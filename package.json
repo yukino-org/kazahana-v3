@@ -1,14 +1,21 @@
 {
   "name": "yukino-desktop",
-  "version": "0.0.1",
-  "author": "ZYROUGE <zyrouge@hotmail.com>",
+  "version": "0.0.1-beta",
+  "description": "Simple anime streamer.",
+  "author": {
+    "name": "ZYROUGE",
+    "email": "zyrouge@hotmail.com"
+  },
   "license": "MIT",
   "scripts": {
     "vite:dev": "vite",
     "vite:build": "vue-tsc --noEmit && vite build",
     "vite:serve": "vite preview",
+    "electron:icons": "electron-icon-builder --flatten --input=./resources/icon.png --output=./resources",
     "electron:start": "cross-env VITE_PLATFORM=\"electron\" electron environments/electron/main.js",
-    "electron:dev": "cross-env VITE_PLATFORM=\"electron\" node scripts/electron-dev"
+    "electron:dev": "cross-env VITE_PLATFORM=\"electron\" node scripts/electron-dev",
+    "electron:pack": "cross-env DEBUG=electron-builder yarn electron:build --dir",
+    "electron:build": "yarn electron:icons && yarn vite:build && electron-builder --config environments/electron/builder.config.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -27,6 +34,8 @@
     "cross-env": "^7.0.3",
     "cross-spawn": "^7.0.3",
     "electron": "^12.0.7",
+    "electron-builder": "^22.10.5",
+    "electron-icon-builder": "^2.0.1",
     "postcss": "^8.2.15",
     "tailwindcss": "^2.1.2",
     "typescript": "^4.1.3",

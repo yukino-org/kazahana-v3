@@ -13,6 +13,12 @@
             <div v-if="selected">
                 <MangaPager
                     class="mt-1"
+                    v-if="
+                        plugin &&
+                        selected.volume &&
+                        selected.chapter &&
+                        selected.url
+                    "
                     :plugin="plugin"
                     :volume="selected.volume"
                     :chapter="selected.chapter"
@@ -23,7 +29,7 @@
             <div>
                 <p class="text-sm opacity-75 mt-4">Episodes</p>
                 <div class="mt-1 grid gap-2">
-                    <div v-for="ep in info.chapters" :key="ep.url">
+                    <div v-for="chap in info.chapters" :key="chap.url">
                         <div
                             class="
                                 hover-pop
@@ -34,22 +40,22 @@
                                 cursor-pointer
                                 rounded
                             "
-                            @click="selectChapter(ep)"
+                            @click="selectChapter(chap)"
                         >
                             <div>
                                 <p class="text-lg">
                                     <span class="font-bold">{{
-                                        ep.title
+                                        chap.title
                                     }}</span>
                                     <span class="ml-1 opacity-75"
-                                        >(Vol. {{ ep.volume }} Chap.
-                                        {{ ep.chapter }})</span
+                                        >(Vol. {{ chap.volume }} Chap.
+                                        {{ chap.chapter }})</span
                                     >
                                 </p>
                                 <ExternalLink
                                     class="text-xs"
                                     :text="`View on ${plugin}`"
-                                    :url="ep.url"
+                                    :url="chap.url"
                                 />
                             </div>
                         </div>
@@ -85,10 +91,7 @@ export default defineComponent({
             info: any;
             plugin: string | null;
             link: string | null;
-            selected: {
-                episode: number;
-                url: string;
-            } | null;
+            selected: any;
         } = {
             state: "pending",
             info: null,
@@ -135,8 +138,8 @@ export default defineComponent({
             this.state = "result";
             this.info = data;
         },
-        selectChapter(url: any) {
-            this.selected = url;
+        selectChapter(chapter: any) {
+            this.selected = chapter;
         },
     },
 });

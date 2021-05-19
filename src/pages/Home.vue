@@ -35,7 +35,7 @@
 
                 <Loading
                     class="mt-8"
-                    v-if="!this.animes[selected]"
+                    v-if="!animes[selected]"
                     :text="`Fetching animes in ${selected}, please wait...`"
                 />
                 <div class="mt-4 grid grid-cols-2 gap-2" v-else>

@@ -2,7 +2,7 @@
     <div>
         <Loading
             v-if="state === 'pending' || state === 'loading'"
-            text="Fetching links, please wait..."
+            text="Fetching pages, please wait..."
         />
         <div v-else-if="state === 'result' && info">
             <p class="text-sm opacity-75 mt-4">
@@ -30,7 +30,7 @@
                         "
                         v-model="currentPage"
                     >
-                        <option disabled :value="{}">
+                        <option disabled :value="undefined">
                             Please select a page
                         </option>
                         <option
@@ -57,9 +57,10 @@
                 </p>
             </div>
 
-            <div class="mt-1 flex flex-row justify-center items-center gap-2">
+            <div class="mt-2 flex flex-row justify-center items-center gap-2">
                 <button
                     class="
+                        text-white
                         bg-indigo-500
                         hover:bg-indigo-600
                         transition
@@ -75,6 +76,7 @@
                 </button>
                 <button
                     class="
+                        text-white
                         bg-indigo-500
                         hover:bg-indigo-600
                         transition
@@ -100,7 +102,9 @@
                     "
                     v-model="currentPage"
                 >
-                    <option disabled :value="{}">Please select a page</option>
+                    <option disabled :value="undefined">
+                        Please select a page
+                    </option>
                     <option v-for="page in info" :key="page.page" :value="page">
                         Page {{ page.page }}
                     </option>
@@ -139,7 +143,7 @@ export default defineComponent({
         } = {
             state: "pending",
             info: null,
-            currentPage: {},
+            currentPage: undefined,
         };
 
         return data;

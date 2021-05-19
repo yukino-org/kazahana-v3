@@ -13,6 +13,7 @@
             <div v-if="selected">
                 <AnimePlayer
                     class="mt-1"
+                    v-if="selected.episode && plugin && selected.url"
                     :episode="selected.episode"
                     :plugin="plugin"
                     :link="selected.url"
@@ -32,9 +33,7 @@
                 >
                     <div
                         class="col-span-1"
-                        v-for="ep in info.episodes.sort(
-                            (a, b) => a.episode - b.episode
-                        )"
+                        v-for="ep in info.episodes"
                         :key="ep.url"
                     >
                         <div
@@ -138,7 +137,7 @@ export default defineComponent({
             }
 
             this.state = "result";
-            this.info = data;
+            this.info = data.sort((a: any, b: any) => a.episode - b.episode);
         },
         selectEpisode(url: any) {
             this.selected = url;
