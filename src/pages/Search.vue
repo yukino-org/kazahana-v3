@@ -114,6 +114,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import api from "../plugins/api";
+import util from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -171,10 +172,7 @@ export default defineComponent({
             }
         },
         getHighResImage(url: string) {
-            return url.replace(
-                /(https:\/\/cdn.myanimelist\.net\/).*(images.*)\?.*/g,
-                "$1$2"
-            );
+            return util.getHighResMALImage(url);
         },
         replaceReadMore(desc: string) {
             return desc.replace(/(read more\.)$/, "");

@@ -13,6 +13,12 @@ const api = {
         async getAnimeInfo(url) {
             return ipcRenderer.invoke("MAL-AnimeInfo", url);
         },
+        async getTopAnime(type) {
+            return ipcRenderer.invoke("MAL-TopAnimes", type);
+        },
+        async getTopAnimeType() {
+            return ipcRenderer.invoke("MAL-TopAnimesTypes");
+        },
         extractors: {
             anime: {
                 extractors: {

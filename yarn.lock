@@ -235,9 +235,9 @@ acorn@^7.0.0:
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
 
 anime-ext@^1.0.14:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.16.tgz#95d9d3556491411f664a7b1c979c350b73807c35"
-  integrity sha512-9Owy8BiCsLLsezDpqBBanydn54tmp0lH2+YzM99QxQglvrmdXF9YkIUJPXeqaKm6jHdb2UV1wqxtL/4zFGksXQ==
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.18.tgz#44c52b1a73c72128230d45940cec180229404e20"
+  integrity sha512-09L3rBw/bc9wDHBrJO/Cf3QfGK/Ku/qfPpVzZ5YmGXN3Rx9cwHsh8pDf0B0EOUmQGYiENQ7etyoQZ1JlB5se2g==
   dependencies:
     axios "^0.21.1"
     cheerio "^1.0.0-rc.9"

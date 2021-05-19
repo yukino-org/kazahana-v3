@@ -5,6 +5,8 @@ export default {
     anime: {
         search: api.animeExt.search,
         info: api.animeExt.getAnimeInfo,
+        top: api.animeExt.getTopAnime,
+        topTypes: api.animeExt.getTopAnimeType,
         extractors: {
             all() {
                 return api.animeExt.extractors.anime.extractors.all();

@@ -1,6 +1,13 @@
 <template>
     <div>
-        <div v-if="info">
+        <Loading
+            v-if="state === 'pending'"
+            text="Loading anime, please wait..."
+        />
+        <p class="opacity-75 text-center" v-else-if="state === 'noresult'">
+            No results could be fetched!
+        </p>
+        <div v-else-if="state === 'result' && info">
             <div class="flex flex-row justify-between gap-4">
                 <div class="flex-grow text-center">
                     <PageTitle :title="info.title" />
@@ -38,10 +45,11 @@
                         class="rounded"
                         :src="info.image"
                         :alt="info.title"
-                        style="width: 16rem"
+                        style="width: 14rem"
                     />
                 </div>
             </div>
+
             <div class="mt-8">
                 <p class="text-sm opacity-75">About</p>
                 <p>{{ info.synopsis || "-" }}</p>
@@ -226,12 +234,14 @@ export default defineComponent({
     },
     data() {
         const data: {
+            state: "pending" | "result" | "noresult";
             info: any;
             extractors: {
                 anime: string[];
                 manga: string[];
             };
         } = {
+            state: "pending",
             info: null,
             extractors: {
                 anime: [],
@@ -248,17 +258,22 @@ export default defineComponent({
     methods: {
         async getAnimeInfo() {
             const url = this.$route.query.url;
-            if (!url)
+            if (!url) {
+                this.state = "noresult";
                 return this.$logger.emit("error", "Missing 'url' in query!");
+            }
 
             const { data, err } = await api.anime.info(url);
-            if (err)
+            if (err) {
+                this.state = "noresult";
                 return this.$logger.emit(
                     "error",
                     `Failed to fetch anime information: ${err}`
                 );
+            }
 
             this.info = data;
+            this.state = "result";
         },
         async getSources() {
             this.extractors.anime = await api.anime.extractors.all();

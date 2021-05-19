@@ -4,6 +4,10 @@ const MALSearchAnime =
     require("anime-ext/dist/integrations/myanimelist/search-anime").default;
 const MALAnimeInfo =
     require("anime-ext/dist/integrations/myanimelist/anime-info").default;
+const {
+    default: MALTopAnimes,
+    TopAnimeTypes: MALTopAnimeTypes,
+} = require("anime-ext/dist/integrations/myanimelist/top");
 
 const FourAnime = require("anime-ext/dist/extractors/anime/4anime").default;
 const GogoAnime = require("anime-ext/dist/extractors/anime/gogoanime").default;
@@ -36,7 +40,8 @@ const options = {
 };
 
 /**
- * @param {(...args) => any} fn
+ * @param {(...args: any[]) => any} fn
+ * @returns {any}
  */
 const getResultOrError = async (fn) => {
     try {
@@ -74,6 +79,14 @@ module.exports = (ipc) => {
 
     ipc.handle("MAL-AnimeInfo", (e, url) => {
         return getResultOrError(() => MALAnimeInfo(url, options));
+    });
+
+    ipc.handle("MAL-TopAnimes", (e, type) => {
+        return getResultOrError(() => MALTopAnimes(type, options));
+    });
+
+    ipc.handle("MAL-TopAnimesTypes", (e) => {
+        return ["all", ...MALTopAnimeTypes];
     });
 
     ipc.handle("Anime-All-Sources", (e) => {
