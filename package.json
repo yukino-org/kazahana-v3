@@ -9,13 +9,13 @@
   "license": "MIT",
   "scripts": {
     "vite:dev": "vite",
-    "vite:build": "vue-tsc --noEmit && vite build",
     "vite:serve": "vite preview",
+    "vite:build": "rimraf ./dist/vite && vue-tsc --noEmit && vite build",
     "electron:icons": "electron-icon-builder --flatten --input=./resources/icon.png --output=./resources",
     "electron:start": "cross-env VITE_PLATFORM=\"electron\" electron environments/electron/main.js",
     "electron:dev": "cross-env VITE_PLATFORM=\"electron\" node scripts/electron-dev",
-    "electron:pack": "cross-env DEBUG=electron-builder yarn electron:build --dir",
-    "electron:build": "yarn electron:icons && yarn vite:build && electron-builder --config environments/electron/builder.config.js"
+    "electron:pack": "cross-env DEBUG=\"electron-builder\" yarn electron:build --dir",
+    "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env BUILD_MODE=\"electron\" yarn vite:build && electron-builder --config environments/electron/builder.config.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -37,6 +37,7 @@
     "electron-builder": "^22.10.5",
     "electron-icon-builder": "^2.0.1",
     "postcss": "^8.2.15",
+    "rimraf": "^3.0.2",
     "tailwindcss": "^2.1.2",
     "typescript": "^4.1.3",
     "vite": "^2.3.0",
