@@ -21,7 +21,9 @@ const createWindow = () => {
         win.loadURL(process.env.VITE_SERVE_URL);
         win.webContents.openDevTools();
     } else {
-        win.loadFile(path.join(__dirname, "..", "..", "dist", "index.html"));
+        win.loadFile(
+            path.join(__dirname, "..", "..", "dist", "vite", "index.html")
+        );
     }
 };
 

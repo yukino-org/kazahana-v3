@@ -3,7 +3,7 @@ module.exports = {
     appId: "io.github.zyrouge.yukino",
     copyright: "Copyright © 2021 Zyrouge",
     files: [
-        "dist/**/*",
+        "dist/vite/**/*",
         "resources/**/*",
         "environments/electron/**/*",
         "node_modules/**/*",
