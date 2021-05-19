@@ -9,7 +9,7 @@ body {
 }
 
 body {
-    @apply bg-white dark:bg-gray-900 text-black dark:text-white font-sans overflow-x-hidden;
+    @apply bg-white dark:bg-gray-900 text-gray-800 dark:text-white font-sans overflow-x-hidden;
 }
 
 hr {
@@ -33,5 +33,5 @@ hr {
 }
 
 .hover-pop:hover {
-    transform: scale(1.02);
+    transform: scale(1.015);
 }

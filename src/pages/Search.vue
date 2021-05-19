@@ -63,7 +63,7 @@
                             style="width: 8rem"
                         />
                         <div>
-                            <p>{{ anime.title }}</p>
+                            <p class="text-lg font-bold">{{ anime.title }}</p>
                             <div class="mt-1 flex flex-row gap-1">
                                 <span
                                     class="
@@ -113,6 +113,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import api from "../plugins/api";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -140,10 +141,27 @@ export default defineComponent({
     },
     methods: {
         async search() {
+            if (!this.terms)
+                return this.$logger.emit(
+                    "warn",
+                    "Provide some search terms to search!"
+                );
+
+            if (this.terms.length < 3)
+                return this.$logger.emit(
+                    "warn",
+                    "Enter atleast 3 characters to search!"
+                );
+
             this.result = [];
             this.state = "loading";
-            const { data, err } = await window.api.animeExt.search(this.terms);
-            if (err) return console.log(err); // todo
+
+            const { data, err } = await api.anime.search(this.terms);
+            if (err)
+                return this.$logger.emit(
+                    "error",
+                    `Could not get search results: ${err}`
+                );
 
             if (!data?.length) {
                 this.state = "noresults";

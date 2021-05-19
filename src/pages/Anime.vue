@@ -2,32 +2,31 @@
     <div>
         <div v-if="info">
             <div class="flex flex-row justify-between gap-4">
-                <div>
-                    <PageTitle class="flex-grow" :title="info.title" />
+                <div class="flex-grow text-center">
+                    <PageTitle :title="info.title" />
                     <div
                         class="
                             flex flex-row
                             justify-center
                             items-center
-                            text-center
                             mt-8
                             gap-10
                         "
                     >
                         <div>
-                            <p>Score</p>
+                            <p class="opacity-75">Score</p>
                             <p class="text-3xl font-bold">
                                 {{ info.stats.score || "-" }}
                             </p>
                         </div>
                         <div>
-                            <p>Rank</p>
+                            <p class="opacity-75">Rank</p>
                             <p class="text-3xl font-bold">
                                 {{ info.stats.rank || "-" }}
                             </p>
                         </div>
                         <div>
-                            <p>Popularity</p>
+                            <p class="opacity-75">Popularity</p>
                             <p class="text-3xl font-bold">
                                 {{ info.stats.popularity || "-" }}
                             </p>
@@ -35,10 +34,9 @@
                     </div>
                 </div>
                 <div>
-                    <!-- // todo -->
                     <img
                         class="rounded"
-                        src="https://cdn.myanimelist.net/images/anime/1301/93586.jpg"
+                        :src="info.image"
                         :alt="info.title"
                         style="width: 16rem"
                     />
@@ -46,7 +44,7 @@
             </div>
             <div class="mt-8">
                 <p class="text-sm opacity-75">About</p>
-                <p>{{ info.synonpsis || "-" }}</p>
+                <p>{{ info.synopsis || "-" }}</p>
 
                 <p class="text-sm opacity-75 mt-4">Information</p>
                 <p><b>Type:</b> {{ info.info.type || "-" }}</p>
@@ -83,7 +81,7 @@
                                     flex flex-row
                                     justify-between
                                     items-center
-                                    gap-2
+                                    gap-3
                                 "
                             >
                                 <img
@@ -96,13 +94,13 @@
                                     <p class="leading-tight">
                                         {{ character.name }}
                                     </p>
-                                    <p class="opacity-75 text-xs">
+                                    <p class="mt-1 opacity-75 text-xs">
                                         {{ character.role }}
                                     </p>
-                                    <p class="leading-none">
+                                    <p>
                                         <ExternalLink
                                             class="text-xs"
-                                            text="View"
+                                            text="View on MAL"
                                             :url="character.url"
                                         />
                                     </p>
@@ -113,7 +111,7 @@
                                     flex flex-row
                                     justify-between
                                     items-center
-                                    gap-2
+                                    gap-3
                                     text-right
                                 "
                             >
@@ -121,13 +119,13 @@
                                     <p class="leading-tight">
                                         {{ character.actor.name }}
                                     </p>
-                                    <p class="opacity-75 text-xs">
+                                    <p class="mt-1 opacity-75 text-xs">
                                         {{ character.actor.language }}
                                     </p>
-                                    <p class="leading-none">
+                                    <p>
                                         <ExternalLink
                                             class="text-xs"
-                                            text="View"
+                                            text="View on MAL"
                                             :url="character.actor.url"
                                         />
                                     </p>
@@ -143,6 +141,28 @@
                     </div>
                 </div>
 
+                <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
+                <div class="mt-1 grid gap-2">
+                    <div v-for="plugin in extractors.anime" :key="plugin">
+                        <AnimeSourceViewer
+                            :title="info.title"
+                            :pluginKey="plugin"
+                            :pluginName="plugin"
+                        />
+                    </div>
+                </div>
+
+                <p class="text-sm opacity-75 mt-4">Sources (Manga)</p>
+                <div class="mt-1 grid gap-2">
+                    <div v-for="plugin in extractors.manga" :key="plugin">
+                        <MangaSourceViewer
+                            :title="info.title"
+                            :pluginKey="plugin"
+                            :pluginName="plugin"
+                        />
+                    </div>
+                </div>
+
                 <p class="text-sm opacity-75 mt-4">Similar</p>
                 <div class="mt-1 grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div
@@ -150,15 +170,8 @@
                         v-for="anime in info.recommendations"
                         :key="anime.url"
                     >
-                        <router-link
-                            :to="{
-                                path: '/anime',
-                                query: {
-                                    url: anime.url,
-                                },
-                            }"
+                        <div
                             class="
-                                hover-pop
                                 flex flex-row
                                 justify-start
                                 items-center
@@ -167,7 +180,6 @@
                                 rounded
                                 p-2
                                 gap-4
-                                cursor-pointer
                             "
                         >
                             <img
@@ -176,16 +188,16 @@
                                 :alt="anime.title"
                             />
                             <div>
-                                <p class="text-xl font-bold">
+                                <p class="text-lg font-bold">
                                     {{ anime.title }}
                                 </p>
                                 <ExternalLink
                                     class="text-xs"
-                                    text="MyAnimeList"
+                                    text="View on MyAnimeList"
                                     :url="anime.url"
                                 />
                             </div>
-                        </router-link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -195,37 +207,62 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import api from "../plugins/api";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
+import AnimeSourceViewer from "../components/AnimeSourceViewer.vue";
+import MangaSourceViewer from "../components/MangaSourceViewer.vue";
+import Loading from "../components/Loading.vue";
 
 export default defineComponent({
     name: "Home",
     components: {
         PageTitle,
         ExternalLink,
+        AnimeSourceViewer,
+        MangaSourceViewer,
+        Loading,
     },
     data() {
         const data: {
             info: any;
+            extractors: {
+                anime: string[];
+                manga: string[];
+            };
         } = {
             info: null,
+            extractors: {
+                anime: [],
+                manga: [],
+            },
         };
 
         return data;
     },
     mounted() {
         this.getAnimeInfo();
+        this.getSources();
     },
     methods: {
         async getAnimeInfo() {
             const url = this.$route.query.url;
-            if (!url) return; // todo
+            if (!url)
+                return this.$logger.emit("error", "Missing 'url' in query!");
 
-            const { data, err } = await window.api.animeExt.getAnimeInfo(url);
-            if (err) return console.log(err); // todo
+            const { data, err } = await api.anime.info(url);
+            if (err)
+                return this.$logger.emit(
+                    "error",
+                    `Failed to fetch anime information: ${err}`
+                );
 
             this.info = data;
+        },
+        async getSources() {
+            this.extractors.anime = await api.anime.extractors.all();
+            this.extractors.manga = await api.manga.extractors.all();
         },
     },
 });

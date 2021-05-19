@@ -37,13 +37,13 @@
         >
             <div v-for="link in links" class="mb-2" :key="link.url">
                 <a v-if="link.external" :class="hrefClassNames" :href="link.url"
-                    ><span class="mr-1 opacity-70"
+                    ><span class="mr-1 opacity-75"
                         ><Icon :icon="link.icon"
                     /></span>
                     {{ link.name }}</a
                 >
                 <router-link v-else :class="hrefClassNames" :to="link.url"
-                    ><span class="mr-1 opacity-70"
+                    ><span class="mr-1 opacity-75"
                         ><Icon :icon="link.icon"
                     /></span>
                     {{ link.name }}</router-link

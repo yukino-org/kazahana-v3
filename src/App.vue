@@ -9,7 +9,6 @@
                         py-6
                         lg:col-span-1
                         rounded
-                        shadow
                         bg-gray-100
                         dark:bg-gray-800
                     "
@@ -23,6 +22,9 @@
             class="
                 fixed
                 bg-indigo-500
+                hover:bg-indigo-600
+                transition
+                duration-200
                 text-white
                 focus:outline-none
                 px-1
@@ -30,12 +32,17 @@
                 bottom-14
                 h-14
                 w-14
+                shadow-lg
             "
             id="scroll-btn"
             @click.prevent="goToTop()"
         >
             <Icon class="text-3xl" icon="arrow-up" />
         </button>
+
+        <div class="fixed right-6 top-6 max-w-xs z-50">
+            <Notifications />
+        </div>
     </div>
 </template>
 
@@ -43,16 +50,18 @@
 import { defineComponent } from "vue";
 
 import SideBar from "./components/SideBar.vue";
+import Notifications from "./components/Logger.vue";
 
 export default defineComponent({
     name: "App",
     components: {
         SideBar,
+        Notifications,
     },
     mounted() {
         window.addEventListener("scroll", this.onScroll);
     },
-    beforeDestroy() {
+    beforeUnmount() {
         window.removeEventListener("scroll", this.onScroll);
     },
     methods: {

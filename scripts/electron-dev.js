@@ -7,7 +7,7 @@ const PORT = process.env.PORT ? +process.env.PORT : 3000;
 
 const start = async () => {
     process.env.NODE_ENV = "development";
-    process.env.VITE_APP_URL = `http://localhost:${PORT}`;
+    process.env.VITE_SERVE_URL = `http://localhost:${PORT}`;
 
     const server = await createServer({
         root: path.resolve(__dirname, ".."),

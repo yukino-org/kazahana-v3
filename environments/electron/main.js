@@ -15,13 +15,13 @@ const createWindow = () => {
     });
 
     if (isDev) {
-        if (!process.env.VITE_APP_URL)
-            throw new Error("Missing 'process.env.VITE_APP_URL'!");
+        if (!process.env.VITE_SERVE_URL)
+            throw new Error("Missing 'process.env.VITE_SERVE_URL'!");
 
-        win.loadURL(process.env.VITE_APP_URL);
+        win.loadURL(process.env.VITE_SERVE_URL);
         win.webContents.openDevTools();
     } else {
-        win.loadFile(path.join(__dirname, "..", "dist", "index.html"));
+        win.loadFile(path.join(__dirname, "..", "..", "dist", "index.html"));
     }
 };
 
