@@ -18,7 +18,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
 
 export default defineComponent({
     props: {
@@ -29,7 +28,7 @@ export default defineComponent({
         goToUrl() {
             if (!this.url) return;
 
-            switch (api.platform) {
+            switch (platform) {
                 case "electron":
                     window.api.openExternalLink(this.url);
                     break;

@@ -1,7 +1,6 @@
-const api: any = import.meta.env.VITE_PLATFORM === "electron" ? window.api : {};
+const api: any = platform === "electron" ? window.api : null;
 
 export default {
-    platform: import.meta.env.VITE_PLATFORM || "unknown",
     anime: {
         search: api.animeExt.search,
         info: api.animeExt.getAnimeInfo,

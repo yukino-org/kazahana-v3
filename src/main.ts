@@ -17,6 +17,8 @@ app.config.globalProperties.$logger = new Logger();
 app.mount("#app");
 
 declare global {
+    const platform: string;
+
     interface Window {
         api: {
             animeExt: any;
