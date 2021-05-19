@@ -16,4 +16,8 @@ module.exports = {
     extraMetadata: {
         main: "environments/electron/main.js",
     },
+    nsis: {
+        oneClick: false,
+        allowToChangeInstallationDirectory: true,
+    },
 };
