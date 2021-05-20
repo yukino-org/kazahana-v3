@@ -17,13 +17,7 @@ module.exports = {
         main: "environments/electron/main.js",
     },
     target: "nsis",
-    publish: [
-        {
-            provider: "github",
-            owner: "zyrouge",
-            repo: "yukino-app",
-        },
-    ],
+    publish: ["github"],
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
