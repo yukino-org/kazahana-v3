@@ -20,7 +20,7 @@
     "electron:dev": "cross-env YUKINO_PLATFORM=\"electron\" node scripts/electron-dev",
     "electron:pack": "cross-env DEBUG=\"electron-builder\" yarn electron:build --dir",
     "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env YUKINO_PLATFORM=\"electron\" yarn vite:build && electron-builder --config environments/electron/builder.config.js",
-    "electron:publish": "yarn electron:build --publish onTag"
+    "electron:publish": "yarn electron:build --publish always"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
