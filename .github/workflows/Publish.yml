@@ -22,3 +22,5 @@ jobs:
 
             - name: Publish
               run: yarn electron:publish
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
