@@ -16,6 +16,13 @@ module.exports = {
     extraMetadata: {
         main: "environments/electron/main.js",
     },
+    publish: [
+        {
+            provider: "github",
+            owner: "zyrouge",
+            repo: "yukino-app",
+        },
+    ],
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
