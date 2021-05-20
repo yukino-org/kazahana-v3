@@ -8,14 +8,7 @@ on:
 
 jobs:
     release:
-        runs-on: ${{ matrix.os }}
-
-        strategy:
-            matrix:
-                os:
-                    - macos-latest
-                    - ubuntu-latest
-                    - windows-latest
+        runs-on: windows-latest
 
         steps:
             - uses: actions/checkout@v2
@@ -24,9 +17,8 @@ jobs:
               with:
                   node-version: "14.16.0"
 
-            - name: Build/release Electron app
-              uses: samuelmeuli/action-electron-builder@v1
-              with:
-                  github_token: ${{ secrets.github_token }}
-                  release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-                  build_script_name: electron:publish
+            - name: Install dependencies
+              run: yarn --dev
+
+            - name: Publish
+              run: yarn electron:publish

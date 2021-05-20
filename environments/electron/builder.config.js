@@ -16,6 +16,7 @@ module.exports = {
     extraMetadata: {
         main: "environments/electron/main.js",
     },
+    target: "nsis",
     publish: [
         {
             provider: "github",
@@ -26,9 +27,5 @@ module.exports = {
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
-    },
-    win: {
-        target: "nsis",
-        publish: ["github"],
     },
 };
