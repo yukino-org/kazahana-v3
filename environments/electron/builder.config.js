@@ -21,6 +21,7 @@ module.exports = {
         allowToChangeInstallationDirectory: true,
     },
     win: {
+        target: "nsis",
         publish: ["github"],
     },
 };
