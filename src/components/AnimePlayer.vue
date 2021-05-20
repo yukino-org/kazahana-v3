@@ -5,7 +5,7 @@
                 Player (Episode {{ episode }})
             </p>
             <div class="mt-2">
-                <video class="outline-none" controls>
+                <video class="outline-none w-full" controls>
                     <source :src="playUrl" />
                 </video>
             </div>

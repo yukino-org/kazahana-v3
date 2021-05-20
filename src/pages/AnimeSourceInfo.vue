@@ -137,7 +137,10 @@ export default defineComponent({
             }
 
             this.state = "result";
-            this.info = data.sort((a: any, b: any) => a.episode - b.episode);
+            data.episodes = data.episodes.sort(
+                (a: any, b: any) => a.episode - b.episode
+            );
+            this.info = data;
         },
         selectEpisode(url: any) {
             this.selected = url;
