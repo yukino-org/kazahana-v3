@@ -20,4 +20,7 @@ module.exports = {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
     },
+    win: {
+        publish: ["github"],
+    },
 };

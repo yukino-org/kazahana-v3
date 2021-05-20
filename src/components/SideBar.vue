@@ -36,13 +36,17 @@
             "
         >
             <div v-for="link in links" class="mb-2" :key="link.url">
-                <a v-if="link.external" :class="hrefClassNames" :href="link.url"
+                <a :class="hrefClassNames" :href="link.url" v-if="link.external"
                     ><span class="mr-1 opacity-75"
                         ><Icon :icon="link.icon"
                     /></span>
                     {{ link.name }}</a
                 >
-                <router-link v-else :class="hrefClassNames" :to="link.url"
+                <router-link
+                    :class="hrefClassNames"
+                    active-class="text-indigo-500"
+                    :to="link.url"
+                    v-else
                     ><span class="mr-1 opacity-75"
                         ><Icon :icon="link.icon"
                     /></span>

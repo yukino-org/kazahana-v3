@@ -1,4 +1,5 @@
 const { shell } = require("electron");
+const { version } = require("../../package.json");
 
 const MALSearchAnime =
     require("anime-ext/dist/integrations/myanimelist/search-anime").default;
@@ -60,6 +61,10 @@ const getResultOrError = async (fn) => {
  * @param {import("electron").ipcMain} ipc
  */
 module.exports = (ipc) => {
+    ipc.handle("Yukino-Version", (e) => {
+        return version || "0.0.0";
+    });
+
     const extractors = {
         anime: {
             "4Anime": new FourAnime(options),

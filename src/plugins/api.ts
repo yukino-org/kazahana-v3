@@ -1,6 +1,7 @@
 const api: any = platform === "electron" ? window.api : null;
 
 export default {
+    version: <() => Promise<string>>api.version,
     anime: {
         search: api.animeExt.search,
         info: api.animeExt.getAnimeInfo,

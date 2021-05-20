@@ -1,11 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 const api = {
-    versions: {
-        chrome: process.versions.chrome,
-        node: process.versions.node,
-        electron: process.versions.electron,
-    },
+    version: () => ipcRenderer.invoke("Yukino-Version"),
     animeExt: {
         async search(terms) {
             return await ipcRenderer.invoke("MAL-Search", terms);
@@ -69,3 +65,26 @@ const api = {
 };
 
 contextBridge.exposeInMainWorld("api", api);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const minimizeBtn = document.getElementById("titlebar-minimize");
+    const maximizeBtn = document.getElementById("titlebar-maximize");
+    const closeBtn = document.getElementById("titlebar-close");
+    const reloadBtn = document.getElementById("titlebar-reload");
+
+    minimizeBtn.addEventListener("click", () => {
+        ipcRenderer.invoke("minimize-window");
+    });
+
+    maximizeBtn.addEventListener("click", () => {
+        ipcRenderer.invoke("toggle-maximize-window");
+    });
+
+    closeBtn.addEventListener("click", () => {
+        ipcRenderer.invoke("close-window");
+    });
+
+    reloadBtn.addEventListener("click", () => {
+        ipcRenderer.invoke("reload-window");
+    });
+});

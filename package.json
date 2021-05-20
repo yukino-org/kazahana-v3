@@ -7,6 +7,10 @@
     "email": "zyrouge@hotmail.com"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zyrouge/yukino-app"
+  },
   "scripts": {
     "vite:dev": "vite",
     "vite:serve": "vite preview",
@@ -15,7 +19,8 @@
     "electron:start": "cross-env YUKINO_PLATFORM=\"electron\" electron environments/electron/main.js",
     "electron:dev": "cross-env YUKINO_PLATFORM=\"electron\" node scripts/electron-dev",
     "electron:pack": "cross-env DEBUG=\"electron-builder\" yarn electron:build --dir",
-    "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env YUKINO_PLATFORM=\"electron\" yarn vite:build && electron-builder --config environments/electron/builder.config.js"
+    "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env YUKINO_PLATFORM=\"electron\" yarn vite:build && electron-builder --config environments/electron/builder.config.js",
+    "electron:publish": "yarn electron:build --publish always"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -23,6 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/vue-fontawesome": "^3.0.0-3",
     "anime-ext": "^1.0.14",
+    "electron-updater": "^4.3.9",
     "vue": "^3.0.5",
     "vue-router": "4"
   },

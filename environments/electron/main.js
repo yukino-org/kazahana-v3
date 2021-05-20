@@ -1,5 +1,6 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
+const { autoUpdater } = require("electron-updater");
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -12,6 +13,7 @@ const createWindow = () => {
             nodeIntegration: false,
             preload: path.join(__dirname, "preload.js"),
         },
+        frame: false,
     });
 
     if (isDev) {
@@ -25,11 +27,39 @@ const createWindow = () => {
             path.join(__dirname, "..", "..", "dist", "vite", "index.html")
         );
     }
+
+    win.on("close", () => {
+        if (!win.isDestroyed()) {
+            win.destroy();
+        }
+    });
+
+    ipcMain.handle("minimize-window", () => {
+        win.minimize();
+    });
+
+    ipcMain.handle("toggle-maximize-window", () => {
+        if (win.isMaximized()) {
+            win.unmaximize();
+        } else {
+            win.maximize();
+        }
+    });
+
+    ipcMain.handle("close-window", () => {
+        win.close();
+    });
+
+    ipcMain.handle("reload-window", () => {
+        win.reload();
+    });
 };
 
 require("./ipc")(ipcMain);
 
-app.whenReady().then(() => {
+app.on("ready", async () => {
+    autoUpdater.checkForUpdatesAndNotify();
+
     createWindow();
 });
 
