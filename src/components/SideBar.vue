@@ -1,29 +1,6 @@
 <template>
     <div class="text-center">
         <h1 class="text-indigo-500 font-bold text-5xl">Yukino</h1>
-        <button
-            class="
-                mt-8
-                focus:outline-none
-                bg-gray-200
-                dark:bg-gray-600
-                px-1
-                py-0.5
-                rounded-full
-            "
-            @click="switchTheme()"
-            style="width: 3rem"
-        >
-            <span
-                :class="[
-                    'flex',
-                    'flex-row',
-                    darkMode ? 'justify-end' : 'justify-start',
-                ]"
-            >
-                {{ darkMode ? "🌙" : "🌞" }}
-            </span>
-        </button>
 
         <div
             class="
@@ -56,26 +33,50 @@
                 >
             </div>
 
-            <div class="flex flex-row gap-4 mb-2 lg:mt-2">
+            <div class="flex flex-row gap-4 mb-2 lg:mt-5">
                 <button
                     :class="[
                         hrefClassNames,
-                        'focus:outline-none bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
+                        'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go back"
                     @click="$router.go(-1)"
                 >
                     <Icon icon="arrow-left" />
                 </button>
+
                 <button
                     :class="[
                         hrefClassNames,
-                        'focus:outline-none bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
+                        'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go forward"
                     @click="$router.go(1)"
                 >
                     <Icon icon="arrow-right" />
+                </button>
+
+                <button
+                    class="
+                        focus:outline-none
+                        bg-gray-200
+                        dark:bg-gray-700
+                        px-1
+                        py-0.5
+                        rounded-full
+                    "
+                    @click="switchTheme()"
+                    style="width: 3rem"
+                >
+                    <span
+                        :class="[
+                            'flex',
+                            'flex-row',
+                            darkMode ? 'justify-end' : 'justify-start',
+                        ]"
+                    >
+                        {{ darkMode ? "🌙" : "🌞" }}
+                    </span>
                 </button>
             </div>
         </div>
