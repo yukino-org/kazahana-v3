@@ -2,6 +2,7 @@ const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
+const logger = require("./logger");
 
 const isDev = process.env.NODE_ENV === "development";
 Logger.info("Starting app");
