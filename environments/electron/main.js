@@ -1,8 +1,7 @@
 const path = require("path");
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
-const logger = require("./logger");
 
 const isDev = process.env.NODE_ENV === "development";
 Logger.info("Starting app");
@@ -86,9 +85,21 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.handle("close-window", () => {
-        Logger.warn("Closing window");
-        win.close();
+    ipcMain.handle("close-window", async () => {
+        const resp = await dialog.showMessageBox(null, {
+            title: "Exit",
+            message: "Do you want to close the app?",
+            type: "warning",
+            buttons: ["Yes", "No"],
+            defaultId: 1,
+        });
+
+        if (resp.response === 0) {
+            Logger.warn("Closing window");
+            win.close();
+        } else {
+            Logger.info("User aborted app close!");
+        }
     });
 
     ipcMain.handle("reload-window", () => {

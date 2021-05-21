@@ -1,4 +1,4 @@
-const { shell } = require("electron");
+const { shell, dialog } = require("electron");
 const Logger = require("./logger");
 const { version } = require("../../package.json");
 
@@ -118,11 +118,23 @@ module.exports = (ipc) => {
         });
     });
 
-    ipc.handle("Open-Externally", (e, url) => {
+    ipc.handle("Open-Externally", async (e, url) => {
         Logger.info(`Open external url: ${url}`);
         if (allowedOrigins.some((x) => url.indexOf(x) === 0)) {
-            Logger.info(`Opened external url: ${url}`);
-            shell.openExternal(url);
+            const resp = await dialog.showMessageBox(null, {
+                title: "External Link",
+                message: `Do you want to visit ${url} in your browser?`,
+                type: "warning",
+                buttons: ["Yes", "No"],
+                defaultId: 1,
+            });
+
+            if (resp.response === 0) {
+                Logger.info(`Opening external url: ${url}`);
+                shell.openExternal(url);
+            } else {
+                Logger.info(`User aborted opening external url: ${url}`);
+            }
         } else {
             Logger.info(`Open external url request rejected: ${url}`);
         }
