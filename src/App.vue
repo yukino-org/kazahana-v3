@@ -33,6 +33,7 @@
             <button
                 class="
                     fixed
+                    rounded
                     bg-indigo-500
                     hover:bg-indigo-600
                     transition
@@ -41,7 +42,7 @@
                     focus:outline-none
                     px-1
                     py-0.5
-                    bottom-14
+                    bottom-2
                     h-14
                     w-14
                     shadow-lg
@@ -118,6 +119,6 @@ export default defineComponent({
 }
 
 #scroll-btn.active {
-    right: 0;
+    right: 0.5rem;
 }
 </style>

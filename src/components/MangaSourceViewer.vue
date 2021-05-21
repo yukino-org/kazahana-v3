@@ -19,7 +19,16 @@
                 >
                     <p>No sources could be found.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2" v-else>
+                <div
+                    class="
+                        grid grid-cols-1
+                        md:grid-cols-2
+                        gap-2
+                        mt-2
+                        items-center
+                    "
+                    v-else
+                >
                     <div
                         class="col-span-1"
                         v-for="src in sources"

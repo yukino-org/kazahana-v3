@@ -30,7 +30,7 @@
         </p>
 
         <div class="mt-8" v-if="result && result.length">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                 <div
                     class="col-span-1"
                     v-for="anime in result"

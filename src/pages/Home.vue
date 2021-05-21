@@ -38,7 +38,16 @@
                     v-if="!animes[selected]"
                     :text="`Fetching animes in ${selected}, please wait...`"
                 />
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2" v-else>
+                <div
+                    class="
+                        mt-4
+                        grid grid-cols-1
+                        md:grid-cols-2
+                        gap-2
+                        items-center
+                    "
+                    v-else
+                >
                     <div
                         class="col-span-1"
                         v-for="anime in animes[selected]"
