@@ -24,6 +24,7 @@
                 {{ darkMode ? "🌙" : "🌞" }}
             </span>
         </button>
+
         <div
             class="
                 mt-8
@@ -33,6 +34,7 @@
                 items-center
                 gap-4
                 lg:gap-0
+                flex-wrap
             "
         >
             <div v-for="link in links" class="mb-2" :key="link.url">
@@ -52,6 +54,29 @@
                     /></span>
                     {{ link.name }}</router-link
                 >
+            </div>
+
+            <div class="flex flex-row gap-4 mb-2 lg:mt-2">
+                <button
+                    :class="[
+                        hrefClassNames,
+                        'focus:outline-none bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
+                    ]"
+                    title="Go back"
+                    @click="$router.go(-1)"
+                >
+                    <Icon icon="arrow-left" />
+                </button>
+                <button
+                    :class="[
+                        hrefClassNames,
+                        'focus:outline-none bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
+                    ]"
+                    title="Go forward"
+                    @click="$router.go(1)"
+                >
+                    <Icon icon="arrow-right" />
+                </button>
             </div>
         </div>
     </div>

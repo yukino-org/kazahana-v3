@@ -15,6 +15,8 @@ import {
     faExpandAlt,
     faTimes,
     faRedo,
+    faArrowLeft,
+    faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -39,7 +41,9 @@ library.add(
     faExpandAlt,
     faWindowMaximize,
     faTimes,
-    faRedo
+    faRedo,
+    faArrowLeft,
+    faArrowRight
 );
 
 export default FontAwesomeIcon;
