@@ -15,6 +15,10 @@ const routes: RouteRecordRaw[] = [
         path: "/manga/source",
         component: () => import("../pages/MangaSourceInfo.vue"),
     },
+    {
+        path: "/settings",
+        component: () => import("../pages/Settings.vue"),
+    },
 ];
 
 const router = createRouter({

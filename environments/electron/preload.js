@@ -2,6 +2,14 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 const api = {
     version: () => ipcRenderer.invoke("Yukino-Version"),
+    store: {
+        async get(key) {
+            return await ipcRenderer.invoke("Store-Get", key);
+        },
+        async set(key, data) {
+            return await ipcRenderer.invoke("Store-Set", key, data);
+        },
+    },
     animeExt: {
         async search(terms) {
             return await ipcRenderer.invoke("MAL-Search", terms);

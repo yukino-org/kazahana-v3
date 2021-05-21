@@ -4,6 +4,8 @@ const { app } = require("electron");
 
 const logDir = path.join(app.getPath("appData"), app.getName());
 
+const isDev = process.env.NODE_ENV === "development";
+
 class Logger {
     constructor() {
         fs.mkdirSync(logDir, {
@@ -31,7 +33,7 @@ class Logger {
 
     write(txt) {
         if (this.file && this.file.writable) this.file.write(`${txt}\n`);
-        console.log(txt);
+        if (isDev) console.log(txt);
     }
 
     static get time() {

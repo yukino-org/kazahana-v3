@@ -106,6 +106,12 @@ export default defineComponent({
                 external: false,
                 icon: "search",
             },
+            {
+                name: "Settings",
+                url: "/settings",
+                external: false,
+                icon: "cog",
+            },
         ];
 
         return {

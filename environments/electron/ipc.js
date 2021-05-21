@@ -1,4 +1,5 @@
 const { shell, dialog } = require("electron");
+const Store = require("./store");
 const Logger = require("./logger");
 const { version } = require("../../package.json");
 
@@ -51,6 +52,14 @@ const getResultOrError = async (fn) => {
 module.exports = (ipc) => {
     ipc.handle("Yukino-Version", (e) => {
         return version || "0.0.0";
+    });
+
+    ipc.handle("Store-Get", (e, key) => {
+        return Store.store.get(key);
+    });
+
+    ipc.handle("Store-Set", (e, key, data) => {
+        Store.store.set(key, data);
     });
 
     const extractors = {

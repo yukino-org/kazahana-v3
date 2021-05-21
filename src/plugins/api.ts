@@ -2,6 +2,14 @@ const api: any = platform === "electron" ? window.api : null;
 
 export default {
     version: <() => Promise<string>>api.version,
+    store: {
+        set(key: string, data: any) {
+            return api.store.set(key, data);
+        },
+        get(key: string) {
+            return api.store.get(key);
+        },
+    },
     anime: {
         search: api.animeExt.search,
         info: api.animeExt.getAnimeInfo,

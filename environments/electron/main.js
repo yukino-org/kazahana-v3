@@ -1,5 +1,6 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const Store = require("./store");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
 
@@ -19,9 +20,12 @@ const createWindow = async () => {
     Logger.warn(`Continue process: ${continueProc}`);
     if (!continueProc) return ignition.close();
 
+    const dimensions = Store.getWindowSize();
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        x: dimensions.x,
+        y: dimensions.y,
+        width: dimensions.width,
+        height: dimensions.height,
         minWidth: 400,
         minHeight: 300,
         webPreferences: {
@@ -33,6 +37,7 @@ const createWindow = async () => {
         frame: false,
         icon: path.join(__dirname, "..", "..", "resources", "icon.png"),
     });
+    if (dimensions.isMaximized) win.maximize();
     Logger.info("Created main window");
 
     if (isDev) {
@@ -64,6 +69,11 @@ const createWindow = async () => {
     });
 
     win.on("close", () => {
+        Store.setWindowSize({
+            ...win.getBounds(),
+            isMaximized: win.isMaximized(),
+        });
+
         if (!win.isDestroyed()) {
             Logger.warn("Main window has been closed!");
             win.destroy();

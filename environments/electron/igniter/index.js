@@ -1,5 +1,6 @@
 const path = require("path");
 const { app, BrowserWindow } = require("electron");
+const Store = require("../store");
 const Logger = require("../logger");
 const { version } = require("../../../package.json");
 
@@ -19,6 +20,8 @@ class Igniter {
         this.autoUpdater = require("electron-updater").autoUpdater;
         this.autoUpdater.autoDownload = false;
         this.autoUpdater.logger = null;
+        this.autoUpdater.channel =
+            Store.store.get("settings.updateChannel") || "latest";
 
         if (isDev) {
             this.autoUpdater.updateConfigPath = path.join(
