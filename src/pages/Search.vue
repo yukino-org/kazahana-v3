@@ -3,7 +3,7 @@
         <PageTitle title="Search" />
         <div class="mt-6 flex flex-row justify-center items-center">
             <input
-                class="flex-grow text-box mr-1"
+                class="flex-grow text-box mr-2"
                 v-model="terms"
                 type="text"
                 placeholder="Type in anime's name..."

@@ -21,7 +21,7 @@ hr {
 }
 
 .text-box {
-    @apply focus:outline-none border-2 border-indigo-500 rounded text-black px-3 py-2 transition duration-300;
+    @apply focus:outline-none ring-2 ring-gray-100 dark:ring-gray-800 bg-gray-100 dark:bg-gray-800 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded px-3 py-2 transition duration-300;
 }
 
 .btn {
