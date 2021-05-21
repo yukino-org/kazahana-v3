@@ -27,7 +27,7 @@
             </div>
 
             <div>
-                <p class="text-sm opacity-75 mt-4">Episodes</p>
+                <p class="text-sm opacity-75 mt-4">Contents</p>
                 <div class="mt-1 grid gap-2">
                     <div v-for="chap in info.chapters" :key="chap.url">
                         <div
