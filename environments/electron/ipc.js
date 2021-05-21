@@ -1,4 +1,5 @@
 const { shell } = require("electron");
+const Logger = require("./logger");
 const { version } = require("../../package.json");
 
 const MALSearchAnime =
@@ -23,21 +24,8 @@ const FanFoxManga = require("anime-ext/dist/extractors/manga/fanfox").default;
 
 const allowedOrigins = ["https://myanimelist.net", "https://4anime.to"];
 
-const isDev = process.env.NODE_ENV === "development";
-
-/**
- * @type {import("anime-ext/dist/types").Logger | null}
- */
-const logger = isDev
-    ? {
-          info: console.log,
-          debug: console.log,
-          error: console.error,
-      }
-    : null;
-
 const options = {
-    logger,
+    logger: Logger,
 };
 
 /**
@@ -131,8 +119,12 @@ module.exports = (ipc) => {
     });
 
     ipc.handle("Open-Externally", (e, url) => {
+        Logger.info(`Open external url: ${url}`);
         if (allowedOrigins.some((x) => url.indexOf(x) === 0)) {
+            Logger.info(`Opened external url: ${url}`);
             shell.openExternal(url);
+        } else {
+            Logger.info(`Open external url request rejected: ${url}`);
         }
     });
 };

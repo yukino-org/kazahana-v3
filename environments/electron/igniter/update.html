@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Yukino Updater</title>
+
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/; font-src https://fonts.gstatic.com/; img-src *;"
+        />
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <main>
+            <h1 class="special">Yukino</h1>
+
+            <div>Version: <b id="currentVersion"></b></div>
+
+            <p
+                class="dull"
+                id="status"
+                style="margin-top: 0.4rem; font-size: 0.9rem"
+            >
+                Starting...
+            </p>
+        </main>
+    </body>
+
+    <style>
+        :root {
+            --light: white;
+            --dark: #18181b;
+            --special: #6366f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        main {
+            height: 100%;
+            width: 100%;
+        }
+
+        main {
+            border-radius: 0.5rem;
+            -webkit-app-region: drag;
+            font-family: "Poppins", sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        main > * {
+            max-width: 80%;
+        }
+
+        .special {
+            color: var(--special);
+        }
+
+        .dull {
+            opacity: 0.6;
+        }
+    </style>
+</html>

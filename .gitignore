@@ -4,3 +4,4 @@ dist
 dist-ssr
 *.local
 resources/icons
+environments/electron/logs
