@@ -1,7 +1,8 @@
 const path = require("path");
 const fs = require("fs");
+const { app } = require("electron");
 
-const logDir = path.join(__dirname, "logs");
+const logDir = path.join(app.getPath("appData"), app.getName());
 
 class Logger {
     constructor() {
@@ -9,9 +10,7 @@ class Logger {
             recursive: true,
         });
 
-        this.file = fs.createWriteStream(
-            path.join(logDir, `data-${Logger.date.replace(/[^\d]+/g, "-")}.log`)
-        );
+        this.file = fs.createWriteStream(path.join(logDir, "logger.log"));
     }
 
     debug(txt) {
@@ -31,12 +30,8 @@ class Logger {
     }
 
     write(txt) {
-        this.file.write(`${txt}\n`);
+        if (this.file && this.file.writable) this.file.write(`${txt}\n`);
         console.log(txt);
-    }
-
-    static get date() {
-        return new Date().toLocaleDateString();
     }
 
     static get time() {
