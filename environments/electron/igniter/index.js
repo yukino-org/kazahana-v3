@@ -43,12 +43,20 @@ class Igniter {
             },
             frame: false,
             transparent: true,
+            icon: path.join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "resources",
+                "icon.png"
+            ),
         });
         Logger.info("Created ignition window");
 
         const url = `file://${path.join(
             __dirname,
-            "update.html"
+            "splash.html"
         )}?version=${encodeURIComponent(app.getVersion())}`;
         this.win.loadURL(url);
         Logger.info(`Opened url in ignition window: ${url}`);

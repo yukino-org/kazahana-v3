@@ -22,12 +22,16 @@ const createWindow = async () => {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        minWidth: 400,
+        minHeight: 300,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
             preload: path.join(__dirname, "preload.js"),
         },
+        show: false,
         frame: false,
+        icon: path.join(__dirname, "..", "..", "resources", "icon.png"),
     });
     Logger.info("Created main window");
 
@@ -54,8 +58,9 @@ const createWindow = async () => {
     }
 
     win.on("ready-to-show", () => {
-        Logger.warn("Closing igniter");
+        Logger.warn("Closing igniter and opening main window");
         ignition.close();
+        win.show();
     });
 
     win.on("close", () => {
