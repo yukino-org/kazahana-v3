@@ -77,7 +77,7 @@
                         v-for="chs in allowedDiscordRpcOptions"
                         :value="chs"
                         :key="chs"
-                        :selected="chs === (settings.sideBarPosition || 'enabled')"
+                        :selected="chs === (settings.discordRpc || 'enabled')"
                     >
                         {{ chs }}
                     </option>
