@@ -4,7 +4,7 @@
 
 # Yukino
 
-Yukino that lets you read manga or stream anime ad-free from multiple sources. The project's name "Yukino" means "Snow" named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
+Yukino lets you read manga or stream anime ad-free from multiple sources. The project's name "Yukino" means "Snow" named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
 
 We do not support piracy or run/serve any illegal or copyrighted contents, everything is acquired from third-party sources.
 
