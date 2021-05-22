@@ -146,13 +146,17 @@ export default defineComponent({
                     details: "Reading",
                     state: `${this.info.title} (Vol. ${
                         this.selected.volume
-                    } Chap. ${this.selected.chapter}) ${this.plugin ? `(${this.plugin})` : ""}`,
-                    buttons: this.link ? [
-                        {
-                            label: "View",
-                            url: this.link,
-                        },
-                    ] : undefined,
+                    } Chap. ${this.selected.chapter}) ${
+                        this.plugin ? `(${this.plugin})` : ""
+                    }`,
+                    buttons: this.link
+                        ? [
+                              {
+                                  label: "View",
+                                  url: this.link,
+                              },
+                          ]
+                        : undefined,
                 });
             } else {
                 this.refreshRpc();
@@ -160,14 +164,16 @@ export default defineComponent({
         },
         refreshRpc() {
             api.rpc({
-                details: "Viewing chapters and volumes",
+                details: "Viewing chapters and volumes of",
                 state: this.info.title,
-                buttons: this.link ? [
-                        {
-                            label: "View",
-                            url: this.link,
-                        },
-                    ] : undefined,
+                buttons: this.link
+                    ? [
+                          {
+                              label: "View",
+                              url: this.link,
+                          },
+                      ]
+                    : undefined,
             });
         },
     },

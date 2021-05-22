@@ -275,7 +275,7 @@ export default defineComponent({
     methods: {
         async getAnimeInfo() {
             const url = this.$route.query.url;
-            if (!url) {
+            if (typeof url !== "string") {
                 this.state = "noresult";
                 return this.$logger.emit("error", "Missing 'url' in query!");
             }
@@ -294,6 +294,12 @@ export default defineComponent({
             api.rpc({
                 details: "Viewing about",
                 state: this.info.title,
+                buttons: [
+                    {
+                        label: "View",
+                        url
+                    }
+                ]
             });
         },
         async getSources() {

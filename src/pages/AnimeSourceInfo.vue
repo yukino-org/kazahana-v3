@@ -147,17 +147,20 @@ export default defineComponent({
         selectEpisode(ep: any) {
             this.selected = ep;
             if (this.selected) {
+                console.log("set");
                 api.rpc({
                     details: "Watching",
                     state: `${this.info.title} (Episode ${
                         this.selected.episode
                     }) ${this.plugin ? `(${this.plugin})` : ""}`,
-                    buttons: this.link ? [
-                        {
-                            label: "View",
-                            url: this.link,
-                        },
-                    ] : undefined,
+                    buttons: this.link
+                        ? [
+                              {
+                                  label: "View",
+                                  url: this.link,
+                              },
+                          ]
+                        : undefined,
                 });
             } else {
                 this.refreshRpc();
@@ -167,12 +170,14 @@ export default defineComponent({
             api.rpc({
                 details: "Viewing episodes of",
                 state: this.info.title,
-                buttons: this.link ? [
-                        {
-                            label: "View",
-                            url: this.link,
-                        },
-                    ] : undefined,
+                buttons: this.link
+                    ? [
+                          {
+                              label: "View",
+                              url: this.link,
+                          },
+                      ]
+                    : undefined,
             });
         },
     },

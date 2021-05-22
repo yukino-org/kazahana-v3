@@ -16,7 +16,7 @@ class RPC {
             transport: "ipc",
         });
         this.started = Date.now();
-        this.disabled = Store.store.get("settings.disableRpc") || false;
+        this.disabled = Store.store.get("settings.discordRpc") === "disabled";
         this.ready = false;
     }
 
@@ -56,7 +56,9 @@ class RPC {
                 if (activity.startTimestamp)
                     this.started = activity.startTimestamp;
             }
-        } catch (err) {}
+        } catch (err) {
+            Logger.error(`Failed to set Rpc activity: ${err}`);
+        }
     }
 
     /**

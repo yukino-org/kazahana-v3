@@ -58,10 +58,35 @@
                     </option>
                 </select>
 
+                <p class="text-sm opacity-75 mt-4">Discord RPC</p>
+                <select
+                    class="
+                        capitalize
+                        bg-gray-100
+                        dark:bg-gray-800
+                        focus:outline-none
+                        px-2
+                        py-1
+                        mt-1
+                        rounded
+                        w-44
+                    "
+                    @change="handleDiscordRpcOptions($event)"
+                >
+                    <option
+                        v-for="chs in allowedDiscordRpcOptions"
+                        :value="chs"
+                        :key="chs"
+                        :selected="chs === (settings.sideBarPosition || 'enabled')"
+                    >
+                        {{ chs }}
+                    </option>
+                </select>
+
                 <p class="opacity-75 mt-4">
                     <Icon class="mr-1" icon="info-circle" /> Click the
-                    <Icon icon="redo" /> at the top right of the screen for the
-                    settings to take effect.
+                    <Icon icon="redo" /> at the top right of the screen or
+                    restart app for the settings to take effect.
                 </p>
             </div>
         </div>
@@ -86,10 +111,12 @@ export default defineComponent({
             settings: any;
             allowedUpdateChannels: string[];
             allowedSidebarPositions: string[];
+            allowedDiscordRpcOptions: string[];
         } = {
             settings: null,
             allowedUpdateChannels: ["latest", "beta", "alpha"],
             allowedSidebarPositions: ["left", "right"],
+            allowedDiscordRpcOptions: ["enabled", "disabled"],
         };
 
         return data;
@@ -115,6 +142,12 @@ export default defineComponent({
             const value = event.target.value;
             if (this.allowedSidebarPositions.includes(value)) {
                 this.updateSettings("sideBarPosition", value);
+            }
+        },
+        handleDiscordRpcOptions(event: any) {
+            const value = event.target.value;
+            if (this.allowedDiscordRpcOptions.includes(value)) {
+                this.updateSettings("discordRpc", value);
             }
         },
     },

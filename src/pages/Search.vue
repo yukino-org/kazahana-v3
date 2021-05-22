@@ -169,11 +169,14 @@ export default defineComponent({
 
             if (!data?.length) {
                 this.state = "noresults";
+                api.rpc({
+                    details: "On Search Page",
+                });
             } else {
                 this.result = data;
                 this.state = "results";
                 api.rpc({
-                    details: "On search page",
+                    details: `Searching for ${this.terms}`,
                 });
             }
         },
