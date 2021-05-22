@@ -118,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import api from "../plugins/api";
 
 import Loading from "./Loading.vue";
@@ -150,8 +150,26 @@ export default defineComponent({
     },
     mounted() {
         this.getInfo();
+        this.watchChapter();
     },
     methods: {
+        refreshInfo() {
+            this.info = null;
+            this.getInfo();
+        },
+        watchChapter() {
+            watch(() => this.volume, (cur, prev) => {
+                if (cur !== prev) {
+                    this.refreshInfo();
+                }
+            });
+
+            watch(() => this.chapter, (cur, prev) => {
+                if (cur !== prev) {
+                    this.refreshInfo();
+                }
+            });
+        },
         async getInfo() {
             if (!this.plugin) {
                 this.state = "noresult";
