@@ -15,7 +15,7 @@
                     my-8
                 "
             >
-                <aside>
+                <aside :class="[sideBarPosition === 'right' && 'order-last']">
                     <SideBar
                         class="
                             py-6
@@ -53,7 +53,12 @@
                 <Icon class="text-3xl" icon="arrow-up" />
             </button>
 
-            <div class="fixed right-6 top-6 max-w-xs z-50">
+            <div
+                :class="[
+                    'fixed right-6 top-6 max-w-xs z-50',
+                    showTitleBar && 'mt-8',
+                ]"
+            >
                 <Notifications />
             </div>
         </div>
@@ -62,6 +67,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import api from "./plugins/api";
 
 import TitleBar from "./components/TitleBar.vue";
 import SideBar from "./components/SideBar.vue";
@@ -77,14 +83,17 @@ export default defineComponent({
     data() {
         const data: {
             showTitleBar: boolean;
+            sideBarPosition: string;
         } = {
             showTitleBar: ["electron"].includes(platform),
+            sideBarPosition: "left",
         };
 
         return data;
     },
     mounted() {
         window.addEventListener("scroll", this.onScroll);
+        this.applySettings();
     },
     beforeUnmount() {
         window.removeEventListener("scroll", this.onScroll);
@@ -107,6 +116,12 @@ export default defineComponent({
                 left: 0,
                 behavior: "smooth",
             });
+        },
+        async applySettings() {
+            const settings = (await api.store.get("settings")) || {};
+            if (settings.sideBarPosition) {
+                this.sideBarPosition = settings.sideBarPosition;
+            }
         },
     },
 });

@@ -32,6 +32,37 @@
                         {{ chs }}
                     </option>
                 </select>
+
+                <p class="text-sm opacity-75 mt-4">Sidebar Position</p>
+                <select
+                    class="
+                        capitalize
+                        bg-gray-100
+                        dark:bg-gray-800
+                        focus:outline-none
+                        px-2
+                        py-1
+                        mt-1
+                        rounded
+                        w-44
+                    "
+                    @change="handleSidebarPositions($event)"
+                >
+                    <option
+                        v-for="chs in allowedSidebarPositions"
+                        :value="chs"
+                        :key="chs"
+                        :selected="chs === (settings.sideBarPosition || 'left')"
+                    >
+                        {{ chs }}
+                    </option>
+                </select>
+
+                <p class="opacity-75 mt-4">
+                    <Icon class="mr-1" icon="info-circle" /> Click the
+                    <Icon icon="redo" /> at the top right of the screen for the
+                    settings to take effect.
+                </p>
             </div>
         </div>
     </div>
@@ -54,9 +85,11 @@ export default defineComponent({
         const data: {
             settings: any;
             allowedUpdateChannels: string[];
+            allowedSidebarPositions: string[];
         } = {
             settings: null,
             allowedUpdateChannels: ["latest", "beta", "alpha"],
+            allowedSidebarPositions: ["left", "right"],
         };
 
         return data;
@@ -76,6 +109,12 @@ export default defineComponent({
             const value = event.target.value;
             if (this.allowedUpdateChannels.includes(value)) {
                 this.updateSettings("updateChannel", value);
+            }
+        },
+        handleSidebarPositions(event: any) {
+            const value = event.target.value;
+            if (this.allowedSidebarPositions.includes(value)) {
+                this.updateSettings("sideBarPosition", value);
             }
         },
     },

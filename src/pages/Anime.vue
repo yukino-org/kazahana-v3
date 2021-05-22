@@ -66,7 +66,15 @@
                 <p><b>Rating:</b> {{ info.info.rating || "-" }}</p>
 
                 <p class="text-sm opacity-75 mt-4">Characters</p>
-                <div class="mt-1 grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+                <div
+                    class="
+                        mt-1
+                        grid grid-cols-1
+                        md:grid-cols-2
+                        gap-2
+                        items-center
+                    "
+                >
                     <div
                         class="col-span-1"
                         v-for="character in info.characters"
@@ -139,6 +147,7 @@
                                     </p>
                                 </div>
                                 <img
+                                    v-if="character.actor"
                                     class="rounded"
                                     :src="character.actor.image"
                                     :alt="character.actor.name"
@@ -172,7 +181,15 @@
                 </div>
 
                 <p class="text-sm opacity-75 mt-4">Similar</p>
-                <div class="mt-1 grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+                <div
+                    class="
+                        mt-1
+                        grid grid-cols-1
+                        md:grid-cols-2
+                        gap-2
+                        items-center
+                    "
+                >
                     <div
                         class="col-span-1"
                         v-for="anime in info.recommendations"
