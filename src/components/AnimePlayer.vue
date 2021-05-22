@@ -165,6 +165,12 @@ export default defineComponent({
         },
         selectPlayUrl(url: string) {
             this.playUrl = url;
+            if (url.includes("m3u8")) {
+                this.$logger.emit(
+                    "warn",
+                    "Some .m3u8 might just give a black output, those are not supported"
+                );
+            }
         },
     },
 });
