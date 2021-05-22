@@ -291,6 +291,10 @@ export default defineComponent({
 
             this.info = data;
             this.state = "result";
+            api.rpc({
+                details: "Viewing about",
+                state: this.info.title,
+            });
         },
         async getSources() {
             this.extractors.anime = await api.anime.extractors.all();

@@ -142,33 +142,39 @@ export default defineComponent({
     },
     methods: {
         async search() {
-            if (!this.terms)
+            if (!this.terms) {
                 return this.$logger.emit(
                     "warn",
                     "Provide some search terms to search!"
                 );
+            }
 
-            if (this.terms.length < 3)
+            if (this.terms.length < 3) {
                 return this.$logger.emit(
                     "warn",
                     "Enter atleast 3 characters to search!"
                 );
+            }
 
             this.result = [];
             this.state = "loading";
 
             const { data, err } = await api.anime.search(this.terms);
-            if (err)
+            if (err) {
                 return this.$logger.emit(
                     "error",
                     `Could not get search results: ${err}`
                 );
+            }
 
             if (!data?.length) {
                 this.state = "noresults";
             } else {
                 this.result = data;
                 this.state = "results";
+                api.rpc({
+                    details: "On search page",
+                });
             }
         },
         getHighResImage(url: string) {

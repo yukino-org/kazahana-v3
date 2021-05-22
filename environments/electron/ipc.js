@@ -1,6 +1,7 @@
 const { shell, dialog } = require("electron");
 const Store = require("./store");
 const Logger = require("./logger");
+const RPC = require("./rpc");
 const { version } = require("../../package.json");
 
 const MALSearchAnime =
@@ -58,6 +59,10 @@ module.exports = (ipc) => {
 
     ipc.handle("Store-Set", (e, key, data) => {
         Store.store.set(key, data);
+    });
+
+    ipc.handle("Rpc-Set", (e, act) => {
+        RPC.setActivity(act);
     });
 
     const extractors = {

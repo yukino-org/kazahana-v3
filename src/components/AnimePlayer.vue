@@ -127,8 +127,7 @@ export default defineComponent({
                 () => this.episode,
                 (cur, prev) => {
                     if (cur !== prev) {
-                        this.info = null;
-                        this.playUrl = null;
+                        this.selectPlayUrl(null);
                         this.getInfo();
                     }
                 }
@@ -144,6 +143,7 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
+            this.info = null;
             this.state = "loading";
             const { data, err } = await api.anime.extractors.links(
                 this.plugin,
@@ -163,9 +163,9 @@ export default defineComponent({
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        selectPlayUrl(url: string) {
+        selectPlayUrl(url: string | null) {
             this.playUrl = url;
-            if (url.includes("m3u8")) {
+            if (url?.includes("m3u8")) {
                 this.$logger.emit(
                     "warn",
                     "Some .m3u8 might just give a black output, those are not supported"

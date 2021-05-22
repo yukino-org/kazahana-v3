@@ -153,22 +153,24 @@ export default defineComponent({
         this.watchChapter();
     },
     methods: {
-        refreshInfo() {
-            this.info = null;
-            this.getInfo();
-        },
         watchChapter() {
-            watch(() => this.volume, (cur, prev) => {
-                if (cur !== prev) {
-                    this.refreshInfo();
+            watch(
+                () => this.volume,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        if (cur) this.getInfo();
+                    }
                 }
-            });
+            );
 
-            watch(() => this.chapter, (cur, prev) => {
-                if (cur !== prev) {
-                    this.refreshInfo();
+            watch(
+                () => this.chapter,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        if (cur) this.getInfo();
+                    }
                 }
-            });
+            );
         },
         async getInfo() {
             if (!this.plugin) {
@@ -180,6 +182,7 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
+            this.info = null;
             this.state = "loading";
             const { data, err } = await api.manga.extractors.pages(
                 this.plugin,

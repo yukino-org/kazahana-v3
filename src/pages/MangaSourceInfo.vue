@@ -137,9 +137,38 @@ export default defineComponent({
 
             this.state = "result";
             this.info = data;
+            this.refreshRpc();
         },
         selectChapter(chapter: any) {
             this.selected = chapter;
+            if (this.selected) {
+                api.rpc({
+                    details: "Reading",
+                    state: `${this.info.title} (Vol. ${
+                        this.selected.volume
+                    } Chap. ${this.selected.chapter}) ${this.plugin ? `(${this.plugin})` : ""}`,
+                    buttons: this.link ? [
+                        {
+                            label: "View",
+                            url: this.link,
+                        },
+                    ] : undefined,
+                });
+            } else {
+                this.refreshRpc();
+            }
+        },
+        refreshRpc() {
+            api.rpc({
+                details: "Viewing chapters and volumes",
+                state: this.info.title,
+                buttons: this.link ? [
+                        {
+                            label: "View",
+                            url: this.link,
+                        },
+                    ] : undefined,
+            });
         },
     },
 });

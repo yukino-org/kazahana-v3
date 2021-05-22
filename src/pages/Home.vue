@@ -142,6 +142,9 @@ export default defineComponent({
         return data;
     },
     async mounted() {
+        api.rpc({
+            details: "On Homepage",
+        });
         await this.getCategories();
         await this.getTopAnimes(this.selected);
     },

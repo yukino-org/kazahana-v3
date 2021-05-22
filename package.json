@@ -12,6 +12,7 @@
     "type": "git",
     "url": "https://github.com/zyrouge/yukino-app"
   },
+  "homepage": "https://zyrouge.github.io/yukino-app",
   "scripts": {
     "vite:dev": "vite",
     "vite:serve": "vite preview",
@@ -29,6 +30,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/vue-fontawesome": "^3.0.0-3",
     "anime-ext": "^1.0.14",
+    "discord-rpc": "^3.2.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "vue": "^3.0.5",

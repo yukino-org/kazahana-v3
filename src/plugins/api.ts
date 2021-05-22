@@ -2,6 +2,14 @@ const api: any = platform === "electron" ? window.api : null;
 
 export default {
     version: <() => Promise<string>>api.version,
+    rpc: (act: {
+        details?: string;
+        state?: string;
+        buttons?: {
+            label: string;
+            url: string;
+        }[];
+    }) => api.rpc?.(act),
     store: {
         set(key: string, data: any) {
             return api.store.set(key, data);

@@ -1,6 +1,7 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const Store = require("./store");
+const Rpc = require("./rpc");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
 
@@ -19,6 +20,8 @@ const createWindow = async () => {
     const continueProc = await ignition.update();
     Logger.warn(`Continue process: ${continueProc}`);
     if (!continueProc) return ignition.close();
+
+    await Rpc.connect();
 
     const dimensions = Store.getWindowSize();
     const win = new BrowserWindow({
