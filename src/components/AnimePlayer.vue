@@ -11,13 +11,15 @@
             </div>
             <p class="mt-2">
                 Stream URL:
-                <span class="bg-gray-100 dark:bg-gray-800 rounded px-1">{{
-                    playUrl
-                }}</span>
+                <span
+                    class="bg-gray-100 dark:bg-gray-800 rounded px-1 break-all"
+                    >{{ playUrl }}</span
+                >
             </p>
         </div>
 
         <Loading
+            class="my-6"
             v-if="state === 'pending' || state === 'loading'"
             text="Fetching links, please wait..."
         />
@@ -79,14 +81,14 @@
                 </div>
             </div>
         </div>
-        <p class="text-center opacity-75" v-else-if="state === 'noresult'">
+        <p class="text-center opacity-75 my-6" v-else-if="state === 'noresult'">
             No results were found!
         </p>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import api from "../plugins/api";
 
 import Loading from "./Loading.vue";
@@ -117,8 +119,21 @@ export default defineComponent({
     },
     mounted() {
         this.getInfo();
+        this.watchEpisode();
     },
     methods: {
+        watchEpisode() {
+            watch(
+                () => this.episode,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        this.info = null;
+                        this.playUrl = null;
+                        this.getInfo();
+                    }
+                }
+            );
+        },
         async getInfo() {
             if (!this.plugin) {
                 this.state = "noresult";

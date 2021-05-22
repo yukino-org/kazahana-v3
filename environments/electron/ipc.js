@@ -23,8 +23,6 @@ const TwistDotMoeAnime =
 
 const FanFoxManga = require("anime-ext/dist/extractors/manga/fanfox").default;
 
-const allowedOrigins = ["https://myanimelist.net", "https://4anime.to"];
-
 const options = {
     logger: Logger,
 };
@@ -129,23 +127,20 @@ module.exports = (ipc) => {
 
     ipc.handle("Open-Externally", async (e, url) => {
         Logger.info(`Open external url: ${url}`);
-        if (allowedOrigins.some((x) => url.indexOf(x) === 0)) {
-            const resp = await dialog.showMessageBox(null, {
-                title: "External Link",
-                message: `Do you want to visit ${url} in your browser?`,
-                type: "warning",
-                buttons: ["Yes", "No"],
-                defaultId: 1,
-            });
 
-            if (resp.response === 0) {
-                Logger.info(`Opening external url: ${url}`);
-                shell.openExternal(url);
-            } else {
-                Logger.info(`User aborted opening external url: ${url}`);
-            }
+        const resp = await dialog.showMessageBox(null, {
+            title: "External Link",
+            message: `Do you want to visit ${url} in your browser?`,
+            type: "warning",
+            buttons: ["Yes", "No"],
+            defaultId: 1,
+        });
+
+        if (resp.response === 0) {
+            Logger.info(`Opening external url: ${url}`);
+            shell.openExternal(url);
         } else {
-            Logger.info(`Open external url request rejected: ${url}`);
+            Logger.info(`User aborted opening external url: ${url}`);
         }
     });
 };
