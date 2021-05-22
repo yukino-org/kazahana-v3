@@ -22,6 +22,7 @@ class Igniter {
         this.autoUpdater.logger = null;
         this.autoUpdater.channel =
             Store.store.get("settings.updateChannel") || "latest";
+        this.autoUpdater.allowDowngrade = false;
 
         if (isDev) {
             this.autoUpdater.updateConfigPath = path.join(
@@ -96,9 +97,14 @@ class Igniter {
             });
 
             this.autoUpdater.on("download-progress", (progress) => {
-                const txt = `${progress.percent} completed (${progress.transferred}/${progress.total} at ${progress.bytesPerSecond})`;
+                const toMb = (n) => (n / 1000000).toFixed(2);
+                const txt = `${progress.percent.toFixed(2)}% completed (${toMb(
+                    progress.transferred
+                )}/${toMb(progress.total)} mb at ${toMb(
+                    progress.bytesPerSecond
+                )} mbps)`;
                 Logger.info(`Update progress: ${txt}`);
-                this.win.webContents.send("update-progress", txt);
+                this.win.webContents.send("download-progress", txt);
             });
 
             this.autoUpdater.on("error", (err) => {
