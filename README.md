@@ -27,7 +27,7 @@ You can download the latest version of app from the [releases](https://github.co
 
 ## Technology
 
--   [Node.js](https://nodejs.org) (Primary language)
+-   [Node.js](https://nodejs.org) (JavaScript Runtime)
 -   [Typescript](https://www.typescriptlang.org/) (Runtime)
 -   [Yarn](https://yarnpkg.com/) (Package manager)
 -   [Vite](https://vitejs.dev) (Base site)
