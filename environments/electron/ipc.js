@@ -126,7 +126,11 @@ module.exports = (ipc) => {
         });
 
         ipc.handle(`Manga-${plugin}-Pages`, (e, url) => {
-            return getResultOrError(() => client.getChapterPageImages(url));
+            return getResultOrError(() => client.getChapterPages(url));
+        });
+
+        ipc.handle(`Manga-${plugin}-PageImage`, (e, url) => {
+            return getResultOrError(() => client.getPageImage(url));
         });
     });
 

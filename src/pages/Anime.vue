@@ -1,6 +1,7 @@
 <template>
     <div>
         <Loading
+            class="mt-8"
             v-if="state === 'pending'"
             text="Loading anime, please wait..."
         />
@@ -297,9 +298,9 @@ export default defineComponent({
                 buttons: [
                     {
                         label: "View",
-                        url
-                    }
-                ]
+                        url,
+                    },
+                ],
             });
         },
         async getSources() {

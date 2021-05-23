@@ -1,6 +1,7 @@
 <template>
     <div>
         <Loading
+            class="mt-8"
             v-if="state === 'pending' || state === 'loading'"
             text="Fetching pages, please wait..."
         />
@@ -43,18 +44,22 @@
                     </select>
                 </div>
 
-                <img
-                    class="mt-2 w-full"
-                    :src="currentPage.image"
-                    :alt="`Page ${currentPage.page}`"
-                    id="page-img"
-                />
-                <p class="mt-2">
-                    Image URL:
-                    <span class="bg-gray-100 dark:bg-gray-800 rounded px-1">{{
-                        currentPage.image
-                    }}</span>
-                </p>
+                <Loading v-if="!images?.[currentPage.url]" />
+                <div v-else>
+                    <img
+                        class="mt-2 w-full"
+                        :src="images[currentPage.url]"
+                        :alt="`Page ${currentPage.page}`"
+                        id="page-img"
+                    />
+                    <p class="mt-2">
+                        Image URL:
+                        <span
+                            class="bg-gray-100 dark:bg-gray-800 rounded px-1"
+                            >{{ images[currentPage.url] }}</span
+                        >
+                    </p>
+                </div>
             </div>
 
             <div class="mt-2 flex flex-row justify-center items-center gap-2">
@@ -139,11 +144,13 @@ export default defineComponent({
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
             info: any;
+            images: Record<string, string> | null;
             currentPage: any;
         } = {
             state: "pending",
             info: null,
-            currentPage: undefined,
+            images: null,
+            currentPage: null,
         };
 
         return data;
@@ -151,6 +158,7 @@ export default defineComponent({
     mounted() {
         this.getInfo();
         this.watchChapter();
+        this.watchPage();
     },
     methods: {
         watchChapter() {
@@ -158,7 +166,10 @@ export default defineComponent({
                 () => this.volume,
                 (cur, prev) => {
                     if (cur !== prev) {
-                        if (cur) this.getInfo();
+                        this.images = null;
+                        if (cur) {
+                            this.getInfo();
+                        }
                     }
                 }
             );
@@ -167,7 +178,21 @@ export default defineComponent({
                 () => this.chapter,
                 (cur, prev) => {
                     if (cur !== prev) {
-                        if (cur) this.getInfo();
+                        if (cur) {
+                            this.getInfo();
+                        }
+                    }
+                }
+            );
+        },
+        watchPage() {
+            watch(
+                () => this.currentPage,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        if (cur?.url) {
+                            this.getPageImage(cur.url);
+                        }
                     }
                 }
             );
@@ -198,6 +223,28 @@ export default defineComponent({
 
             this.state = "result";
             this.info = data;
+            this.selectPlayUrl(this.info[0]);
+        },
+        async getPageImage(url: string) {
+            if (!this.plugin) {
+                return this.$logger.emit("error", "Invalid 'plugin' on query!");
+            }
+
+            if (!this.images) this.images = {};
+            if (this.images[url]) return this.images[url];
+
+            const { data, err } = await api.manga.extractors.pageImage(
+                this.plugin,
+                url
+            );
+            if (err) {
+                return this.$logger.emit(
+                    "error",
+                    `Could not fetch anime's information: ${err}`
+                );
+            }
+
+            this.images[url] = data.image;
         },
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;

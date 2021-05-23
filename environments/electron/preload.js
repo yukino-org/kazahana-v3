@@ -64,6 +64,12 @@ const api = {
                     pages(plugin, url) {
                         return ipcRenderer.invoke(`Manga-${plugin}-Pages`, url);
                     },
+                    pageImage(plugin, url) {
+                        return ipcRenderer.invoke(
+                            `Manga-${plugin}-PageImage`,
+                            url
+                        );
+                    },
                 },
             },
         },

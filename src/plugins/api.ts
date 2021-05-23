@@ -70,6 +70,12 @@ export default {
                     url
                 );
             },
+            pageImage(plugin: string, url: string) {
+                return api.animeExt.extractors.manga.extractors.pageImage(
+                    plugin,
+                    url
+                );
+            },
         },
     },
 };

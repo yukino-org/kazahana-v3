@@ -4,6 +4,7 @@
             {{ plugin || "Unknown" }}
         </h1>
         <Loading
+            class="mt-8"
             v-if="state === 'pending' || state === 'loading'"
             text="Fetching information, please wait..."
         />
@@ -149,7 +150,7 @@ export default defineComponent({
             if (this.selected) {
                 console.log("set");
                 api.rpc({
-                    details: "Watching",
+                    details: "Currently watching",
                     state: `${this.info.title} (Episode ${
                         this.selected.episode
                     }) ${this.plugin ? `(${this.plugin})` : ""}`,

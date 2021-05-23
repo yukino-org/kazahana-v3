@@ -663,9 +663,9 @@ ajv@^8.0.0, ajv@^8.1.0:
     uri-js "^4.2.2"
 
 anime-ext@^1.0.14:
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.19.tgz#68efa72e485bb777ace71a610c81564de2d17744"
-  integrity sha512-fGQ4yX7tuoMUX8wcrRI9gC2GmGDbSgSFEaNTnOdeQF3GIRd22avxRzxOz2y+FK7gu+FgwNMoz73PLYLPOxDQVQ==
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.20.tgz#67e71488834f1882eb5887f81064b79bac0159b6"
+  integrity sha512-lM44V2oZfJnUcYWOmMpYkAxlWfN93+28SNjdCW4dKiZHPV+OQXb/II5pWj4qn1GZx1obvr957YfOnuoLA+L7xg==
   dependencies:
     axios "^0.21.1"
     cheerio "^1.0.0-rc.9"
