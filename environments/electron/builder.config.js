@@ -20,37 +20,16 @@ module.exports = {
     win: {
         target: "nsis",
     },
-        "dmg": {
-            "title":"Yukino",
-        "background": null,
-        "backgroundColor": "#ffffff",
-        "window": {
-            "width": "400",
-            "height": "300"
-        },
-        "contents": [
-            {
-                "x": 100,
-                "y": 100
-            },
-            {
-                "x": 300,
-                "y": 100,
-                "type": "link",
-                "path": "/Applications"
-            }
-        ]
-    },
-    "mac": {
-        "target": "dmg",
-        "category": "public.app-category.utilities"
-      },
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
     },
     linux: {
         target: "AppImage",
+    },
+    mac: {
+        target: "dmg",
+        category: "public.app-category.entertainment",
     },
     generateUpdatesFilesForAllChannels: true,
 };
