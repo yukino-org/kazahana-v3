@@ -8,7 +8,7 @@ Yukino lets you read manga or stream anime ad-free from multiple sources. The pr
 
 We do not support piracy or run/serve any illegal or copyrighted contents, everything is acquired from third-party sources.
 
-[![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg)](https://GitHub.com/zyrouge/yukino-app/releases/)
+[![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml) 
 
 
 ## Download
