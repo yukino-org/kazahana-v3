@@ -15,12 +15,16 @@
             "
         >
             <div v-for="link in links" class="mb-2" :key="link.url">
-                <a :class="hrefClassNames" :href="link.url" v-if="link.external"
-                    ><span class="mr-1 opacity-75"
+                <button
+                    :class="[hrefClassNames, 'focus:outline-none']"
+                    @click="openExternalUrl(link.url)"
+                    v-if="link.external"
+                >
+                    <span class="mr-1 opacity-75"
                         ><Icon :icon="link.icon"
                     /></span>
-                    {{ link.name }}</a
-                >
+                    {{ link.name }}
+                </button>
                 <router-link
                     :class="hrefClassNames"
                     active-class="text-indigo-500"
@@ -85,6 +89,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import api from "../plugins/api";
 
 export default defineComponent({
     setup() {
@@ -105,6 +110,12 @@ export default defineComponent({
                 url: "/search",
                 external: false,
                 icon: "search",
+            },
+            {
+                name: "Donate",
+                url: "https://www.patreon.com/zyrouge",
+                external: true,
+                icon: "heart",
             },
             {
                 name: "Settings",
@@ -155,6 +166,7 @@ export default defineComponent({
             }
             this.configureTheme();
         },
+        openExternalUrl: api.openExternalUrl,
     },
 });
 </script>

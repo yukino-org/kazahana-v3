@@ -148,7 +148,6 @@ export default defineComponent({
         selectEpisode(ep: any) {
             this.selected = ep;
             if (this.selected) {
-                console.log("set");
                 api.rpc({
                     details: "Currently watching",
                     state: `${this.info.title} (Episode ${

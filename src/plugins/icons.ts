@@ -18,6 +18,7 @@ import {
     faArrowLeft,
     faArrowRight,
     faCog,
+    faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -45,7 +46,8 @@ library.add(
     faRedo,
     faArrowLeft,
     faArrowRight,
-    faCog
+    faCog,
+    faHeart
 );
 
 export default FontAwesomeIcon;

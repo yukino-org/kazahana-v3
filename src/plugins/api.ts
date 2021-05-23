@@ -78,4 +78,15 @@ export default {
             },
         },
     },
+    openExternalUrl(url: string) {
+        switch (platform) {
+            case "electron":
+                window.api.openExternalLink(url);
+                break;
+
+            default:
+                window.open(url, "_blank")?.focus();
+                break;
+        }
+    },
 };

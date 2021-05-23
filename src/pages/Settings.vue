@@ -58,6 +58,31 @@
                     </option>
                 </select>
 
+                <p class="text-sm opacity-75 mt-4">Default Player Width</p>
+                <select
+                    class="
+                        capitalize
+                        bg-gray-100
+                        dark:bg-gray-800
+                        focus:outline-none
+                        px-2
+                        py-1
+                        mt-1
+                        rounded
+                        w-44
+                    "
+                    @change="handlePlayerWidthOptions($event)"
+                >
+                    <option
+                        v-for="chs in allowedPlayerWidths"
+                        :value="chs"
+                        :key="chs"
+                        :selected="chs === (settings.defaultPlayerWidth || 100)"
+                    >
+                        {{ chs }}%
+                    </option>
+                </select>
+
                 <p class="text-sm opacity-75 mt-4">Discord RPC</p>
                 <select
                     class="
@@ -112,11 +137,15 @@ export default defineComponent({
             allowedUpdateChannels: string[];
             allowedSidebarPositions: string[];
             allowedDiscordRpcOptions: string[];
+            allowedPlayerWidths: number[];
         } = {
             settings: null,
             allowedUpdateChannels: ["latest", "beta", "alpha"],
             allowedSidebarPositions: ["left", "right"],
             allowedDiscordRpcOptions: ["enabled", "disabled"],
+            allowedPlayerWidths: Array(10)
+                .fill(null)
+                .map((x, i) => i * 10 + 10),
         };
 
         return data;
@@ -148,6 +177,16 @@ export default defineComponent({
             const value = event.target.value;
             if (this.allowedDiscordRpcOptions.includes(value)) {
                 this.updateSettings("discordRpc", value);
+            }
+        },
+        handlePlayerWidthOptions(event: any) {
+            const value = +event.target.value;
+            if (
+                value &&
+                !isNaN(value) &&
+                this.allowedPlayerWidths.includes(value)
+            ) {
+                this.updateSettings("defaultPlayerWidth", value);
             }
         },
     },

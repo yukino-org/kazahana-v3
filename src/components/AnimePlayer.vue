@@ -1,11 +1,45 @@
 <template>
     <div>
         <div v-if="playUrl">
-            <p class="text-sm opacity-75 mt-4">
-                Player (Episode {{ episode }})
-            </p>
+            <div class="flex flex-row justify-between items-center">
+                <p class="text-sm opacity-75 mt-4">
+                    Player (Episode {{ episode }})
+                </p>
+                <div>
+                    <span class="mr-2 opacity-75">Player width:</span>
+                    <select
+                        class="
+                            capitalize
+                            bg-gray-100
+                            dark:bg-gray-800
+                            focus:outline-none
+                            px-2
+                            py-1
+                            mt-1
+                            rounded
+                            w-44
+                        "
+                        v-model="playerWidth"
+                    >
+                        <option
+                            v-for="wid in Array(10)
+                                .fill(null)
+                                .map((x, i) => i * 10 + 10)"
+                            :value="wid"
+                            :key="wid"
+                        >
+                            {{ wid }}%
+                        </option>
+                    </select>
+                </div>
+            </div>
+
             <div class="mt-2">
-                <video class="outline-none w-full" controls>
+                <video
+                    class="outline-none w-full"
+                    controls
+                    :style="{ width: `${playerWidth}%` }"
+                >
                     <source :src="playUrl" />
                 </video>
             </div>
@@ -109,19 +143,31 @@ export default defineComponent({
             state: "pending" | "loading" | "noresult" | "result";
             info: any;
             playUrl: string | null;
+            playerWidth: number;
         } = {
             state: "pending",
             info: null,
             playUrl: null,
+            playerWidth: 100,
         };
 
         return data;
     },
     mounted() {
+        this.updateWidth();
         this.getInfo();
         this.watchEpisode();
     },
     methods: {
+        async updateWidth() {
+            let wid = await api.store.get("settings.defaultPlayerWidth");
+            if (wid && !isNaN(wid)) {
+                wid = +wid;
+                if (wid > 0 && wid <= 100) {
+                    this.playerWidth = wid;
+                }
+            }
+        },
         watchEpisode() {
             watch(
                 () => this.episode,
