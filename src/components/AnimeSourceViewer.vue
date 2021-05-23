@@ -60,6 +60,7 @@
                                     class="w-20 rounded"
                                     :src="src.thumbnail"
                                     :alt="src.title"
+                                    v-if="src.thumbnail"
                                 />
                                 <div class="flex-grow">
                                     <p class="text-lg font-bold">

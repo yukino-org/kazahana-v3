@@ -60,6 +60,7 @@
                                     class="w-20 rounded"
                                     :src="src.image"
                                     :alt="src.title"
+                                    v-if="src.image"
                                 />
                                 <div class="flex-grow">
                                     <p class="text-lg font-bold">

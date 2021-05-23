@@ -47,6 +47,7 @@
                         :src="info.image"
                         :alt="info.title"
                         style="width: 14rem"
+                        v-if="info.image"
                     />
                 </div>
             </div>
@@ -106,6 +107,7 @@
                                     :src="character.image"
                                     :alt="character.name"
                                     style="width: 3rem"
+                                    v-if="character.image"
                                 />
                                 <div>
                                     <p class="leading-tight">
@@ -148,11 +150,11 @@
                                     </p>
                                 </div>
                                 <img
-                                    v-if="character.actor"
                                     class="rounded"
                                     :src="character.actor.image"
                                     :alt="character.actor.name"
                                     style="width: 3rem"
+                                    v-if="character.actor?.image"
                                 />
                             </div>
                         </div>
@@ -212,8 +214,9 @@
                                 class="w-16 rounded"
                                 :src="anime.thumbnail"
                                 :alt="anime.title"
+                                v-if="anime.thumbnail"
                             />
-                            <div>
+                            <div class="flex-grow">
                                 <p class="text-lg font-bold">
                                     {{ anime.title }}
                                 </p>

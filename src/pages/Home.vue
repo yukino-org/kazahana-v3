@@ -87,6 +87,7 @@
                                         class="w-14 rounded"
                                         :src="getHighResImage(anime.image)"
                                         :alt="anime.title"
+                                        v-if="anime.image"
                                     />
                                     <div class="flex-grow">
                                         <p class="text-lg font-bold">

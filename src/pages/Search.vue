@@ -61,8 +61,9 @@
                             :src="getHighResImage(anime.thumbnail)"
                             :alt="anime.title"
                             style="width: 8rem"
+                            v-if="anime.thumbnail"
                         />
-                        <div>
+                        <div class="flex-grow">
                             <p class="text-lg font-bold">{{ anime.title }}</p>
                             <div class="mt-1 flex flex-row gap-1">
                                 <span
