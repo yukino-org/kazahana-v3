@@ -23,6 +23,10 @@ const TwistDotMoeAnime =
     require("anime-ext/dist/extractors/anime/twistdotmoe").default;
 
 const FanFoxManga = require("anime-ext/dist/extractors/manga/fanfox").default;
+const MangaDexManga =
+    require("anime-ext/dist/extractors/manga/mangadex").default;
+const MangaInnManga =
+    require("anime-ext/dist/extractors/manga/mangainn").default;
 
 const options = {
     logger: Logger,
@@ -74,7 +78,9 @@ module.exports = (ipc) => {
             TwistMoe: new TwistDotMoeAnime(options),
         },
         manga: {
-            FanFoxManga: new FanFoxManga(options),
+            FanFox: new FanFoxManga(options),
+            MangaDex: new MangaDexManga(options),
+            MangaInn: new MangaInnManga(options),
         },
     };
 

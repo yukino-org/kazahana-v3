@@ -663,14 +663,13 @@ ajv@^8.0.0, ajv@^8.1.0:
     uri-js "^4.2.2"
 
 anime-ext@^1.0.14:
-  version "1.0.23"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.23.tgz#9a2632e12d5e63e62739fc8c6b0cab5c5edb4eea"
-  integrity sha512-YTn3UltJTfeifdWZWBnH0CgTPaKVuISMouM55Q98k+ThqqjKUDvc6dDZjF+zkfCeTiswE7qF90QjQrIUVxQpPQ==
+  version "1.0.26"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.0.26.tgz#6e77676f72a06a0f3cbcaedd81d80b6813959cec"
+  integrity sha512-9EL85ZewHSEfdW7zvPD4Tyewy7CNP2DiWWHuEppqrstm24afCXQX0n8QUDcD+jaAPPHKr06eVSojAfy6Lj136w==
   dependencies:
     axios "^0.21.1"
     cheerio "^1.0.0-rc.9"
     crypto-js "^4.0.0"
-    typedoc-material-dark "github:zyrouge/typedoc-material-dark"
 
 ansi-align@^3.0.0:
   version "3.0.0"
@@ -4160,10 +4159,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-"typedoc-material-dark@github:zyrouge/typedoc-material-dark":
-  version "1.0.0"
-  resolved "https://codeload.github.com/zyrouge/typedoc-material-dark/tar.gz/7bdd44801d3dfeda47389cfb88e9e1ad9a23de5f"
 
 typescript@^4.1.3:
   version "4.2.4"

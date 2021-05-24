@@ -18,6 +18,7 @@ class RPC {
         this.started = Date.now();
         this.disabled = Store.store.get("settings.discordRpc") === "disabled";
         this.ready = false;
+        this.alreadySetInPrivacyMode = false;
     }
 
     /**
@@ -34,23 +35,18 @@ class RPC {
     setActivity(activity) {
         try {
             if (this.ready) {
+                if (
+                    Store.store.get("settings.discordRpcPrivacy") === "enabled"
+                ) {
+                    if (!this.alreadySetInPrivacyMode) {
+                        this.rpc.setActivity(this.defaultActivity);
+                        this.alreadySetInPrivacyMode = true;
+                        return;
+                    }
+                }
+
                 this.rpc.setActivity(
-                    Util.mergeObj(
-                        {
-                            startTimestamp: this.started,
-                            largeImageKey: "large",
-                            largeImageText: `${productName} v${version}`,
-                            smallImageKey: "snowflake_inverted",
-                            smallImageText: description,
-                            buttons: [
-                                {
-                                    label: "Download App",
-                                    url: homepage,
-                                },
-                            ],
-                        },
-                        activity
-                    )
+                    Util.mergeObj(this.defaultActivity, activity)
                 );
 
                 if (activity.startTimestamp)
@@ -91,6 +87,22 @@ class RPC {
                     resolve(false);
                 });
         });
+    }
+
+    get defaultActivity() {
+        return {
+            startTimestamp: this.started,
+            largeImageKey: "large",
+            largeImageText: `${productName} v${version}`,
+            smallImageKey: "snowflake_inverted",
+            smallImageText: description,
+            buttons: [
+                {
+                    label: "Download App",
+                    url: homepage,
+                },
+            ],
+        };
     }
 }
 

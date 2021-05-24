@@ -108,6 +108,35 @@
                     </option>
                 </select>
 
+                <p class="text-sm opacity-75 mt-4">
+                    Discord RPC (Privacy mode)
+                </p>
+                <select
+                    class="
+                        capitalize
+                        bg-gray-100
+                        dark:bg-gray-800
+                        focus:outline-none
+                        px-2
+                        py-1
+                        mt-1
+                        rounded
+                        w-44
+                    "
+                    @change="handleDiscordRpcPrivacyOptions($event)"
+                >
+                    <option
+                        v-for="chs in allowedDiscordRpcOptions"
+                        :value="chs"
+                        :key="chs"
+                        :selected="
+                            chs === (settings.discordRpcPrivacy || 'disabled')
+                        "
+                    >
+                        {{ chs }}
+                    </option>
+                </select>
+
                 <p class="opacity-75 mt-4">
                     <Icon class="mr-1" icon="info-circle" /> Click the
                     <Icon icon="redo" /> at the top right of the screen or
@@ -177,6 +206,12 @@ export default defineComponent({
             const value = event.target.value;
             if (this.allowedDiscordRpcOptions.includes(value)) {
                 this.updateSettings("discordRpc", value);
+            }
+        },
+        handleDiscordRpcPrivacyOptions(event: any) {
+            const value = event.target.value;
+            if (this.allowedDiscordRpcOptions.includes(value)) {
+                this.updateSettings("discordRpcPrivacy", value);
             }
         },
         handlePlayerWidthOptions(event: any) {
