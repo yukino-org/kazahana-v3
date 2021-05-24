@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="playUrl">
+        <div v-if="currentPlaying">
             <div class="flex flex-row justify-between items-center">
                 <p class="text-sm opacity-75 mt-4">
                     Player (Episode {{ episode }})
@@ -36,18 +36,19 @@
 
             <div class="mt-2">
                 <video
-                    class="outline-none w-full"
+                    class="outline-none"
                     controls
                     :style="{ width: `${playerWidth}%` }"
+                    v-if="currentPlaying.type === 'streamable'"
                 >
-                    <source :src="playUrl" />
+                    <source :src="currentPlaying.url" />
                 </video>
             </div>
             <p class="mt-2">
                 Stream URL:
                 <span
                     class="bg-gray-100 dark:bg-gray-800 rounded px-1 break-all"
-                    >{{ playUrl }}</span
+                    >{{ currentPlaying.url }}</span
                 >
             </p>
         </div>
@@ -92,7 +93,14 @@
                                 />
                             </p>
                         </div>
-                        <div>
+                        <div
+                            class="
+                                flex flex-row
+                                justify-center
+                                items-center
+                                flex-wrap
+                            "
+                        >
                             <button
                                 class="
                                     text-white
@@ -106,7 +114,7 @@
                                     focus:outline-none
                                 "
                                 v-if="stream.type.includes('streamable')"
-                                @click="selectPlayUrl(stream.url)"
+                                @click="selectPlayUrl('streamable', stream.url)"
                             >
                                 <Icon class="text-sm mr-1" icon="play" /> Play
                             </button>
@@ -142,12 +150,15 @@ export default defineComponent({
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
             info: any;
-            playUrl: string | null;
+            currentPlaying: {
+                type: string;
+                url: string;
+            } | null;
             playerWidth: number;
         } = {
             state: "pending",
             info: null,
-            playUrl: null,
+            currentPlaying: null,
             playerWidth: 100,
         };
 
@@ -173,7 +184,7 @@ export default defineComponent({
                 () => this.episode,
                 (cur, prev) => {
                     if (cur !== prev) {
-                        this.selectPlayUrl(null);
+                        this.selectPlayUrl(null, null);
                         this.getInfo();
                     }
                 }
@@ -204,13 +215,20 @@ export default defineComponent({
             }
 
             this.state = "result";
-            this.info = data;
+            this.info = data.sort((x: any) =>
+                x.type.some((y: any) => ["streamable"].includes(y)) ? -1 : 1
+            );
         },
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        selectPlayUrl(url: string | null) {
-            this.playUrl = url;
+        selectPlayUrl(type: string | null, url: string | null) {
+            if (!type || !url) return (this.currentPlaying = null);
+
+            this.currentPlaying = {
+                type,
+                url,
+            };
             if (url?.includes("m3u8")) {
                 this.$logger.emit(
                     "warn",
