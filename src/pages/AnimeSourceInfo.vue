@@ -48,7 +48,7 @@
                                 cursor-pointer
                                 rounded
                             "
-                            @click="selectEpisode(ep)"
+                            @click.prevent="selectEpisode(ep)"
                         >
                             <p>
                                 Episode <b>{{ ep.episode }}</b>

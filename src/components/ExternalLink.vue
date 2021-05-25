@@ -1,19 +1,18 @@
 <template>
-    <span>
-        <span
-            class="
-                text-red-400
-                hover:text-red-500
-                transition
-                duration-200
-                cursor-pointer
-            "
-            v-if="url"
-            @click="goToUrl()"
-        >
-            {{ text }} <Icon icon="external-link-alt" />
-        </span>
-    </span>
+    <a
+        href="#"
+        class="
+            text-red-400
+            hover:text-red-500
+            transition
+            duration-200
+            cursor-pointer
+        "
+        v-if="url"
+        @click.prevent="goToUrl()"
+    >
+        {{ text }} <Icon icon="external-link-alt" />
+    </a>
 </template>
 
 <script lang="ts">

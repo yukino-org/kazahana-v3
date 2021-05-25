@@ -1,7 +1,10 @@
 <template>
     <div>
         <div class="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded">
-            <p class="cursor-pointer text-xl font-bold" @click="toggle()">
+            <p
+                class="cursor-pointer text-xl font-bold"
+                @click.prevent="toggle()"
+            >
                 <Icon class="opacity-75 mr-1" icon="caret-down" v-if="isOpen" />
                 <Icon class="opacity-75 mr-1" icon="caret-right" v-else />
                 {{ pluginName }}

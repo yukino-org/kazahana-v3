@@ -40,7 +40,7 @@
                             cursor-pointer
                             rounded
                         "
-                        @click="selectChapter(chap)"
+                        @click.prevent="selectChapter(chap)"
                     >
                         <div>
                             <p class="text-lg">

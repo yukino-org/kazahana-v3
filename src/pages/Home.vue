@@ -26,7 +26,7 @@
                                     ? 'bg-indigo-500 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800',
                             ]"
-                            @click="selectCategory(cat)"
+                            @click.prevent="selectCategory(cat)"
                         >
                             {{ cat }}
                         </p>
@@ -93,6 +93,10 @@
                                         <p class="text-lg font-bold">
                                             {{ anime.title }}
                                         </p>
+                                        <ExternalLink
+                                            class="text-xs"
+                                            text="View on MAL"
+                                        />
                                     </div>
                                     <div>
                                         <p class="text-xs opacity-75">Score</p>
@@ -120,12 +124,14 @@ import util from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
+import ExternalLink from "../components/ExternalLink.vue";
 
 export default defineComponent({
     name: "Home",
     components: {
         PageTitle,
         Loading,
+        ExternalLink,
     },
     data() {
         const data: {

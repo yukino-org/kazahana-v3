@@ -103,7 +103,9 @@
                                     focus:outline-none
                                 "
                                 v-if="stream.type.includes('streamable')"
-                                @click="selectPlayUrl('streamable', stream.url)"
+                                @click.prevent="
+                                    selectPlayUrl('streamable', stream.url)
+                                "
                             >
                                 <Icon class="text-sm mr-1" icon="play" /> Play
                             </button>

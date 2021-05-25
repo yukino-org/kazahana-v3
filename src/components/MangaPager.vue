@@ -78,7 +78,7 @@
                         rounded
                         focus:outline-none
                     "
-                    @click="prevPage()"
+                    @click.prevent="prevPage()"
                 >
                     <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
                 </button>
@@ -94,7 +94,7 @@
                         rounded
                         focus:outline-none
                     "
-                    @click="nextPage()"
+                    @click.prevent="nextPage()"
                 >
                     Next <Icon class="ml-1 opacity-75" icon="caret-right" />
                 </button>

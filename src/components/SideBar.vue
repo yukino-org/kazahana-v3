@@ -17,7 +17,7 @@
             <div v-for="link in links" class="mb-2" :key="link.url">
                 <button
                     :class="[hrefClassNames, 'focus:outline-none']"
-                    @click="openExternalUrl(link.url)"
+                    @click.prevent="openExternalUrl(link.url)"
                     v-if="link.external"
                 >
                     <span class="mr-1 opacity-75"
@@ -44,7 +44,7 @@
                         'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go back"
-                    @click="$router.go(-1)"
+                    @click.prevent="$router.go(-1)"
                 >
                     <Icon icon="arrow-left" />
                 </button>
@@ -55,7 +55,7 @@
                         'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go forward"
-                    @click="$router.go(1)"
+                    @click.prevent="$router.go(1)"
                 >
                     <Icon icon="arrow-right" />
                 </button>
@@ -69,7 +69,7 @@
                         py-0.5
                         rounded-full
                     "
-                    @click="switchTheme()"
+                    @click.prevent="switchTheme()"
                     style="width: 3rem"
                 >
                     <span
