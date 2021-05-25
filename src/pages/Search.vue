@@ -340,7 +340,7 @@ export default defineComponent({
                 };
                 this.state = "results";
                 api.rpc({
-                    details: `Searching for ${this.terms}`,
+                    details: `Searching for ${this.terms} (${this.selectedPlugin})`,
                 });
             }
         },
