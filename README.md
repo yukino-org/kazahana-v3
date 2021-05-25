@@ -6,7 +6,7 @@
 
 Yukino lets you read manga or stream anime ad-free from multiple sources. The project's name "Yukino" meaning "Snow" named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
 
-We do not support piracy nor run/serve any illegal or copyrighted contents, everything is acquired from third-party sources. The developer of this application does not have any affiliation with the content providers available.
+We do not support piracy nor run/serve any illegal or copyrighted contents, everything is acquired from third-party sources. The developer of this application does not have any affiliation with any of the third-party sources.
 
 [![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml) 
 
