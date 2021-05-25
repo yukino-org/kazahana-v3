@@ -14,30 +14,48 @@
                 <div class="flex flex-row justify-between items-center">
                     <p class="text-xl font-bold mt-1">Page {{ currentPage }}</p>
 
-                    <div class="select">
-                        <select v-model="currentPage">
-                            <option disabled :value="undefined">
-                                Please select a page
-                            </option>
-                            <option
-                                v-for="page in info.entities"
-                                :key="page.page"
-                                :value="page.page"
-                            >
-                                Page {{ page.page }}
-                            </option>
-                        </select>
+                    <div class="flex flex-row justify-center items-center">
+                        <span class="mr-2 opacity-75">Page width:</span>
+                        <div class="select w-40">
+                            <select class="capitalize" v-model="pageWidth">
+                                <option
+                                    v-for="wid in Array(10)
+                                        .fill(null)
+                                        .map((x, i) => i * 10 + 10)"
+                                    :value="wid"
+                                    :key="wid"
+                                >
+                                    {{ wid }}%
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="ml-3 select">
+                            <select v-model="currentPage">
+                                <option disabled :value="undefined">
+                                    Please select a page
+                                </option>
+                                <option
+                                    v-for="page in info.entities"
+                                    :key="page.page"
+                                    :value="page.page"
+                                >
+                                    Page {{ page.page }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <Loading v-if="!getCurrentImage()" />
-                <div v-else>
+                <div class="mt-4" v-else>
                     <img
-                        class="mt-2 w-full"
+                        class="w-full"
                         :src="getCurrentImage()"
                         :alt="`Page ${currentPage}`"
+                        :style="{ width: `${pageWidth}%` }"
                     />
-                    <p class="mt-2">
+                    <p class="mt-4">
                         Image URL:
                         <span
                             class="bg-gray-100 dark:bg-gray-800 rounded px-1"
@@ -126,21 +144,33 @@ export default defineComponent({
             info: any;
             images: any[] | null;
             currentPage: string | null;
+            pageWidth: number;
         } = {
             state: "pending",
             info: null,
             images: null,
             currentPage: null,
+            pageWidth: 100,
         };
 
         return data;
     },
     mounted() {
+        this.updateWidth();
         this.getInfo();
         this.watchChapter();
         this.watchPage();
     },
     methods: {
+        async updateWidth() {
+            let wid = await api.store.get("settings.defaultPageWidth");
+            if (wid && !isNaN(wid)) {
+                wid = +wid;
+                if (wid > 0 && wid <= 100) {
+                    this.pageWidth = wid;
+                }
+            }
+        },
         watchChapter() {
             watch(
                 () => this.volume,

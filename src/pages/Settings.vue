@@ -65,6 +65,25 @@
                     </select>
                 </div>
 
+                <p class="text-sm opacity-75 mt-4">Default Manga Page Width</p>
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handleMangaPageWidthOptions($event)"
+                    >
+                        <option
+                            v-for="chs in allowedPlayerWidths"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs === (settings.defaultPageWidth || 100)
+                            "
+                        >
+                            {{ chs }}%
+                        </option>
+                    </select>
+                </div>
+
                 <p class="text-sm opacity-75 mt-4">Discord RPC</p>
                 <div class="select mt-1 w-1/4">
                     <select
@@ -191,6 +210,16 @@ export default defineComponent({
                 this.allowedPlayerWidths.includes(value)
             ) {
                 this.updateSettings("defaultPlayerWidth", value);
+            }
+        },
+        handleMangaPageWidthOptions(event: any) {
+            const value = +event.target.value;
+            if (
+                value &&
+                !isNaN(value) &&
+                this.allowedPlayerWidths.includes(value)
+            ) {
+                this.updateSettings("defaultPageWidth", value);
             }
         },
     },
