@@ -1,7 +1,7 @@
 <template>
     <div>
         <Loading
-            class="mt-8"
+            class="my-8"
             v-if="state === 'pending' || state === 'loading'"
             text="Fetching pages, please wait..."
         />
@@ -14,29 +14,20 @@
                 <div class="flex flex-row justify-between items-center">
                     <p class="text-xl font-bold mt-1">Page {{ currentPage }}</p>
 
-                    <select
-                        class="
-                            focus:outline-none
-                            rounded
-                            px-1.5
-                            py-1
-                            bg-gray-100
-                            dark:bg-gray-800
-                            cursor-pointer
-                        "
-                        v-model="currentPage"
-                    >
-                        <option disabled :value="undefined">
-                            Please select a page
-                        </option>
-                        <option
-                            v-for="page in info.entities"
-                            :key="page.page"
-                            :value="page.page"
-                        >
-                            Page {{ page.page }}
-                        </option>
-                    </select>
+                    <div class="select">
+                        <select v-model="currentPage">
+                            <option disabled :value="undefined">
+                                Please select a page
+                            </option>
+                            <option
+                                v-for="page in info.entities"
+                                :key="page.page"
+                                :value="page.page"
+                            >
+                                Page {{ page.page }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
                 <Loading v-if="!getCurrentImage()" />
@@ -64,8 +55,8 @@
                         hover:bg-indigo-600
                         transition
                         duration-200
-                        px-2
-                        py-1
+                        px-3
+                        py-2
                         rounded
                         focus:outline-none
                     "
@@ -80,8 +71,8 @@
                         hover:bg-indigo-600
                         transition
                         duration-200
-                        px-2
-                        py-1
+                        px-3
+                        py-2
                         rounded
                         focus:outline-none
                     "
@@ -89,29 +80,20 @@
                 >
                     Next <Icon class="ml-1 opacity-75" icon="caret-right" />
                 </button>
-                <select
-                    class="
-                        focus:outline-none
-                        rounded
-                        px-1.5
-                        py-1
-                        bg-gray-100
-                        dark:bg-gray-800
-                        cursor-pointer
-                    "
-                    v-model="currentPage"
-                >
-                    <option disabled :value="undefined">
-                        Please select a page
-                    </option>
-                    <option
-                        v-for="page in info.entities"
-                        :key="page.page"
-                        :value="page.page"
-                    >
-                        Page {{ page.page }}
-                    </option>
-                </select>
+                <div class="select">
+                    <select v-model="currentPage">
+                        <option disabled :value="undefined">
+                            Please select a page
+                        </option>
+                        <option
+                            v-for="page in info.entities"
+                            :key="page.page"
+                            :value="page.page"
+                        >
+                            Page {{ page.page }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
         <p class="text-center opacity-75" v-else-if="state === 'noresult'">

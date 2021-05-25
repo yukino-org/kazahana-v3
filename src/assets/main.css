@@ -21,11 +21,11 @@ hr {
 }
 
 .text-box {
-    @apply focus:outline-none ring-2 ring-gray-100 dark:ring-gray-800 bg-gray-100 dark:bg-gray-800 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded px-3 py-2 transition duration-300;
+    @apply focus:outline-none ring-2 ring-gray-100 dark:ring-gray-800 bg-gray-100 dark:bg-gray-800 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded-sm px-3 py-1.5 transition duration-300;
 }
 
 .btn {
-    @apply text-white border-2 border-transparent bg-indigo-500 hover:bg-indigo-600 px-3 py-2 focus:outline-none rounded transition duration-300;
+    @apply text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-2 focus:outline-none rounded transition duration-300;
 }
 
 .hover-pop {
@@ -34,6 +34,24 @@ hr {
 
 .hover-pop:hover {
     transform: scale(1.015);
+}
+
+.select {
+    @apply appearance-none relative flex flex-row justify-center items-center bg-gray-100 dark:bg-gray-800 rounded;
+}
+
+.select select {
+    background: inherit;
+    color: inherit;
+
+    @apply appearance-none w-full bg-gray-100 dark:bg-gray-800 focus:outline-none pr-7 pl-3 py-2 rounded cursor-pointer;
+}
+
+.select::after {
+    content: "";
+    clip-path: polygon(100% 0, 0 0, 50% 70%);
+
+    @apply absolute pointer-events-none mt-0.5 right-3 bg-black dark:bg-white w-2.5 h-2.5;
 }
 
 ::-webkit-scrollbar {

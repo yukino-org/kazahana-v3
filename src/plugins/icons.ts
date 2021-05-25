@@ -1,4 +1,4 @@
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library, config } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
     faHome,
@@ -25,6 +25,8 @@ import {
     faWindowMinimize,
     faWindowMaximize,
 } from "@fortawesome/free-regular-svg-icons";
+
+config.searchPseudoElements = true;
 
 library.add(
     faHome,

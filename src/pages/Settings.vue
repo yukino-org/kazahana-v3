@@ -9,133 +9,102 @@
             />
             <div v-else>
                 <p class="text-sm opacity-75">Update Channel</p>
-                <select
-                    class="
-                        capitalize
-                        bg-gray-100
-                        dark:bg-gray-800
-                        focus:outline-none
-                        px-2
-                        py-1
-                        mt-1
-                        rounded
-                        w-44
-                    "
-                    @change="handleUpdateChannel($event)"
-                >
-                    <option
-                        v-for="chs in allowedUpdateChannels"
-                        :value="chs"
-                        :key="chs"
-                        :selected="chs === (settings.updateChannel || 'latest')"
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handleUpdateChannel($event)"
                     >
-                        {{ chs }}
-                    </option>
-                </select>
+                        <option
+                            v-for="chs in allowedUpdateChannels"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs === (settings.updateChannel || 'latest')
+                            "
+                        >
+                            {{ chs }}
+                        </option>
+                    </select>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">Sidebar Position</p>
-                <select
-                    class="
-                        capitalize
-                        bg-gray-100
-                        dark:bg-gray-800
-                        focus:outline-none
-                        px-2
-                        py-1
-                        mt-1
-                        rounded
-                        w-44
-                    "
-                    @change="handleSidebarPositions($event)"
-                >
-                    <option
-                        v-for="chs in allowedSidebarPositions"
-                        :value="chs"
-                        :key="chs"
-                        :selected="chs === (settings.sideBarPosition || 'left')"
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handleSidebarPositions($event)"
                     >
-                        {{ chs }}
-                    </option>
-                </select>
+                        <option
+                            v-for="chs in allowedSidebarPositions"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs === (settings.sideBarPosition || 'left')
+                            "
+                        >
+                            {{ chs }}
+                        </option>
+                    </select>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">Default Player Width</p>
-                <select
-                    class="
-                        capitalize
-                        bg-gray-100
-                        dark:bg-gray-800
-                        focus:outline-none
-                        px-2
-                        py-1
-                        mt-1
-                        rounded
-                        w-44
-                    "
-                    @change="handlePlayerWidthOptions($event)"
-                >
-                    <option
-                        v-for="chs in allowedPlayerWidths"
-                        :value="chs"
-                        :key="chs"
-                        :selected="chs === (settings.defaultPlayerWidth || 100)"
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handlePlayerWidthOptions($event)"
                     >
-                        {{ chs }}%
-                    </option>
-                </select>
+                        <option
+                            v-for="chs in allowedPlayerWidths"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs === (settings.defaultPlayerWidth || 100)
+                            "
+                        >
+                            {{ chs }}%
+                        </option>
+                    </select>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">Discord RPC</p>
-                <select
-                    class="
-                        capitalize
-                        bg-gray-100
-                        dark:bg-gray-800
-                        focus:outline-none
-                        px-2
-                        py-1
-                        mt-1
-                        rounded
-                        w-44
-                    "
-                    @change="handleDiscordRpcOptions($event)"
-                >
-                    <option
-                        v-for="chs in allowedDiscordRpcOptions"
-                        :value="chs"
-                        :key="chs"
-                        :selected="chs === (settings.discordRpc || 'enabled')"
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handleDiscordRpcOptions($event)"
                     >
-                        {{ chs }}
-                    </option>
-                </select>
+                        <option
+                            v-for="chs in allowedDiscordRpcOptions"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs === (settings.discordRpc || 'enabled')
+                            "
+                        >
+                            {{ chs }}
+                        </option>
+                    </select>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">
                     Discord RPC (Privacy mode)
                 </p>
-                <select
-                    class="
-                        capitalize
-                        bg-gray-100
-                        dark:bg-gray-800
-                        focus:outline-none
-                        px-2
-                        py-1
-                        mt-1
-                        rounded
-                        w-44
-                    "
-                    @change="handleDiscordRpcPrivacyOptions($event)"
-                >
-                    <option
-                        v-for="chs in allowedDiscordRpcOptions"
-                        :value="chs"
-                        :key="chs"
-                        :selected="
-                            chs === (settings.discordRpcPrivacy || 'disabled')
-                        "
+                <div class="select mt-1 w-1/4">
+                    <select
+                        class="capitalize"
+                        @change="handleDiscordRpcPrivacyOptions($event)"
                     >
-                        {{ chs }}
-                    </option>
-                </select>
+                        <option
+                            v-for="chs in allowedDiscordRpcOptions"
+                            :value="chs"
+                            :key="chs"
+                            :selected="
+                                chs ===
+                                (settings.discordRpcPrivacy || 'disabled')
+                            "
+                        >
+                            {{ chs }}
+                        </option>
+                    </select>
+                </div>
 
                 <p class="opacity-75 mt-4">
                     <Icon class="mr-1" icon="info-circle" /> Click the

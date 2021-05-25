@@ -1,9 +1,16 @@
 <template>
     <div>
         <PageTitle title="Search" />
-        <div class="mt-6 flex flex-row justify-center items-center">
+        <div class="mt-6 flex flex-row justify-center items-center gap-2">
+            <div class="select">
+                <select v-model="selectedPlugin">
+                    <option :value="plugin.name" v-for="plugin of allPlugins">
+                        {{ plugin.name }}
+                    </option>
+                </select>
+            </div>
             <input
-                class="flex-grow text-box mr-2"
+                class="flex-grow text-box"
                 v-model="terms"
                 type="text"
                 placeholder="Type in anime's name..."
@@ -29,20 +36,15 @@
             No results were found.
         </p>
 
-        <div class="mt-8" v-if="result && result.length">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+        <div class="mt-8" v-if="result && result.entities.length">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
                 <div
                     class="col-span-1"
-                    v-for="anime in result"
+                    v-for="anime in result.entities"
                     :key="anime.url"
                 >
                     <router-link
-                        :to="{
-                            path: '/anime',
-                            query: {
-                                url: anime.url,
-                            },
-                        }"
+                        :to="anime.link"
                         class="
                             hover-pop
                             flex flex-row
@@ -52,20 +54,29 @@
                             bg-gray-100
                             dark:bg-gray-800
                             rounded
-                            p-4
+                            p-3
                             cursor-pointer
                         "
                     >
                         <img
                             class="rounded"
-                            :src="getHighResImage(anime.thumbnail)"
+                            :src="anime.thumbnail"
                             :alt="anime.title"
-                            style="width: 8rem"
+                            :style="{
+                                width: anime.description ? '8rem' : '5rem',
+                            }"
                             v-if="anime.thumbnail"
                         />
                         <div class="flex-grow">
-                            <p class="text-lg font-bold">{{ anime.title }}</p>
-                            <div class="mt-1 flex flex-row gap-1">
+                            <p class="text-lg font-bold leading-snug">
+                                {{ anime.title }}
+                            </p>
+                            <div
+                                class="mt-1 flex flex-row gap-1"
+                                v-if="
+                                    anime.type || anime.episodes || anime.score
+                                "
+                            >
                                 <span
                                     class="
                                         text-white text-xs
@@ -97,13 +108,28 @@
                                     >Score: {{ anime.score || "-" }}</span
                                 >
                             </div>
-                            <p class="mt-2 text-sm opacity-75 leading-tight">
-                                {{ replaceReadMore(anime.description) }}
+                            <p
+                                class="mt-2 text-sm opacity-75 leading-tight"
+                                v-if="anime.description"
+                            >
+                                {{ anime.description }}
                                 <ExternalLink
                                     text="read more at MyAnimeList"
                                     :url="anime.url"
                                 />
                             </p>
+                            <p
+                                class="mt-1 text-sm opacity-75 leading-tight"
+                                v-if="anime.air"
+                            >
+                                {{ anime.air }}
+                            </p>
+                            <ExternalLink
+                                class="text-xs"
+                                :text="`View at ${selectedPlugin}`"
+                                :url="anime.url"
+                                v-if="!anime.description"
+                            />
                         </div>
                     </router-link>
                 </div>
@@ -113,7 +139,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import api from "../plugins/api";
 import util from "../plugins/util";
 
@@ -132,16 +158,70 @@ export default defineComponent({
         const data: {
             state: "search" | "loading" | "noresults" | "results";
             terms: string;
-            result: any[];
+            result: {
+                type: "extended" | "short";
+                plugin: string;
+                entities: any[];
+            } | null;
+            selectedPlugin: string;
+            allPlugins: {
+                name: string;
+                type: string;
+                category: "integration" | "anime" | "manga";
+            }[];
         } = {
             state: "search",
             terms: "",
-            result: [],
+            result: null,
+            selectedPlugin: "MyAnimeList",
+            allPlugins: [
+                {
+                    name: "MyAnimeList",
+                    type: "extended",
+                    category: "integration",
+                },
+            ],
         };
 
         return data;
     },
+    mounted() {
+        this.getAllPlugins();
+        this.watchPluginChange();
+    },
     methods: {
+        watchPluginChange() {
+            watch(
+                () => this.selectedPlugin,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        if (this.result) {
+                            this.result = null;
+                            this.search();
+                        }
+                    }
+                }
+            );
+        },
+        async getAllPlugins() {
+            const animePlugins = await api.anime.extractors.all();
+            animePlugins.forEach((x: string) => {
+                this.allPlugins.push({
+                    name: x,
+                    type: "short",
+                    category: "anime",
+                });
+            });
+
+            const mangaPlugins = await api.manga.extractors.all();
+            mangaPlugins.forEach((x: string) => {
+                this.allPlugins.push({
+                    name: x,
+                    type: "short",
+                    category: "manga",
+                });
+            });
+        },
         async search() {
             if (!this.terms) {
                 return this.$logger.emit(
@@ -157,10 +237,89 @@ export default defineComponent({
                 );
             }
 
-            this.result = [];
+            const config = this.allPlugins.find(
+                (x) => x.name === this.selectedPlugin
+            );
+            if (!config) {
+                return this.$logger.emit(
+                    "error",
+                    "Corresponding plugin was not found!"
+                );
+            }
+
+            this.result = null;
             this.state = "loading";
 
-            const { data, err } = await api.anime.search(this.terms);
+            let results: any = null,
+                err: any;
+            if (config.category === "integration") {
+                let res = await (<any>api.intergrations)[config.name]?.search(
+                    this.terms
+                );
+                if (res.err) {
+                    err = res.err;
+                } else if (res.data && config.name === "MyAnimeList") {
+                    results = res.data.map((x: any) => {
+                        x.description = x.description.replace(
+                            /(read more\.)$/,
+                            ""
+                        );
+                        x.thumbnail = util.getHighResMALImage(x.thumbnail);
+                        x.link = {
+                            path: "/anime",
+                            query: {
+                                url: x.url,
+                            },
+                        };
+                        return x;
+                    });
+                }
+            } else if (config.category === "anime") {
+                let res = await api.anime.extractors.search(
+                    config.name,
+                    this.terms
+                );
+                if (res.err) {
+                    err = res.err;
+                } else if (res.data) {
+                    results = res.data.map((x: any) => {
+                        x.link = {
+                            path: "/anime/source",
+                            query: {
+                                plugin: config.name,
+                                url: x.url,
+                            },
+                        };
+                        return x;
+                    });
+                }
+            } else if (config.category === "manga") {
+                let res = await api.manga.extractors.search(
+                    config.name,
+                    this.terms
+                );
+                if (res.err) {
+                    err = res.err;
+                } else if (res.data) {
+                    results = res.data.map((x: any) => {
+                        x.thumbnail = x.image;
+                        x.link = {
+                            path: "/manga/source",
+                            query: {
+                                plugin: config.name,
+                                url: x.url,
+                            },
+                        };
+                        return x;
+                    });
+                }
+            } else {
+                return this.$logger.emit(
+                    "error",
+                    "No valid search function was not found!"
+                );
+            }
+
             if (err) {
                 return this.$logger.emit(
                     "error",
@@ -168,24 +327,22 @@ export default defineComponent({
                 );
             }
 
-            if (!data?.length) {
+            if (!results?.length) {
                 this.state = "noresults";
                 api.rpc({
                     details: "On Search Page",
                 });
             } else {
-                this.result = data;
+                this.result = {
+                    plugin: config.name,
+                    type: <any>config.type,
+                    entities: results,
+                };
                 this.state = "results";
                 api.rpc({
                     details: `Searching for ${this.terms}`,
                 });
             }
-        },
-        getHighResImage(url: string) {
-            return util.getHighResMALImage(url);
-        },
-        replaceReadMore(desc: string) {
-            return desc.replace(/(read more\.)$/, "");
         },
     },
 });

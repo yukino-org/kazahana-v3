@@ -12,17 +12,21 @@ const api = {
         },
     },
     animeExt: {
-        async search(terms) {
-            return await ipcRenderer.invoke("MAL-Search", terms);
-        },
-        async getAnimeInfo(url) {
-            return ipcRenderer.invoke("MAL-AnimeInfo", url);
-        },
-        async getTopAnime(type) {
-            return ipcRenderer.invoke("MAL-TopAnimes", type);
-        },
-        async getTopAnimeType() {
-            return ipcRenderer.invoke("MAL-TopAnimesTypes");
+        intergrations: {
+            MyAnimeList: {
+                async search(terms) {
+                    return await ipcRenderer.invoke("MAL-Search", terms);
+                },
+                async getAnimeInfo(url) {
+                    return ipcRenderer.invoke("MAL-AnimeInfo", url);
+                },
+                async getTopAnime(type) {
+                    return ipcRenderer.invoke("MAL-TopAnimes", type);
+                },
+                async getTopAnimeType() {
+                    return ipcRenderer.invoke("MAL-TopAnimesTypes");
+                },
+            },
         },
         extractors: {
             anime: {

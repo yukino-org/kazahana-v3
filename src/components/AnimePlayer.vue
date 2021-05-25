@@ -5,36 +5,25 @@
                 <p class="text-sm opacity-75 mt-4">
                     Player (Episode {{ episode }})
                 </p>
-                <div>
+                <div class="flex flex-row justify-center items-center">
                     <span class="mr-2 opacity-75">Player width:</span>
-                    <select
-                        class="
-                            capitalize
-                            bg-gray-100
-                            dark:bg-gray-800
-                            focus:outline-none
-                            px-2
-                            py-1
-                            mt-1
-                            rounded
-                            w-44
-                        "
-                        v-model="playerWidth"
-                    >
-                        <option
-                            v-for="wid in Array(10)
-                                .fill(null)
-                                .map((x, i) => i * 10 + 10)"
-                            :value="wid"
-                            :key="wid"
-                        >
-                            {{ wid }}%
-                        </option>
-                    </select>
+                    <div class="select w-40">
+                        <select class="capitalize" v-model="playerWidth">
+                            <option
+                                v-for="wid in Array(10)
+                                    .fill(null)
+                                    .map((x, i) => i * 10 + 10)"
+                                :value="wid"
+                                :key="wid"
+                            >
+                                {{ wid }}%
+                            </option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-2">
+            <div class="my-2">
                 <video
                     class="outline-none"
                     controls

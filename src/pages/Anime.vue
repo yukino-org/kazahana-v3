@@ -284,7 +284,7 @@ export default defineComponent({
                 return this.$logger.emit("error", "Missing 'url' in query!");
             }
 
-            const { data, err } = await api.anime.info(url);
+            const { data, err } = await api.intergrations.MyAnimeList.info(url);
             if (err) {
                 this.state = "noresult";
                 return this.$logger.emit(

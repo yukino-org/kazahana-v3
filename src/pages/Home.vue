@@ -2,7 +2,7 @@
     <div>
         <PageTitle title="Home" />
         <div>
-            <p class="text-xl">Top Animes</p>
+            <p class="-mt-1 text-xl text-indigo-500 font-bold">Top Animes</p>
             <Loading
                 v-if="!hasLoaded"
                 text="Fetching top animes, please wait..."
@@ -151,10 +151,10 @@ export default defineComponent({
     },
     methods: {
         async getCategories() {
-            this.categories = await api.anime.topTypes();
+            this.categories = await api.intergrations.MyAnimeList.topTypes();
         },
         async getTopAnimes(type: string) {
-            const { data, err } = await api.anime.top(type);
+            const { data, err } = await api.intergrations.MyAnimeList.top(type);
             if (err) {
                 this.$logger.emit(
                     "error",

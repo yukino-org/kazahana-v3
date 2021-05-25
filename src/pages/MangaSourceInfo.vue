@@ -27,38 +27,34 @@
                 />
             </div>
 
-            <div>
-                <p class="text-sm opacity-75 mt-4">Contents</p>
-                <div class="mt-1 grid gap-2">
-                    <div v-for="chap in info.chapters" :key="chap.url">
-                        <div
-                            class="
-                                hover-pop
-                                bg-gray-100
-                                dark:bg-gray-800
-                                px-3
-                                py-1.5
-                                cursor-pointer
-                                rounded
-                            "
-                            @click="selectChapter(chap)"
-                        >
-                            <div>
-                                <p class="text-lg">
-                                    <span class="font-bold">{{
-                                        chap.title
-                                    }}</span>
-                                    <span class="ml-1 opacity-75"
-                                        >(Vol. {{ chap.volume }} Chap.
-                                        {{ chap.chapter }})</span
-                                    >
-                                </p>
-                                <ExternalLink
-                                    class="text-xs"
-                                    :text="`View on ${plugin}`"
-                                    :url="chap.url"
-                                />
-                            </div>
+            <p class="text-sm opacity-75 mt-4">Contents</p>
+            <div class="mt-1 grid gap-2">
+                <div v-for="chap in info.chapters" :key="chap.url">
+                    <div
+                        class="
+                            hover-pop
+                            bg-gray-100
+                            dark:bg-gray-800
+                            px-3
+                            py-1.5
+                            cursor-pointer
+                            rounded
+                        "
+                        @click="selectChapter(chap)"
+                    >
+                        <div>
+                            <p class="text-lg">
+                                <span class="font-bold">{{ chap.title }}</span>
+                                <span class="ml-1 opacity-75"
+                                    >(Vol. {{ chap.volume }} Chap.
+                                    {{ chap.chapter }})</span
+                                >
+                            </p>
+                            <ExternalLink
+                                class="text-xs"
+                                :text="`View on ${plugin}`"
+                                :url="chap.url"
+                            />
                         </div>
                     </div>
                 </div>

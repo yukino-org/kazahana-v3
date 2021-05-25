@@ -18,11 +18,15 @@ export default {
             return api.store.get(key);
         },
     },
+    intergrations: {
+        MyAnimeList: {
+            search: api.animeExt.intergrations.MyAnimeList.search,
+            info: api.animeExt.intergrations.MyAnimeList.getAnimeInfo,
+            top: api.animeExt.intergrations.MyAnimeList.getTopAnime,
+            topTypes: api.animeExt.intergrations.MyAnimeList.getTopAnimeType,
+        },
+    },
     anime: {
-        search: api.animeExt.search,
-        info: api.animeExt.getAnimeInfo,
-        top: api.animeExt.getTopAnime,
-        topTypes: api.animeExt.getTopAnimeType,
         extractors: {
             all() {
                 return api.animeExt.extractors.anime.extractors.all();
