@@ -37,7 +37,7 @@
                 >
             </div>
 
-            <div class="flex flex-row gap-3 mb-2 lg:mt-5">
+            <div class="flex flex-row gap-3 lg:mt-5">
                 <button
                     :class="[
                         hrefClassNames,

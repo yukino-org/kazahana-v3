@@ -21,6 +21,10 @@ const SimplyMoeAnime =
     require("anime-ext/dist/extractors/anime/simplydotmoe").default;
 const TwistDotMoeAnime =
     require("anime-ext/dist/extractors/anime/twistdotmoe").default;
+const KawaiifuAnime =
+    require("anime-ext/dist/extractors/anime/kawaiifu").default;
+const TenshiDotMoeAnime =
+    require("anime-ext/dist/extractors/anime/tenshidotmoe").default;
 
 const FanFoxManga = require("anime-ext/dist/extractors/manga/fanfox").default;
 const MangaDexManga =
@@ -76,6 +80,8 @@ module.exports = (ipc) => {
             GogoStream: new GogoStreamAnime(options),
             SimplyMoe: new SimplyMoeAnime(options),
             TwistMoe: new TwistDotMoeAnime(options),
+            Kawaiifu: new KawaiifuAnime(options),
+            TenshiMoe: new TenshiDotMoeAnime(options),
         },
         manga: {
             FanFox: new FanFoxManga(options),

@@ -133,7 +133,7 @@ export default defineComponent({
         ExternalLink,
     },
     props: {
-        episode: Number,
+        episode: String,
         plugin: String,
         link: String,
     },

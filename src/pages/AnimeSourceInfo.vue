@@ -19,6 +19,49 @@
                     :plugin="plugin"
                     :link="selected.url"
                 />
+                <div
+                    class="
+                        mt-4
+                        flex flex-row
+                        justify-center
+                        items-center
+                        flex-wrap
+                        gap-2
+                    "
+                >
+                    <button
+                        class="
+                            bg-indigo-500
+                            hover:bg-indigo-600
+                            transition
+                            duration-300
+                            px-3
+                            py-1
+                            rounded
+                            focus:outline-none
+                        "
+                        @click.prevent="prevEpisode()"
+                    >
+                        <Icon class="mr-1 opacity-75" icon="caret-left" />
+                        Previous Episode
+                    </button>
+                    <button
+                        class="
+                            bg-indigo-500
+                            hover:bg-indigo-600
+                            transition
+                            duration-300
+                            px-3
+                            py-1
+                            rounded
+                            focus:outline-none
+                        "
+                        @click.prevent="nextEpisode()"
+                    >
+                        Next Episode
+                        <Icon class="ml-1 opacity-75" icon="caret-right" />
+                    </button>
+                </div>
             </div>
 
             <div>
@@ -92,7 +135,7 @@ export default defineComponent({
             plugin: string | null;
             link: string | null;
             selected: {
-                episode: number;
+                episode: string;
                 url: string;
             } | null;
         } = {
@@ -139,9 +182,6 @@ export default defineComponent({
             }
 
             this.state = "result";
-            data.episodes = data.episodes.sort(
-                (a: any, b: any) => a.episode - b.episode
-            );
             this.info = data;
             this.refreshRpc();
         },
@@ -164,6 +204,26 @@ export default defineComponent({
                 });
             } else {
                 this.refreshRpc();
+            }
+        },
+        prevEpisode() {
+            if (!this.info || !this.selected) return;
+            const cur = this.info.episodes.findIndex(
+                (x: any) => x.episode === this.selected?.episode
+            );
+            if (typeof cur === "number") {
+                const prev = this.info.episodes[cur - 1];
+                if (prev) this.selectEpisode(prev);
+            }
+        },
+        nextEpisode() {
+            if (!this.info || !this.selected) return;
+            const cur = this.info.episodes.findIndex(
+                (x: any) => x.episode === this.selected?.episode
+            );
+            if (typeof cur === "number") {
+                const next = this.info.episodes[cur + 1];
+                if (next) this.selectEpisode(next);
             }
         },
         refreshRpc() {

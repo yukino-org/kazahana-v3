@@ -12,7 +12,7 @@
 
             <div v-if="isOpen">
                 <Loading
-                    class="mb-1"
+                    class="my-3"
                     text="Fetching sources, please wait..."
                     v-if="!sources"
                 />

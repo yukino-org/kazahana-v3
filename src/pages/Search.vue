@@ -2,13 +2,6 @@
     <div>
         <PageTitle title="Search" />
         <div class="mt-6 flex flex-row justify-center items-center gap-2">
-            <div class="select">
-                <select v-model="selectedPlugin">
-                    <option :value="plugin.name" v-for="plugin of allPlugins">
-                        {{ plugin.name }}
-                    </option>
-                </select>
-            </div>
             <input
                 class="flex-grow text-box"
                 v-model="terms"
@@ -21,7 +14,37 @@
             </button>
         </div>
 
-        <p class="text-center mt-4 opacity-75" v-if="state === 'search'">
+        <div
+            class="
+                flex flex-row
+                justify-center
+                items-center
+                flex-wrap
+                gap-2
+                mt-6
+            "
+        >
+            <div
+                :class="[
+                    'px-2 py-0.5 rounded cursor-pointer',
+                    selectedPlugin.includes(plugin.name)
+                        ? 'bg-green-400 dark:bg-green-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-800',
+                ]"
+                :title="
+                    selectedPlugin.includes(plugin.name)
+                        ? 'Selected'
+                        : 'Disabled'
+                "
+                v-for="plugin in allPlugins"
+            >
+                <p @click.prevent="toggleSelected(plugin.name)">
+                    {{ plugin.name }}
+                </p>
+            </div>
+        </div>
+
+        <p class="text-center mt-6 opacity-75" v-if="state === 'search'">
             Enter something to search for!
         </p>
         <Loading
@@ -30,17 +53,17 @@
             :text="`Fetching results for ${terms}...`"
         />
         <p
-            class="text-center mt-4 opacity-75"
+            class="text-center mt-6 opacity-75"
             v-else-if="state === 'noresults'"
         >
             No results were found.
         </p>
 
-        <div class="mt-8" v-if="result && result.entities.length">
+        <div class="mt-8" v-if="result && result.length">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
                 <div
                     class="col-span-1"
-                    v-for="anime in result.entities"
+                    v-for="anime in result"
                     :key="anime.url"
                 >
                     <router-link
@@ -68,7 +91,18 @@
                             v-if="anime.thumbnail"
                         />
                         <div class="flex-grow">
-                            <p class="text-lg font-bold leading-snug">
+                            <p
+                                class="
+                                    text-xs
+                                    opacity-75
+                                    text-indigo-500
+                                    dark:text-indigo-400
+                                    font-bold
+                                "
+                            >
+                                {{ anime.plugin.name }}
+                            </p>
+                            <p class="mt-0.5 text-lg font-bold leading-snug">
                                 {{ anime.title }}
                             </p>
                             <div
@@ -126,7 +160,7 @@
                             </p>
                             <ExternalLink
                                 class="text-xs"
-                                :text="`View at ${selectedPlugin}`"
+                                :text="`View at ${anime.plugin.name}`"
                                 :url="anime.url"
                                 v-if="!anime.description"
                             />
@@ -158,12 +192,8 @@ export default defineComponent({
         const data: {
             state: "search" | "loading" | "noresults" | "results";
             terms: string;
-            result: {
-                type: "extended" | "short";
-                plugin: string;
-                entities: any[];
-            } | null;
-            selectedPlugin: string;
+            result: any[] | null;
+            selectedPlugin: string[];
             allPlugins: {
                 name: string;
                 type: string;
@@ -173,7 +203,7 @@ export default defineComponent({
             state: "search",
             terms: "",
             result: null,
-            selectedPlugin: "MyAnimeList",
+            selectedPlugin: ["MyAnimeList"],
             allPlugins: [
                 {
                     name: "MyAnimeList",
@@ -194,14 +224,16 @@ export default defineComponent({
             watch(
                 () => this.selectedPlugin,
                 (cur, prev) => {
-                    if (cur !== prev) {
-                        if (this.result) {
-                            this.result = null;
-                            this.search();
-                        }
+                    if (cur !== prev && this.result) {
+                        this.search();
                     }
                 }
             );
+        },
+        toggleSelected(plugin: string) {
+            this.selectedPlugin = this.selectedPlugin.includes(plugin)
+                ? this.selectedPlugin.filter((x) => x !== plugin)
+                : [...this.selectedPlugin, plugin];
         },
         async getAllPlugins() {
             const animePlugins = await api.anime.extractors.all();
@@ -237,107 +269,98 @@ export default defineComponent({
                 );
             }
 
-            const config = this.allPlugins.find(
-                (x) => x.name === this.selectedPlugin
-            );
-            if (!config) {
-                return this.$logger.emit(
-                    "error",
-                    "Corresponding plugin was not found!"
-                );
-            }
-
             this.result = null;
+            const results = [];
             this.state = "loading";
-
-            let results: any = null,
-                err: any;
-            if (config.category === "integration") {
-                let res = await (<any>api.intergrations)[config.name]?.search(
-                    this.terms
+            for (const pluginName of this.selectedPlugin) {
+                const config = this.allPlugins.find(
+                    (x) => x.name === pluginName
                 );
-                if (res.err) {
-                    err = res.err;
-                } else if (res.data && config.name === "MyAnimeList") {
-                    results = res.data.map((x: any) => {
-                        x.description = x.description.replace(
-                            /(read more\.)$/,
-                            ""
+                if (!config) {
+                    return this.$logger.emit(
+                        "error",
+                        "Corresponding plugin was not found!"
+                    );
+                }
+
+                if (config.category === "integration") {
+                    let res = await (<any>api.intergrations)[
+                        config.name
+                    ]?.search(this.terms);
+
+                    if (res.data && config.name === "MyAnimeList") {
+                        results.push(
+                            ...res.data.map((x: any) => {
+                                x.plugin = config;
+                                x.description = x.description.replace(
+                                    /(read more\.)$/,
+                                    ""
+                                );
+                                x.thumbnail = util.getHighResMALImage(
+                                    x.thumbnail
+                                );
+                                x.link = {
+                                    path: "/anime",
+                                    query: {
+                                        url: x.url,
+                                    },
+                                };
+                                return x;
+                            })
                         );
-                        x.thumbnail = util.getHighResMALImage(x.thumbnail);
-                        x.link = {
-                            path: "/anime",
-                            query: {
-                                url: x.url,
-                            },
-                        };
-                        return x;
-                    });
+                    }
+                } else if (config.category === "anime") {
+                    let res = await api.anime.extractors.search(
+                        config.name,
+                        this.terms
+                    );
+                    if (res.data) {
+                        results.push(
+                            ...res.data.map((x: any) => {
+                                x.plugin = config;
+                                x.link = {
+                                    path: "/anime/source",
+                                    query: {
+                                        plugin: config.name,
+                                        url: x.url,
+                                    },
+                                };
+                                return x;
+                            })
+                        );
+                    }
+                } else if (config.category === "manga") {
+                    let res = await api.manga.extractors.search(
+                        config.name,
+                        this.terms
+                    );
+                    if (res.data) {
+                        results.push(
+                            ...res.data.map((x: any) => {
+                                x.plugin = config;
+                                x.thumbnail = x.image;
+                                x.link = {
+                                    path: "/manga/source",
+                                    query: {
+                                        plugin: config.name,
+                                        url: x.url,
+                                    },
+                                };
+                                return x;
+                            })
+                        );
+                    }
                 }
-            } else if (config.category === "anime") {
-                let res = await api.anime.extractors.search(
-                    config.name,
-                    this.terms
-                );
-                if (res.err) {
-                    err = res.err;
-                } else if (res.data) {
-                    results = res.data.map((x: any) => {
-                        x.link = {
-                            path: "/anime/source",
-                            query: {
-                                plugin: config.name,
-                                url: x.url,
-                            },
-                        };
-                        return x;
-                    });
-                }
-            } else if (config.category === "manga") {
-                let res = await api.manga.extractors.search(
-                    config.name,
-                    this.terms
-                );
-                if (res.err) {
-                    err = res.err;
-                } else if (res.data) {
-                    results = res.data.map((x: any) => {
-                        x.thumbnail = x.image;
-                        x.link = {
-                            path: "/manga/source",
-                            query: {
-                                plugin: config.name,
-                                url: x.url,
-                            },
-                        };
-                        return x;
-                    });
-                }
-            } else {
-                return this.$logger.emit(
-                    "error",
-                    "No valid search function was not found!"
-                );
-            }
-
-            if (err) {
-                return this.$logger.emit(
-                    "error",
-                    `Could not get search results: ${err}`
-                );
             }
 
             if (!results?.length) {
+                this.result = null;
                 this.state = "noresults";
                 api.rpc({
                     details: "On Search Page",
                 });
             } else {
-                this.result = {
-                    plugin: config.name,
-                    type: <any>config.type,
-                    entities: results,
-                };
+                this.result = results;
                 this.state = "results";
                 api.rpc({
                     details: `Searching for ${this.terms} (${this.selectedPlugin})`,
