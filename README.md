@@ -12,7 +12,7 @@ We do not support piracy nor run/serve any illegal or copyrighted contents, ever
 
 ## Download
 
-You can download the latest version of app from the [releases](https://github.com/zyrouge/yukino-app/releases) tab. Currently it supports only **Windows** and **Linux**. More to be announced after further development.
+You can download the latest version of app from the [releases](https://github.com/zyrouge/yukino-app/releases) tab.
 
 ## Preview
 
