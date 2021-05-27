@@ -88,21 +88,13 @@ export default defineComponent({
     data() {
         const data: {
             title: string;
-            version: string | null;
+            version: string;
         } = {
             title: document.title,
-            version: null,
+            version: api.version,
         };
 
         return data;
-    },
-    mounted() {
-        this.getVersion();
-    },
-    methods: {
-        async getVersion() {
-            this.version = await api.version();
-        },
     },
 });
 </script>

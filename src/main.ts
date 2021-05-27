@@ -18,6 +18,7 @@ app.mount("#app");
 
 declare global {
     const platform: string;
+    const app_version: string;
 
     interface Window {
         api: {

@@ -1,7 +1,7 @@
 const api: any = platform === "electron" ? window.api : null;
 
 export default {
-    version: <() => Promise<string>>api.version,
+    version: app_version,
     rpc: (act: {
         details?: string;
         state?: string;
