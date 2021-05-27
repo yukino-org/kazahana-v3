@@ -1,7 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 const api = {
-    version: () => ipcRenderer.invoke("Yukino-Version"),
     rpc: (act) => ipcRenderer.invoke("Rpc-Set", act),
     store: {
         async get(key) {
