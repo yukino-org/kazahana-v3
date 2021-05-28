@@ -122,7 +122,8 @@
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
-import api from "../plugins/api";
+import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
+import { Await } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -140,7 +141,9 @@ export default defineComponent({
     data() {
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
-            info: any;
+            info: Await<
+                ReturnType<ExtractorsEntity["anime"][""]["getDownloadLinks"]>
+            > | null;
             currentPlaying: {
                 type: string;
                 url: string;
@@ -162,7 +165,8 @@ export default defineComponent({
     },
     methods: {
         async updateWidth() {
-            let wid = await api.store.get("settings.defaultPlayerWidth");
+            const store = await Store.getClient();
+            let wid = await store.get("settings.defaultPlayerWidth");
             if (wid && !isNaN(wid)) {
                 wid = +wid;
                 if (wid > 0 && wid <= 100) {
@@ -191,24 +195,25 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
-            this.info = null;
-            this.state = "loading";
-            const { data, err } = await api.anime.extractors.links(
-                this.plugin,
-                this.link
-            );
-            if (err) {
+            try {
+                this.info = null;
+                this.state = "loading";
+                const client = await Extractors.getClient();
+                const data = await client.anime[this.plugin].getDownloadLinks(
+                    this.link
+                );
+
+                this.state = "result";
+                this.info = data.sort((x) =>
+                    x.type.some((y) => ["streamable"].includes(y)) ? -1 : 1
+                );
+            } catch (err) {
                 this.state = "noresult";
-                return this.$logger.emit(
+                this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err}`
                 );
             }
-
-            this.state = "result";
-            this.info = data.sort((x: any) =>
-                x.type.some((y: any) => ["streamable"].includes(y)) ? -1 : 1
-            );
         },
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
@@ -220,6 +225,7 @@ export default defineComponent({
                 type,
                 url,
             };
+
             if (url?.includes("m3u8")) {
                 this.$logger.emit(
                     "warn",

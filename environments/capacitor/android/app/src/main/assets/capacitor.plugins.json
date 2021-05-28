@@ -1,0 +1,10 @@
+[
+	{
+		"pkg": "@capacitor-community/http",
+		"classpath": "com.getcapacitor.plugin.http.Http"
+	},
+	{
+		"pkg": "capacitor-secure-storage-plugin",
+		"classpath": "com.whitestein.securestorage.SecureStoragePlugin"
+	}
+]

@@ -81,6 +81,7 @@
                     @click.prevent="prevPage()"
                 >
                     <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
+                    Page
                 </button>
                 <button
                     class="
@@ -96,7 +97,8 @@
                     "
                     @click.prevent="nextPage()"
                 >
-                    Next <Icon class="ml-1 opacity-75" icon="caret-right" />
+                    Next Page
+                    <Icon class="ml-1 opacity-75" icon="caret-right" />
                 </button>
                 <div class="select">
                     <select v-model="currentPage">
@@ -122,7 +124,8 @@
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
-import api from "../plugins/api";
+import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
+import { Await } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -141,8 +144,15 @@ export default defineComponent({
     data() {
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
-            info: any;
-            images: any[] | null;
+            info: Await<
+                ReturnType<ExtractorsEntity["manga"][""]["getChapterPages"]>
+            > | null;
+            images:
+                | {
+                      page: string;
+                      image: string;
+                  }[]
+                | null;
             currentPage: string | null;
             pageWidth: number;
         } = {
@@ -163,7 +173,8 @@ export default defineComponent({
     },
     methods: {
         async updateWidth() {
-            let wid = await api.store.get("settings.defaultPageWidth");
+            const store = await Store.getClient();
+            let wid = await store.get("settings.defaultPageWidth");
             if (wid && !isNaN(wid)) {
                 wid = +wid;
                 if (wid > 0 && wid <= 100) {
@@ -214,9 +225,8 @@ export default defineComponent({
                 return this.images?.find((x) => x.page === this.currentPage)
                     ?.image;
 
-            return this.info?.entities.find(
-                (x: any) => x.page === this.currentPage
-            )?.url;
+            return this.info?.entities.find((x) => x.page === this.currentPage)
+                ?.url;
         },
         async getInfo() {
             if (!this.plugin) {
@@ -228,25 +238,25 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
-            this.info = null;
-            this.state = "loading";
-            const { data, err } = await api.manga.extractors.pages(
-                this.plugin,
-                this.link
-            );
-            if (err) {
-                this.state = "noresult";
-                return this.$logger.emit(
-                    "error",
-                    `Could not fetch anime's information: ${err}`
+            try {
+                this.info = null;
+                this.state = "loading";
+                const client = await Extractors.getClient();
+                const data = await client.manga[this.plugin].getChapterPages(
+                    this.link
                 );
-            }
 
-            this.state = "result";
-            this.info = data;
-            if (this.info.entities[0]) {
-                this.selectPageUrl(this.info.entities[0].page);
-                this.scrollToImage();
+                this.state = "result";
+                this.info = data;
+                if (this.info.entities[0]) {
+                    this.selectPageUrl(this.info.entities[0].page);
+                    this.scrollToImage();
+                }
+            } catch (err) {
+                this.$logger.emit(
+                    "error",
+                    `Could not fetch anime's information: ${err?.message}`
+                );
             }
         },
         async getPageImage(page: string) {
@@ -259,9 +269,7 @@ export default defineComponent({
             const found = this.images.find((x) => x.page === page);
             if (found) return;
 
-            const url = this.info?.entities.find(
-                (x: any) => x.page === page
-            )?.url;
+            const url = this.info?.entities.find((x) => x.page === page)?.url;
             if (!url) {
                 return this.$logger.emit(
                     "error",
@@ -269,52 +277,54 @@ export default defineComponent({
                 );
             }
 
-            const { data, err } = await api.manga.extractors.pageImage(
-                this.plugin,
-                url
-            );
-            if (err) {
-                return this.$logger.emit(
+            try {
+                const client = await Extractors.getClient();
+                const data = await client.manga[this.plugin].getPageImage?.(
+                    url
+                );
+                if (data) {
+                    this.images.push({
+                        page,
+                        image: data.image,
+                    });
+                }
+            } catch (err) {
+                this.$logger.emit(
                     "error",
-                    `Could not fetch anime's information: ${err}`
+                    `Could not fetch anime's information: ${err?.message}`
                 );
             }
-
-            this.images.push({
-                page,
-                image: data.image,
-            });
         },
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        selectPageUrl(page: any) {
+        selectPageUrl(page: string) {
             this.currentPage = page;
         },
         prevPage() {
             if (this.currentPage && this.info) {
                 const prevIndex =
                     this.info.entities.findIndex(
-                        (x: any) => x.page === this.currentPage
+                        (x) => x.page === this.currentPage
                     ) - 1;
 
                 const prev = this.info.entities[prevIndex];
                 if (prev) this.currentPage = prev.page;
-            } else {
+            } else if (this.info) {
                 this.currentPage = this.info.entities[0].page;
             }
             this.scrollToImage();
         },
         nextPage() {
-            if (this.currentPage) {
+            if (this.currentPage && this.info) {
                 const nextIndex =
                     this.info.entities.findIndex(
-                        (x: any) => x.page === this.currentPage
+                        (x) => x.page === this.currentPage
                     ) + 1;
 
                 const next = this.info.entities[nextIndex];
                 if (next) this.currentPage = next.page;
-            } else {
+            } else if (this.info) {
                 this.currentPage = this.info.entities[0].page;
             }
             this.scrollToImage();

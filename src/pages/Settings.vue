@@ -137,7 +137,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { Store } from "../plugins/api";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -150,7 +150,7 @@ export default defineComponent({
     },
     data() {
         const data: {
-            settings: any;
+            settings: Record<string, any> | null;
             allowedUpdateChannels: string[];
             allowedSidebarPositions: string[];
             allowedDiscordRpcOptions: string[];
@@ -172,10 +172,12 @@ export default defineComponent({
     },
     methods: {
         async getSettings() {
-            this.settings = (await api.store.get("settings")) || {};
+            const store = await Store.getClient();
+            this.settings = (await store.get("settings")) || {};
         },
         async updateSettings(key: string, value: any) {
-            await api.store.set(`settings.${key}`, value);
+            const store = await Store.getClient();
+            await store.set(`settings.${key}`, value);
             this.getSettings();
         },
         handleUpdateChannel(event: any) {

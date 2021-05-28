@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { ExternalLink } from "../plugins/api";
 
 export default defineComponent({
     props: {
@@ -25,9 +25,11 @@ export default defineComponent({
         url: String,
     },
     methods: {
-        goToUrl() {
+        async goToUrl() {
             if (!this.url) return;
-            api.openExternalUrl(this.url);
+
+            const opener = await ExternalLink.getClient();
+            opener?.(this.url);
         },
     },
 });

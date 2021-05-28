@@ -67,7 +67,7 @@
                     :key="anime.url"
                 >
                     <router-link
-                        :to="anime.link"
+                        :to="anime.route"
                         class="
                             hover-pop
                             flex flex-row
@@ -100,17 +100,12 @@
                                     font-bold
                                 "
                             >
-                                {{ anime.plugin.name }}
+                                {{ anime.plugin }}
                             </p>
                             <p class="mt-0.5 text-lg font-bold leading-snug">
                                 {{ anime.title }}
                             </p>
-                            <div
-                                class="mt-1 flex flex-row gap-1"
-                                v-if="
-                                    anime.type || anime.episodes || anime.score
-                                "
-                            >
+                            <div class="mt-1 flex flex-row gap-1">
                                 <span
                                     class="
                                         text-white text-xs
@@ -129,7 +124,10 @@
                                         rounded-sm
                                         bg-blue-500
                                     "
-                                    >Episodes: {{ anime.episodes || "-" }}</span
+                                    >Episodes:
+                                    {{
+                                        anime.additional?.episodes || "-"
+                                    }}</span
                                 >
                                 <span
                                     class="
@@ -139,7 +137,8 @@
                                         rounded-sm
                                         bg-purple-500
                                     "
-                                    >Score: {{ anime.score || "-" }}</span
+                                    >Score:
+                                    {{ anime.additional?.score || "-" }}</span
                                 >
                             </div>
                             <p
@@ -160,7 +159,7 @@
                             </p>
                             <ExternalLink
                                 class="text-xs"
-                                :text="`View at ${anime.plugin.name}`"
+                                :text="`View at ${anime.plugin}`"
                                 :url="anime.url"
                                 v-if="!anime.description"
                             />
@@ -174,12 +173,28 @@
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
-import api from "../plugins/api";
-import util from "../plugins/util";
+import { RouteLocationRaw } from "vue-router";
+import { Extractors, Rpc } from "../plugins/api";
+import { util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
+
+interface ResultType {
+    title: string;
+    description: string;
+    thumbnail: string;
+    url: string;
+    air: string;
+    plugin: string;
+    route: RouteLocationRaw;
+    type: "anime" | "manga";
+    additional?: {
+        episodes: string;
+        score: string;
+    };
+}
 
 export default defineComponent({
     name: "Search",
@@ -192,12 +207,12 @@ export default defineComponent({
         const data: {
             state: "search" | "loading" | "noresults" | "results";
             terms: string;
-            result: any[] | null;
+            result: ResultType[] | null;
             selectedPlugin: string[];
             allPlugins: {
                 name: string;
                 type: string;
-                category: "integration" | "anime" | "manga";
+                category: "integration-MAL" | "anime" | "manga";
             }[];
         } = {
             state: "search",
@@ -208,7 +223,7 @@ export default defineComponent({
                 {
                     name: "MyAnimeList",
                     type: "extended",
-                    category: "integration",
+                    category: "integration-MAL",
                 },
             ],
         };
@@ -236,7 +251,9 @@ export default defineComponent({
                 : [...this.selectedPlugin, plugin];
         },
         async getAllPlugins() {
-            const animePlugins = await api.anime.extractors.all();
+            const client = await Extractors.getClient();
+
+            const animePlugins = Object.keys(client.anime);
             animePlugins.forEach((x: string) => {
                 this.allPlugins.push({
                     name: x,
@@ -245,7 +262,7 @@ export default defineComponent({
                 });
             });
 
-            const mangaPlugins = await api.manga.extractors.all();
+            const mangaPlugins = Object.keys(client.manga);
             mangaPlugins.forEach((x: string) => {
                 this.allPlugins.push({
                     name: x,
@@ -272,97 +289,120 @@ export default defineComponent({
             this.result = null;
             const results = [];
             this.state = "loading";
+            const client = await Extractors.getClient();
+
             for (const pluginName of this.selectedPlugin) {
-                const config = this.allPlugins.find(
-                    (x) => x.name === pluginName
-                );
-                if (!config) {
-                    return this.$logger.emit(
-                        "error",
-                        "Corresponding plugin was not found!"
+                try {
+                    const config = this.allPlugins.find(
+                        (x) => x.name === pluginName
                     );
-                }
+                    if (!config) {
+                        this.$logger.emit(
+                            "error",
+                            "Corresponding plugin was not found!"
+                        );
+                    } else if (config.category === "integration-MAL") {
+                        const data =
+                            await client.integrations.MyAnimeList.search(
+                                this.terms
+                            );
 
-                if (config.category === "integration") {
-                    let res = await (<any>api.intergrations)[
-                        config.name
-                    ]?.search(this.terms);
+                        results.push(
+                            ...data.map((x) => {
+                                const res: ResultType = {
+                                    title: x.title,
+                                    description: x.description.replace(
+                                        /(read more\.)$/,
+                                        ""
+                                    ),
+                                    thumbnail: util.getHighResMALImage(
+                                        x.thumbnail
+                                    ),
+                                    url: x.url,
+                                    air: "",
+                                    plugin: config.name,
+                                    route: {
+                                        path: "/anime",
+                                        query: {
+                                            url: x.url,
+                                        },
+                                    },
+                                    type: "anime",
+                                    additional: {
+                                        episodes: x.episodes,
+                                        score: x.score,
+                                    },
+                                };
+                                return res;
+                            })
+                        );
+                    } else if (config.category === "anime") {
+                        const data = await client.anime[config.name].search(
+                            this.terms
+                        );
 
-                    if (res.data && config.name === "MyAnimeList") {
                         results.push(
-                            ...res.data.map((x: any) => {
-                                x.plugin = config;
-                                x.description = x.description.replace(
-                                    /(read more\.)$/,
-                                    ""
-                                );
-                                x.thumbnail = util.getHighResMALImage(
-                                    x.thumbnail
-                                );
-                                x.link = {
-                                    path: "/anime",
-                                    query: {
-                                        url: x.url,
+                            ...data.map((x) => {
+                                const res: ResultType = {
+                                    title: x.title,
+                                    description: "",
+                                    thumbnail: x.thumbnail,
+                                    url: x.url,
+                                    air: "",
+                                    plugin: config.name,
+                                    route: {
+                                        path: "/anime/source",
+                                        query: {
+                                            plugin: config.name,
+                                            url: x.url,
+                                        },
                                     },
+                                    type: "anime",
                                 };
-                                return x;
+                                return res;
+                            })
+                        );
+                    } else if (config.category === "manga") {
+                        const data = await client.manga[config.name].search(
+                            this.terms
+                        );
+
+                        results.push(
+                            ...data.map((x) => {
+                                const res: ResultType = {
+                                    title: x.title,
+                                    description: "",
+                                    thumbnail: x.image || "",
+                                    url: x.url,
+                                    air: "",
+                                    plugin: config.name,
+                                    route: {
+                                        path: "/anime/source",
+                                        query: {
+                                            plugin: config.name,
+                                            url: x.url,
+                                        },
+                                    },
+                                    type: "manga",
+                                };
+                                return res;
                             })
                         );
                     }
-                } else if (config.category === "anime") {
-                    let res = await api.anime.extractors.search(
-                        config.name,
-                        this.terms
-                    );
-                    if (res.data) {
-                        results.push(
-                            ...res.data.map((x: any) => {
-                                x.plugin = config;
-                                x.link = {
-                                    path: "/anime/source",
-                                    query: {
-                                        plugin: config.name,
-                                        url: x.url,
-                                    },
-                                };
-                                return x;
-                            })
-                        );
-                    }
-                } else if (config.category === "manga") {
-                    let res = await api.manga.extractors.search(
-                        config.name,
-                        this.terms
-                    );
-                    if (res.data) {
-                        results.push(
-                            ...res.data.map((x: any) => {
-                                x.plugin = config;
-                                x.thumbnail = x.image;
-                                x.link = {
-                                    path: "/manga/source",
-                                    query: {
-                                        plugin: config.name,
-                                        url: x.url,
-                                    },
-                                };
-                                return x;
-                            })
-                        );
-                    }
-                }
+                } catch (err) {}
             }
 
+            const rpc = await Rpc.getClient();
             if (!results?.length) {
                 this.result = null;
                 this.state = "noresults";
-                api.rpc({
+                rpc?.({
                     details: "On Search Page",
                 });
             } else {
                 this.result = results;
                 this.state = "results";
-                api.rpc({
+                rpc?.({
                     details: `Searching for ${this.terms} (${this.selectedPlugin})`,
                 });
             }

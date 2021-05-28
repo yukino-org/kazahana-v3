@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import html from "vite-plugin-html";
 import { version } from "./package.json";
 
 const platform = process.env.YUKINO_PLATFORM || "unknown";
@@ -9,20 +8,20 @@ export default defineConfig({
     base: getBase(platform),
     plugins: [
         vue(),
-        html({
-            inject: {
-                injectData: {
-                    scripts: getScripts(platform),
-                },
+        {
+            name: "transform-html",
+            enforce: "pre",
+            transformIndexHtml(html) {
+                html = html.replace("{{ head }}", getHead(platform));
+                return html;
             },
-            minify: true,
-        }),
+        },
     ],
     build: {
-        outDir: "dist/vite",
+        outDir: getOutDir(platform),
     },
     define: {
-        platform: `"${platform}"`,
+        app_platform: `"${platform}"`,
         app_version: `"${version}"`,
     },
 });
@@ -37,12 +36,18 @@ function getBase(platform: string) {
     }
 }
 
-function getScripts(platform: string) {
-    let scripts: string[] = [];
+function getOutDir(platform: string) {
+    switch (platform) {
+        case "capacitor":
+            return "dist/capacitor/web";
 
-    if (platform === "capacitor") {
-        // scripts.push();
+        default:
+            return "dist/vite";
     }
+}
 
-    return scripts.join("\n");
+function getHead(platform: string) {
+    const head: string[] = [];
+
+    return head.join("\n");
 }

@@ -17,14 +17,11 @@ app.config.globalProperties.$logger = new Logger();
 app.mount("#app");
 
 declare global {
-    const platform: string;
+    const app_platform: string;
     const app_version: string;
 
     interface Window {
-        api: {
-            animeExt: any;
-            [s: string]: any;
-        };
+        PlatformBridge?: any;
     }
 }
 

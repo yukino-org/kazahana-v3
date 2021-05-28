@@ -82,7 +82,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
 
 export default defineComponent({
     data() {
@@ -91,7 +90,7 @@ export default defineComponent({
             version: string;
         } = {
             title: document.title,
-            version: api.version,
+            version: app_version,
         };
 
         return data;

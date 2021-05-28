@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { ExternalLink } from "../plugins/api";
 
 export default defineComponent({
     setup() {
@@ -166,7 +166,10 @@ export default defineComponent({
             }
             this.configureTheme();
         },
-        openExternalUrl: api.openExternalUrl,
+        async openExternalUrl(url: string) {
+            const opener = await ExternalLink.getClient();
+            opener?.(url);
+        },
     },
 });
 </script>

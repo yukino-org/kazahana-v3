@@ -48,11 +48,7 @@
                     "
                     v-else
                 >
-                    <div
-                        class="col-span-1"
-                        v-for="anime in animes[selected]"
-                        :key="anime.key"
-                    >
+                    <div class="col-span-1" v-for="anime in animes[selected]">
                         <div>
                             <router-link
                                 :to="{
@@ -119,8 +115,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
-import util from "../plugins/util";
+import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
+import { util, Await } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -137,7 +133,14 @@ export default defineComponent({
         const data: {
             hasLoaded: boolean;
             categories: string[];
-            animes: Record<string, any[]>;
+            animes: Record<
+                string,
+                Await<
+                    ReturnType<
+                        ExtractorsEntity["integrations"]["MyAnimeList"]["getTopAnime"]
+                    >
+                >
+            >;
             selected: string;
         } = {
             hasLoaded: false,
@@ -149,25 +152,35 @@ export default defineComponent({
         return data;
     },
     async mounted() {
-        api.rpc({
+        const rpc = await Rpc.getClient();
+        rpc?.({
             details: "On Homepage",
         });
+
         await this.getCategories();
         await this.getTopAnimes(this.selected);
     },
     methods: {
         async getCategories() {
-            this.categories = await api.intergrations.MyAnimeList.topTypes();
+            const client = await Extractors.getClient();
+            this.categories =
+                await client.integrations.MyAnimeList.getTopAnimeTypes();
         },
         async getTopAnimes(type: string) {
-            const { data, err } = await api.intergrations.MyAnimeList.top(type);
-            if (err) {
+            try {
+                const client = await Extractors.getClient();
+                const data = await client.integrations.MyAnimeList.getTopAnime(
+                    type
+                );
+                this.animes[type] = data;
+                this.hasLoaded = true;
+            } catch (err) {
                 this.$logger.emit(
                     "error",
-                    `Could not fetch anime's information: ${err}`
+                    `Could not fetch anime's information: ${err?.message}`
                 );
-            } else this.animes[type] = data;
-            this.hasLoaded = true;
+                this.hasLoaded = false;
+            }
         },
         selectCategory(type: string) {
             this.selected = type;

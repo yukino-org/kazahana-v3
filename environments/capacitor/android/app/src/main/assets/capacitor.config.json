@@ -1,0 +1,8 @@
+{
+	"appId": "io.github.zyrouge.yukino",
+	"appName": "Yukino",
+	"webDir": "dist/capacitor/web",
+	"android": {
+		"path": "environments/capacitor/android"
+	}
+}

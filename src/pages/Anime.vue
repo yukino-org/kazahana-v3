@@ -236,7 +236,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { Store, Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
+import { Await } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -256,7 +257,11 @@ export default defineComponent({
     data() {
         const data: {
             state: "pending" | "result" | "noresult";
-            info: any;
+            info: Await<
+                ReturnType<
+                    ExtractorsEntity["integrations"]["MyAnimeList"]["getAnimeInfo"]
+                >
+            > | null;
             extractors: {
                 anime: string[];
                 manga: string[];
@@ -284,31 +289,38 @@ export default defineComponent({
                 return this.$logger.emit("error", "Missing 'url' in query!");
             }
 
-            const { data, err } = await api.intergrations.MyAnimeList.info(url);
-            if (err) {
+            try {
+                const client = await Extractors.getClient();
+                const data = await client.integrations.MyAnimeList.getAnimeInfo(
+                    url
+                );
+
+                this.info = data;
+                this.state = "result";
+
+                const rpc = await Rpc.getClient();
+                rpc?.({
+                    details: "Viewing about",
+                    state: this.info.title,
+                    buttons: [
+                        {
+                            label: "View",
+                            url,
+                        },
+                    ],
+                });
+            } catch (err) {
                 this.state = "noresult";
-                return this.$logger.emit(
+                this.$logger.emit(
                     "error",
-                    `Failed to fetch anime information: ${err}`
+                    `Failed to fetch anime information: ${err?.message}`
                 );
             }
-
-            this.info = data;
-            this.state = "result";
-            api.rpc({
-                details: "Viewing about",
-                state: this.info.title,
-                buttons: [
-                    {
-                        label: "View",
-                        url,
-                    },
-                ],
-            });
         },
         async getSources() {
-            this.extractors.anime = await api.anime.extractors.all();
-            this.extractors.manga = await api.manga.extractors.all();
+            const client = await Extractors.getClient();
+            this.extractors.anime = Object.keys(client.anime);
+            this.extractors.manga = Object.keys(client.manga);
         },
     },
 });

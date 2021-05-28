@@ -67,7 +67,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "./plugins/api";
+import { Store } from "./plugins/api";
 
 import TitleBar from "./components/TitleBar.vue";
 import SideBar from "./components/SideBar.vue";
@@ -85,7 +85,7 @@ export default defineComponent({
             showTitleBar: boolean;
             sideBarPosition: string;
         } = {
-            showTitleBar: ["electron"].includes(platform),
+            showTitleBar: ["electron"].includes(app_platform),
             sideBarPosition: "left",
         };
 
@@ -118,10 +118,9 @@ export default defineComponent({
             });
         },
         async applySettings() {
-            const settings = (await api.store.get("settings")) || {};
-            if (settings.sideBarPosition) {
-                this.sideBarPosition = settings.sideBarPosition;
-            }
+            const store = await Store.getClient();
+            this.sideBarPosition =
+                (await store.get("settings.sideBarPosition")) || "left";
         },
     },
 });

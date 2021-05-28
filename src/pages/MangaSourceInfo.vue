@@ -68,12 +68,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
 import MangaPager from "../components/MangaPager.vue";
+import { Await } from "../plugins/util";
+
+type SelectedEntity = Await<
+    ReturnType<ExtractorsEntity["manga"][""]["getInfo"]>
+>["chapters"][0];
 
 export default defineComponent({
     components: {
@@ -85,10 +90,12 @@ export default defineComponent({
     data() {
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
-            info: any;
+            info: Await<
+                ReturnType<ExtractorsEntity["manga"][""]["getInfo"]>
+            > | null;
             plugin: string | null;
             link: string | null;
-            selected: any;
+            selected: SelectedEntity | null;
         } = {
             state: "pending",
             info: null,
@@ -119,27 +126,26 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
-            this.state = "loading";
-            const { data, err } = await api.manga.extractors.info(
-                this.plugin,
-                this.link
-            );
-            if (err) {
+            try {
+                this.state = "loading";
+                const client = await Extractors.getClient();
+                const data = await client.manga[this.plugin].getInfo(this.link);
+                this.state = "result";
+                this.info = data;
+                this.refreshRpc();
+            } catch (err) {
                 this.state = "noresult";
                 return this.$logger.emit(
                     "error",
-                    `Could not fetch anime's information: ${err}`
+                    `Could not fetch anime's information: ${err?.message}`
                 );
             }
-
-            this.state = "result";
-            this.info = data;
-            this.refreshRpc();
         },
-        selectChapter(chapter: any) {
+        async selectChapter(chapter: SelectedEntity) {
             this.selected = chapter;
-            if (this.selected) {
-                api.rpc({
+            if (this.selected && this.info) {
+                const rpc = await Rpc.getClient();
+                rpc?.({
                     details: "Currently reading",
                     state: `${this.info.title} (Vol. ${
                         this.selected.volume
@@ -159,19 +165,22 @@ export default defineComponent({
                 this.refreshRpc();
             }
         },
-        refreshRpc() {
-            api.rpc({
-                details: "Viewing chapters and volumes of",
-                state: this.info.title,
-                buttons: this.link
-                    ? [
-                          {
-                              label: "View",
-                              url: this.link,
-                          },
-                      ]
-                    : undefined,
-            });
+        async refreshRpc() {
+            const rpc = await Rpc.getClient();
+            if (this.info) {
+                rpc?.({
+                    details: "Viewing chapters and volumes of",
+                    state: this.info.title,
+                    buttons: this.link
+                        ? [
+                              {
+                                  label: "View",
+                                  url: this.link,
+                              },
+                          ]
+                        : undefined,
+                });
+            }
         },
     },
 });

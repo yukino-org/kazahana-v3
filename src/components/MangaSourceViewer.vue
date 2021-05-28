@@ -86,7 +86,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { Extractors, ExtractorsEntity } from "../plugins/api";
+import { Await } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -104,7 +105,9 @@ export default defineComponent({
     data() {
         const data: {
             isOpen: boolean;
-            sources: any[] | null;
+            sources: Await<
+                ReturnType<ExtractorsEntity["manga"][""]["search"]>
+            > | null;
         } = {
             isOpen: false,
             sources: null,
@@ -120,17 +123,18 @@ export default defineComponent({
         async getSources() {
             if (!this.title || !this.pluginKey || this.sources) return;
 
-            const { data, err } = await api.manga.extractors.search(
-                this.pluginKey,
-                this.title
-            );
-            if (err)
-                return this.$logger.emit(
-                    "error",
-                    `Could not get search results: ${err}`
+            try {
+                const client = await Extractors.getClient();
+                const data = await client.manga[this.pluginKey].search(
+                    this.title
                 );
-
-            this.sources = data;
+                this.sources = data;
+            } catch (err) {
+                this.$logger.emit(
+                    "error",
+                    `Could not get search results: ${err?.message}`
+                );
+            }
         },
     },
 });

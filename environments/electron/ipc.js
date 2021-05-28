@@ -1,55 +1,30 @@
 const { shell, dialog } = require("electron");
+const axios = require("axios");
 const Store = require("./store");
 const Logger = require("./logger");
 const RPC = require("./rpc");
 
-const MALSearchAnime =
-    require("anime-ext/dist/integrations/myanimelist/search-anime").default;
-const MALAnimeInfo =
-    require("anime-ext/dist/integrations/myanimelist/anime-info").default;
-const {
-    default: MALTopAnimes,
-    TopAnimeTypes: MALTopAnimeTypes,
-} = require("anime-ext/dist/integrations/myanimelist/top");
+const http = {
+    async get(url, options) {
+        const { data } = await axios.get(url, {
+            headers: options.headers,
+            withCredentials: options.credentials,
+            timeout: options.timeout,
+            responseType: "text",
+        });
 
-const FourAnime = require("anime-ext/dist/extractors/anime/4anime").default;
-const GogoAnime = require("anime-ext/dist/extractors/anime/gogoanime").default;
-const GogoStreamAnime =
-    require("anime-ext/dist/extractors/anime/gogostream").default;
-const SimplyMoeAnime =
-    require("anime-ext/dist/extractors/anime/simplydotmoe").default;
-const TwistDotMoeAnime =
-    require("anime-ext/dist/extractors/anime/twistdotmoe").default;
-const KawaiifuAnime =
-    require("anime-ext/dist/extractors/anime/kawaiifu").default;
-const TenshiDotMoeAnime =
-    require("anime-ext/dist/extractors/anime/tenshidotmoe").default;
+        return data;
+    },
+    async post(url, body, options) {
+        const { data } = axios.post(url, body, {
+            headers: options.headers,
+            withCredentials: options.credentials,
+            timeout: options.timeout,
+            responseType: "text",
+        });
 
-const FanFoxManga = require("anime-ext/dist/extractors/manga/fanfox").default;
-const MangaDexManga =
-    require("anime-ext/dist/extractors/manga/mangadex").default;
-const MangaInnManga =
-    require("anime-ext/dist/extractors/manga/mangainn").default;
-
-const options = {
-    logger: Logger,
-};
-
-/**
- * @param {(...args: any[]) => any} fn
- * @returns {any}
- */
-const getResultOrError = async (fn) => {
-    try {
-        const data = await fn();
-        return {
-            data,
-        };
-    } catch (err) {
-        return {
-            err: err.toString(),
-        };
-    }
+        return data;
+    },
 };
 
 /**
@@ -68,76 +43,9 @@ module.exports = (ipc) => {
         RPC.setActivity(act);
     });
 
-    const extractors = {
-        anime: {
-            "4Anime": new FourAnime(options),
-            GogoAnime: new GogoAnime(options),
-            GogoStream: new GogoStreamAnime(options),
-            SimplyMoe: new SimplyMoeAnime(options),
-            TwistMoe: new TwistDotMoeAnime(options),
-            Kawaiifu: new KawaiifuAnime(options),
-            TenshiMoe: new TenshiDotMoeAnime(options),
-        },
-        manga: {
-            FanFox: new FanFoxManga(options),
-            MangaDex: new MangaDexManga(options),
-            MangaInn: new MangaInnManga(options),
-        },
-    };
-
-    ipc.handle("MAL-Search", (e, terms) => {
-        return getResultOrError(() => MALSearchAnime(terms, options));
-    });
-
-    ipc.handle("MAL-AnimeInfo", (e, url) => {
-        return getResultOrError(() => MALAnimeInfo(url, options));
-    });
-
-    ipc.handle("MAL-TopAnimes", (e, type) => {
-        return getResultOrError(() => MALTopAnimes(type, options));
-    });
-
-    ipc.handle("MAL-TopAnimesTypes", (e) => {
-        return ["all", ...MALTopAnimeTypes];
-    });
-
-    ipc.handle("Anime-All-Sources", (e) => {
-        return Object.keys(extractors.anime);
-    });
-
-    Object.entries(extractors.anime).forEach(([plugin, client]) => {
-        ipc.handle(`Anime-${plugin}-Search`, (e, terms) => {
-            return getResultOrError(() => client.search(terms));
-        });
-
-        ipc.handle(`Anime-${plugin}-Info`, (e, url) => {
-            return getResultOrError(() => client.getInfo(url));
-        });
-
-        ipc.handle(`Anime-${plugin}-DownloadLinks`, (e, url) => {
-            return getResultOrError(() => client.getDownloadLinks(url));
-        });
-    });
-
-    ipc.handle("Manga-All-Sources", (e) => {
-        return Object.keys(extractors.manga);
-    });
-
-    Object.entries(extractors.manga).forEach(([plugin, client]) => {
-        ipc.handle(`Manga-${plugin}-Search`, (e, terms) => {
-            return getResultOrError(() => client.search(terms));
-        });
-
-        ipc.handle(`Manga-${plugin}-Info`, (e, url) => {
-            return getResultOrError(() => client.getInfo(url));
-        });
-
-        ipc.handle(`Manga-${plugin}-Pages`, (e, url) => {
-            return getResultOrError(() => client.getChapterPages(url));
-        });
-
-        ipc.handle(`Manga-${plugin}-PageImage`, (e, url) => {
-            return getResultOrError(() => client.getPageImage(url));
+    Object.entries(http).forEach(([method, fn]) => {
+        ipc.handle(`Request-${method}`, (e, ...args) => {
+            return fn(...args);
         });
     });
 

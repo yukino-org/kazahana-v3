@@ -114,12 +114,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import api from "../plugins/api";
+import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
+import { Await } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
 import AnimePlayer from "../components/AnimePlayer.vue";
+
+interface SelectedEntity {
+    episode: string;
+    url: string;
+}
 
 export default defineComponent({
     components: {
@@ -131,13 +137,12 @@ export default defineComponent({
     data() {
         const data: {
             state: "pending" | "loading" | "noresult" | "result";
-            info: any;
+            info: Await<
+                ReturnType<ExtractorsEntity["anime"][""]["getInfo"]>
+            > | null;
             plugin: string | null;
             link: string | null;
-            selected: {
-                episode: string;
-                url: string;
-            } | null;
+            selected: SelectedEntity | null;
         } = {
             state: "pending",
             info: null,
@@ -168,27 +173,26 @@ export default defineComponent({
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
-            this.state = "loading";
-            const { data, err } = await api.anime.extractors.info(
-                this.plugin,
-                this.link
-            );
-            if (err) {
+            try {
+                this.state = "loading";
+                const client = await Extractors.getClient();
+                const data = await client.anime[this.plugin].getInfo(this.link);
+                this.state = "result";
+                this.info = data;
+                this.refreshRpc();
+            } catch (err) {
                 this.state = "noresult";
-                return this.$logger.emit(
+                this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err}`
                 );
             }
-
-            this.state = "result";
-            this.info = data;
-            this.refreshRpc();
         },
-        selectEpisode(ep: any) {
+        async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
-            if (this.selected) {
-                api.rpc({
+            if (this.selected && this.info) {
+                const rpc = await Rpc.getClient();
+                rpc?.({
                     details: "Currently watching",
                     state: `${this.info.title} (Episode ${
                         this.selected.episode
@@ -209,7 +213,7 @@ export default defineComponent({
         prevEpisode() {
             if (!this.info || !this.selected) return;
             const cur = this.info.episodes.findIndex(
-                (x: any) => x.episode === this.selected?.episode
+                (x) => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
                 const prev = this.info.episodes[cur - 1];
@@ -219,26 +223,29 @@ export default defineComponent({
         nextEpisode() {
             if (!this.info || !this.selected) return;
             const cur = this.info.episodes.findIndex(
-                (x: any) => x.episode === this.selected?.episode
+                (x) => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
                 const next = this.info.episodes[cur + 1];
                 if (next) this.selectEpisode(next);
             }
         },
-        refreshRpc() {
-            api.rpc({
-                details: "Viewing episodes of",
-                state: this.info.title,
-                buttons: this.link
-                    ? [
-                          {
-                              label: "View",
-                              url: this.link,
-                          },
-                      ]
-                    : undefined,
-            });
+        async refreshRpc() {
+            const rpc = await Rpc.getClient();
+            if (this.info) {
+                rpc?.({
+                    details: "Viewing episodes of",
+                    state: this.info.title,
+                    buttons: this.link
+                        ? [
+                              {
+                                  label: "View",
+                                  url: this.link,
+                              },
+                          ]
+                        : undefined,
+                });
+            }
         },
     },
 });
