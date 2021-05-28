@@ -9,8 +9,16 @@
             No results could be fetched!
         </p>
         <div v-else-if="state === 'result' && info">
-            <div class="flex flex-row justify-between gap-4">
-                <div class="flex-grow text-center">
+            <div
+                class="
+                    flex flex-col
+                    md:flex-row
+                    justify-between
+                    items-center
+                    gap-8
+                "
+            >
+                <div class="flex-grow text-center order-last md:order-none">
                     <PageTitle :title="info.title" />
                     <div
                         class="
@@ -72,7 +80,7 @@
                     class="
                         mt-1
                         grid grid-cols-1
-                        md:grid-cols-2
+                        lg:grid-cols-2
                         gap-2
                         items-center
                     "
@@ -85,8 +93,8 @@
                         <div
                             class="
                                 p-2
-                                flex flex-row
-                                justify-between
+                                grid grid-cols-1
+                                sm:grid-cols-2
                                 items-center
                                 gap-4
                                 rounded
@@ -96,6 +104,7 @@
                         >
                             <div
                                 class="
+                                    col-span-1
                                     flex flex-row
                                     justify-between
                                     items-center
@@ -103,13 +112,13 @@
                                 "
                             >
                                 <img
-                                    class="rounded"
+                                    class="rounded flex-none"
                                     :src="character.image"
                                     :alt="character.name"
                                     style="width: 3rem"
                                     v-if="character.image"
                                 />
-                                <div>
+                                <div class="flex-grow">
                                     <p class="leading-tight">
                                         {{ character.name }}
                                     </p>
@@ -127,6 +136,7 @@
                             </div>
                             <div
                                 class="
+                                    col-span-1
                                     flex flex-row
                                     justify-between
                                     items-center
@@ -134,7 +144,7 @@
                                     text-right
                                 "
                             >
-                                <div v-if="character.actor">
+                                <div class="flex-grow" v-if="character.actor">
                                     <p class="leading-tight">
                                         {{ character.actor.name }}
                                     </p>
@@ -150,7 +160,7 @@
                                     </p>
                                 </div>
                                 <img
-                                    class="rounded"
+                                    class="rounded flex-none"
                                     :src="character.actor.image"
                                     :alt="character.actor.name"
                                     style="width: 3rem"

@@ -5,7 +5,6 @@
                 flex flex-row
                 justify-between
                 items-center
-                gap-4
                 text-white
                 bg-indigo-500
                 dark:bg-gray-800
@@ -13,7 +12,10 @@
                 select-none
             "
         >
-            <div class="pl-5 pr-2 py-1 dark:text-indigo-500 font-bold">
+            <div
+                class="pl-5 pr-2 py-1 dark:text-indigo-500 font-bold"
+                style="-webkit-app-region: drag"
+            >
                 {{ title }}
                 <span class="opacity-50 text-xs" v-if="version"
                     >({{ version }})</span

@@ -82,12 +82,12 @@
                         "
                     >
                         <img
-                            class="rounded"
+                            :class="[
+                                'rounded flex-none w-20',
+                                anime.description ? 'sm:w-32' : 'sm:w-20',
+                            ]"
                             :src="anime.thumbnail"
                             :alt="anime.title"
-                            :style="{
-                                width: anime.description ? '8rem' : '5rem',
-                            }"
                             v-if="anime.thumbnail"
                         />
                         <div class="flex-grow">
@@ -105,16 +105,18 @@
                             <p class="mt-0.5 text-lg font-bold leading-snug">
                                 {{ anime.title }}
                             </p>
-                            <div class="mt-1 flex flex-row gap-1">
+                            <div class="mt-1 flex flex-row flex-wrap gap-1">
                                 <span
                                     class="
+                                        capitalize
                                         text-white text-xs
                                         px-1
                                         py-0.5
                                         rounded-sm
                                         bg-red-500
                                     "
-                                    >Type: {{ anime.type || "-" }}</span
+                                    v-if="anime.type"
+                                    >Type: {{ anime.type }}</span
                                 >
                                 <span
                                     class="
@@ -124,10 +126,9 @@
                                         rounded-sm
                                         bg-blue-500
                                     "
+                                    v-if="anime.additional?.episodes"
                                     >Episodes:
-                                    {{
-                                        anime.additional?.episodes || "-"
-                                    }}</span
+                                    {{ anime.additional.episodes }}</span
                                 >
                                 <span
                                     class="
@@ -137,12 +138,19 @@
                                         rounded-sm
                                         bg-purple-500
                                     "
-                                    >Score:
-                                    {{ anime.additional?.score || "-" }}</span
+                                    v-if="anime.additional?.score"
+                                    >Score: {{ anime.additional.score }}</span
                                 >
                             </div>
                             <p
-                                class="mt-2 text-sm opacity-75 leading-tight"
+                                class="
+                                    mt-2
+                                    text-sm
+                                    opacity-75
+                                    leading-tight
+                                    hidden
+                                    sm:block
+                                "
                                 v-if="anime.description"
                             >
                                 {{ anime.description }}

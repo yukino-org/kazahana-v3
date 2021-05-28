@@ -12,7 +12,7 @@
 
             <div v-if="isOpen">
                 <Loading
-                    class="my-3"
+                    class="my-4"
                     text="Fetching sources, please wait..."
                     v-if="!sources"
                 />
@@ -60,7 +60,7 @@
                                 "
                             >
                                 <img
-                                    class="w-20 rounded"
+                                    class="w-16 md:w-20 rounded"
                                     :src="src.thumbnail"
                                     :alt="src.title"
                                     v-if="src.thumbnail"

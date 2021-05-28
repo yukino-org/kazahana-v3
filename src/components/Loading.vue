@@ -1,7 +1,7 @@
 <template>
     <div class="text-center">
         <Icon
-            class="text-6xl"
+            class="text-5xl md:text-6xl"
             :icon="['far', 'snowflake']"
             id="loader-snowflake"
         />

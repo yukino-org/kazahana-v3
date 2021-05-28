@@ -8,121 +8,135 @@
                 v-if="!settings"
             />
             <div v-else>
-                <p class="text-sm opacity-75">Update Channel</p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handleUpdateChannel($event)"
-                    >
-                        <option
-                            v-for="chs in allowedUpdateChannels"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs === (settings.updateChannel || 'latest')
-                            "
+                <div v-if="supportsUpdateChannel">
+                    <p class="text-sm opacity-75">Update Channel</p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handleUpdateChannel($event)"
                         >
-                            {{ chs }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedUpdateChannels"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs === (settings.updateChannel || 'latest')
+                                "
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Sidebar Position</p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handleSidebarPositions($event)"
-                    >
-                        <option
-                            v-for="chs in allowedSidebarPositions"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs === (settings.sideBarPosition || 'left')
-                            "
+                <div v-if="supportsSidebarPostion">
+                    <p class="text-sm opacity-75 mt-4">Sidebar Position</p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handleSidebarPositions($event)"
                         >
-                            {{ chs }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedSidebarPositions"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs === (settings.sideBarPosition || 'left')
+                                "
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Default Player Width</p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handlePlayerWidthOptions($event)"
-                    >
-                        <option
-                            v-for="chs in allowedPlayerWidths"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs === (settings.defaultPlayerWidth || 100)
-                            "
+                <div v-if="supportsPlayerWidth">
+                    <p class="text-sm opacity-75 mt-4">Default Player Width</p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handlePlayerWidthOptions($event)"
                         >
-                            {{ chs }}%
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedPlayerWidths"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs === (settings.defaultPlayerWidth || 100)
+                                "
+                            >
+                                {{ chs }}%
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Default Manga Page Width</p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handleMangaPageWidthOptions($event)"
-                    >
-                        <option
-                            v-for="chs in allowedPlayerWidths"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs === (settings.defaultPageWidth || 100)
-                            "
+                <div>
+                    <p class="text-sm opacity-75 mt-4">
+                        Default Manga Page Width
+                    </p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handleMangaPageWidthOptions($event)"
                         >
-                            {{ chs }}%
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedPlayerWidths"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs === (settings.defaultPageWidth || 100)
+                                "
+                            >
+                                {{ chs }}%
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Discord RPC</p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handleDiscordRpcOptions($event)"
-                    >
-                        <option
-                            v-for="chs in allowedDiscordRpcOptions"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs === (settings.discordRpc || 'enabled')
-                            "
+                <div v-if="supportsRpc">
+                    <p class="text-sm opacity-75 mt-4">Discord RPC</p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handleDiscordRpcOptions($event)"
                         >
-                            {{ chs }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedDiscordRpcOptions"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs === (settings.discordRpc || 'enabled')
+                                "
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">
-                    Discord RPC (Privacy mode)
-                </p>
-                <div class="select mt-1 w-1/4">
-                    <select
-                        class="capitalize"
-                        @change="handleDiscordRpcPrivacyOptions($event)"
-                    >
-                        <option
-                            v-for="chs in allowedDiscordRpcOptions"
-                            :value="chs"
-                            :key="chs"
-                            :selected="
-                                chs ===
-                                (settings.discordRpcPrivacy || 'disabled')
-                            "
+                <div v-if="supportsRpc">
+                    <p class="text-sm opacity-75 mt-4">
+                        Discord RPC (Privacy mode)
+                    </p>
+                    <div class="select mt-1 w-full sm:w-1/3">
+                        <select
+                            class="capitalize"
+                            @change="handleDiscordRpcPrivacyOptions($event)"
                         >
-                            {{ chs }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="chs in allowedDiscordRpcOptions"
+                                :value="chs"
+                                :key="chs"
+                                :selected="
+                                    chs ===
+                                    (settings.discordRpcPrivacy || 'disabled')
+                                "
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
                 <p class="opacity-75 mt-4">
@@ -155,6 +169,10 @@ export default defineComponent({
             allowedSidebarPositions: string[];
             allowedDiscordRpcOptions: string[];
             allowedPlayerWidths: number[];
+            supportsUpdateChannel: boolean;
+            supportsSidebarPostion: boolean;
+            supportsPlayerWidth: boolean;
+            supportsRpc: boolean;
         } = {
             settings: null,
             allowedUpdateChannels: ["latest", "beta", "alpha"],
@@ -163,6 +181,10 @@ export default defineComponent({
             allowedPlayerWidths: Array(10)
                 .fill(null)
                 .map((x, i) => i * 10 + 10),
+            supportsUpdateChannel: ["electron"].includes(app_platform),
+            supportsSidebarPostion: ["electron"].includes(app_platform),
+            supportsPlayerWidth: ["electron"].includes(app_platform),
+            supportsRpc: ["electron"].includes(app_platform),
         };
 
         return data;
@@ -177,8 +199,10 @@ export default defineComponent({
         },
         async updateSettings(key: string, value: any) {
             const store = await Store.getClient();
-            await store.set(`settings.${key}`, value);
-            this.getSettings();
+            const settings = (await store.get("settings")) || {};
+            settings[key] = value;
+            await store.set("settings", settings);
+            this.settings = settings;
         },
         handleUpdateChannel(event: any) {
             const value = event.target.value;

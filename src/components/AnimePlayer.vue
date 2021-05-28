@@ -1,11 +1,23 @@
 <template>
     <div>
         <div v-if="currentPlaying">
-            <div class="flex flex-row justify-between items-center">
+            <div
+                class="
+                    flex flex-col
+                    sm:flex-row
+                    justify-between
+                    items-center
+                    gap-2
+                    mb-4
+                "
+            >
                 <p class="text-sm opacity-75 mt-4">
                     Player (Episode {{ episode }})
                 </p>
-                <div class="flex flex-row justify-center items-center">
+                <div
+                    class="text-sm flex flex-row justify-center items-center"
+                    v-if="supportsPlayerWidth"
+                >
                     <span class="mr-2 opacity-75">Player width:</span>
                     <div class="select w-40">
                         <select class="capitalize" v-model="playerWidth">
@@ -60,12 +72,16 @@
                             rounded
                             px-3
                             py-1.5
-                            flex flex-row
-                            justify-center
+                            flex flex-col
+                            md:flex-row
+                            justify-between
                             items-center
+                            gap-3
+                            pb-3
+                            md:pb-0
                         "
                     >
-                        <div class="flex-grow">
+                        <div class="w-full">
                             <p><b>Host:</b> {{ getHostFromUrl(stream.url) }}</p>
                             <p><b>Quality:</b> {{ stream.quality }}</p>
                             <p>
@@ -84,7 +100,7 @@
                         </div>
                         <div
                             class="
-                                flex flex-row
+                                flex-none flex flex-row
                                 justify-center
                                 items-center
                                 flex-wrap
@@ -149,11 +165,13 @@ export default defineComponent({
                 url: string;
             } | null;
             playerWidth: number;
+            supportsPlayerWidth: boolean;
         } = {
             state: "pending",
             info: null,
             currentPlaying: null,
             playerWidth: 100,
+            supportsPlayerWidth: ["electron"].includes(app_platform),
         };
 
         return data;
@@ -166,7 +184,7 @@ export default defineComponent({
     methods: {
         async updateWidth() {
             const store = await Store.getClient();
-            let wid = await store.get("settings.defaultPlayerWidth");
+            let wid = (await store.get("settings"))?.defaultPlayerWidth;
             if (wid && !isNaN(wid)) {
                 wid = +wid;
                 if (wid > 0 && wid <= 100) {

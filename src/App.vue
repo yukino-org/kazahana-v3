@@ -11,13 +11,15 @@
                     gap-8
                     lg:gap-10
                     auto-cols-fr
-                    mx-10
+                    mx-8
+                    md:mx-10
                     my-8
                 "
             >
                 <aside :class="[sideBarPosition === 'right' && 'order-last']">
                     <SideBar
                         class="
+                            px-6
                             py-10
                             lg:col-span-1
                             rounded
@@ -43,14 +45,16 @@
                     px-1
                     py-0.5
                     bottom-2
-                    h-14
-                    w-14
+                    h-10
+                    w-10
+                    md:h-14
+                    md:w-14
                     shadow-lg
                 "
                 id="scroll-btn"
                 @click.prevent="goToTop()"
             >
-                <Icon class="text-3xl" icon="arrow-up" />
+                <Icon class="text-2xl md:text-3xl" icon="arrow-up" />
             </button>
 
             <div
@@ -120,7 +124,7 @@ export default defineComponent({
         async applySettings() {
             const store = await Store.getClient();
             this.sideBarPosition =
-                (await store.get("settings.sideBarPosition")) || "left";
+                (await store.get("settings"))?.sideBarPosition || "left";
         },
     },
 });

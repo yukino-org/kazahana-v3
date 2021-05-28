@@ -4,10 +4,14 @@
         <div>
             <p class="-mt-1 text-xl text-indigo-500 font-bold">Top Animes</p>
             <Loading
+                class="mt-4"
                 v-if="!hasLoaded"
                 text="Fetching top animes, please wait..."
             />
-            <div v-else-if="hasLoaded && Object.keys(animes).length">
+            <div
+                class="mt-4"
+                v-else-if="hasLoaded && Object.keys(animes).length"
+            >
                 <div
                     class="
                         mt-1
@@ -21,7 +25,7 @@
                     <div v-for="cat in categories" :key="cat">
                         <p
                             :class="[
-                                'capitalize px-1 rounded-sm cursor-pointer',
+                                'capitalize px-1.5 rounded-sm cursor-pointer',
                                 cat === selected
                                     ? 'bg-indigo-500 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800',
@@ -40,7 +44,7 @@
                 />
                 <div
                     class="
-                        mt-4
+                        mt-6
                         grid grid-cols-1
                         md:grid-cols-2
                         gap-2

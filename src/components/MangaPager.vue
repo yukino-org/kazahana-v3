@@ -11,23 +11,52 @@
             </p>
 
             <div class="mb-4" v-if="currentPage">
-                <div class="flex flex-row justify-between items-center">
-                    <p class="text-xl font-bold mt-1">Page {{ currentPage }}</p>
+                <div
+                    class="
+                        flex flex-col
+                        md:flex-row
+                        justify-between
+                        items-center
+                        gap-3
+                        mt-3
+                    "
+                >
+                    <p class="text-xl font-bold mt-1 hidden md:block">
+                        Page {{ currentPage }}
+                    </p>
 
-                    <div class="flex flex-row justify-center items-center">
-                        <span class="mr-2 opacity-75">Page width:</span>
-                        <div class="select w-40">
-                            <select class="capitalize" v-model="pageWidth">
-                                <option
-                                    v-for="wid in Array(10)
-                                        .fill(null)
-                                        .map((x, i) => i * 10 + 10)"
-                                    :value="wid"
-                                    :key="wid"
-                                >
-                                    {{ wid }}%
-                                </option>
-                            </select>
+                    <div
+                        class="
+                            flex flex-col
+                            md:flex-row
+                            justify-center
+                            items-center
+                            gap-2
+                        "
+                    >
+                        <div
+                            class="
+                                flex flex-row
+                                justify-center
+                                items-center
+                                order-last
+                                md:order-none
+                            "
+                        >
+                            <span class="mr-2 opacity-75">Page width:</span>
+                            <div class="select w-40">
+                                <select class="capitalize" v-model="pageWidth">
+                                    <option
+                                        v-for="wid in Array(10)
+                                            .fill(null)
+                                            .map((x, i) => i * 10 + 10)"
+                                        :value="wid"
+                                        :key="wid"
+                                    >
+                                        {{ wid }}%
+                                    </option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="ml-3 select">
@@ -58,14 +87,29 @@
                     <p class="mt-4">
                         Image URL:
                         <span
-                            class="bg-gray-100 dark:bg-gray-800 rounded px-1"
+                            class="
+                                bg-gray-100
+                                dark:bg-gray-800
+                                rounded
+                                px-1
+                                break-all
+                            "
                             >{{ getCurrentImage() }}</span
                         >
                     </p>
                 </div>
             </div>
 
-            <div class="mt-2 flex flex-row justify-center items-center gap-2">
+            <div
+                class="
+                    mt-2
+                    flex flex-row
+                    justify-center
+                    items-center
+                    gap-2
+                    flex-wrap
+                "
+            >
                 <button
                     class="
                         text-white
@@ -77,6 +121,8 @@
                         py-2
                         rounded
                         focus:outline-none
+                        order-last
+                        md:order-none
                     "
                     @click.prevent="prevPage()"
                 >
@@ -94,6 +140,8 @@
                         py-2
                         rounded
                         focus:outline-none
+                        order-last
+                        md:order-none
                     "
                     @click.prevent="nextPage()"
                 >
@@ -174,7 +222,7 @@ export default defineComponent({
     methods: {
         async updateWidth() {
             const store = await Store.getClient();
-            let wid = await store.get("settings.defaultPageWidth");
+            let wid = (await store.get("settings"))?.defaultPageWidth;
             if (wid && !isNaN(wid)) {
                 wid = +wid;
                 if (wid > 0 && wid <= 100) {
