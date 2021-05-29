@@ -49,12 +49,11 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div class="flex-none">
                     <img
-                        class="rounded"
+                        class="rounded w-36 sm:w-56"
                         :src="info.image"
                         :alt="info.title"
-                        style="width: 14rem"
                         v-if="info.image"
                     />
                 </div>

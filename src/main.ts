@@ -5,16 +5,21 @@ import "./assets/main.css";
 import Icon from "./plugins/icons";
 import Router from "./plugins/router";
 import Logger from "./plugins/logger";
+import { Initiator } from "./plugins/api/initiator";
 
 const app = createApp(App);
 
-app.component("Icon", Icon);
+const start = async () => {
+    app.component("Icon", Icon);
+    app.use(Router);
+    app.config.globalProperties.$logger = new Logger();
+    app.mount("#app");
 
-app.use(Router);
+    const initiator = await Initiator.getClient();
+    await initiator();
+};
 
-app.config.globalProperties.$logger = new Logger();
-
-app.mount("#app");
+start();
 
 declare global {
     const app_platform: string;

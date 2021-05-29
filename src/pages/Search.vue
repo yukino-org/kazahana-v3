@@ -397,7 +397,9 @@ export default defineComponent({
                             })
                         );
                     }
-                } catch (err) {}
+                } catch (err) {
+                    this.$logger.emit("error", `Something went wrong: ${err?.message}`);
+                }
             }
 
             const rpc = await Rpc.getClient();

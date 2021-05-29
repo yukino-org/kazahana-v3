@@ -24,14 +24,15 @@
     "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env YUKINO_PLATFORM=\"electron\" yarn vite:build && electron-builder --config=environments/electron/builder.config.js",
     "electron:publish": "yarn electron:build --publish=always",
     "capacitor:sync": "cap sync",
-    "capacitor:web:build": "rimraf ./dist/capacitor/web && cross-env YUKINO_PLATFORM=\"capacitor\" vite build",
-    "capacitor:android:sync": "cap sync android",
-    "capacitor:android:run": "cap open android"
+    "capacitor:android:build": "rimraf ./dist/capacitor/web && cross-env YUKINO_PLATFORM=\"capacitor\" vite build && yarn capacitor:android:icons && yarn capacitor:sync",
+    "capacitor:android:run": "cap open android",
+    "capacitor:android:icons": "cordova-res android --skip-config --copy --android-project environments/capacitor/android"
   },
   "dependencies": {
     "@capacitor-community/http": "^1.0.0",
     "@capacitor/android": "^3.0.0",
     "@capacitor/core": "^3.0.0",
+    "@capacitor/splash-screen": "^1.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
@@ -42,15 +43,18 @@
     "discord-rpc": "^3.2.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
+    "qs": "^6.10.1",
     "vue": "^3.0.5",
     "vue-router": "4"
   },
   "devDependencies": {
     "@capacitor/cli": "^3.0.0",
     "@tailwindcss/jit": "^0.1.18",
+    "@types/qs": "^6.9.6",
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.5",
+    "cordova-res": "^0.15.3",
     "cross-env": "^7.0.3",
     "cross-spawn": "^7.0.3",
     "electron": "^12.0.7",

@@ -13,15 +13,14 @@
             "
         >
             <div
-                class="pl-5 pr-2 py-1 dark:text-indigo-500 font-bold"
-                style="-webkit-app-region: drag"
+                class="pl-5 pr-2 py-1 dark:text-indigo-500 font-bold draggable"
             >
                 {{ title }}
                 <span class="opacity-50 text-xs" v-if="version"
                     >({{ version }})</span
                 >
             </div>
-            <div class="flex-grow py-4" style="-webkit-app-region: drag"></div>
+            <div class="flex-grow py-4 draggable"></div>
             <div class="flex flex-row justify-center items-center pr-3">
                 <div
                     class="
@@ -101,6 +100,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.draggable {
+    -webkit-app-region: drag;
+}
+
 .titlebar-container {
     @apply px-3 rounded transition duration-200;
 }

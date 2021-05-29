@@ -16,7 +16,7 @@ const http = {
         return data;
     },
     async post(url, body, options) {
-        const { data } = axios.post(url, body, {
+        const { data } = await axios.post(url, body, {
             headers: options.headers,
             withCredentials: options.credentials,
             timeout: options.timeout,
