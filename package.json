@@ -24,13 +24,15 @@
     "electron:build": "rimraf ./dist/electron && yarn electron:icons && cross-env YUKINO_PLATFORM=\"electron\" yarn vite:build && electron-builder --config=environments/electron/builder.config.js",
     "electron:publish": "yarn electron:build --publish=always",
     "capacitor:sync": "cap sync",
+    "capacitor:android:icons": "cordova-res android --skip-config --copy --android-project environments/capacitor/android",
     "capacitor:android:build": "rimraf ./dist/capacitor/web && cross-env YUKINO_PLATFORM=\"capacitor\" vite build && yarn capacitor:android:icons && yarn capacitor:sync",
-    "capacitor:android:run": "cap open android",
-    "capacitor:android:icons": "cordova-res android --skip-config --copy --android-project environments/capacitor/android"
+    "capacitor:android:run": "cap open android"
   },
   "dependencies": {
     "@capacitor-community/http": "^1.0.0",
     "@capacitor/android": "^3.0.0",
+    "@capacitor/app": "^1.0.0",
+    "@capacitor/browser": "^1.0.0",
     "@capacitor/core": "^3.0.0",
     "@capacitor/splash-screen": "^1.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

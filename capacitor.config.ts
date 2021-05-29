@@ -15,7 +15,7 @@ const config: CapacitorConfig = {
             launchAutoHide: false,
             splashImmersive: false,
             splashFullScreen: false,
-            backgroundColor: "#ffffffff",
+            backgroundColor: "#18181b",
             showSpinner: false,
         },
     },

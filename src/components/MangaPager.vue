@@ -93,6 +93,7 @@
                                 rounded
                                 px-1
                                 break-all
+                                select-all
                             "
                             >{{ getCurrentImage() }}</span
                         >

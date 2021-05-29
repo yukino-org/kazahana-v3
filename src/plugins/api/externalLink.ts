@@ -9,6 +9,11 @@ export const ExternalLink = {
                     this.__opener = window.PlatformBridge.openExternalLink;
                     break;
 
+                case "capacitor": {
+                    const { Browser } = await import("@capacitor/browser");
+                    this.__opener = (url: string) => Browser.open({ url });
+                }
+
                 default:
                     break;
             }

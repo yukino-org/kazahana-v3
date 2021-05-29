@@ -22,6 +22,7 @@ import { MangaExtractorModel } from "anime-ext/dist/extractors/manga/model";
 import FanFoxManga from "anime-ext/dist/extractors/manga/fanfox";
 import MangaDexManga from "anime-ext/dist/extractors/manga/mangadex";
 import MangaInnManga from "anime-ext/dist/extractors/manga/mangainn";
+import ManhwatopManga from "anime-ext/dist/extractors/manga/manhwatop";
 
 export interface ExtractorsEntity {
     integrations: {
@@ -86,6 +87,7 @@ export const Extractors = {
                     FanFox: new FanFoxManga(options),
                     MangaDex: new MangaDexManga(options),
                     MangaInn: new MangaInnManga(options),
+                    Manhwatop: new ManhwatopManga(options),
                 },
             };
         }

@@ -48,7 +48,7 @@
             <p class="mt-2">
                 Stream URL:
                 <span
-                    class="bg-gray-100 dark:bg-gray-800 rounded px-1 break-all"
+                    class="bg-gray-100 dark:bg-gray-800 rounded px-1 break-all select-all"
                     >{{ currentPlaying.url }}</span
                 >
             </p>

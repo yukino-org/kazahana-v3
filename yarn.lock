@@ -47,6 +47,16 @@
   resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-3.0.0.tgz#0d8ce965fa19d9f1412a468476525af2b92a151e"
   integrity sha512-qyvI3LzfGvVnSK7Dw3dXXLSJjfj816EfWHiyGzV4Rg5r2XkvPa8IqjHT3lmyxwNJjGdHl3TTn9Q6YvM6XD70cQ==
 
+"@capacitor/app@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/app/-/app-1.0.0.tgz#38e092de0448f1b230cfc289d65337e802357638"
+  integrity sha512-ie8BNPoyQV300BQ7ckucc4xdcTOcxcII9YH2kOcffHfXjrqYMo+2srkoaAbYs6ivjse+rWfNVFZN9CjAbep8qQ==
+
+"@capacitor/browser@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-1.0.0.tgz#84d5e3af1beeefc161228e31927877c655b26e87"
+  integrity sha512-eynPNOcV7j40jEIB/xNpLbazbGia3nA7/MueYkTvjhvxXgiwwKg4fHAOfMNj5bzAVk1O8raO2MUGF1Lui1EIZQ==
+
 "@capacitor/cli@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.0.0.tgz#ce2defddbf6ecd40236f8cdfba62a0af84147606"
