@@ -385,7 +385,7 @@ export default defineComponent({
                                     air: "",
                                     plugin: config.name,
                                     route: {
-                                        path: "/anime/source",
+                                        path: "/manga/source",
                                         query: {
                                             plugin: config.name,
                                             url: x.url,

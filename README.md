@@ -31,6 +31,7 @@ You can download the latest version of app from the [releases](https://github.co
 -   [Yarn](https://yarnpkg.com/) (Package manager)
 -   [Vite](https://vitejs.dev) (Base site)
 -   [Electron](https://electronjs.org) (Desktop app)
+-   [Capacitor](https://capacitorjs.com) (Mobile app)
 -   [Tailwind CSS](https://tailwindcss.com/) (Styling)
 
 ## Packages
@@ -66,6 +67,7 @@ yarn
 ```bash
 yarn vite:dev # Vite
 yarn electron:dev # Electron
+# No hot reload for Capacitor
 ```
 
 ### Building the app in development
@@ -73,6 +75,7 @@ yarn electron:dev # Electron
 ```bash
 yarn vite:build # Vite
 yarn electron:build # Electron
+yarn capacitor:android:build # Capacitor (android)
 ```
 
 ## License
