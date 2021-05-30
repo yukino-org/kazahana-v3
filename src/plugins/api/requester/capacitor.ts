@@ -8,12 +8,14 @@ const getUrl = (url: URL) => url.origin + url.pathname;
 // @ts-ignore
 const getParams = (url: URL) => Object.fromEntries(url.searchParams);
 
-const getBody = (headers: Record<string, any>, body: any) => {
+const getContentType = (headers: Record<string, any>) => {
     const contentTypeKey = Object.keys(headers).find(
-            (x) => x.toLowerCase() === "content-type"
-        ),
-        contentType = contentTypeKey ? headers[contentTypeKey] : null;
+        (x) => x.toLowerCase() === "content-type"
+    );
+    return <string | null>(contentTypeKey ? headers[contentTypeKey] : null);
+};
 
+const getBody = (body: any, contentType: ReturnType<typeof getContentType>) => {
     if (contentType?.includes("application/x-www-form-urlencoded")) {
         try {
             body = qs.parse(body);
@@ -21,6 +23,16 @@ const getBody = (headers: Record<string, any>, body: any) => {
     }
 
     return body;
+};
+
+const getData = (data: any, contentType: ReturnType<typeof getContentType>) => {
+    if (contentType?.includes("json")) {
+        try {
+            data = JSON.stringify(data);
+        } catch (err) {}
+    }
+
+    return <string>data;
 };
 
 export const requester: Requester = {
@@ -34,7 +46,7 @@ export const requester: Requester = {
             responseType: "text",
             connectTimeout: options.timeout,
         });
-        return res.data;
+        return getData(res.data, getContentType(res.headers));
     },
     async post(url, body, options) {
         const parsed = new URL(url);
@@ -42,7 +54,7 @@ export const requester: Requester = {
             method: "POST",
             url: getUrl(parsed),
             params: getParams(parsed),
-            data: getBody(options.headers || {}, body),
+            data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: "text",
             connectTimeout: options.timeout,
