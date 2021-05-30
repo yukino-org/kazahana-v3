@@ -76,6 +76,7 @@
                     </div>
                 </div>
 
+                <div id="manga-page"></div>
                 <Loading v-if="!getCurrentImage()" />
                 <div class="mt-4" v-else>
                     <img
@@ -260,11 +261,10 @@ export default defineComponent({
                 () => this.currentPage,
                 (cur, prev) => {
                     if (cur !== prev) {
-                        if (cur) {
-                            if (this.info?.type === "page_urls")
-                                this.getPageImage(cur);
+                        if (cur && this.info?.type === "page_urls") {
+                            this.getPageImage(cur);
+                            this.scrollToImage();
                         }
-                        this.scrollToImage();
                     }
                 }
             );
@@ -299,7 +299,6 @@ export default defineComponent({
                 this.info = data;
                 if (this.info.entities[0]) {
                     this.selectPageUrl(this.info.entities[0].page);
-                    this.scrollToImage();
                 }
             } catch (err) {
                 this.$logger.emit(
@@ -362,7 +361,6 @@ export default defineComponent({
             } else if (this.info) {
                 this.currentPage = this.info.entities[0].page;
             }
-            this.scrollToImage();
         },
         nextPage() {
             if (this.currentPage && this.info) {
@@ -376,13 +374,16 @@ export default defineComponent({
             } else if (this.info) {
                 this.currentPage = this.info.entities[0].page;
             }
-            this.scrollToImage();
         },
         scrollToImage() {
-            window.scrollTo({
-                top: 100,
-                behavior: "smooth",
-            });
+            const ele = document.getElementById("manga-page");
+            console.log(ele);
+            if (ele) {
+                window.scrollTo({
+                    top: ele.offsetTop - 100,
+                    behavior: "smooth",
+                });
+            }
         },
     },
 });

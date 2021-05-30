@@ -35,6 +35,7 @@
                 </div>
             </div>
 
+            <div id="video-player"></div>
             <div class="my-2">
                 <video
                     class="outline-none"
@@ -48,7 +49,14 @@
             <p class="mt-2">
                 Stream URL:
                 <span
-                    class="bg-gray-100 dark:bg-gray-800 rounded px-1 break-all select-all"
+                    class="
+                        bg-gray-100
+                        dark:bg-gray-800
+                        rounded
+                        px-1
+                        break-all
+                        select-all
+                    "
                     >{{ currentPlaying.url }}</span
                 >
             </p>
@@ -90,7 +98,7 @@
                                     stream.type.join(", ").replace(/_/g, " ")
                                 }}</span>
                             </p>
-                            <p>
+                            <p class="mb-1.5">
                                 <ExternalLink
                                     class="text-sm"
                                     text="Open in browser"
@@ -178,8 +186,8 @@ export default defineComponent({
     },
     mounted() {
         this.updateWidth();
-        this.getInfo();
         this.watchEpisode();
+        this.getInfo();
     },
     methods: {
         async updateWidth() {
@@ -195,13 +203,23 @@ export default defineComponent({
         watchEpisode() {
             watch(
                 () => this.episode,
-                (cur, prev) => {
+                async (cur, prev) => {
                     if (cur !== prev) {
                         this.selectPlayUrl(null, null);
-                        this.getInfo();
+                        await this.getInfo();
+                        this.scrollToPlayer();
                     }
                 }
             );
+        },
+        scrollToPlayer() {
+            const ele = document.getElementById("video-player");
+            if (ele) {
+                window.scrollTo({
+                    top: ele.offsetTop - 100,
+                    behavior: "smooth",
+                });
+            }
         },
         async getInfo() {
             if (!this.plugin) {

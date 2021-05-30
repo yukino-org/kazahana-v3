@@ -7,6 +7,7 @@
             transition
             duration-200
             cursor-pointer
+            pointer-events-auto
         "
         v-if="url"
         @click.prevent="goToUrl()"

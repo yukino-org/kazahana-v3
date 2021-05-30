@@ -11,6 +11,7 @@
         <div v-else-if="state === 'result' && info">
             <PageTitle :title="info.title" />
 
+            <div id="episodes-top"></div>
             <div v-if="selected">
                 <AnimePlayer
                     class="mt-1"
@@ -65,7 +66,23 @@
             </div>
 
             <div>
-                <p class="text-sm opacity-75 mt-4">Episodes</p>
+                <div
+                    class="
+                        flex flex-row
+                        justify-between
+                        items-center
+                        mt-4
+                        text-sm
+                        opacity-75
+                    "
+                >
+                    <p>Episodes</p>
+                    <Icon
+                        class="cursor-pointer"
+                        icon="sort-amount-up"
+                        @click.prevent="reverseEpisodes()"
+                    />
+                </div>
                 <div
                     class="
                         mt-1
@@ -106,14 +123,14 @@
                 </div>
             </div>
         </div>
-        <p class="text-center opacity-75" v-else-if="state === 'noresult'">
+        <p class="text-center opacity-75 mt-4" v-else-if="state === 'noresult'">
             No results were found!
         </p>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
 import { Await } from "../plugins/util";
 
@@ -163,6 +180,15 @@ export default defineComponent({
         this.getInfo();
     },
     methods: {
+        scrollToView() {
+            const ele = document.getElementById("episodes-top");
+            if (ele) {
+                window.scrollTo({
+                    top: ele.offsetTop - 100,
+                    behavior: "smooth",
+                });
+            }
+        },
         async getInfo() {
             if (!this.plugin) {
                 this.state = "noresult";
@@ -188,8 +214,13 @@ export default defineComponent({
                 );
             }
         },
+        reverseEpisodes() {
+            if (!this.info?.episodes) return;
+            this.info.episodes = this.info.episodes.reverse();
+        },
         async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
+            this.scrollToView();
             if (this.selected && this.info) {
                 const rpc = await Rpc.getClient();
                 rpc?.({
