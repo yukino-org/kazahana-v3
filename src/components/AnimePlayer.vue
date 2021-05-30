@@ -43,7 +43,7 @@
                     :style="{ width: `${playerWidth}%` }"
                     v-if="currentPlaying.type === 'streamable'"
                 >
-                    <source :src="currentPlaying.url" />
+                    <source :src="getValidImageUrl(currentPlaying.url)" />
                 </video>
             </div>
             <p class="mt-2">
@@ -147,7 +147,7 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
-import { Await } from "../plugins/util";
+import { Await, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -269,6 +269,7 @@ export default defineComponent({
                 );
             }
         },
+        getValidImageUrl: util.getValidImageUrl,
     },
 });
 </script>
