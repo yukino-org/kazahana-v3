@@ -1,6 +1,5 @@
 <template>
     <a
-        href="#"
         class="
             text-red-400
             hover:text-red-500

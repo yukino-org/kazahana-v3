@@ -2,8 +2,6 @@ import qs from "qs";
 import { Http } from "@capacitor-community/http";
 import { Requester } from "anime-ext/dist/types";
 
-console.log("hello");
-
 const getUrl = (url: URL) => url.origin + url.pathname;
 // @ts-ignore
 const getParams = (url: URL) => Object.fromEntries(url.searchParams);
@@ -26,7 +24,7 @@ const getBody = (body: any, contentType: ReturnType<typeof getContentType>) => {
 };
 
 const getData = (data: any, contentType: ReturnType<typeof getContentType>) => {
-    if (contentType?.includes("json")) {
+    if (contentType?.includes("application/json")) {
         try {
             data = JSON.stringify(data);
         } catch (err) {}

@@ -175,7 +175,7 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await } from "../plugins/util";
+import { Await, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -274,8 +274,11 @@ export default defineComponent({
                 return this.images?.find((x) => x.page === this.currentPage)
                     ?.image;
 
-            return this.info?.entities.find((x) => x.page === this.currentPage)
-                ?.url;
+            const url = this.info?.entities.find(
+                (x) => x.page === this.currentPage
+            )?.url;
+
+            return url ? util.getValidImageUrl(url) : undefined;
         },
         async getInfo() {
             if (!this.plugin) {
@@ -377,7 +380,6 @@ export default defineComponent({
         },
         scrollToImage() {
             const ele = document.getElementById("manga-page");
-            console.log(ele);
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop - 100,

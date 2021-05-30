@@ -61,7 +61,7 @@
                             >
                                 <img
                                     class="w-16 md:w-20 rounded"
-                                    :src="src.thumbnail"
+                                    :src="getValidImageUrl(src.thumbnail)"
                                     :alt="src.title"
                                     v-if="src.thumbnail"
                                 />
@@ -93,7 +93,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await } from "../plugins/util";
+import { Await, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -143,6 +143,7 @@ export default defineComponent({
                 );
             }
         },
+        getValidImageUrl: util.getValidImageUrl,
     },
 });
 </script>

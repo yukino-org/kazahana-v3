@@ -86,7 +86,7 @@
                                 'rounded flex-none w-20',
                                 anime.description ? 'sm:w-32' : 'sm:w-20',
                             ]"
-                            :src="anime.thumbnail"
+                            :src="getValidImageUrl(anime.thumbnail)"
                             :alt="anime.title"
                             v-if="anime.thumbnail"
                         />
@@ -398,7 +398,10 @@ export default defineComponent({
                         );
                     }
                 } catch (err) {
-                    this.$logger.emit("error", `Something went wrong: ${err?.message}`);
+                    this.$logger.emit(
+                        "error",
+                        `Something went wrong: ${err?.message}`
+                    );
                 }
             }
 
@@ -417,6 +420,7 @@ export default defineComponent({
                 });
             }
         },
+        getValidImageUrl: util.getValidImageUrl,
     },
 });
 </script>

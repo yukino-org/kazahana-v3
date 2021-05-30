@@ -52,7 +52,7 @@
                 <div class="flex-none">
                     <img
                         class="rounded w-36 sm:w-56"
-                        :src="info.image"
+                        :src="getValidImageUrl(info.image)"
                         :alt="info.title"
                         v-if="info.image"
                     />
@@ -112,7 +112,7 @@
                             >
                                 <img
                                     class="rounded flex-none"
-                                    :src="character.image"
+                                    :src="getValidImageUrl(character.image)"
                                     :alt="character.name"
                                     style="width: 3rem"
                                     v-if="character.image"
@@ -160,7 +160,9 @@
                                 </div>
                                 <img
                                     class="rounded flex-none"
-                                    :src="character.actor.image"
+                                    :src="
+                                        getValidImageUrl(character.actor.image)
+                                    "
                                     :alt="character.actor.name"
                                     style="width: 3rem"
                                     v-if="character.actor?.image"
@@ -221,7 +223,7 @@
                         >
                             <img
                                 class="w-16 rounded"
-                                :src="anime.thumbnail"
+                                :src="getValidImageUrl(anime.thumbnail)"
                                 :alt="anime.title"
                                 v-if="anime.thumbnail"
                             />
@@ -245,8 +247,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Store, Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { Await } from "../plugins/util";
+import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
+import { Await, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -331,6 +333,7 @@ export default defineComponent({
             this.extractors.anime = Object.keys(client.anime);
             this.extractors.manga = Object.keys(client.manga);
         },
+        getValidImageUrl: util.getValidImageUrl,
     },
 });
 </script>
