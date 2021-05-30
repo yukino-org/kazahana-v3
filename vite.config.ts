@@ -18,7 +18,7 @@ export default defineConfig({
         },
     ],
     build: {
-        outDir: getOutDir(platform),
+        outDir: "dist/vite",
     },
     define: {
         app_platform: `"${platform}"`,
@@ -33,16 +33,6 @@ function getBase(platform: string) {
 
         default:
             return "/";
-    }
-}
-
-function getOutDir(platform: string) {
-    switch (platform) {
-        case "capacitor":
-            return "dist/capacitor/web";
-
-        default:
-            return "dist/vite";
     }
 }
 

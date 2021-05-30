@@ -5,7 +5,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 const config: CapacitorConfig = {
     appId: "io.github.zyrouge.yukino",
     appName: "Yukino",
-    webDir: "dist/capacitor/web",
+    webDir: "dist/vite",
     android: {
         path: "environments/capacitor/android",
     },
