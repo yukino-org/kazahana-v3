@@ -26,10 +26,11 @@
                             bg-gray-100
                             dark:bg-gray-800
                         "
+                        :reload="reloadComponent"
                     />
                 </aside>
                 <main class="py-6 lg:col-span-3" id="main-container">
-                    <router-view></router-view>
+                    <router-view :key="pageKey"></router-view>
                 </main>
             </section>
             <button
@@ -88,9 +89,11 @@ export default defineComponent({
         const data: {
             showTitleBar: boolean;
             sideBarPosition: string;
+            pageKey: number;
         } = {
             showTitleBar: ["electron"].includes(app_platform),
             sideBarPosition: "left",
+            pageKey: 0,
         };
 
         return data;
@@ -125,6 +128,9 @@ export default defineComponent({
             const store = await Store.getClient();
             this.sideBarPosition =
                 (await store.get("settings"))?.sideBarPosition || "left";
+        },
+        reloadComponent() {
+            this.pageKey += 1;
         },
     },
 });

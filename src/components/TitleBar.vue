@@ -62,7 +62,7 @@
                     id="titlebar-reload"
                     title="Reload"
                 >
-                    <Icon id="titlebar-icon" icon="redo" />
+                    <Icon id="titlebar-icon" icon="sync-alt" />
                 </div>
                 <div
                     class="

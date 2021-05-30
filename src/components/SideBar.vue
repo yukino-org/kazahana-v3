@@ -61,6 +61,18 @@
                 </button>
 
                 <button
+                    :class="[
+                        hrefClassNames,
+                        'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
+                    ]"
+                    title="Reload page"
+                    @click.prevent="reload()"
+                    v-if="reload"
+                >
+                    <Icon icon="redo" />
+                </button>
+
+                <button
                     class="
                         focus:outline-none
                         bg-gray-200
@@ -92,6 +104,12 @@ import { defineComponent } from "vue";
 import { ExternalLink } from "../plugins/api";
 
 export default defineComponent({
+    props: {
+        reload: {
+            type: Function,
+            default: null,
+        },
+    },
     setup() {
         const links: {
             name: string;
