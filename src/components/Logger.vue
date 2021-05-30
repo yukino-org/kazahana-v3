@@ -2,7 +2,7 @@
     <div class="flex flex-col justify-end items-end">
         <div
             :class="[
-                'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',
+                'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center max-w-sm',
                 getBgColor(noti.type),
             ]"
             id="log"
