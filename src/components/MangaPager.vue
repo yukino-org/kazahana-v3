@@ -76,7 +76,6 @@
                     </div>
                 </div>
 
-                <div id="manga-page"></div>
                 <Loading v-if="!getCurrentImage()" />
                 <div class="mt-4" v-else>
                     <img
@@ -263,8 +262,8 @@ export default defineComponent({
                     if (cur !== prev) {
                         if (cur && this.info?.type === "page_urls") {
                             this.getPageImage(cur);
-                            this.scrollToImage();
                         }
+                        this.scrollToImage();
                     }
                 }
             );
@@ -379,10 +378,10 @@ export default defineComponent({
             }
         },
         scrollToImage() {
-            const ele = document.getElementById("manga-page");
+            const ele = document.getElementById("main-container");
             if (ele) {
                 window.scrollTo({
-                    top: ele.offsetTop - 100,
+                    top: ele.offsetTop,
                     behavior: "smooth",
                 });
             }

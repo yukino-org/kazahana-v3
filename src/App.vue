@@ -28,7 +28,7 @@
                         "
                     />
                 </aside>
-                <main class="py-6 lg:col-span-3">
+                <main class="py-6 lg:col-span-3" id="main-container">
                     <router-view></router-view>
                 </main>
             </section>

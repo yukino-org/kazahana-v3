@@ -35,7 +35,6 @@
                 </div>
             </div>
 
-            <div id="video-player"></div>
             <div class="my-2">
                 <video
                     class="outline-none"
@@ -213,10 +212,10 @@ export default defineComponent({
             );
         },
         scrollToPlayer() {
-            const ele = document.getElementById("video-player");
+            const ele = document.getElementById("main-container");
             if (ele) {
                 window.scrollTo({
-                    top: ele.offsetTop - 100,
+                    top: ele.offsetTop,
                     behavior: "smooth",
                 });
             }

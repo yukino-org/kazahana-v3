@@ -11,7 +11,6 @@
         <div v-else-if="state === 'result' && info">
             <PageTitle :title="info.title" />
 
-            <div id="episodes-top"></div>
             <div v-if="selected">
                 <AnimePlayer
                     class="mt-1"
@@ -181,10 +180,10 @@ export default defineComponent({
     },
     methods: {
         scrollToView() {
-            const ele = document.getElementById("episodes-top");
+            const ele = document.getElementById("main-container");
             if (ele) {
                 window.scrollTo({
-                    top: ele.offsetTop - 100,
+                    top: ele.offsetTop,
                     behavior: "smooth",
                 });
             }
