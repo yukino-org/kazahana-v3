@@ -76,11 +76,11 @@
                     </div>
                 </div>
 
-                <Loading v-if="!getCurrentImage()" />
+                <Loading class="mt-4" v-if="!currentPageImage" />
                 <div class="mt-4" v-else>
                     <img
                         class="w-full"
-                        :src="getCurrentImage()"
+                        :src="currentPageImage"
                         :alt="`Page ${currentPage}`"
                         :style="{ width: `${pageWidth}%` }"
                     />
@@ -95,7 +95,7 @@
                                 break-all
                                 select-all
                             "
-                            >{{ getCurrentImage() }}</span
+                            >{{ currentPageImage }}</span
                         >
                     </p>
                 </div>
@@ -203,12 +203,14 @@ export default defineComponent({
                   }[]
                 | null;
             currentPage: string | null;
+            currentPageImage: string | null;
             pageWidth: number;
         } = {
             state: "pending",
             info: null,
             images: null,
             currentPage: null,
+            currentPageImage: null,
             pageWidth: 100,
         };
 
@@ -218,7 +220,6 @@ export default defineComponent({
         this.updateWidth();
         this.getInfo();
         this.watchChapter();
-        this.watchPage();
     },
     methods: {
         async updateWidth() {
@@ -237,6 +238,7 @@ export default defineComponent({
                 (cur, prev) => {
                     if (cur !== prev) {
                         this.images = null;
+                        this.currentPageImage = null;
                         if (cur) {
                             this.getInfo();
                         }
@@ -248,36 +250,14 @@ export default defineComponent({
                 () => this.chapter,
                 (cur, prev) => {
                     if (cur !== prev) {
+                        this.currentPage = null;
+                        this.currentPageImage = null;
                         if (cur) {
                             this.getInfo();
                         }
                     }
                 }
             );
-        },
-        watchPage() {
-            watch(
-                () => this.currentPage,
-                (cur, prev) => {
-                    if (cur !== prev) {
-                        if (cur && this.info?.type === "page_urls") {
-                            this.getPageImage(cur);
-                        }
-                        this.scrollToImage();
-                    }
-                }
-            );
-        },
-        getCurrentImage() {
-            if (this.info?.type === "page_urls")
-                return this.images?.find((x) => x.page === this.currentPage)
-                    ?.image;
-
-            const url = this.info?.entities.find(
-                (x) => x.page === this.currentPage
-            )?.url;
-
-            return url ? util.getValidImageUrl(url) : undefined;
         },
         async getInfo() {
             if (!this.plugin) {
@@ -291,6 +271,7 @@ export default defineComponent({
 
             try {
                 this.info = null;
+                this.images = null;
                 this.state = "loading";
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.plugin].getChapterPages(
@@ -317,7 +298,7 @@ export default defineComponent({
             if (!this.images) this.images = [];
 
             const found = this.images.find((x) => x.page === page);
-            if (found) return;
+            if (found) return found.image;
 
             const url = this.info?.entities.find((x) => x.page === page)?.url;
             if (!url) {
@@ -337,6 +318,7 @@ export default defineComponent({
                         page,
                         image: data.image,
                     });
+                    return data.image;
                 }
             } catch (err) {
                 this.$logger.emit(
@@ -348,8 +330,14 @@ export default defineComponent({
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        selectPageUrl(page: string) {
+        async selectPageUrl(page: string) {
             this.currentPage = page;
+            this.scrollToImage();
+            const img =
+                this.info?.type === "page_urls"
+                    ? await this.getPageImage(page)
+                    : this.info?.entities.find((x) => x.page === page)?.url;
+            if (img) this.currentPageImage = img;
         },
         prevPage() {
             if (this.currentPage && this.info) {
