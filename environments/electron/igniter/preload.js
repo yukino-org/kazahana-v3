@@ -3,6 +3,9 @@ const { ipcRenderer } = require("electron");
 document.addEventListener("DOMContentLoaded", () => {
     const queries = new URLSearchParams(location.search);
 
+    document.title = document.getElementById("hero-title").innerText =
+        queries.get("title");
+
     document.getElementById("currentVersion").innerText =
         queries.get("version");
 

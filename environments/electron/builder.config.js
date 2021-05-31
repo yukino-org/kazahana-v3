@@ -1,5 +1,7 @@
+const { productName } = require("../../package.json");
+
 module.exports = {
-    productName: "Yukino",
+    productName,
     appId: "io.github.zyrouge.yukino",
     copyright: "Copyright © 2021 Zyrouge",
     files: [

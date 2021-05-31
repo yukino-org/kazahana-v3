@@ -44,26 +44,37 @@
             </div>
         </div>
 
-        <p class="text-center mt-6 opacity-75" v-if="state === 'search'">
+        <p
+            class="text-center mt-6 opacity-75"
+            v-if="result.state === 'waiting'"
+        >
             Enter something to search for!
         </p>
         <Loading
             class="mt-8"
-            v-else-if="state === 'loading'"
+            v-else-if="result.state === 'resolving'"
             :text="`Fetching results for ${terms}...`"
         />
         <p
             class="text-center mt-6 opacity-75"
-            v-else-if="state === 'noresults'"
+            v-else-if="result.state === 'failed'"
+        >
+            Failed to fetch results.
+        </p>
+        <p
+            class="text-center mt-6 opacity-75"
+            v-else-if="result.state === 'resolved' && result.data?.length === 0"
         >
             No results were found.
         </p>
-
-        <div class="mt-8" v-if="result && result.length">
+        <div
+            class="mt-8"
+            v-else-if="result.state === 'resolved' && result.data"
+        >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
                 <div
                     class="col-span-1"
-                    v-for="anime in result"
+                    v-for="anime in result.data"
                     :key="anime.url"
                 >
                     <router-link
@@ -183,7 +194,7 @@
 import { defineComponent, watch } from "vue";
 import { RouteLocationRaw } from "vue-router";
 import { Extractors, Rpc } from "../plugins/api";
-import { util } from "../plugins/util";
+import { StateController, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -213,9 +224,8 @@ export default defineComponent({
     },
     data() {
         const data: {
-            state: "search" | "loading" | "noresults" | "results";
             terms: string;
-            result: ResultType[] | null;
+            result: StateController<ResultType[]>;
             selectedPlugin: string[];
             allPlugins: {
                 name: string;
@@ -223,9 +233,8 @@ export default defineComponent({
                 category: "integration-MAL" | "anime" | "manga";
             }[];
         } = {
-            state: "search",
             terms: "",
-            result: null,
+            result: util.createStateController(),
             selectedPlugin: ["MyAnimeList"],
             allPlugins: [
                 {
@@ -247,7 +256,7 @@ export default defineComponent({
             watch(
                 () => this.selectedPlugin,
                 (cur, prev) => {
-                    if (cur !== prev && this.result) {
+                    if (cur !== prev && this.terms) {
                         this.search();
                     }
                 }
@@ -294,9 +303,9 @@ export default defineComponent({
                 );
             }
 
-            this.result = null;
+            this.result.data = null;
             const results = [];
-            this.state = "loading";
+            this.result.state = "resolving";
             const client = await Extractors.getClient();
 
             for (const pluginName of this.selectedPlugin) {
@@ -398,7 +407,8 @@ export default defineComponent({
                         );
                     }
                 } catch (err) {
-                    this.$logger.emit(
+                    this.result.state = "failed";
+                    return this.$logger.emit(
                         "error",
                         `Something went wrong: ${err?.message}`
                     );
@@ -406,19 +416,13 @@ export default defineComponent({
             }
 
             const rpc = await Rpc.getClient();
-            if (!results?.length) {
-                this.result = null;
-                this.state = "noresults";
-                rpc?.({
-                    details: "On Search Page",
-                });
-            } else {
-                this.result = results;
-                this.state = "results";
-                rpc?.({
-                    details: `Searching for ${this.terms} (${this.selectedPlugin})`,
-                });
-            }
+            this.result.data = results;
+            this.result.state = "resolved";
+            rpc?.({
+                details: this.result.data.length
+                    ? `Searching for ${this.terms} (${this.selectedPlugin})`
+                    : "On Search Page",
+            });
         },
         getValidImageUrl: util.getValidImageUrl,
     },

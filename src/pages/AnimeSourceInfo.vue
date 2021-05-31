@@ -3,13 +3,20 @@
         <h1 class="mb-1 text-xl font-bold text-indigo-400">
             {{ plugin || "Unknown" }}
         </h1>
+
         <Loading
             class="mt-8"
-            v-if="state === 'pending' || state === 'loading'"
+            v-if="['waiting', 'resolving'].includes(info.state)"
             text="Fetching information, please wait..."
         />
-        <div v-else-if="state === 'result' && info">
-            <PageTitle :title="info.title" />
+        <p
+            class="text-center opacity-75 mt-4"
+            v-else-if="info.state === 'resolved' && !info.data"
+        >
+            No results were found!
+        </p>
+        <div v-else-if="info.state === 'resolved' && info.data">
+            <PageTitle :title="info.data.title" />
 
             <div v-if="selected">
                 <AnimePlayer
@@ -79,6 +86,7 @@
                     <Icon
                         class="cursor-pointer"
                         icon="sort-amount-up"
+                        title="Sort"
                         @click.prevent="reverseEpisodes()"
                     />
                 </div>
@@ -94,7 +102,7 @@
                 >
                     <div
                         class="col-span-1"
-                        v-for="ep in info.episodes"
+                        v-for="ep in info.data.episodes"
                         :key="ep.url"
                     >
                         <div
@@ -122,16 +130,13 @@
                 </div>
             </div>
         </div>
-        <p class="text-center opacity-75 mt-4" v-else-if="state === 'noresult'">
-            No results were found!
-        </p>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { Await } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -152,16 +157,14 @@ export default defineComponent({
     },
     data() {
         const data: {
-            state: "pending" | "loading" | "noresult" | "result";
-            info: Await<
-                ReturnType<ExtractorsEntity["anime"][""]["getInfo"]>
-            > | null;
+            info: StateController<
+                Await<ReturnType<ExtractorsEntity["anime"][""]["getInfo"]>>
+            >;
             plugin: string | null;
             link: string | null;
             selected: SelectedEntity | null;
         } = {
-            state: "pending",
-            info: null,
+            info: util.createStateController(),
             plugin:
                 typeof this.$route.query.plugin === "string"
                     ? this.$route.query.plugin
@@ -190,23 +193,23 @@ export default defineComponent({
         },
         async getInfo() {
             if (!this.plugin) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
             if (!this.link) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
             try {
-                this.state = "loading";
+                this.info.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.anime[this.plugin].getInfo(this.link);
-                this.state = "result";
-                this.info = data;
+                this.info.data = data;
+                this.info.state = "resolved";
                 this.refreshRpc();
             } catch (err) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err}`
@@ -214,17 +217,17 @@ export default defineComponent({
             }
         },
         reverseEpisodes() {
-            if (!this.info?.episodes) return;
-            this.info.episodes = this.info.episodes.reverse();
+            if (!this.info.data?.episodes) return;
+            this.info.data.episodes = this.info.data.episodes.reverse();
         },
         async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
             this.scrollToView();
-            if (this.selected && this.info) {
+            if (this.selected && this.info.data) {
                 const rpc = await Rpc.getClient();
                 rpc?.({
                     details: "Currently watching",
-                    state: `${this.info.title} (Episode ${
+                    state: `${this.info.data.title} (Episode ${
                         this.selected.episode
                     }) ${this.plugin ? `(${this.plugin})` : ""}`,
                     buttons: this.link
@@ -241,31 +244,31 @@ export default defineComponent({
             }
         },
         prevEpisode() {
-            if (!this.info || !this.selected) return;
-            const cur = this.info.episodes.findIndex(
+            if (!this.info.data || !this.selected) return;
+            const cur = this.info.data.episodes.findIndex(
                 (x) => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
-                const prev = this.info.episodes[cur - 1];
+                const prev = this.info.data.episodes[cur - 1];
                 if (prev) this.selectEpisode(prev);
             }
         },
         nextEpisode() {
-            if (!this.info || !this.selected) return;
-            const cur = this.info.episodes.findIndex(
+            if (!this.info.data || !this.selected) return;
+            const cur = this.info.data.episodes.findIndex(
                 (x) => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
-                const next = this.info.episodes[cur + 1];
+                const next = this.info.data.episodes[cur + 1];
                 if (next) this.selectEpisode(next);
             }
         },
         async refreshRpc() {
             const rpc = await Rpc.getClient();
-            if (this.info) {
+            if (this.info.data) {
                 rpc?.({
                     details: "Viewing episodes of",
-                    state: this.info.title,
+                    state: this.info.data.title,
                     buttons: this.link
                         ? [
                               {

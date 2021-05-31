@@ -10,6 +10,8 @@ import { Initiator } from "./plugins/api/initiator";
 const app = createApp(App);
 
 const start = async () => {
+    document.title = app_name;
+
     app.component("Icon", Icon);
     app.use(Router);
     app.config.globalProperties.$logger = new Logger();
@@ -22,6 +24,7 @@ const start = async () => {
 start();
 
 declare global {
+    const app_name: string;
     const app_platform: string;
     const app_version: string;
     const app_builtAt: number;

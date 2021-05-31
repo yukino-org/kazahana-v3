@@ -1,10 +1,11 @@
 /// <reference types="@capacitor/splash-screen" />
 
 import { CapacitorConfig } from "@capacitor/cli";
+import { productName } from "./package.json";
 
 const config: CapacitorConfig = {
     appId: "io.github.zyrouge.yukino",
-    appName: "Yukino",
+    appName: productName,
     webDir: "dist/vite",
     android: {
         path: "environments/capacitor/android",

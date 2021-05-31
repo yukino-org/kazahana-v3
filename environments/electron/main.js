@@ -4,6 +4,7 @@ const Store = require("./store");
 const Rpc = require("./rpc");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
+const { productName } = require("../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
 Logger.info("Starting app");
@@ -25,6 +26,7 @@ const createWindow = async () => {
 
     const dimensions = Store.getWindowSize();
     const win = new BrowserWindow({
+        title: productName,
         x: dimensions.x,
         y: dimensions.y,
         width: dimensions.width,

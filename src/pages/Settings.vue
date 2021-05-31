@@ -146,7 +146,11 @@
                 </p>
 
                 <div class="text-xs opacity-50 mt-3">
-                    <p><b>App Information</b></p>
+                    <p class="underline">App Information</p>
+                    <p>
+                        Name:
+                        <b>{{ appInfo.name }}</b>
+                    </p>
                     <p>
                         Platform:
                         <b class="capitalize">{{ appInfo.platform }}</b>
@@ -201,6 +205,7 @@ export default defineComponent({
             supportsPlayerWidth: ["electron"].includes(app_platform),
             supportsRpc: ["electron"].includes(app_platform),
             appInfo: {
+                name: app_name,
                 platform: app_platform,
                 version: app_version,
                 builtAt: new Date(app_builtAt).toLocaleString(undefined, {

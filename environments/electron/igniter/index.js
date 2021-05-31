@@ -2,7 +2,7 @@ const path = require("path");
 const { app, BrowserWindow } = require("electron");
 const Store = require("../store");
 const Logger = require("../logger");
-const { version } = require("../../../package.json");
+const { productName, version } = require("../../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -37,6 +37,7 @@ class Igniter {
 
     start() {
         this.win = new BrowserWindow({
+            title: productName,
             width: 300,
             height: 330,
             resizable: false,
@@ -61,7 +62,9 @@ class Igniter {
         const url = `file://${path.join(
             __dirname,
             "splash.html"
-        )}?version=${encodeURIComponent(app.getVersion())}`;
+        )}?title=${encodeURIComponent(
+            productName
+        )}&version=${encodeURIComponent(app.getVersion())}`;
         this.win.loadURL(url);
         Logger.info(`Opened url in ignition window: ${url}`);
     }

@@ -3,14 +3,31 @@
         <PageTitle title="Home" />
         <div>
             <p class="-mt-1 text-xl text-indigo-500 font-bold">Top Animes</p>
+
             <Loading
                 class="mt-4"
-                v-if="!hasLoaded"
+                v-if="['waiting', 'resolving'].includes(animes.state)"
                 text="Fetching top animes, please wait..."
             />
+            <p
+                class="mt-4 text-center opacity-75"
+                v-else-if="animes.state === 'failed'"
+            >
+                Failed to load top animes!
+            </p>
+            <p
+                class="mt-4 text-center opacity-75"
+                v-else-if="
+                    animes.state === 'resolved' && !Object.keys(animes).length
+                "
+            >
+                No results were found!
+            </p>
             <div
                 class="mt-4"
-                v-else-if="hasLoaded && Object.keys(animes).length"
+                v-else-if="
+                    animes.state === 'resolved' && Object.keys(animes).length
+                "
             >
                 <div
                     class="
@@ -39,7 +56,7 @@
 
                 <Loading
                     class="mt-8"
-                    v-if="!animes[selected]"
+                    v-if="!animes.data[selected]"
                     :text="`Fetching animes in ${selected}, please wait...`"
                 />
                 <div
@@ -52,7 +69,10 @@
                     "
                     v-else
                 >
-                    <div class="col-span-1" v-for="anime in animes[selected]">
+                    <div
+                        class="col-span-1"
+                        v-for="anime in animes.data[selected]"
+                    >
                         <div>
                             <router-link
                                 :to="{
@@ -110,9 +130,6 @@
                     </div>
                 </div>
             </div>
-            <p class="text-center opacity-75" v-else>
-                Failed to load top animes!
-            </p>
         </div>
     </div>
 </template>
@@ -120,7 +137,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { util, Await } from "../plugins/util";
+import { Await, StateControllerNoNull, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -135,21 +152,21 @@ export default defineComponent({
     },
     data() {
         const data: {
-            hasLoaded: boolean;
             categories: string[];
-            animes: Record<
-                string,
-                Await<
-                    ReturnType<
-                        ExtractorsEntity["integrations"]["MyAnimeList"]["getTopAnime"]
+            animes: StateControllerNoNull<
+                Record<
+                    string,
+                    Await<
+                        ReturnType<
+                            ExtractorsEntity["integrations"]["MyAnimeList"]["getTopAnime"]
+                        >
                     >
                 >
             >;
             selected: string;
         } = {
-            hasLoaded: false,
             categories: [],
-            animes: {},
+            animes: util.createStateControllerNoNull({}),
             selected: "all",
         };
 
@@ -172,23 +189,24 @@ export default defineComponent({
         },
         async getTopAnimes(type: string) {
             try {
+                this.animes.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.integrations.MyAnimeList.getTopAnime(
                     type
                 );
-                this.animes[type] = data;
-                this.hasLoaded = true;
+                this.animes.data[type] = data;
+                this.animes.state = "resolved";
             } catch (err) {
+                this.animes.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err?.message}`
                 );
-                this.hasLoaded = false;
             }
         },
         selectCategory(type: string) {
             this.selected = type;
-            if (!this.animes[type]) this.getTopAnimes(type);
+            if (!this.animes.data[type]) this.getTopAnimes(type);
         },
         getHighResImage(url: string) {
             return util.getHighResMALImage(url);

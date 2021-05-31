@@ -14,11 +14,20 @@
                 <Loading
                     class="my-4"
                     text="Fetching sources, please wait..."
-                    v-if="!sources"
+                    v-if="['waiting', 'resolving'].includes(sources.state)"
                 />
                 <div
                     class="text-sm text-center opacity-75 my-2"
-                    v-else-if="!sources.length"
+                    v-else-if="sources.state === 'failed'"
+                >
+                    <p>Failed to fetch sources!</p>
+                </div>
+                <div
+                    class="text-sm text-center opacity-75 my-2"
+                    v-else-if="
+                        sources.state === 'resolved' &&
+                        sources.data?.length === 0
+                    "
                 >
                     <p>No sources could be found.</p>
                 </div>
@@ -30,11 +39,11 @@
                         mt-2
                         items-center
                     "
-                    v-else
+                    v-else-if="sources.state === 'resolved' && sources.data"
                 >
                     <div
                         class="col-span-1"
-                        v-for="src in sources"
+                        v-for="src in sources.data"
                         :key="src.url"
                     >
                         <router-link
@@ -87,7 +96,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await, util } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -105,12 +114,12 @@ export default defineComponent({
     data() {
         const data: {
             isOpen: boolean;
-            sources: Await<
-                ReturnType<ExtractorsEntity["manga"][""]["search"]>
-            > | null;
+            sources: StateController<
+                Await<ReturnType<ExtractorsEntity["manga"][""]["search"]>>
+            >;
         } = {
             isOpen: false,
-            sources: null,
+            sources: util.createStateController(),
         };
 
         return data;
@@ -121,15 +130,19 @@ export default defineComponent({
             if (this.isOpen && !this.sources) this.getSources();
         },
         async getSources() {
-            if (!this.title || !this.pluginKey || this.sources) return;
+            if (!this.title || !this.pluginKey || this.sources.data) return;
 
             try {
+                this.sources.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.pluginKey].search(
                     this.title
                 );
-                this.sources = data;
+
+                this.sources.data = data;
+                this.sources.state = "resolved";
             } catch (err) {
+                this.sources.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Could not get search results: ${err?.message}`

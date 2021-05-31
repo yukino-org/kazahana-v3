@@ -63,15 +63,27 @@
 
         <Loading
             class="my-6"
-            v-if="state === 'pending' || state === 'loading'"
+            v-if="['waiting', 'resolving'].includes(info.state)"
             text="Fetching links, please wait..."
         />
-        <div v-else-if="state === 'result' && info">
+        <p
+            class="text-center opacity-75 my-6"
+            v-else-if="info.state === 'resolved' && !info.data"
+        >
+            No result were found!
+        </p>
+        <p
+            class="text-center opacity-75 my-6"
+            v-else-if="info.state === 'failed'"
+        >
+            Failed to fetch results!
+        </p>
+        <div v-else-if="info.state === 'resolved' && info">
             <p class="text-sm opacity-75 mt-4">
                 Sources (Episode {{ episode }})
             </p>
             <div class="mt-1 grid gap-2">
-                <div v-for="stream in info" :key="stream.url">
+                <div v-for="stream in info.data" :key="stream.url">
                     <div
                         class="
                             bg-gray-100
@@ -137,16 +149,13 @@
                 </div>
             </div>
         </div>
-        <p class="text-center opacity-75 my-6" v-else-if="state === 'noresult'">
-            No results were found!
-        </p>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
-import { Await, util } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -163,10 +172,13 @@ export default defineComponent({
     },
     data() {
         const data: {
-            state: "pending" | "loading" | "noresult" | "result";
-            info: Await<
-                ReturnType<ExtractorsEntity["anime"][""]["getDownloadLinks"]>
-            > | null;
+            info: StateController<
+                Await<
+                    ReturnType<
+                        ExtractorsEntity["anime"][""]["getDownloadLinks"]
+                    >
+                >
+            >;
             currentPlaying: {
                 type: string;
                 url: string;
@@ -174,8 +186,7 @@ export default defineComponent({
             playerWidth: number;
             supportsPlayerWidth: boolean;
         } = {
-            state: "pending",
-            info: null,
+            info: util.createStateController(),
             currentPlaying: null,
             playerWidth: 100,
             supportsPlayerWidth: ["electron"].includes(app_platform),
@@ -222,28 +233,29 @@ export default defineComponent({
         },
         async getInfo() {
             if (!this.plugin) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
             if (!this.link) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
             try {
-                this.info = null;
-                this.state = "loading";
+                this.info.data = null;
+                this.info.state = "resolving";
+
                 const client = await Extractors.getClient();
                 const data = await client.anime[this.plugin].getDownloadLinks(
                     this.link
                 );
 
-                this.state = "result";
-                this.info = data.sort((x) =>
+                this.info.data = data.sort((x) =>
                     x.type.some((y) => ["streamable"].includes(y)) ? -1 : 1
                 );
+                this.info.state = "resolved";
             } catch (err) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err}`

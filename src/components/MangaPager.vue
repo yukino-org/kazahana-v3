@@ -2,10 +2,19 @@
     <div>
         <Loading
             class="my-8"
-            v-if="state === 'pending' || state === 'loading'"
+            v-if="['waiting', 'resolving'].includes(info.state)"
             text="Fetching pages, please wait..."
         />
-        <div v-else-if="state === 'result' && info">
+        <p class="text-center opacity-75" v-else-if="info.state === 'failed'">
+            Failed to fetch results!
+        </p>
+        <p
+            class="text-center opacity-75"
+            v-else-if="info.state === 'resolved' && !info.data"
+        >
+            No results were found!
+        </p>
+        <div v-else-if="info.state === 'resolved' && info.data">
             <p class="text-sm opacity-75 mt-4">
                 Viewing Vol. {{ volume }} Chap. {{ chapter }}
             </p>
@@ -65,7 +74,7 @@
                                     Please select a page
                                 </option>
                                 <option
-                                    v-for="page in info.entities"
+                                    v-for="page in info.data.entities"
                                     :key="page.page"
                                     :value="page.page"
                                 >
@@ -155,7 +164,7 @@
                             Please select a page
                         </option>
                         <option
-                            v-for="page in info.entities"
+                            v-for="page in info.data.entities"
                             :key="page.page"
                             :value="page.page"
                         >
@@ -165,16 +174,13 @@
                 </div>
             </div>
         </div>
-        <p class="text-center opacity-75" v-else-if="state === 'noresult'">
-            No results were found!
-        </p>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await, util } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -192,10 +198,11 @@ export default defineComponent({
     },
     data() {
         const data: {
-            state: "pending" | "loading" | "noresult" | "result";
-            info: Await<
-                ReturnType<ExtractorsEntity["manga"][""]["getChapterPages"]>
-            > | null;
+            info: StateController<
+                Await<
+                    ReturnType<ExtractorsEntity["manga"][""]["getChapterPages"]>
+                >
+            >;
             images:
                 | {
                       page: string;
@@ -206,8 +213,7 @@ export default defineComponent({
             currentPageImage: string | null;
             pageWidth: number;
         } = {
-            state: "pending",
-            info: null,
+            info: util.createStateController(),
             images: null,
             currentPage: null,
             currentPageImage: null,
@@ -261,29 +267,31 @@ export default defineComponent({
         },
         async getInfo() {
             if (!this.plugin) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
             if (!this.link) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
             }
 
             try {
-                this.info = null;
+                this.info.state = "resolving";
+                this.info.data = null;
                 this.images = null;
-                this.state = "loading";
+
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.plugin].getChapterPages(
                     this.link
                 );
 
-                this.state = "result";
-                this.info = data;
-                if (this.info.entities[0]) {
-                    this.selectPageUrl(this.info.entities[0].page);
+                this.info.data = data;
+                if (this.info.data.entities[0]) {
+                    this.selectPageUrl(this.info.data.entities[0].page);
                 }
+                this.info.state = "resolved";
             } catch (err) {
+                this.info.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err?.message}`
@@ -300,7 +308,9 @@ export default defineComponent({
             const found = this.images.find((x) => x.page === page);
             if (found) return found.image;
 
-            const url = this.info?.entities.find((x) => x.page === page)?.url;
+            const url = this.info.data?.entities.find(
+                (x) => x.page === page
+            )?.url;
             if (!url) {
                 return this.$logger.emit(
                     "error",
@@ -334,35 +344,36 @@ export default defineComponent({
             this.currentPage = page;
             this.scrollToImage();
             const img =
-                this.info?.type === "page_urls"
+                this.info.data?.type === "page_urls"
                     ? await this.getPageImage(page)
-                    : this.info?.entities.find((x) => x.page === page)?.url;
+                    : this.info.data?.entities.find((x) => x.page === page)
+                          ?.url;
             if (img) this.currentPageImage = img;
         },
         prevPage() {
-            if (this.currentPage && this.info) {
+            if (this.currentPage && this.info.data) {
                 const prevIndex =
-                    this.info.entities.findIndex(
+                    this.info.data.entities.findIndex(
                         (x) => x.page === this.currentPage
                     ) - 1;
 
-                const prev = this.info.entities[prevIndex];
+                const prev = this.info.data.entities[prevIndex];
                 if (prev) this.currentPage = prev.page;
-            } else if (this.info) {
-                this.currentPage = this.info.entities[0].page;
+            } else if (this.info.data) {
+                this.currentPage = this.info.data.entities[0].page;
             }
         },
         nextPage() {
-            if (this.currentPage && this.info) {
+            if (this.currentPage && this.info.data) {
                 const nextIndex =
-                    this.info.entities.findIndex(
+                    this.info.data.entities.findIndex(
                         (x) => x.page === this.currentPage
                     ) + 1;
 
-                const next = this.info.entities[nextIndex];
+                const next = this.info.data.entities[nextIndex];
                 if (next) this.currentPage = next.page;
-            } else if (this.info) {
-                this.currentPage = this.info.entities[0].page;
+            } else if (this.info.data) {
+                this.currentPage = this.info.data.entities[0].page;
             }
         },
         scrollToImage() {

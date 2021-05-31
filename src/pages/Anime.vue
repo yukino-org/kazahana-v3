@@ -2,13 +2,22 @@
     <div>
         <Loading
             class="mt-8"
-            v-if="state === 'pending'"
+            v-if="['waiting', 'resolving'].includes(info.state)"
             text="Loading anime, please wait..."
         />
-        <p class="opacity-75 text-center" v-else-if="state === 'noresult'">
-            No results could be fetched!
+        <p
+            class="mt-6 opacity-75 text-center"
+            v-else-if="info.state === 'failed'"
+        >
+            Anime information could not be fetched!
         </p>
-        <div v-else-if="state === 'result' && info">
+        <p
+            class="mt-6 opacity-75 text-center"
+            v-else-if="info.state === 'resolved' && !info.data"
+        >
+            Failed to fetch anime information!
+        </p>
+        <div v-else-if="info.state === 'resolved' && info.data">
             <div
                 class="
                     flex flex-col
@@ -19,7 +28,7 @@
                 "
             >
                 <div class="flex-grow text-center order-last md:order-none">
-                    <PageTitle :title="info.title" />
+                    <PageTitle :title="info.data.title" />
                     <div
                         class="
                             flex flex-row
@@ -32,19 +41,19 @@
                         <div>
                             <p class="opacity-75">Score</p>
                             <p class="text-3xl font-bold">
-                                {{ info.stats.score || "-" }}
+                                {{ info.data.stats.score || "-" }}
                             </p>
                         </div>
                         <div>
                             <p class="opacity-75">Rank</p>
                             <p class="text-3xl font-bold">
-                                {{ info.stats.rank || "-" }}
+                                {{ info.data.stats.rank || "-" }}
                             </p>
                         </div>
                         <div>
                             <p class="opacity-75">Popularity</p>
                             <p class="text-3xl font-bold">
-                                {{ info.stats.popularity || "-" }}
+                                {{ info.data.stats.popularity || "-" }}
                             </p>
                         </div>
                     </div>
@@ -52,27 +61,27 @@
                 <div class="flex-none">
                     <img
                         class="rounded w-36 sm:w-56"
-                        :src="getValidImageUrl(info.image)"
-                        :alt="info.title"
-                        v-if="info.image"
+                        :src="getValidImageUrl(info.data.image)"
+                        :alt="info.data.title"
+                        v-if="info.data.image"
                     />
                 </div>
             </div>
 
             <div class="mt-8">
                 <p class="text-sm opacity-75">About</p>
-                <p>{{ info.synopsis || "-" }}</p>
+                <p>{{ info.data.synopsis || "-" }}</p>
 
                 <p class="text-sm opacity-75 mt-4">Information</p>
-                <p><b>Type:</b> {{ info.info.type || "-" }}</p>
-                <p><b>Status:</b> {{ info.info.status || "-" }}</p>
-                <p><b>Season:</b> {{ info.season || "-" }}</p>
-                <p><b>Premiered:</b> {{ info.info.premiered || "-" }}</p>
-                <p><b>Episodes:</b> {{ info.info.episodes || "-" }}</p>
-                <p><b>Aired:</b> {{ info.info.aired || "-" }}</p>
-                <p><b>Genres:</b> {{ info.info.genres || "-" }}</p>
-                <p><b>Duration:</b> {{ info.info.duration || "-" }}</p>
-                <p><b>Rating:</b> {{ info.info.rating || "-" }}</p>
+                <p><b>Type:</b> {{ info.data.info.type || "-" }}</p>
+                <p><b>Status:</b> {{ info.data.info.status || "-" }}</p>
+                <p><b>Season:</b> {{ info.data.season || "-" }}</p>
+                <p><b>Premiered:</b> {{ info.data.info.premiered || "-" }}</p>
+                <p><b>Episodes:</b> {{ info.data.info.episodes || "-" }}</p>
+                <p><b>Aired:</b> {{ info.data.info.aired || "-" }}</p>
+                <p><b>Genres:</b> {{ info.data.info.genres || "-" }}</p>
+                <p><b>Duration:</b> {{ info.data.info.duration || "-" }}</p>
+                <p><b>Rating:</b> {{ info.data.info.rating || "-" }}</p>
 
                 <p class="text-sm opacity-75 mt-4">Characters</p>
                 <div
@@ -86,7 +95,7 @@
                 >
                     <div
                         class="col-span-1"
-                        v-for="character in info.characters"
+                        v-for="character in info.data.characters"
                         :key="character.url"
                     >
                         <div
@@ -176,7 +185,7 @@
                 <div class="mt-1 grid gap-2">
                     <div v-for="plugin in extractors.anime" :key="plugin">
                         <AnimeSourceViewer
-                            :title="info.title"
+                            :title="info.data.title"
                             :pluginKey="plugin"
                             :pluginName="plugin"
                         />
@@ -187,7 +196,7 @@
                 <div class="mt-1 grid gap-2">
                     <div v-for="plugin in extractors.manga" :key="plugin">
                         <MangaSourceViewer
-                            :title="info.title"
+                            :title="info.data.title"
                             :pluginKey="plugin"
                             :pluginName="plugin"
                         />
@@ -206,7 +215,7 @@
                 >
                     <div
                         class="col-span-1"
-                        v-for="anime in info.recommendations"
+                        v-for="anime in info.data.recommendations"
                         :key="anime.url"
                     >
                         <div
@@ -248,7 +257,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { Await, util } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -267,19 +276,19 @@ export default defineComponent({
     },
     data() {
         const data: {
-            state: "pending" | "result" | "noresult";
-            info: Await<
-                ReturnType<
-                    ExtractorsEntity["integrations"]["MyAnimeList"]["getAnimeInfo"]
+            info: StateController<
+                Await<
+                    ReturnType<
+                        ExtractorsEntity["integrations"]["MyAnimeList"]["getAnimeInfo"]
+                    >
                 >
-            > | null;
+            >;
             extractors: {
                 anime: string[];
                 manga: string[];
             };
         } = {
-            state: "pending",
-            info: null,
+            info: util.createStateController(),
             extractors: {
                 anime: [],
                 manga: [],
@@ -296,23 +305,24 @@ export default defineComponent({
         async getAnimeInfo() {
             const url = this.$route.query.url;
             if (typeof url !== "string") {
-                this.state = "noresult";
+                this.info.state = "failed";
                 return this.$logger.emit("error", "Missing 'url' in query!");
             }
 
             try {
+                this.info.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.integrations.MyAnimeList.getAnimeInfo(
                     url
                 );
 
-                this.info = data;
-                this.state = "result";
+                this.info.data = data;
+                this.info.state = "resolved";
 
                 const rpc = await Rpc.getClient();
                 rpc?.({
                     details: "Viewing about",
-                    state: this.info.title,
+                    state: this.info.data.title,
                     buttons: [
                         {
                             label: "View",
@@ -321,7 +331,7 @@ export default defineComponent({
                     ],
                 });
             } catch (err) {
-                this.state = "noresult";
+                this.info.state = "failed";
                 this.$logger.emit(
                     "error",
                     `Failed to fetch anime information: ${err?.message}`
