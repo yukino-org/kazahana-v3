@@ -24,6 +24,7 @@ start();
 declare global {
     const app_platform: string;
     const app_version: string;
+    const app_builtAt: number;
 
     interface Window {
         PlatformBridge?: any;

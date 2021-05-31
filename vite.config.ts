@@ -23,6 +23,7 @@ export default defineConfig({
     define: {
         app_platform: `"${platform}"`,
         app_version: `"${version}"`,
+        app_builtAt: Date.now(),
     },
 });
 
