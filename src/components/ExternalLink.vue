@@ -1,6 +1,7 @@
 <template>
     <button
         class="
+            focus:outline-none
             text-red-400
             hover:text-red-500
             transition
