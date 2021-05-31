@@ -351,29 +351,33 @@ export default defineComponent({
             if (img) this.currentPageImage = img;
         },
         prevPage() {
-            if (this.currentPage && this.info.data) {
-                const prevIndex =
-                    this.info.data.entities.findIndex(
-                        (x) => x.page === this.currentPage
-                    ) - 1;
+            if (this.info.data) {
+                if (this.currentPage) {
+                    const prevIndex =
+                        this.info.data.entities.findIndex(
+                            (x) => x.page === this.currentPage
+                        ) - 1;
 
-                const prev = this.info.data.entities[prevIndex];
-                if (prev) this.currentPage = prev.page;
-            } else if (this.info.data) {
-                this.currentPage = this.info.data.entities[0].page;
+                    const prev = this.info.data.entities[prevIndex];
+                    if (prev) this.selectPageUrl(prev.page);
+                } else {
+                    this.selectPageUrl(this.info.data.entities[0].page);
+                }
             }
         },
         nextPage() {
-            if (this.currentPage && this.info.data) {
-                const nextIndex =
-                    this.info.data.entities.findIndex(
-                        (x) => x.page === this.currentPage
-                    ) + 1;
+            if (this.info.data) {
+                if (this.currentPage) {
+                    const nextIndex =
+                        this.info.data.entities.findIndex(
+                            (x) => x.page === this.currentPage
+                        ) + 1;
 
-                const next = this.info.data.entities[nextIndex];
-                if (next) this.currentPage = next.page;
-            } else if (this.info.data) {
-                this.currentPage = this.info.data.entities[0].page;
+                    const next = this.info.data.entities[nextIndex];
+                    if (next) this.selectPageUrl(next.page);
+                } else {
+                    this.selectPageUrl(this.info.data.entities[0].page);
+                }
             }
         },
         scrollToImage() {
