@@ -24,10 +24,14 @@
             <p
                 class="dull"
                 id="status"
-                style="margin-top: 0.4rem; font-size: 0.9rem"
+                style="margin-top: 1rem; font-size: 0.9rem"
             >
                 Starting...
             </p>
+
+            <div class="progress-container" id="progress" style="display: none">
+                <span class="progress-bar" id="progress-bar"></span>
+            </div>
         </main>
     </body>
 
@@ -35,6 +39,7 @@
         :root {
             --light: white;
             --dark: #18181b;
+            --not-so-dull: #27272a;
             --special: #6366f1;
         }
 
@@ -74,6 +79,23 @@
 
         .dull {
             opacity: 0.6;
+        }
+
+        .progress-container {
+            margin-top: 0.4rem;
+            background-color: var(--not-so-dull);
+            width: 100%;
+            height: 0.6rem;
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            left: 0;
+            position: absolute;
+            height: 100%;
+            background-color: var(--special);
         }
     </style>
 </html>

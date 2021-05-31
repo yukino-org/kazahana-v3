@@ -86,6 +86,11 @@
   dependencies:
     tslib "^2.1.0"
 
+"@capacitor/dialog@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/dialog/-/dialog-1.0.0.tgz#2af3151086099e89983f6274db9eef525ecff7ac"
+  integrity sha512-MsSS4mUx2BIfsQMe6XM4jVVeRpl2OuTsktdSm9dfKXM1PysTqXt+mfDvt8kmS1ahHvWb0+5cO9MuLkAcFWGOCA==
+
 "@capacitor/filesystem@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.0.tgz#dbf98802d73e5e19efb784096c1374cc8bafc8be"

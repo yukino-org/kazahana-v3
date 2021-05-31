@@ -1,5 +1,5 @@
 <template>
-    <a
+    <button
         class="
             text-red-400
             hover:text-red-500
@@ -12,7 +12,7 @@
         @click.prevent="goToUrl()"
     >
         {{ text }} <Icon icon="external-link-alt" />
-    </a>
+    </button>
 </template>
 
 <script lang="ts">

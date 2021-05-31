@@ -1,6 +1,6 @@
 <template>
     <div class="text-center">
-        <h1 class="text-indigo-500 font-bold text-5xl">{{ app_name }}</h1>
+        <h1 class="text-indigo-500 font-bold text-5xl">{{ sideBarTitle }}</h1>
 
         <div
             class="
@@ -149,11 +149,11 @@ export default defineComponent({
     },
     data() {
         const data: {
-            app_name: string;
+            sideBarTitle: string;
             hrefClassNames: string[];
             darkMode: boolean;
         } = {
-            app_name,
+            sideBarTitle: app_name,
             hrefClassNames: [
                 "text-lg",
                 "hover:text-indigo-600",

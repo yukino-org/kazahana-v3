@@ -100,14 +100,15 @@ class Igniter {
             });
 
             this.autoUpdater.on("download-progress", (progress) => {
+                Logger.info(
+                    `Update progress: ${progress.percent.toFixed(2)}%/100%`
+                );
                 const toMb = (n) => (n / 1000000).toFixed(2);
-                const txt = `${progress.percent.toFixed(2)}% completed (${toMb(
-                    progress.transferred
-                )}/${toMb(progress.total)} mb at ${toMb(
-                    progress.bytesPerSecond
-                )} mbps)`;
-                Logger.info(`Update progress: ${txt}`);
-                this.win.webContents.send("download-progress", txt);
+                this.win.webContents.send("download-progress", {
+                    percent: progress.percent,
+                    transferred: toMb(progress.transferred),
+                    total: toMb(progress.total),
+                });
             });
 
             this.autoUpdater.on("error", (err) => {
