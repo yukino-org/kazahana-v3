@@ -23,7 +23,7 @@ module.exports = (mode) =>
         const buildProcess = spawn(
             `"./gradlew" assemble${mode.charAt(0).toUpperCase()}${mode.slice(
                 1
-            )}`,
+            )} --rerun-tasks`,
             {
                 stdio: "inherit",
                 cwd: androidRoot,
