@@ -9,10 +9,16 @@
             v-if="['waiting', 'resolving'].includes(info.state)"
             text="Fetching information, please wait..."
         />
-        <p class="mt-6 text-center opacity-75" v-else-if="info.state === 'resolved' && !info.data">
+        <p
+            class="mt-6 text-center opacity-75"
+            v-else-if="info.state === 'resolved' && !info.data"
+        >
             No results were found!
         </p>
-        <p class="mt-6 text-center opacity-75" v-else-if="info.state === 'failed'">
+        <p
+            class="mt-6 text-center opacity-75"
+            v-else-if="info.state === 'failed'"
+        >
             Failed to fetch manga information!
         </p>
         <div v-else-if="info.state === 'resolved' && info.data">
@@ -34,7 +40,24 @@
                 />
             </div>
 
-            <p class="text-sm opacity-75 mt-4">Contents</p>
+            <div
+                class="
+                    flex flex-row
+                    justify-between
+                    items-center
+                    mt-4
+                    text-sm
+                    opacity-75
+                "
+            >
+                <p>Contents</p>
+                <Icon
+                    class="cursor-pointer"
+                    icon="sort-amount-up"
+                    title="Sort"
+                    @click.prevent="reverseChapters()"
+                />
+            </div>
             <div class="mt-1 grid gap-2">
                 <div v-for="chap in info.data.chapters" :key="chap.url">
                     <div
@@ -93,9 +116,9 @@ export default defineComponent({
     },
     data() {
         const data: {
-            info: StateController<Await<
-                ReturnType<ExtractorsEntity["manga"][""]["getInfo"]>
-            >>;
+            info: StateController<
+                Await<ReturnType<ExtractorsEntity["manga"][""]["getInfo"]>>
+            >;
             plugin: string | null;
             link: string | null;
             selected: SelectedEntity | null;
@@ -166,6 +189,10 @@ export default defineComponent({
             } else {
                 this.refreshRpc();
             }
+        },
+        reverseChapters() {
+            if (!this.info.data?.chapters) return;
+            this.info.data.chapters = this.info.data.chapters.reverse();
         },
         async refreshRpc() {
             const rpc = await Rpc.getClient();
