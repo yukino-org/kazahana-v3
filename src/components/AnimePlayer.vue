@@ -96,8 +96,6 @@
                             justify-between
                             items-center
                             gap-3
-                            pb-3
-                            md:pb-0
                         "
                     >
                         <div class="w-full">
@@ -109,7 +107,7 @@
                                     stream.type.join(", ").replace(/_/g, " ")
                                 }}</span>
                             </p>
-                            <p class="mb-1.5">
+                            <p>
                                 <ExternalLink
                                     class="text-sm"
                                     text="Open in browser"
@@ -123,7 +121,9 @@
                                 justify-center
                                 items-center
                                 flex-wrap
+                                mb-1.5
                             "
+                            v-if="isPlayable(stream.type)"
                         >
                             <button
                                 class="
@@ -279,6 +279,10 @@ export default defineComponent({
                     "Some .m3u8 might just give a black output, those are not supported"
                 );
             }
+        },
+        isPlayable(types: string[]) {
+            if (types.includes("streamable")) return true;
+            return false;
         },
         getValidImageUrl: util.getValidImageUrl,
     },
