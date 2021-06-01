@@ -26,13 +26,14 @@ jobs:
                   java-version: "11"
 
             - name: Build APK
-              run: yarn capacitor:android:release
+              run: ./gradlew assembleRelease
+              working-directory: app/environments/capacitor/android
 
             - name: Sign APK
               uses: r0adkll/sign-android-release@v1
               id: sign_app
               with:
-                  releaseDirectory: app/build/outputs/apk/release
+                  releaseDirectory: app/environments/capacitor/android/build/outputs/apk/release
                   signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
                   alias: ${{ secrets.ANDROID_SIGN_ALIAS }}
                   keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
