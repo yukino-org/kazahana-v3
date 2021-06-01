@@ -162,7 +162,7 @@ export default defineComponent({
                 this.info.state = "failed";
                 this.$logger.emit(
                     "error",
-                    `Could not fetch anime's information: ${err?.message}`
+                    `Could not fetch manga's information: ${err?.message}`
                 );
             }
         },
