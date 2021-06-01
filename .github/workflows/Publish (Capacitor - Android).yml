@@ -1,0 +1,39 @@
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+
+jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v2
+
+        - uses: actions/setup-node@v2
+          with:
+              node-version: "14.16.0"
+
+        - name: Install dependencies
+          run: yarn --dev
+
+        - name: Checkout
+          uses: actions/checkout@v2.3.3
+
+        - name: Set up our JDK environment
+          uses: actions/setup-java@v1.4.3
+          with:
+              java-version: "11"
+
+        - name: Build APK
+          run: yarn capacitor:android:release
+
+        - name: Sign APK
+          uses: r0adkll/sign-android-release@v1
+          id: sign_app
+          with:
+              releaseDirectory: app/build/outputs/apk/release
+              signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
+              alias: ${{ secrets.ANDROID_SIGN_ALIAS }}
+              keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
+              keyPassword: ${{ secrets.ANDROID_SIGN_KEY_PASSWORD }}

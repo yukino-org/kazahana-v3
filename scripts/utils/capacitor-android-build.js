@@ -31,19 +31,9 @@ module.exports = (mode) =>
         );
 
         buildProcess.on("close", () => {
-            let out;
-
-            if (mode === "debug")
-                out = path.join(
-                    androidRoot,
-                    "app",
-                    "build",
-                    "outputs",
-                    "apk",
-                    "debug"
-                );
-
-            return resolve(out);
+            return resolve(
+                path.join(androidRoot, "app", "build", "outputs", "apk", mode)
+            );
         });
 
         buildProcess.on("error", (err) => {
