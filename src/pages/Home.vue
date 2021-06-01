@@ -102,6 +102,14 @@
                                         <p class="font-bold">
                                             #{{ anime.rank }}
                                         </p>
+                                        <div class="block sm:hidden">
+                                            <p class="text-xs opacity-75">
+                                                Score
+                                            </p>
+                                            <p class="font-bold">
+                                                {{ anime.score }}
+                                            </p>
+                                        </div>
                                     </div>
                                     <img
                                         class="w-14 rounded"
@@ -118,7 +126,7 @@
                                             text="View on MAL"
                                         />
                                     </div>
-                                    <div>
+                                    <div class="hidden sm:block">
                                         <p class="text-xs opacity-75">Score</p>
                                         <p class="font-bold">
                                             {{ anime.score }}

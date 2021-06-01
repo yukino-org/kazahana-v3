@@ -13,6 +13,7 @@
                 justify-center
                 items-center
                 gap-2
+                md:gap-6
             "
             v-if="info"
         >
