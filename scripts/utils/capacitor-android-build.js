@@ -21,12 +21,14 @@ module.exports = (mode) =>
             return reject(`Invalid build mode: ${mode}`);
 
         const buildProcess = spawn(
-            `bash ./gradlew assemble${mode.charAt(0).toUpperCase()}${mode.slice(
+            "gradlew",
+            [`assemble${mode.charAt(0).toUpperCase()}${mode.slice(
                 1
-            )} --rerun-tasks`,
+            )}`, "--rerun-tasks"],
             {
                 stdio: "inherit",
                 cwd: androidRoot,
+                env: process.env,
             }
         );
 
