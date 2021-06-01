@@ -26,8 +26,7 @@ jobs:
                   java-version: "11"
 
             - name: Build APK
-              run: ./gradlew assembleRelease
-              working-directory: app/environments/capacitor/android
+              run: yarn capacitor:android:release
 
             - name: Sign APK
               uses: r0adkll/sign-android-release@v1
