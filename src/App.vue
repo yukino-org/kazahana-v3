@@ -19,7 +19,7 @@
                 <aside :class="[sideBarPosition === 'right' && 'order-last']">
                     <SideBar
                         class="
-                            px-6
+                            px-8
                             py-10
                             lg:col-span-1
                             rounded

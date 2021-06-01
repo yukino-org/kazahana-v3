@@ -8,12 +8,12 @@
                 px-3
                 py-1.5
                 rounded-r
-                shadow
+                shadow-lg
                 flex flex-row
                 justify-center
                 items-center
                 gap-2
-                md:gap-6
+                md:gap-8
             "
             v-if="info"
         >
@@ -25,12 +25,17 @@
                 <p class="text-xs opacity-75">Continue watching</p>
                 <p class="font-bold">{{ info.title }}</p>
                 <p class="text-xs opacity-75">
-                    Watched <b>{{ getFormattedDuration(info.watched) }}</b> of
-                    <b>{{ getFormattedDuration(info.total) }}</b>
+                    <b>{{ getFormattedDuration(info.total - info.watched) }}</b>
+                    remaining
                 </p>
                 <p class="text-xs opacity-75">
-                    Updated at
-                    <b>{{ new Date(info.updatedAt).toLocaleString() }}</b>
+                    Watched
+                    <b>{{
+                        getFormattedDuration(
+                            (Date.now() - info.updatedAt) / 1000
+                        )
+                    }}</b>
+                    ago
                 </p>
             </div>
             <div
@@ -42,17 +47,38 @@
                 "
             >
                 <button
-                    class="bg-gray-800 w-8 text-2xl rounded focus:outline-none"
+                    class="
+                        bg-gray-800
+                        w-8
+                        h-8
+                        text-sm
+                        rounded
+                        focus:outline-none
+                        flex
+                        justify-center
+                        items-center
+                    "
                     @click.prevent="toggleDialog()"
                 >
-                    <Icon icon="caret-left" v-if="info.showPopup" />
-                    <Icon icon="caret-right" v-else />
+                    <Icon icon="eye" v-if="info.showPopup" />
+                    <Icon icon="eye-slash" v-else />
                 </button>
                 <button
-                    class="bg-gray-800 w-8 text-2xl rounded focus:outline-none"
+                    class="
+                        bg-gray-800
+                        w-8
+                        h-8
+                        text-sm
+                        rounded
+                        focus:outline-none
+                        flex
+                        justify-center
+                        items-center
+                    "
+                    v-if="info.showPopup"
                     @click.prevent="deleteLastWatched()"
                 >
-                    <Icon icon="times" />
+                    <Icon icon="trash" />
                 </button>
             </div>
         </div>
@@ -109,11 +135,11 @@ export default defineComponent({
         getFormattedDuration(sec: number) {
             const parsed = util.parseMs(sec * 1000);
             let output: string[] = [];
-            if (parsed.days) output.push(`${parsed.days}`);
-            if (parsed.hours) output.push(`${parsed.hours}`);
-            output.push(`${parsed.mins}`);
-            output.push(`${parsed.secs}`);
-            return output.join(":");
+            if (parsed.days) output.push(`${parsed.days}d`);
+            if (parsed.hours) output.push(`${parsed.hours}h`);
+            output.push(`${parsed.mins}m`);
+            output.push(`${parsed.secs}s`);
+            return output.join(" ");
         },
         navigateToLastWatched() {
             if (!this.info) return;
