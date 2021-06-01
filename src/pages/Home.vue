@@ -131,6 +131,10 @@
                 </div>
             </div>
         </div>
+
+        <div class="fixed left-0 bottom-8 max-w-md mr-8 z-50">
+            <LastWatched />
+        </div>
     </div>
 </template>
 
@@ -142,6 +146,7 @@ import { Await, StateControllerNoNull, util } from "../plugins/util";
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
+import LastWatched from "../components/LastWatched.vue";
 
 export default defineComponent({
     name: "Home",
@@ -149,6 +154,7 @@ export default defineComponent({
         PageTitle,
         Loading,
         ExternalLink,
+        LastWatched,
     },
     data() {
         const data: {

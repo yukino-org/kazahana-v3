@@ -38,9 +38,12 @@
             <div class="my-2">
                 <video
                     class="outline-none"
+                    id="video-player"
                     controls
                     :style="{ width: `${playerWidth}%` }"
                     v-if="currentPlaying.type === 'streamable'"
+                    @loadedmetadata="initializePlayer()"
+                    @timeupdate="updateLastWatched(true)"
                 >
                     <source :src="getValidImageUrl(currentPlaying.url)" />
                 </video>
@@ -156,6 +159,7 @@
 import { defineComponent, watch } from "vue";
 import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
 import { Await, StateController, util } from "../plugins/util";
+import { LastWatchedEntity } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -166,6 +170,7 @@ export default defineComponent({
         ExternalLink,
     },
     props: {
+        title: String,
         episode: String,
         plugin: String,
         link: String,
@@ -185,11 +190,13 @@ export default defineComponent({
             } | null;
             playerWidth: number;
             supportsPlayerWidth: boolean;
+            lastWatchUpdated: number;
         } = {
             info: util.createStateController(),
             currentPlaying: null,
             playerWidth: 100,
             supportsPlayerWidth: ["electron"].includes(app_platform),
+            lastWatchUpdated: 0,
         };
 
         return data;
@@ -262,6 +269,21 @@ export default defineComponent({
                 );
             }
         },
+        initializePlayer() {
+            const video = <any>document.getElementById("video-player");
+            if (video && this.$route.query.watched) {
+                const watched =
+                    typeof this.$route.query.watched === "string"
+                        ? +this.$route.query.watched
+                        : null;
+
+                if (watched !== null && !isNaN(watched)) {
+                    video.currentTime = watched;
+                }
+
+                this.updateLastWatched();
+            }
+        },
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
@@ -283,6 +305,46 @@ export default defineComponent({
         isPlayable(types: string[]) {
             if (types.includes("streamable")) return true;
             return false;
+        },
+        async updateLastWatched(fromPlayer: boolean = false) {
+            if (fromPlayer) {
+                const timeout = 10000;
+                const diff = Date.now() - this.lastWatchUpdated;
+                if (diff < timeout) return;
+            }
+
+            let watchedDuration = 0,
+                totalDuration = 0;
+
+            const video = <any>document.getElementById("video-player");
+            if (video) {
+                if (typeof video.currentTime === "number")
+                    watchedDuration = video.currentTime;
+                if (typeof video.duration === "number")
+                    totalDuration = video.duration;
+            }
+
+            const store = await Store.getClient();
+            try {
+                await store.set("lastWatchedLeft", <LastWatchedEntity>{
+                    title: `${this.title} (Episode ${this.episode})`,
+                    episode: this.episode,
+                    watched: watchedDuration,
+                    total: totalDuration,
+                    updatedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: { ...this.$route.query },
+                    },
+                    showPopup: true,
+                });
+                this.lastWatchUpdated = Date.now();
+            } catch (err) {
+                this.$logger.emit(
+                    "error",
+                    `Failed to updated last watched: ${err?.message}`
+                );
+            }
         },
         getValidImageUrl: util.getValidImageUrl,
     },

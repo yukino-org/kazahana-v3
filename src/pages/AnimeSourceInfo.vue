@@ -22,6 +22,7 @@
                 <AnimePlayer
                     class="mt-1"
                     v-if="selected.episode && plugin && selected.url"
+                    :title="info.data.title"
                     :episode="selected.episode"
                     :plugin="plugin"
                     :link="selected.url"
@@ -207,6 +208,17 @@ export default defineComponent({
                 const data = await client.anime[this.plugin].getInfo(this.link);
                 this.info.data = data;
                 this.info.state = "resolved";
+
+                const episode = this.$route.query.episode;
+                if (typeof episode === "string") {
+                    const foundEp = this.info.data.episodes.find(
+                        (x) => x.episode === episode
+                    );
+                    if (foundEp) {
+                        this.selectEpisode(foundEp);
+                    }
+                }
+
                 this.refreshRpc();
             } catch (err) {
                 this.info.state = "failed";

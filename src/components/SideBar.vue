@@ -37,7 +37,17 @@
                 >
             </div>
 
-            <div class="flex flex-row gap-3 lg:mt-5 md:mb-2">
+            <div
+                class="
+                    flex flex-row
+                    justify-center
+                    items-center
+                    flex-wrap
+                    gap-3
+                    lg:mt-5
+                    md:mb-2
+                "
+            >
                 <button
                     :class="[
                         hrefClassNames,
