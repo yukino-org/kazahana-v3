@@ -21,7 +21,7 @@ module.exports = (mode) =>
             return reject(`Invalid build mode: ${mode}`);
 
         const buildProcess = spawn(
-            `"./gradlew" assemble${mode.charAt(0).toUpperCase()}${mode.slice(
+            `bash ./gradlew assemble${mode.charAt(0).toUpperCase()}${mode.slice(
                 1
             )} --rerun-tasks`,
             {
