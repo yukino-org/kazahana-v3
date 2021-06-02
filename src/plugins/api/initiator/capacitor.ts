@@ -21,27 +21,19 @@ export const initiator: InitiatorFn = async () => {
 async function notifyUpdate() {
     try {
         const client = await http.getClient();
-        const res: any[] = JSON.parse(
+        const latest: any = JSON.parse(
             await client.get(
-                "https://api.github.com/repos/zyrouge/yukino-app/releases",
+                "https://api.github.com/repos/zyrouge/yukino-app/releases/latest",
                 {
                     headers: {},
                 }
             )
         );
 
-        const latest = res
-            .filter((x) => !x.draft)
-            .sort(
-                (a, b) =>
-                    new Date(a.updated_at).getTime() -
-                    new Date(b.updated_at).getTime()
-            )[0];
-
-        if (latest && app_version !== `v${latest}`) {
+        if (latest && !latest.draft && app_version !== latest.name) {
             const { value } = await Dialog.confirm({
                 title: "Update",
-                message: `Newer version of the app is available! (${app_version} -> ${latest.tag_name})\nWould you like to download it?`,
+                message: `Newer version of the app is available! (v${app_version} -> v${latest.name})\nWould you like to download it?`,
             });
 
             if (value) {

@@ -27,8 +27,8 @@
     "capacitor:android:icons": "cordova-res android --skip-config --copy --android-project environments/capacitor/android",
     "capacitor:android:build": "cross-env YUKINO_PLATFORM=\"capacitor\" yarn vite:build && yarn capacitor:android:icons && yarn capacitor:sync",
     "capacitor:android:open": "cap open android",
-    "capacitor:android:pack": "node scripts/capacitor-android-debug",
-    "capacitor:android:release": "node scripts/capacitor-android-release"
+    "capacitor:android:pack": "yarn capacitor:android:build && node scripts/capacitor-android-debug",
+    "capacitor:android:release": "yarn capacitor:android:build && node scripts/capacitor-android-release"
   },
   "dependencies": {
     "@capacitor-community/http": "^1.0.0",

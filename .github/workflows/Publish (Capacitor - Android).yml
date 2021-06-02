@@ -24,12 +24,9 @@ jobs:
               uses: actions/setup-java@v2
               with:
                   java-version: 11
-                  distribution: adopt
+                  distribution: adopt=
 
-            - name: Build Environment
-              run: yarn capacitor:android:build
-
-            - name: Generate APK
+            - name: Build APK
               run: yarn capacitor:android:release
 
             - name: Sign APK
