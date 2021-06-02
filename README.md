@@ -43,6 +43,7 @@ You can download the latest version of app from the [releases](https://github.co
         -   [./android](./environments/capacitor/android) - Capacitor-related files (Android)
 -   [./scripts](./scripts) - Required scripts
 -   [./resources](./resources) - Required assets
+-   [./screenshots](./resources) - App previews
 
 ## Under the hood
 
