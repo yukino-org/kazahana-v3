@@ -3,7 +3,7 @@
         <div class="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded">
             <p
                 class="cursor-pointer text-xl font-bold"
-                @click.prevent="toggle()"
+                @click.prevent="!!void toggle()"
             >
                 <Icon class="opacity-75 mr-1" icon="caret-down" v-if="isOpen" />
                 <Icon class="opacity-75 mr-1" icon="caret-right" v-else />
@@ -132,7 +132,7 @@ export default defineComponent({
     methods: {
         toggle() {
             this.isOpen = !this.isOpen;
-            if (this.isOpen && !this.sources) this.getSources();
+            if (this.isOpen && !this.sources.data) this.getSources();
         },
         async getSources() {
             if (!this.title || !this.pluginKey || this.sources.data) return;

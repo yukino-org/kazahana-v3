@@ -47,7 +47,7 @@
                                     ? 'bg-indigo-500 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800',
                             ]"
-                            @click.prevent="selectCategory(cat)"
+                            @click.stop.prevent="!!void selectCategory(cat)"
                         >
                             {{ cat }}
                         </p>

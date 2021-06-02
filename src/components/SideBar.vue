@@ -17,7 +17,7 @@
             <div v-for="link in links" class="md:mb-2" :key="link.url">
                 <button
                     :class="[hrefClassNames, 'focus:outline-none']"
-                    @click.prevent="openExternalUrl(link.url)"
+                    @click.stop.prevent="!!void openExternalUrl(link.url)"
                     v-if="link.external"
                 >
                     <span class="mr-1 opacity-75"
@@ -54,7 +54,7 @@
                         'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go back"
-                    @click.prevent="$router.go(-1)"
+                    @click.stop.prevent="!!void $router.go(-1)"
                 >
                     <Icon icon="arrow-left" />
                 </button>
@@ -65,7 +65,7 @@
                         'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Go forward"
-                    @click.prevent="$router.go(1)"
+                    @click.stop.prevent="!!void $router.go(1)"
                 >
                     <Icon icon="arrow-right" />
                 </button>
@@ -76,7 +76,7 @@
                         'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
                     ]"
                     title="Reload page"
-                    @click.prevent="reload()"
+                    @click.stop.prevent="!!void reload()"
                     v-if="reload"
                 >
                     <Icon icon="redo" />
@@ -91,7 +91,7 @@
                         py-0.5
                         rounded-full
                     "
-                    @click.prevent="switchTheme()"
+                    @click.stop.prevent="!!void switchTheme()"
                     style="width: 3rem"
                 >
                     <span

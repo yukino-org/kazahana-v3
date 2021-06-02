@@ -48,7 +48,7 @@
                             rounded
                             focus:outline-none
                         "
-                        @click.prevent="prevEpisode()"
+                        @click.stop.prevent="!!void prevEpisode()"
                     >
                         <Icon class="mr-1 opacity-75" icon="caret-left" />
                         Previous Episode
@@ -64,7 +64,7 @@
                             rounded
                             focus:outline-none
                         "
-                        @click.prevent="nextEpisode()"
+                        @click.stop.prevent="!!void nextEpisode()"
                     >
                         Next Episode
                         <Icon class="ml-1 opacity-75" icon="caret-right" />
@@ -88,7 +88,7 @@
                         class="cursor-pointer"
                         icon="sort-amount-up"
                         title="Sort"
-                        @click.prevent="reverseEpisodes()"
+                        @click.stop.prevent="!!void reverseEpisodes()"
                     />
                 </div>
                 <div
@@ -116,7 +116,7 @@
                                 cursor-pointer
                                 rounded
                             "
-                            @click.prevent="selectEpisode(ep)"
+                            @click.stop.prevent="!!void selectEpisode(ep)"
                         >
                             <p>
                                 Episode <b>{{ ep.episode }}</b>

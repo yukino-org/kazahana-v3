@@ -6,7 +6,7 @@
                 getBgColor(noti.type),
             ]"
             id="log"
-            @click.prevent="removeId(noti.id)"
+            @click.stop.prevent="!!void removeId(noti.id)"
             v-for="noti in notifications"
             :key="noti.id"
         >

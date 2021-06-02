@@ -20,7 +20,7 @@
             <div
                 class="flex-grow cursor-pointer"
                 v-if="info.showPopup"
-                @click.prevent="navigateToLastWatched()"
+                @click.stop.prevent="!!void navigateToLastWatched()"
             >
                 <p class="text-xs opacity-75">
                     Continue
@@ -75,7 +75,7 @@
                         justify-center
                         items-center
                     "
-                    @click.prevent="toggleDialog()"
+                    @click.stop.prevent="!!void toggleDialog()"
                 >
                     <Icon icon="eye" v-if="info.showPopup" />
                     <Icon icon="eye-slash" v-else />
@@ -93,7 +93,7 @@
                         items-center
                     "
                     v-if="info.showPopup"
-                    @click.prevent="deleteLastWatched()"
+                    @click.stop.prevent="!!void deleteLastWatched()"
                 >
                     <Icon icon="trash" />
                 </button>

@@ -10,7 +10,7 @@
             pointer-events-auto
         "
         v-if="url"
-        @click.prevent="goToUrl()"
+        @click.stop.prevent="!!void goToUrl()"
     >
         {{ text }} <Icon icon="external-link-alt" />
     </button>

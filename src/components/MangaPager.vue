@@ -134,7 +134,7 @@
                         order-last
                         md:order-none
                     "
-                    @click.prevent="prevPage()"
+                    @click.stop.prevent="!!void prevPage()"
                 >
                     <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
                     Page
@@ -153,7 +153,7 @@
                         order-last
                         md:order-none
                     "
-                    @click.prevent="nextPage()"
+                    @click.stop.prevent="!!void nextPage()"
                 >
                     Next Page
                     <Icon class="ml-1 opacity-75" icon="caret-right" />
@@ -295,7 +295,7 @@ export default defineComponent({
                 } else if (this.info.data.entities[0]) {
                     this.selectPageUrl(this.info.data.entities[0].page);
                 }
-                
+
                 this.info.state = "resolved";
             } catch (err) {
                 this.info.state = "failed";
@@ -353,7 +353,8 @@ export default defineComponent({
             const img =
                 this.info.data?.type === "page_urls"
                     ? await this.getPageImage(page)
-                    : this.info.data?.entities.find((x) => x.page === page)?.url;
+                    : this.info.data?.entities.find((x) => x.page === page)
+                          ?.url;
             if (img) {
                 this.currentPageImage = img;
                 this.updateLastRead();

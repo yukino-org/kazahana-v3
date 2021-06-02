@@ -53,7 +53,7 @@
                     shadow-lg
                 "
                 id="scroll-btn"
-                @click.prevent="goToTop()"
+                @click.stop.prevent="!!void goToTop()"
             >
                 <Icon class="text-2xl md:text-3xl" icon="arrow-up" />
             </button>

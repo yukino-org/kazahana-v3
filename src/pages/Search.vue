@@ -9,7 +9,11 @@
                 placeholder="Type in anime's name..."
                 @keypress.enter="search()"
             />
-            <button type="submit" class="btn" @click.prevent="search()">
+            <button
+                type="submit"
+                class="btn"
+                @click.stop.prevent="!!void search()"
+            >
                 Search
             </button>
         </div>
@@ -38,7 +42,7 @@
                 "
                 v-for="plugin in allPlugins"
             >
-                <p @click.prevent="toggleSelected(plugin.name)">
+                <p @click.stop.prevent="!!void toggleSelected(plugin.name)">
                     {{ plugin.name }}
                 </p>
             </div>

@@ -56,7 +56,7 @@
                     class="cursor-pointer"
                     icon="sort-amount-up"
                     title="Sort"
-                    @click.prevent="reverseChapters()"
+                    @click.stop.prevent="!!void reverseChapters()"
                 />
             </div>
             <div class="mt-1 grid gap-2">
@@ -71,7 +71,7 @@
                             cursor-pointer
                             rounded
                         "
-                        @click.prevent="selectChapter(chap)"
+                        @click.stop.prevent="!!void selectChapter(chap)"
                     >
                         <div>
                             <p class="text-lg">
