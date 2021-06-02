@@ -26,7 +26,8 @@ jobs:
                   java-version: 11
                   distribution: adopt
 
-            - run: ls .
+            - name: Build
+              run: yarn capacitor:android:build
 
             - name: Build APK
               run: yarn capacitor:android:release
