@@ -36,7 +36,7 @@ jobs:
               uses: r0adkll/sign-android-release@v1
               id: sign_app
               with:
-                  releaseDirectory: ${{ github.workspace }}/environments/capacitor/android/app/build/outputs/apk/release/app-release-unsigned.apk
+                  releaseDirectory: ${{ github.workspace }}/environments/capacitor/android/app/build/outputs/apk/release
                   signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
                   alias: ${{ secrets.ANDROID_SIGN_ALIAS }}
                   keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
