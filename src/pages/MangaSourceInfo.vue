@@ -33,6 +33,7 @@
                         selected.chapter &&
                         selected.url
                     "
+                    :title="info.data.title"
                     :plugin="plugin"
                     :volume="selected.volume"
                     :chapter="selected.chapter"
@@ -157,6 +158,18 @@ export default defineComponent({
                 const data = await client.manga[this.plugin].getInfo(this.link);
                 this.info.data = data;
                 this.info.state = "resolved";
+
+                const chapter = this.$route.query.chapter,
+                    volume = this.$route.query.volume;
+                if (typeof chapter === "string" && typeof volume === "string") {
+                    const foundChap = this.info.data.chapters.find(
+                        (x) => x.chapter === chapter && x.volume === volume
+                    );
+                    if (foundChap) {
+                        this.selectChapter(foundChap);
+                    }
+                }
+
                 this.refreshRpc();
             } catch (err) {
                 this.info.state = "failed";
@@ -170,13 +183,17 @@ export default defineComponent({
             this.selected = chapter;
             if (this.selected && this.info.data) {
                 const rpc = await Rpc.getClient();
+                const extra: string[] = [];
+                if (this.selected.volume)
+                    extra.push(`Vol. ${this.selected.volume}`);
+                if (this.selected.chapter)
+                    extra.push(`Chap. ${this.selected.chapter}`);
+
                 rpc?.({
                     details: "Currently reading",
-                    state: `${this.info.data.title} (Vol. ${
-                        this.selected.volume
-                    } Chap. ${this.selected.chapter}) ${
-                        this.plugin ? `(${this.plugin})` : ""
-                    }`,
+                    state: `${this.info.data.title}${
+                        extra.length ? ` (${extra.join(" ")})` : ""
+                    } (${this.plugin})`,
                     buttons: this.link
                         ? [
                               {

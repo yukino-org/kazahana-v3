@@ -1,8 +1,16 @@
-export interface LastWatchedEntity {
+export interface LastLeftEntity {
     title: string;
-    episode: string;
-    watched: number;
-    total: number;
+    episode?: {
+        episode: string;
+        watched: number;
+        total: number;
+    };
+    reading?: {
+        volume: string;
+        chapter: string;
+        read: string;
+        total: string;
+    };
     updatedAt: number;
     route: {
         route: string;

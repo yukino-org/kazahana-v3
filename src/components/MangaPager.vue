@@ -89,7 +89,7 @@
                 <div class="mt-4" v-else>
                     <img
                         class="w-full"
-                        :src="currentPageImage"
+                        :src="getValidImageUrl(currentPageImage)"
                         :alt="`Page ${currentPage}`"
                         :style="{ width: `${pageWidth}%` }"
                     />
@@ -181,6 +181,7 @@
 import { defineComponent, watch } from "vue";
 import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
 import { Await, StateController, util } from "../plugins/util";
+import { LastLeftEntity } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -191,6 +192,7 @@ export default defineComponent({
         ExternalLink,
     },
     props: {
+        title: String,
         plugin: String,
         volume: String,
         chapter: String,
@@ -286,9 +288,14 @@ export default defineComponent({
                 );
 
                 this.info.data = data;
-                if (this.info.data.entities[0]) {
+
+                const page = this.$route.query.page;
+                if (typeof page === "string") {
+                    this.selectPageUrl(page);
+                } else if (this.info.data.entities[0]) {
                     this.selectPageUrl(this.info.data.entities[0].page);
                 }
+                
                 this.info.state = "resolved";
             } catch (err) {
                 this.info.state = "failed";
@@ -346,9 +353,11 @@ export default defineComponent({
             const img =
                 this.info.data?.type === "page_urls"
                     ? await this.getPageImage(page)
-                    : this.info.data?.entities.find((x) => x.page === page)
-                          ?.url;
-            if (img) this.currentPageImage = img;
+                    : this.info.data?.entities.find((x) => x.page === page)?.url;
+            if (img) {
+                this.currentPageImage = img;
+                this.updateLastRead();
+            }
         },
         prevPage() {
             if (this.info.data) {
@@ -389,6 +398,38 @@ export default defineComponent({
                 });
             }
         },
+        async updateLastRead() {
+            const store = await Store.getClient();
+            try {
+                const extra: string[] = [];
+                if (this.volume) extra.push(`Vol. ${this.volume}`);
+                if (this.chapter) extra.push(`Chap. ${this.chapter}`);
+
+                await store.set("lastWatchedLeft", <LastLeftEntity>{
+                    title: `${this.title}${
+                        extra.length ? ` (${extra.join(" ")})` : ""
+                    }`,
+                    reading: {
+                        volume: this.volume,
+                        chapter: this.chapter,
+                        read: this.currentPage,
+                        total: this.info.data?.entities.length.toString(),
+                    },
+                    updatedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: { ...this.$route.query },
+                    },
+                    showPopup: true,
+                });
+            } catch (err) {
+                this.$logger.emit(
+                    "error",
+                    `Failed to updated last watched: ${err?.message}`
+                );
+            }
+        },
+        getValidImageUrl: util.getValidImageUrl,
     },
 });
 </script>

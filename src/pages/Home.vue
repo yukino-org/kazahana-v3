@@ -154,7 +154,7 @@ import { Await, StateControllerNoNull, util } from "../plugins/util";
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
-import LastWatched from "../components/LastWatched.vue";
+import LastWatched from "../components/LastLeft.vue";
 
 export default defineComponent({
     name: "Home",

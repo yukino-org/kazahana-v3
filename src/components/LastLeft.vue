@@ -22,14 +22,31 @@
                 v-if="info.showPopup"
                 @click.prevent="navigateToLastWatched()"
             >
-                <p class="text-xs opacity-75">Continue watching</p>
-                <p class="font-bold">{{ info.title }}</p>
                 <p class="text-xs opacity-75">
-                    <b>{{ getFormattedDuration(info.total - info.watched) }}</b>
+                    Continue
+                    {{
+                        info.episode
+                            ? "watching"
+                            : info.reading
+                            ? "reading"
+                            : ""
+                    }}
+                </p>
+                <p class="font-bold">{{ info.title }}</p>
+                <p class="text-xs opacity-75" v-if="info.episode">
+                    <b>{{
+                        getFormattedDuration(
+                            info.episode.total - info.episode.watched
+                        )
+                    }}</b>
                     remaining
                 </p>
+                <p class="text-xs opacity-75" v-else-if="info.reading">
+                    Read <b>{{ info.reading.read }}</b> of
+                    <b>{{ info.reading.total }}</b> pages
+                </p>
                 <p class="text-xs opacity-75">
-                    Watched
+                    {{ info.episode ? "Watched" : info.reading ? "Read" : "" }}
                     <b>{{
                         getFormattedDuration(
                             (Date.now() - info.updatedAt) / 1000
@@ -89,12 +106,12 @@
 import { defineComponent } from "vue";
 import { Store } from "../plugins/api";
 import { util } from "../plugins/util";
-import { LastWatchedEntity } from "../plugins/types";
+import { LastLeftEntity } from "../plugins/types";
 
 export default defineComponent({
     data() {
         const data: {
-            info: LastWatchedEntity | null;
+            info: LastLeftEntity | null;
         } = {
             info: null,
         };
@@ -108,7 +125,7 @@ export default defineComponent({
         async getLastWatched() {
             try {
                 const store = await Store.getClient();
-                const lastWatched: LastWatchedEntity | null = await store.get(
+                const lastWatched: LastLeftEntity | null = await store.get(
                     "lastWatchedLeft"
                 );
                 if (lastWatched) {
@@ -144,12 +161,26 @@ export default defineComponent({
         navigateToLastWatched() {
             if (!this.info) return;
 
+            const query: Record<string, string> = {};
+
+            if (this.info.episode) {
+                Object.assign(query, {
+                    episode: this.info.episode.episode,
+                    watched: this.info.episode.watched,
+                });
+            } else if (this.info.reading) {
+                Object.assign(query, {
+                    page: this.info.reading.read,
+                    volume: this.info.reading.volume,
+                    chapter: this.info.reading.chapter,
+                });
+            }
+
             this.$router.push({
                 path: this.info.route.route,
                 query: {
                     ...this.info.route.queries,
-                    episode: this.info.episode,
-                    watched: this.info.watched,
+                    ...query,
                 },
             });
         },

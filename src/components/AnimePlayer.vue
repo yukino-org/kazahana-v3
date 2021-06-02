@@ -159,7 +159,7 @@
 import { defineComponent, watch } from "vue";
 import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
 import { Await, StateController, util } from "../plugins/util";
-import { LastWatchedEntity } from "../plugins/types";
+import { LastLeftEntity } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -326,11 +326,13 @@ export default defineComponent({
 
             const store = await Store.getClient();
             try {
-                await store.set("lastWatchedLeft", <LastWatchedEntity>{
+                await store.set("lastWatchedLeft", <LastLeftEntity>{
                     title: `${this.title} (Episode ${this.episode})`,
-                    episode: this.episode,
-                    watched: watchedDuration,
-                    total: totalDuration,
+                    episode: {
+                        episode: this.episode,
+                        watched: watchedDuration,
+                        total: totalDuration,
+                    },
                     updatedAt: Date.now(),
                     route: {
                         route: this.$route.path,

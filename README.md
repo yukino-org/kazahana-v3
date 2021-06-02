@@ -46,7 +46,7 @@ You can download the latest version of app from the [releases](https://github.co
 
 ## Under the hood
 
--   [anime-ext](https://zyrouge.github.io/anime-ext) (Used to fetch all the required data)
+-   [anime-ext](https://zyrouge.github.io/anime-ext) - Fetches all the required data
 
 ## Contributing
 
