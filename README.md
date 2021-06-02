@@ -8,7 +8,7 @@ Yukino lets you read manga or stream anime ad-free from multiple sources. The pr
 
 We do not support piracy nor run/serve any illegal or copyrighted contents, everything is acquired from third-party sources. The developer of this application does not have any affiliation with any of the third-party sources.
 
-[![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Publish.yml) 
+[![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Site](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish (Electron)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml/badge.svg>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml>) [![Publish (Capacitor - Android)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml/badge.svg>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml>)
 
 ## Download
 
@@ -34,16 +34,19 @@ You can download the latest version of app from the [releases](https://github.co
 -   [Capacitor](https://capacitorjs.com) (Mobile app)
 -   [Tailwind CSS](https://tailwindcss.com/) (Styling)
 
-## Packages
-
--   [anime-ext](https://zyrouge.github.io/anime-ext) (Module that fetches everything behind-the-scene)
-
 ## Code structure
 
--   `src` - Contains the base of the site
--   `environments/electron` - Contains Electron base files
--   `scripts` - Contains necessary base scripts
--   `resources` - Contains necessary assets
+-   [./src](./src) - Core vue app (SPA)
+-   [./environments](./environments)
+    -   [./electron](./environments/electron) - Electron-related files (Windows, Linux, MacOS)
+    -   [./capacitor](./environments/capacitor)
+        -   [./android](./environments/capacitor/android) - Capacitor-related files (Android)
+-   [./scripts](./scripts) - Required scripts
+-   [./resources](./resources) - Required assets
+
+## Under the hood
+
+-   [anime-ext](https://zyrouge.github.io/anime-ext) (Used to fetch all the required data)
 
 ## Contributing
 

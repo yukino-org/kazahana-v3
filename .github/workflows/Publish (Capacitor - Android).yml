@@ -42,7 +42,20 @@ jobs:
                   keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
                   keyPassword: ${{ secrets.ANDROID_SIGN_KEY_PASSWORD }}
 
-            - uses: actions/upload-artifact@v2
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v2
               with:
                   name: Signed APK
                   path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+            - name: Create tag and upload
+              uses: actions/github-script@v4
+              with:
+                  github-token: ${{secrets.GITHUB_TOKEN}}
+                  script: |
+                      github.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: '👋 Thanks for reporting!'
+                      })
