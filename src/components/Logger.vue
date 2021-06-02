@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-col justify-end items-end">
+    <div class="flex flex-col justify-end items-end max-w-sm">
         <div
             :class="[
-                'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center max-w-sm',
+                'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',
                 getBgColor(noti.type),
             ]"
             id="log"

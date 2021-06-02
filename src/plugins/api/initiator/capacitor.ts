@@ -38,7 +38,7 @@ async function notifyUpdate() {
                     new Date(b.updated_at).getTime()
             )[0];
 
-        if (latest && app_version !== latest) {
+        if (latest && app_version !== `v${latest}`) {
             const { value } = await Dialog.confirm({
                 title: "Update",
                 message: `Newer version of the app is available! (${app_version} -> ${latest.tag_name})\nWould you like to download it?`,
