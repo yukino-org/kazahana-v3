@@ -26,17 +26,17 @@ jobs:
                   java-version: 11
                   distribution: adopt
 
-            - name: Build
+            - name: Build Environment
               run: yarn capacitor:android:build
 
-            - name: Build APK
+            - name: Generate APK
               run: yarn capacitor:android:release
 
             - name: Sign APK
               uses: r0adkll/sign-android-release@v1
               id: sign_app
               with:
-                  releaseDirectory: ${{ env.GITHUB_WORKSPACE }}/environments/capacitor/android/app/build/outputs/apk/release/app-release-unsigned.apk
+                  releaseDirectory: ${{ github.workspace }}/environments/capacitor/android/app/build/outputs/apk/release/app-release-unsigned.apk
                   signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
                   alias: ${{ secrets.ANDROID_SIGN_ALIAS }}
                   keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
