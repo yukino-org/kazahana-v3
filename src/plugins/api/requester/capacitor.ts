@@ -23,8 +23,8 @@ const getBody = (body: any, contentType: ReturnType<typeof getContentType>) => {
     return body;
 };
 
-const getData = (data: any, contentType: ReturnType<typeof getContentType>) => {
-    if (contentType?.includes("application/json")) {
+const getData = (data: any) => {
+    if (typeof data === "object") {
         try {
             data = JSON.stringify(data);
         } catch (err) {}
@@ -44,7 +44,7 @@ export const requester: Requester = {
             responseType: "text",
             connectTimeout: options.timeout,
         });
-        return getData(res.data, getContentType(res.headers));
+        return getData(res.data);
     },
     async post(url, body, options) {
         const parsed = new URL(url);
@@ -57,6 +57,6 @@ export const requester: Requester = {
             responseType: "text",
             connectTimeout: options.timeout,
         });
-        return res.data;
+        return getData(res.data);
     },
 };
