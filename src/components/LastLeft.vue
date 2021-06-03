@@ -1,104 +1,112 @@
 <template>
     <div>
-        <div
-            class="
-                bg-indigo-500
-                text-white
-                border-opacity-75
-                px-3
-                py-1.5
-                rounded-r
-                shadow-lg
-                flex flex-row
-                justify-center
-                items-center
-                gap-2
-                md:gap-8
-            "
-            v-if="info"
-        >
-            <div
-                class="flex-grow cursor-pointer"
-                v-if="info.showPopup"
-                @click.stop.prevent="!!void navigateToLastWatched()"
-            >
-                <p class="text-xs opacity-75">
-                    Continue
-                    {{
-                        info.episode
-                            ? "watching"
-                            : info.reading
-                            ? "reading"
-                            : ""
-                    }}
-                </p>
-                <p class="font-bold">{{ info.title }}</p>
-                <p class="text-xs opacity-75" v-if="info.episode">
-                    <b>{{
-                        getFormattedDuration(
-                            info.episode.total - info.episode.watched
-                        )
-                    }}</b>
-                    remaining
-                </p>
-                <p class="text-xs opacity-75" v-else-if="info.reading">
-                    Read <b>{{ info.reading.read }}</b> of
-                    <b>{{ info.reading.total }}</b> pages
-                </p>
-                <p class="text-xs opacity-75">
-                    {{ info.episode ? "Watched" : info.reading ? "Read" : "" }}
-                    <b>{{
-                        getFormattedDuration(
-                            (Date.now() - info.updatedAt) / 1000
-                        )
-                    }}</b>
-                    ago
-                </p>
-            </div>
+        <transition name="slidein">
             <div
                 class="
-                    flex-none flex flex-col
+                    bg-indigo-500
+                    text-white
+                    border-opacity-75
+                    px-3
+                    py-1.5
+                    rounded-r
+                    shadow-lg
+                    flex flex-row
                     justify-center
                     items-center
-                    gap-1
+                    gap-2
+                    md:gap-8
                 "
+                v-if="info"
             >
-                <button
-                    class="
-                        bg-gray-800
-                        w-8
-                        h-8
-                        text-sm
-                        rounded
-                        focus:outline-none
-                        flex
-                        justify-center
-                        items-center
-                    "
-                    @click.stop.prevent="!!void toggleDialog()"
-                >
-                    <Icon icon="eye" v-if="info.showPopup" />
-                    <Icon icon="eye-slash" v-else />
-                </button>
-                <button
-                    class="
-                        bg-gray-800
-                        w-8
-                        h-8
-                        text-sm
-                        rounded
-                        focus:outline-none
-                        flex
-                        justify-center
-                        items-center
-                    "
+                <div
+                    class="flex-grow cursor-pointer"
                     v-if="info.showPopup"
-                    @click.stop.prevent="!!void deleteLastWatched()"
+                    @click.stop.prevent="!!void navigateToLastWatched()"
                 >
-                    <Icon icon="trash" />
-                </button>
+                    <p class="text-xs opacity-75">
+                        Continue
+                        {{
+                            info.episode
+                                ? "watching"
+                                : info.reading
+                                ? "reading"
+                                : ""
+                        }}
+                    </p>
+                    <p class="font-bold">{{ info.title }}</p>
+                    <p class="text-xs opacity-75" v-if="info.episode">
+                        <b>{{
+                            getFormattedDuration(
+                                info.episode.total - info.episode.watched
+                            )
+                        }}</b>
+                        remaining
+                    </p>
+                    <p class="text-xs opacity-75" v-else-if="info.reading">
+                        Read <b>{{ info.reading.read }}</b> of
+                        <b>{{ info.reading.total }}</b> pages
+                    </p>
+                    <p class="text-xs opacity-75">
+                        {{
+                            info.episode
+                                ? "Watched"
+                                : info.reading
+                                ? "Read"
+                                : ""
+                        }}
+                        <b>{{
+                            getFormattedDuration(
+                                (Date.now() - info.updatedAt) / 1000
+                            )
+                        }}</b>
+                        ago
+                    </p>
+                </div>
+                <div
+                    class="
+                        flex-none flex flex-col
+                        justify-center
+                        items-center
+                        gap-1
+                    "
+                >
+                    <button
+                        class="
+                            bg-gray-800
+                            w-8
+                            h-8
+                            text-sm
+                            rounded
+                            focus:outline-none
+                            flex
+                            justify-center
+                            items-center
+                        "
+                        @click.stop.prevent="!!void toggleDialog()"
+                    >
+                        <Icon icon="eye" v-if="info.showPopup" />
+                        <Icon icon="eye-slash" v-else />
+                    </button>
+                    <button
+                        class="
+                            bg-gray-800
+                            w-8
+                            h-8
+                            text-sm
+                            rounded
+                            focus:outline-none
+                            flex
+                            justify-center
+                            items-center
+                        "
+                        v-if="info.showPopup"
+                        @click.stop.prevent="!!void deleteLastWatched()"
+                    >
+                        <Icon icon="trash" />
+                    </button>
+                </div>
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
@@ -187,3 +195,22 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.slidein-enter-active {
+    transform: translateX(-30rem);
+    transition: 0.5s ease;
+}
+
+.slidein-enter-to {
+    transform: translateX(0);
+}
+
+.slidein-leave-active {
+    transition: 0.3s ease;
+}
+
+.slidein-leave-to {
+    opacity: 0;
+}
+</style>
