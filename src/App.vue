@@ -30,7 +30,14 @@
                     />
                 </aside>
                 <main class="py-6 lg:col-span-3" id="main-container">
-                    <router-view :key="pageKey"></router-view>
+                    <router-view
+                        v-slot="{ Component: RouterComponent }"
+                        :key="pageKey"
+                    >
+                        <transition name="page" mode="out-in">
+                            <component :is="RouterComponent" />
+                        </transition>
+                    </router-view>
                 </main>
             </section>
             <button
@@ -144,5 +151,27 @@ export default defineComponent({
 
 #scroll-btn.active {
     right: 0.5rem;
+}
+
+.page-enter-from {
+    opacity: 0;
+}
+
+.page-enter-active {
+    transform: translateY(-1rem);
+    transition: 0.4s ease;
+}
+
+.page-enter-to {
+    transform: translateY(0);
+}
+
+.page-leave-active {
+    transition: 0.4s ease;
+}
+
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(1rem);
 }
 </style>
