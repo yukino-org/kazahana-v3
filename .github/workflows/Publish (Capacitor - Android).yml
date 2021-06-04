@@ -31,7 +31,7 @@ jobs:
 
             - name: Sign APK
               uses: r0adkll/sign-android-release@v1
-              id: sign_app
+              id: signed_app
               with:
                   releaseDirectory: ${{ github.workspace }}/environments/capacitor/android/app/build/outputs/apk/release
                   signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
@@ -43,16 +43,23 @@ jobs:
               uses: actions/upload-artifact@v2
               with:
                   name: Signed APK
-                  path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+                  path: ${{ steps.signed_app.outputs.signedReleaseFile }}
+
+            - name: Get app version
+              uses: actions/github-script@v4
+              id: app_version
+              with:
+                  result-encoding: string
+                  script: |
+                      const packageJson = require("${{ github.workspace }}/package.json");
+                      return packageJson.version;
 
             - name: Create tag and upload
-              uses: actions/github-script@v4
+              uses: ncipollo/release-action@v1
               with:
-                  github-token: ${{secrets.GITHUB_TOKEN}}
-                  script: |
-                      github.issues.createComment({
-                        issue_number: context.issue.number,
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        body: '👋 Thanks for reporting!'
-                      })
+                  allowUpdates: true
+                  artifact: ${{ steps.signed_app.outputs.signedReleaseFile }}
+                  commit: v${{ steps.app_version.outputs.result }}
+                  name: v${{ steps.app_version.outputs.result }}
+                  draft: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
