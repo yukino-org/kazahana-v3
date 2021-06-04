@@ -76,6 +76,6 @@ jobs:
                   allowUpdates: true
                   artifacts: ${{ steps.app_path.outputs.result }}
                   name: v${{ steps.app_version.outputs.result }}
-                  tag: v${{ steps.app_version.outputs.result }}
+                  tag: ${{ steps.app_version.outputs.result }}
                   draft: true
                   token: ${{ secrets.GITHUB_TOKEN }}
