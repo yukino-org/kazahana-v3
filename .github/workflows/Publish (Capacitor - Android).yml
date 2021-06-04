@@ -53,11 +53,29 @@ jobs:
                       const packageJson = require("./package.json");
                       return packageJson.version;
 
-            - name: Create tag and upload
+            - name: Do necessary modifications
+              id: app_path
+              env:
+                  SIGNED_APK_PATH: ${{ steps.signed_app.outputs.signedReleaseFile }}
+              id: app_path
+              with:
+                  result-encoding: string
+                  script: |
+                      const path = require("path");
+                      const fs = require("fs");
+                      const packageJson = require("./package.json");
+
+                      const in = process.env.SIGNED_APK_PATH;
+                      const out = path.join(path.dirname(in), `${packageJson.productName}-${packageJson.version}.apk`);
+                      fs.renameSync(in, out);
+                      return out;
+              
+
+            - name: Create and upload to release
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
-                  artifacts: ${{ steps.signed_app.outputs.signedReleaseFile }}
+                  artifacts: ${{ steps.app_path.outputs.result }}
                   name: v${{ steps.app_version.outputs.result }}
                   tag: v${{ steps.app_version.outputs.result }}
                   draft: true
