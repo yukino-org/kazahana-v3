@@ -228,6 +228,7 @@ export default defineComponent({
         this.updateWidth();
         this.getInfo();
         this.watchChapter();
+        this.watchPage();
     },
     methods: {
         async updateWidth() {
@@ -267,6 +268,16 @@ export default defineComponent({
                 }
             );
         },
+        watchPage() {
+            watch(
+                () => this.currentPage,
+                (cur, prev) => {
+                    if (cur !== prev) {
+                        this.updatePage();
+                    }
+                }
+            );
+        },
         async getInfo() {
             if (!this.plugin) {
                 this.info.state = "failed";
@@ -290,11 +301,10 @@ export default defineComponent({
                 this.info.data = data;
 
                 const page = this.$route.query.page;
-                if (typeof page === "string") {
-                    this.selectPageUrl(page);
-                } else if (this.info.data.entities[0]) {
-                    this.selectPageUrl(this.info.data.entities[0].page);
-                }
+                this.currentPage =
+                    typeof page === "string"
+                        ? page
+                        : this.info.data.entities[0].page;
 
                 this.info.state = "resolved";
             } catch (err) {
@@ -347,14 +357,16 @@ export default defineComponent({
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        async selectPageUrl(page: string) {
-            this.currentPage = page;
+        async updatePage() {
+            if (!this.currentPage) return;
+
             this.scrollToImage();
             const img =
                 this.info.data?.type === "page_urls"
-                    ? await this.getPageImage(page)
-                    : this.info.data?.entities.find((x) => x.page === page)
-                          ?.url;
+                    ? await this.getPageImage(this.currentPage)
+                    : this.info.data?.entities.find(
+                          (x) => x.page === this.currentPage
+                      )?.url;
             if (img) {
                 this.currentPageImage = img;
                 this.updateLastRead();
@@ -369,9 +381,9 @@ export default defineComponent({
                         ) - 1;
 
                     const prev = this.info.data.entities[prevIndex];
-                    if (prev) this.selectPageUrl(prev.page);
+                    if (prev) this.currentPage = prev.page;
                 } else {
-                    this.selectPageUrl(this.info.data.entities[0].page);
+                    this.currentPage = (this.info.data.entities[0].page);
                 }
             }
         },
@@ -384,9 +396,9 @@ export default defineComponent({
                         ) + 1;
 
                     const next = this.info.data.entities[nextIndex];
-                    if (next) this.selectPageUrl(next.page);
+                    if (next) this.currentPage = (next.page);
                 } else {
-                    this.selectPageUrl(this.info.data.entities[0].page);
+                    this.currentPage = (this.info.data.entities[0].page);
                 }
             }
         },
