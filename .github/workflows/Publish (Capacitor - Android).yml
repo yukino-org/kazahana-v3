@@ -50,7 +50,7 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      const packageJson = require("${{ github.workspace }}/package.json");
+                      const packageJson = require("package.json");
                       return packageJson.version;
 
             - name: Create tag and upload
