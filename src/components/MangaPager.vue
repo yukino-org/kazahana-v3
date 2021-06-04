@@ -272,9 +272,7 @@ export default defineComponent({
             watch(
                 () => this.currentPage,
                 (cur, prev) => {
-                    if (cur !== prev) {
-                        this.updatePage();
-                    }
+                    this.updatePage();
                 }
             );
         },
