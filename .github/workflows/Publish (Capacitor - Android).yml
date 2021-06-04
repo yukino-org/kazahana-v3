@@ -65,10 +65,10 @@ jobs:
                       const fs = require("fs");
                       const packageJson = require("./package.json");
 
-                      const in = process.env.SIGNED_APK_PATH;
-                      const out = path.join(path.dirname(in), `${packageJson.productName}-${packageJson.version}.apk`);
-                      fs.renameSync(in, out);
-                      return out;
+                      const inFile = process.env.SIGNED_APK_PATH;
+                      const outFile = path.join(path.dirname(inFile), `${packageJson.productName}-${packageJson.version}.apk`);
+                      fs.renameSync(inFile, outFile);
+                      return outFile;
 
             - name: Create and upload to release
               uses: ncipollo/release-action@v1
