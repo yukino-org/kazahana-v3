@@ -54,6 +54,7 @@ jobs:
                       return packageJson.version;
 
             - name: Do necessary modifications
+              uses: actions/github-script@v4
               id: app_path
               env:
                   SIGNED_APK_PATH: ${{ steps.signed_app.outputs.signedReleaseFile }}
