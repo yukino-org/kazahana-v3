@@ -58,7 +58,6 @@ jobs:
               id: app_path
               env:
                   SIGNED_APK_PATH: ${{ steps.signed_app.outputs.signedReleaseFile }}
-              id: app_path
               with:
                   result-encoding: string
                   script: |
@@ -70,7 +69,6 @@ jobs:
                       const out = path.join(path.dirname(in), `${packageJson.productName}-${packageJson.version}.apk`);
                       fs.renameSync(in, out);
                       return out;
-              
 
             - name: Create and upload to release
               uses: ncipollo/release-action@v1
