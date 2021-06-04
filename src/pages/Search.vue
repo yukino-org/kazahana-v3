@@ -307,6 +307,13 @@ export default defineComponent({
                 );
             }
 
+            if (!this.selectedPlugin.length) {
+                return this.$logger.emit(
+                    "warn",
+                    "Select atleast one source to search!"
+                );
+            }
+
             this.result.data = null;
             const results = [];
             this.result.state = "resolving";

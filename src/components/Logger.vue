@@ -1,21 +1,22 @@
 <template>
     <div class="flex flex-col justify-end items-end max-w-sm">
-        <div
-            :class="[
-                'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',
-                getBgColor(noti.type),
-            ]"
-            id="log"
-            @click.stop.prevent="!!void removeId(noti.id)"
-            v-for="noti in notifications"
-            :key="noti.id"
-        >
-            <Icon
-                class="mr-1.5 opacity-75 text-lg"
-                :icon="getIcon(noti.type)"
-            />
-            <p>{{ noti.msg }}</p>
-        </div>
+        <transition-group name="slidein" tag="div">
+            <div v-for="noti in notifications" :key="noti.id">
+                <div
+                    :class="[
+                        'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',
+                        getBgColor(noti.type),
+                    ]"
+                    @click.stop.prevent="!!void removeId(noti.id)"
+                >
+                    <Icon
+                        class="mr-1.5 opacity-75 text-lg"
+                        :icon="getIcon(noti.type)"
+                    />
+                    <p>{{ noti.msg }}</p>
+                </div>
+            </div>
+        </transition-group>
     </div>
 </template>
 
@@ -57,8 +58,11 @@ export default defineComponent({
     },
     methods: {
         removeId(id: number) {
-            const i = this.notifications.findIndex((x) => x.id === id);
-            if (typeof i === "number") this.notifications.splice(i, 1);
+            const index = this.notifications.findIndex((x) => x.id === id);
+            console.log(index);
+            if (typeof index === "number" && index > -1) {
+                this.notifications.splice(index, 1);
+            }
         },
         getBgColor(type: string) {
             switch (type) {
@@ -93,17 +97,21 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#log {
-    animation: slidein 0.2s cubic-bezier(0.43, 0.02, 0.57, 0.97);
+.slidein-enter-active {
+    transform: translateX(21rem);
+    transition: 0.4s ease;
 }
 
-@keyframes slidein {
-    from {
-        transform: translateX(20.1rem);
-    }
+.slidein-enter-to {
+    transform: translateX(0);
+}
 
-    to {
-        transform: translateX(0);
-    }
+.slidein-leave-active {
+    transition: 0.4s ease;
+}
+
+.slidein-leave-to {
+    opacity: 0;
+    transform: translateX(21rem);
 }
 </style>
