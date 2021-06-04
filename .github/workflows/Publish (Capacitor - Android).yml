@@ -57,8 +57,9 @@ jobs:
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
-                  artifact: ${{ steps.signed_app.outputs.signedReleaseFile }}
+                  artifacts: ${{ steps.signed_app.outputs.signedReleaseFile }}
                   commit: v${{ steps.app_version.outputs.result }}
                   name: v${{ steps.app_version.outputs.result }}
+                  tag: v${{ steps.app_version.outputs.result }}
                   draft: true
                   token: ${{ secrets.GITHUB_TOKEN }}
