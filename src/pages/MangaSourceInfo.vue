@@ -35,6 +35,7 @@
                     "
                     :title="info.data.title"
                     :plugin="plugin"
+                    :chapTitle="selected.title"
                     :volume="selected.volume"
                     :chapter="selected.chapter"
                     :link="selected.url"

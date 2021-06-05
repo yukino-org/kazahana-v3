@@ -16,7 +16,7 @@
         </p>
         <div v-else-if="info.state === 'resolved' && info.data">
             <p class="text-sm opacity-75 mt-4">
-                Viewing Vol. {{ volume }} Chap. {{ chapter }}
+                Viewing {{ chapTitle }} (Vol. {{ volume }} Chap. {{ chapter }})
             </p>
 
             <div class="mb-4" v-if="currentPage">
@@ -194,6 +194,7 @@ export default defineComponent({
     props: {
         title: String,
         plugin: String,
+        chapTitle: String,
         volume: String,
         chapter: String,
         link: String,
@@ -243,36 +244,19 @@ export default defineComponent({
         },
         watchChapter() {
             watch(
-                () => this.volume,
-                (cur, prev) => {
-                    if (cur !== prev) {
-                        this.images = null;
-                        this.currentPageImage = null;
-                        if (cur) {
-                            this.getInfo();
-                        }
-                    }
-                }
-            );
-
-            watch(
-                () => this.chapter,
-                (cur, prev) => {
-                    if (cur !== prev) {
-                        this.currentPage = null;
-                        this.currentPageImage = null;
-                        if (cur) {
-                            this.getInfo();
-                        }
-                    }
+                [() => this.volume, () => this.chapter, () => this.link],
+                () => {
+                    this.getInfo();
                 }
             );
         },
         watchPage() {
             watch(
                 () => this.currentPage,
-                (cur, prev) => {
-                    this.updatePage();
+                (cur) => {
+                    if (cur) {
+                        this.updatePageImage();
+                    }
                 }
             );
         },
@@ -290,6 +274,8 @@ export default defineComponent({
                 this.info.state = "resolving";
                 this.info.data = null;
                 this.images = null;
+                this.currentPage = null;
+                this.currentPageImage = null;
 
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.plugin].getChapterPages(
@@ -355,7 +341,7 @@ export default defineComponent({
         getHostFromUrl(url: string) {
             return url.match(/https?:\/\/(.*?)\//)?.[1] || url;
         },
-        async updatePage() {
+        async updatePageImage() {
             if (!this.currentPage) return;
 
             this.scrollToImage();
@@ -381,7 +367,7 @@ export default defineComponent({
                     const prev = this.info.data.entities[prevIndex];
                     if (prev) this.currentPage = prev.page;
                 } else {
-                    this.currentPage = (this.info.data.entities[0].page);
+                    this.currentPage = this.info.data.entities[0].page;
                 }
             }
         },
@@ -394,9 +380,9 @@ export default defineComponent({
                         ) + 1;
 
                     const next = this.info.data.entities[nextIndex];
-                    if (next) this.currentPage = (next.page);
+                    if (next) this.currentPage = next.page;
                 } else {
-                    this.currentPage = (this.info.data.entities[0].page);
+                    this.currentPage = this.info.data.entities[0].page;
                 }
             }
         },
