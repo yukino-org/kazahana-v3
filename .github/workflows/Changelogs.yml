@@ -29,5 +29,5 @@ jobs:
 
                       const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
                       const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-                      const changes = await genChanges(previos.tag_name, latest.tag_name);
+                      const changes = await genChanges(previous.tag_name, latest.tag_name);
                       console.log(changes);
