@@ -10,7 +10,7 @@ on:
             - released
 
 jobs:
-    android:
+    changelogs:
         runs-on: ubuntu-latest
 
         steps:
