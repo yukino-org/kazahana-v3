@@ -23,8 +23,8 @@ jobs:
             - name: Install dependencies
               run: yarn --dev
 
-            - name: Fetch all changes
-              run: git fetch --all
+            - name: Pull all changes
+              run: git pull origin HEAD
 
             - name: Update changes
               uses: actions/github-script@v4
