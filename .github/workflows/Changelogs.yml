@@ -29,6 +29,7 @@ jobs:
               with:
                   result-encoding: string
                   script: |
+                      console.log(github.ref, github)
                       let branch;
                       if (github.ref) {
                           branch = github.ref.split("/")[2];
