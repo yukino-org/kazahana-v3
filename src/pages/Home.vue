@@ -39,7 +39,7 @@
                         gap-1
                     "
                 >
-                    <div v-for="cat in categories" :key="cat">
+                    <div v-for="cat in categories">
                         <p
                             :class="[
                                 'capitalize px-1.5 rounded-sm cursor-pointer',
@@ -139,11 +139,6 @@
                 </div>
             </div>
         </div>
-
-        
-            <div class="fixed left-0 bottom-8 max-w-md mr-8 z-50">
-                <LastLeft />
-            </div>
     </div>
 </template>
 
@@ -155,7 +150,6 @@ import { Await, StateControllerNoNull, util } from "../plugins/util";
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
-import LastLeft from "../components/LastLeft.vue";
 
 export default defineComponent({
     name: "Home",
@@ -163,7 +157,6 @@ export default defineComponent({
         PageTitle,
         Loading,
         ExternalLink,
-        LastLeft,
     },
     data() {
         const data: {

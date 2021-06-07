@@ -101,11 +101,7 @@
                         items-center
                     "
                 >
-                    <div
-                        class="col-span-1"
-                        v-for="ep in info.data.episodes"
-                        :key="ep.url"
-                    >
+                    <div class="col-span-1" v-for="ep in info.data.episodes">
                         <div
                             class="
                                 hover-pop

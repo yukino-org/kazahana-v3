@@ -60,7 +60,6 @@
                                             .fill(null)
                                             .map((x, i) => i * 10 + 10)"
                                         :value="wid"
-                                        :key="wid"
                                     >
                                         {{ wid }}%
                                     </option>
@@ -75,7 +74,6 @@
                                 </option>
                                 <option
                                     v-for="page in info.data.entities"
-                                    :key="page.page"
                                     :value="page.page"
                                 >
                                     Page {{ page.page }}
@@ -165,7 +163,6 @@
                         </option>
                         <option
                             v-for="page in info.data.entities"
-                            :key="page.page"
                             :value="page.page"
                         >
                             Page {{ page.page }}

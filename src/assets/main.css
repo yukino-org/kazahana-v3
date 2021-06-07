@@ -65,3 +65,20 @@ hr {
 ::-webkit-scrollbar-thumb {
     @apply bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 rounded-full;
 }
+
+.fade-enter-from {
+    opacity: 0;
+    transition: 0.3s ease;
+}
+
+.fade-enter-to {
+    opacity: 1;
+}
+
+.fade-leave-active {
+    transition: 0.3s ease;
+}
+
+.fade-leave-to {
+    opacity: 0;
+}

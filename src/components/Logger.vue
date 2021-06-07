@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col justify-end items-end max-w-sm">
         <transition-group name="slidein" tag="div">
-            <div v-for="noti in notifications" :key="noti.id">
+            <div v-for="noti in notifications">
                 <div
                     :class="[
                         'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',

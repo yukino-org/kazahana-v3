@@ -18,7 +18,6 @@
                             <option
                                 v-for="chs in allowedUpdateChannels"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs === (settings.updateChannel || 'latest')
                                 "
@@ -39,7 +38,6 @@
                             <option
                                 v-for="chs in allowedSidebarPositions"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs === (settings.sideBarPosition || 'left')
                                 "
@@ -60,7 +58,6 @@
                             <option
                                 v-for="chs in allowedPlayerWidths"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs === (settings.defaultPlayerWidth || 100)
                                 "
@@ -83,7 +80,6 @@
                             <option
                                 v-for="chs in allowedPlayerWidths"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs === (settings.defaultPageWidth || 100)
                                 "
@@ -104,7 +100,6 @@
                             <option
                                 v-for="chs in allowedDiscordRpcOptions"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs === (settings.discordRpc || 'enabled')
                                 "
@@ -127,7 +122,6 @@
                             <option
                                 v-for="chs in allowedDiscordRpcOptions"
                                 :value="chs"
-                                :key="chs"
                                 :selected="
                                     chs ===
                                     (settings.discordRpcPrivacy || 'disabled')

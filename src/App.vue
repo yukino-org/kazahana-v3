@@ -74,6 +74,12 @@
                 <Notifications />
             </div>
         </div>
+
+        <div class="fixed left-0 bottom-8 max-w-md mr-8 z-50">
+            <transition name="fade">
+                <LastLeft v-if="$route.path === '/'" />
+            </transition>
+        </div>
     </div>
 </template>
 
@@ -84,6 +90,7 @@ import { Store } from "./plugins/api";
 import TitleBar from "./components/TitleBar.vue";
 import SideBar from "./components/SideBar.vue";
 import Notifications from "./components/Logger.vue";
+import LastLeft from "./components/LastLeft.vue";
 
 export default defineComponent({
     name: "App",
@@ -91,6 +98,7 @@ export default defineComponent({
         TitleBar,
         SideBar,
         Notifications,
+        LastLeft,
     },
     data() {
         const data: {

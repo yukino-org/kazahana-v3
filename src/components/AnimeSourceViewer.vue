@@ -40,11 +40,7 @@
                     "
                     v-else-if="sources.state === 'resolved' && sources.data"
                 >
-                    <div
-                        class="col-span-1"
-                        v-for="src in sources.data"
-                        :key="src.url"
-                    >
+                    <div class="col-span-1" v-for="src in sources.data">
                         <router-link
                             :to="{
                                 path: '/anime/source',

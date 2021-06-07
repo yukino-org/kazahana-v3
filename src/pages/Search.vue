@@ -33,7 +33,7 @@
                     'px-2 py-0.5 rounded cursor-pointer',
                     selectedPlugin.includes(plugin.name)
                         ? 'bg-green-400 dark:bg-green-500 text-white'
-                        : 'bg-gray-100 dark:bg-gray-800',
+                        : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300',
                 ]"
                 :title="
                     selectedPlugin.includes(plugin.name)
@@ -76,11 +76,7 @@
             v-else-if="result.state === 'resolved' && result.data"
         >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-center">
-                <div
-                    class="col-span-1"
-                    v-for="anime in result.data"
-                    :key="anime.url"
-                >
+                <div class="col-span-1" v-for="anime in result.data">
                     <router-link
                         :to="anime.route"
                         class="

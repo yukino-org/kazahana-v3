@@ -61,7 +61,7 @@
                 />
             </div>
             <div class="mt-1 grid gap-2">
-                <div v-for="chap in info.data.chapters" :key="chap.url">
+                <div v-for="chap in info.data.chapters">
                     <div
                         class="
                             hover-pop

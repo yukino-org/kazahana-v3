@@ -26,7 +26,6 @@
                                     .fill(null)
                                     .map((x, i) => i * 10 + 10)"
                                 :value="wid"
-                                :key="wid"
                             >
                                 {{ wid }}%
                             </option>
@@ -86,7 +85,7 @@
                 Sources (Episode {{ episode }})
             </p>
             <div class="mt-1 grid gap-2">
-                <div v-for="stream in info.data" :key="stream.url">
+                <div v-for="stream in info.data">
                     <div
                         class="
                             bg-gray-100

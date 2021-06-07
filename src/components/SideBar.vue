@@ -14,7 +14,7 @@
                 flex-wrap
             "
         >
-            <div v-for="link in links" class="md:mb-2" :key="link.url">
+            <div v-for="link in links" class="md:mb-2">
                 <button
                     :class="[hrefClassNames, 'focus:outline-none']"
                     @click.stop.prevent="!!void openExternalUrl(link.url)"

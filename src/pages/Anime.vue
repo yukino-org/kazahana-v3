@@ -96,7 +96,6 @@
                     <div
                         class="col-span-1"
                         v-for="character in info.data.characters"
-                        :key="character.url"
                     >
                         <div
                             class="
@@ -183,7 +182,7 @@
 
                 <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
                 <div class="mt-1 grid gap-2">
-                    <div v-for="plugin in extractors.anime" :key="plugin">
+                    <div v-for="plugin in extractors.anime">
                         <AnimeSourceViewer
                             :title="info.data.title"
                             :pluginKey="plugin"
@@ -194,7 +193,7 @@
 
                 <p class="text-sm opacity-75 mt-4">Sources (Manga)</p>
                 <div class="mt-1 grid gap-2">
-                    <div v-for="plugin in extractors.manga" :key="plugin">
+                    <div v-for="plugin in extractors.manga">
                         <MangaSourceViewer
                             :title="info.data.title"
                             :pluginKey="plugin"
@@ -216,7 +215,6 @@
                     <div
                         class="col-span-1"
                         v-for="anime in info.data.recommendations"
-                        :key="anime.url"
                     >
                         <div
                             class="
