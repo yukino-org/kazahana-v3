@@ -57,7 +57,7 @@ jobs:
                           body += `\n\n${logs}`;
                       }
 
-                      await github.rest.repos.updateRelease({
+                      await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
                           ...context.repo,
                           release_id: latest.id,
                           body
