@@ -29,12 +29,8 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      console.log(github.ref, github)
-                      let branch;
-                      if (github.ref) {
-                          branch = github.ref.split("/")[2];
-                      }
-                      return branch || "main";
+                      const branch = require("child_process").execSync("git branch").toString();
+                      return branch?.match(/\* (.*)/)?.[1] || "main";
 
             - name: Pull all changes
               run: git pull origin ${{ steps.current-branch.outputs.result }}
