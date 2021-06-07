@@ -34,7 +34,9 @@ jobs:
                       return matched && matched[1] ? matched[1] : "main";
 
             - name: Pull all changes
-              run: git pull origin ${{ steps.current-branch.outputs.result }}
+              run: |
+                  git fetch origin ${{ steps.current-branch.outputs.result }}
+                  git reset --hard FETCH_HEAD
 
             - name: Update changes
               uses: actions/github-script@v4
