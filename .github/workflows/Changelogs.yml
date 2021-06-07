@@ -20,6 +20,9 @@ jobs:
             - name: Install dependencies
               run: yarn --dev
 
+            - name: Pull all changes
+              run: git pull
+
             - name: Update changes
               uses: actions/github-script@v4
               with:
