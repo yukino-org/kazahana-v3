@@ -1,0 +1,30 @@
+name: Changelogs
+
+on:
+    workflow_dispatch:
+    release:
+        types:
+            - published
+
+jobs:
+    android:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14.x
+
+            - name: Update changes
+              uses: actions/github-script@v4
+              with:
+                  script: |
+                      const got = require("got").default;
+                      const genChanges = require("./scripts/utils/get-changes");
+
+                      const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
+                      const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+                      const changes = await genChanges(previos.tag_name, latest.tag_name);
+                      console.log(changes);
