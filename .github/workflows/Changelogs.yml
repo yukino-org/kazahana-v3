@@ -29,8 +29,9 @@ jobs:
               with:
                   result-encoding: string
                   script: |
-                      const branch = require("child_process").execSync("git branch").toString();
-                      return branch?.match(/\* (.*)/)?.[1] || "main";
+                      const raw = require("child_process").execSync("git branch").toString();
+                      const matched = raw && raw.match(/\* (.*)/);
+                      return matched && matched[1] ? matched[1] : "main";
 
             - name: Pull all changes
               run: git pull origin ${{ steps.current-branch.outputs.result }}
