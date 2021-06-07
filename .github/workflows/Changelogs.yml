@@ -24,7 +24,7 @@ jobs:
               run: yarn --dev
 
             - name: Pull all changes
-              run: git pull
+              run: git pull origin main
 
             - name: Update changes
               uses: actions/github-script@v4
