@@ -11,7 +11,8 @@
                     gap-8
                     lg:gap-10
                     auto-cols-fr
-                    mx-8
+                    mx-5
+                    sm:mx-8
                     md:mx-10
                     my-8
                 "
