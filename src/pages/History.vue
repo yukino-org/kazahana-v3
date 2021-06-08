@@ -167,7 +167,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Store } from "../plugins/api";
+import { Rpc, Store } from "../plugins/api";
 import { constants, util } from "../plugins/util";
 import { RecentlyBrowsedEntity, RecentlyViewedEntity } from "../plugins/types";
 
@@ -197,6 +197,7 @@ export default defineComponent({
         return data;
     },
     mounted() {
+        this.setRpc();
         this.getRecentlyBrowsed();
         this.getRecentlyViewed();
     },
@@ -210,6 +211,12 @@ export default defineComponent({
             const store = await Store.getClient();
             this.recentlyViewed =
                 (await store.get(constants.storeKeys.recentlyViewed)) || [];
+        },
+        async setRpc() {
+            const rpc = await Rpc.getClient();
+            rpc?.({
+                details: "Viewing their history",
+            });
         },
     },
 });

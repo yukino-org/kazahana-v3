@@ -163,7 +163,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Store } from "../plugins/api";
+import { Rpc, Store } from "../plugins/api";
 import { constants } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
@@ -219,6 +219,7 @@ export default defineComponent({
     },
     mounted() {
         this.getSettings();
+        this.setRpc();
     },
     methods: {
         async getSettings() {
@@ -277,6 +278,12 @@ export default defineComponent({
             ) {
                 this.updateSettings("defaultPageWidth", value);
             }
+        },
+        async setRpc() {
+            const rpc = await Rpc.getClient();
+            rpc?.({
+                details: "On settings page",
+            });
         },
     },
 });
