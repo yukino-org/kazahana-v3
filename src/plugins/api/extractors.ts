@@ -87,7 +87,6 @@ export const Extractors = {
                     FanFox: new FanFoxManga(options),
                     MangaDex: new MangaDexManga(options),
                     MangaInn: new MangaInnManga(options),
-                    Manhwatop: new ManhwatopManga(options),
                 },
             };
         }

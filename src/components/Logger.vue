@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col justify-end items-end max-w-sm">
         <transition-group name="slidein" tag="div">
-            <div v-for="noti in notifications">
+            <div v-for="noti in notifications" :key="noti.id">
                 <div
                     :class="[
                         'text-white mb-1 px-2 py-1 rounded cursor-pointer shadow-lg flex flex-row justify-center items-center',
@@ -59,7 +59,6 @@ export default defineComponent({
     methods: {
         removeId(id: number) {
             const index = this.notifications.findIndex((x) => x.id === id);
-            console.log(index);
             if (typeof index === "number" && index > -1) {
                 this.notifications.splice(index, 1);
             }

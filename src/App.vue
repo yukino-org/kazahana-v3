@@ -25,6 +25,8 @@
                             rounded
                             bg-gray-100
                             dark:bg-gray-800
+                            lg:sticky
+                            lg:top-16
                         "
                         :reload="reloadComponent"
                     />
