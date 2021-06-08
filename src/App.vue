@@ -88,6 +88,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Store } from "./plugins/api";
+import { constants } from "./plugins/util";
 
 import TitleBar from "./components/TitleBar.vue";
 import SideBar from "./components/SideBar.vue";
@@ -144,7 +145,8 @@ export default defineComponent({
         async applySettings() {
             const store = await Store.getClient();
             this.sideBarPosition =
-                (await store.get("settings"))?.sideBarPosition || "left";
+                (await store.get(constants.storeKeys.settings))
+                    ?.sideBarPosition || "left";
         },
         reloadComponent() {
             this.pageKey += 1;

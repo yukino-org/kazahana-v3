@@ -193,8 +193,9 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { RouteLocationRaw } from "vue-router";
-import { Extractors, Rpc } from "../plugins/api";
-import { StateController, util } from "../plugins/util";
+import { Extractors, Rpc, Store } from "../plugins/api";
+import { StateController, constants, util } from "../plugins/util";
+import { RecentlyBrowsedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -233,9 +234,18 @@ export default defineComponent({
                 category: "integration-MAL" | "anime" | "manga";
             }[];
         } = {
-            terms: "",
+            terms:
+                typeof this.$route.query.terms === "string"
+                    ? this.$route.query.terms
+                    : "",
             result: util.createStateController(),
-            selectedPlugin: ["MyAnimeList"],
+            selectedPlugin: Array.isArray(this.$route.query.plugins)
+                ? <string[]>(
+                      this.$route.query.plugins.filter(
+                          (x) => typeof x === "string"
+                      )
+                  )
+                : ["MyAnimeList"],
             allPlugins: [
                 {
                     name: "MyAnimeList",
@@ -250,6 +260,9 @@ export default defineComponent({
     mounted() {
         this.getAllPlugins();
         this.watchPluginChange();
+        if (this.$route.query.autoSearch === "1") {
+            this.search();
+        }
     },
     methods: {
         watchPluginChange() {
@@ -430,6 +443,28 @@ export default defineComponent({
                     ? `Searching for ${this.terms} (${this.selectedPlugin})`
                     : "On Search Page",
             });
+
+            const store = await Store.getClient();
+            const allSearchedEntities: RecentlyBrowsedEntity[] =
+                (await store.get(constants.storeKeys.recentlyBrowsed)) || [];
+
+            allSearchedEntities.push({
+                terms: this.terms,
+                searchedAt: Date.now(),
+                resultsFound: results.length,
+                route: {
+                    route: this.$route.path,
+                    queries: {
+                        terms: this.terms,
+                        plugins: [...this.selectedPlugin],
+                    },
+                },
+            });
+
+            await store.set(
+                constants.storeKeys.recentlyBrowsed,
+                allSearchedEntities
+            );
         },
         getValidImageUrl: util.getValidImageUrl,
     },

@@ -18,3 +18,24 @@ export interface LastLeftEntity {
     };
     showPopup: boolean;
 }
+
+export interface RecentlyBrowsedEntity {
+    terms: string;
+    searchedAt: number;
+    resultsFound: number;
+    route: {
+        route: string;
+        queries: Record<string, string | string[]>;
+    };
+}
+
+export interface RecentlyViewedEntity {
+    title: string;
+    image: string;
+    plugin: string;
+    viewedAt: number;
+    route: {
+        route: string;
+        queries: Record<string, string>;
+    };
+}

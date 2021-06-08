@@ -97,7 +97,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
+import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
+import { constants } from "../plugins/util";
+import { RecentlyViewedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -172,6 +174,28 @@ export default defineComponent({
                 }
 
                 this.refreshRpc();
+
+                const store = await Store.getClient();
+                const allRecentlyViewed: RecentlyViewedEntity[] =
+                    (await store.get(constants.storeKeys.recentlyViewed)) || [];
+
+                allRecentlyViewed.push({
+                    title: data.title,
+                    image: "",
+                    plugin: `${this.plugin} (Manga)`,
+                    viewedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: {
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
+                });
+
+                await store.set(
+                    constants.storeKeys.recentlyViewed,
+                    allRecentlyViewed
+                );
             } catch (err) {
                 this.info.state = "failed";
                 this.$logger.emit(

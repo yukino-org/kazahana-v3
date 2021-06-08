@@ -113,7 +113,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Store } from "../plugins/api";
-import { util } from "../plugins/util";
+import { constants, util } from "../plugins/util";
 import { LastLeftEntity } from "../plugins/types";
 
 export default defineComponent({
@@ -134,7 +134,7 @@ export default defineComponent({
             try {
                 const store = await Store.getClient();
                 const lastWatched: LastLeftEntity | null = await store.get(
-                    "lastWatchedLeft"
+                    constants.storeKeys.lastWatchedLeft
                 );
                 if (lastWatched) {
                     this.info = lastWatched;
@@ -144,7 +144,7 @@ export default defineComponent({
         async deleteLastWatched() {
             try {
                 const store = await Store.getClient();
-                await store.set("lastWatchedLeft", null);
+                await store.set(constants.storeKeys.lastWatchedLeft, null);
                 this.info = null;
             } catch (err) {}
         },
@@ -153,7 +153,9 @@ export default defineComponent({
                 try {
                     this.info.showPopup = !this.info.showPopup;
                     const store = await Store.getClient();
-                    await store.set("lastWatchedLeft", { ...this.info });
+                    await store.set(constants.storeKeys.lastWatchedLeft, {
+                        ...this.info,
+                    });
                 } catch (err) {}
             }
         },

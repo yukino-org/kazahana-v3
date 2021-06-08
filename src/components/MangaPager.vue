@@ -177,7 +177,7 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await, StateController, util } from "../plugins/util";
+import { Await, StateController, constants, util } from "../plugins/util";
 import { LastLeftEntity } from "../plugins/types";
 
 import Loading from "./Loading.vue";
@@ -231,7 +231,8 @@ export default defineComponent({
     methods: {
         async updateWidth() {
             const store = await Store.getClient();
-            let wid = (await store.get("settings"))?.defaultPageWidth;
+            let wid = (await store.get(constants.storeKeys.settings))
+                ?.defaultPageWidth;
             if (wid && !isNaN(wid)) {
                 wid = +wid;
                 if (wid > 0 && wid <= 100) {
@@ -399,7 +400,9 @@ export default defineComponent({
                 if (this.volume) extra.push(`Vol. ${this.volume}`);
                 if (this.chapter) extra.push(`Chap. ${this.chapter}`);
 
-                await store.set("lastWatchedLeft", <LastLeftEntity>{
+                await store.set(constants.storeKeys.lastWatchedLeft, <
+                    LastLeftEntity
+                >{
                     title: `${this.title}${
                         extra.length ? ` (${extra.join(" ")})` : ""
                     }`,

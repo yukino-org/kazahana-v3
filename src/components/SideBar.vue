@@ -140,6 +140,12 @@ export default defineComponent({
                 icon: "search",
             },
             {
+                name: "History",
+                url: "/history",
+                external: false,
+                icon: "history",
+            },
+            {
                 name: "Donate",
                 url: "https://www.patreon.com/zyrouge",
                 external: true,

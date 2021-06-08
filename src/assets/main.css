@@ -56,10 +56,11 @@ hr {
 
 ::-webkit-scrollbar {
     width: 8px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-gray-800;
+    @apply bg-gray-100 dark:bg-gray-800 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -164,6 +164,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Store } from "../plugins/api";
+import { constants } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -222,13 +223,15 @@ export default defineComponent({
     methods: {
         async getSettings() {
             const store = await Store.getClient();
-            this.settings = (await store.get("settings")) || {};
+            this.settings =
+                (await store.get(constants.storeKeys.settings)) || {};
         },
         async updateSettings(key: string, value: any) {
             const store = await Store.getClient();
-            const settings = (await store.get("settings")) || {};
+            const settings =
+                (await store.get(constants.storeKeys.settings)) || {};
             settings[key] = value;
-            await store.set("settings", settings);
+            await store.set(constants.storeKeys.settings, settings);
             this.settings = settings;
         },
         handleUpdateChannel(event: any) {

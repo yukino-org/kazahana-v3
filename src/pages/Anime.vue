@@ -254,8 +254,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { Await, StateController, util } from "../plugins/util";
+import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
+import { Await, StateController, constants, util } from "../plugins/util";
+import { RecentlyViewedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -328,6 +329,28 @@ export default defineComponent({
                         },
                     ],
                 });
+
+                const store = await Store.getClient();
+                const allRecentlyViewed: RecentlyViewedEntity[] =
+                    (await store.get(constants.storeKeys.recentlyViewed)) || [];
+
+                allRecentlyViewed.push({
+                    title: data.title,
+                    image: data.image,
+                    plugin: "MyAnimeList",
+                    viewedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: {
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
+                });
+
+                await store.set(
+                    constants.storeKeys.recentlyViewed,
+                    allRecentlyViewed
+                );
             } catch (err) {
                 this.info.state = "failed";
                 this.$logger.emit(
