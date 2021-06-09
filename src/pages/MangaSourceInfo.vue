@@ -45,9 +45,58 @@
             <div
                 class="
                     flex flex-row
+                    justify-center
+                    items-center
+                    flex-wrap
+                    gap-2
+                    mt-2
+                    mb-4
+                "
+                v-if="selected"
+            >
+                <button
+                    class="
+                        text-white
+                        bg-indigo-500
+                        hover:bg-indigo-600
+                        transition
+                        duration-200
+                        px-3
+                        py-2
+                        rounded
+                        focus:outline-none
+                    "
+                    @click.stop.prevent="!!void previousChapter()"
+                >
+                    <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
+                    Chapter
+                </button>
+
+                <button
+                    class="
+                        text-white
+                        bg-indigo-500
+                        hover:bg-indigo-600
+                        transition
+                        duration-200
+                        px-3
+                        py-2
+                        rounded
+                        focus:outline-none
+                    "
+                    @click.stop.prevent="!!void nextChapter()"
+                >
+                    Next Chapter
+                    <Icon class="ml-1 opacity-75" icon="caret-right" />
+                </button>
+            </div>
+
+            <div
+                class="
+                    flex flex-row
                     justify-between
                     items-center
-                    mt-4
+                    mt-6
                     text-sm
                     opacity-75
                 "
@@ -60,6 +109,7 @@
                     @click.stop.prevent="!!void reverseChapters()"
                 />
             </div>
+
             <div class="mt-1 grid gap-2">
                 <div v-for="chap in info.data.chapters">
                     <div
@@ -235,6 +285,38 @@ export default defineComponent({
             } else {
                 this.refreshRpc();
             }
+        },
+        previousChapter() {
+            if (!this.info.data?.chapters.length) return;
+
+            if (this.selected) {
+                const currentIndex = this.info.data.chapters.findIndex(
+                    (x) => x.url === this.selected?.url
+                );
+                const prevChapter = this.info.data.chapters[currentIndex - 1];
+                if (prevChapter) {
+                    return this.selectChapter(prevChapter);
+                }
+            }
+
+            this.selectChapter(
+                this.info.data.chapters[this.info.data.chapters.length - 1]
+            );
+        },
+        nextChapter() {
+            if (!this.info.data?.chapters.length) return;
+
+            if (this.selected) {
+                const currentIndex = this.info.data.chapters.findIndex(
+                    (x) => x.url === this.selected?.url
+                );
+                const nextChapter = this.info.data.chapters[currentIndex + 1];
+                if (nextChapter) {
+                    return this.selectChapter(nextChapter);
+                }
+            }
+
+            this.selectChapter(this.info.data.chapters[0]);
         },
         reverseChapters() {
             if (!this.info.data?.chapters) return;
