@@ -26,6 +26,7 @@ import {
     faTrash,
     faHistory,
     faCheckCircle,
+    faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -63,7 +64,8 @@ library.add(
     faEyeSlash,
     faTrash,
     faHistory,
-    faCheckCircle
+    faCheckCircle,
+    faFilter
 );
 
 export default FontAwesomeIcon;

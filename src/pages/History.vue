@@ -9,23 +9,49 @@
                     justify-between
                     items-center
                     flex-wrap
+                    gap-4
                 "
             >
                 <p class="text-xl text-indigo-500 font-bold">
                     Recently Browsed
                 </p>
-                <button
+
+                <div
                     class="
-                        opacity-75
-                        hover:opacity-100
-                        transition
-                        duration-300
-                        focus:outline-none
+                        flex flex-row
+                        justify-center
+                        items-center
+                        flex-wrap
+                        gap-4
                     "
-                    @click.stop.prevent="clearRecentlyBrowsed()"
                 >
-                    <Icon icon="trash" />
-                </button>
+                    <button
+                        :class="[
+                            'opacity-75 hover:opacity-100 transition duration-300 focus:outline-none',
+                            filterRecentlyBrowsed && 'text-green-400',
+                        ]"
+                        @click.stop.prevent="
+                            !!void toggleFilterRecentlyBrowsed()
+                        "
+                        title="Filter duplicate items"
+                    >
+                        <Icon icon="filter" />
+                    </button>
+
+                    <button
+                        class="
+                            opacity-75
+                            hover:opacity-100
+                            transition
+                            duration-300
+                            focus:outline-none
+                        "
+                        @click.stop.prevent="clearRecentlyBrowsed()"
+                        title="Delete all recently browsed"
+                    >
+                        <Icon icon="trash" />
+                    </button>
+                </div>
             </div>
 
             <div>
@@ -43,11 +69,16 @@
                         gap-2
                         overflow-x-scroll
                     "
+                    :key="+filterRecentlyBrowsed"
                     v-else
                 >
                     <router-link
-                        v-for="(item, i) in recentlyBrowsed.sort(
-                            (a, b) => b.searchedAt - a.searchedAt
+                        v-for="(item, i) in getFilteredItems(
+                            recentlyBrowsed.sort(
+                                (a, b) => b.searchedAt - a.searchedAt
+                            ),
+                            'terms',
+                            filterRecentlyBrowsed
                         )"
                         :to="{
                             path: item.route.route,
@@ -117,28 +148,52 @@
 
             <div
                 class="
-                    mt-6
+                    mt-8
                     flex flex-row
                     justify-between
                     items-center
                     flex-wrap
+                    gap-4
                 "
             >
-                <p class="mt-8 text-xl text-indigo-500 font-bold">
-                    Recently Viewed
-                </p>
-                <button
+                <p class="text-xl text-indigo-500 font-bold">Recently Viewed</p>
+
+                <div
                     class="
-                        opacity-75
-                        hover:opacity-100
-                        transition
-                        duration-300
-                        focus:outline-none
+                        flex flex-row
+                        justify-center
+                        items-center
+                        flex-wrap
+                        gap-4
                     "
-                    @click.stop.prevent="clearRecentlyViewed()"
                 >
-                    <Icon icon="trash" />
-                </button>
+                    <button
+                        :class="[
+                            'opacity-75 hover:opacity-100 transition duration-300 focus:outline-none',
+                            filterRecentlyViewed && 'text-green-400',
+                        ]"
+                        @click.stop.prevent="
+                            !!void toggleFilterRecentlyViewed()
+                        "
+                        title="Filter duplicate items"
+                    >
+                        <Icon icon="filter" />
+                    </button>
+
+                    <button
+                        class="
+                            opacity-75
+                            hover:opacity-100
+                            transition
+                            duration-300
+                            focus:outline-none
+                        "
+                        @click.stop.prevent="clearRecentlyViewed()"
+                        title="Delete all recently viewed"
+                    >
+                        <Icon icon="trash" />
+                    </button>
+                </div>
             </div>
 
             <div>
@@ -148,11 +203,19 @@
                 >
                     No recently viewed history was found.
                 </p>
-                <div class="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2" v-else>
+                <div
+                    class="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2"
+                    :key="+filterRecentlyViewed"
+                    v-else
+                >
                     <router-link
                         class="col-span-1"
-                        v-for="(item, i) in recentlyViewed.sort(
-                            (a, b) => b.viewedAt - a.viewedAt
+                        v-for="(item, i) in getFilteredItems(
+                            recentlyViewed.sort(
+                                (a, b) => b.viewedAt - a.viewedAt
+                            ),
+                            'title',
+                            filterRecentlyViewed
                         )"
                         :to="{
                             path: item.route.route,
@@ -235,14 +298,18 @@ export default defineComponent({
         const data: {
             placeHolderImage: string;
             recentlyBrowsed: RecentlyBrowsedEntity[];
+            filterRecentlyBrowsed: boolean;
             recentlyViewed: RecentlyViewedEntity[];
+            filterRecentlyViewed: boolean;
         } = {
             placeHolderImage:
                 constants.assets.images[
                     util.isDarkTheme() ? "darkPlaceholder" : "lightPlaceholder"
                 ],
             recentlyBrowsed: [],
+            filterRecentlyBrowsed: false,
             recentlyViewed: [],
+            filterRecentlyViewed: false,
         };
 
         return data;
@@ -263,6 +330,9 @@ export default defineComponent({
             await store.set(constants.storeKeys.recentlyBrowsed, []);
             this.recentlyBrowsed = [];
         },
+        toggleFilterRecentlyBrowsed() {
+            this.filterRecentlyBrowsed = !this.filterRecentlyBrowsed;
+        },
         async getRecentlyViewed() {
             const store = await Store.getClient();
             this.recentlyViewed =
@@ -272,6 +342,21 @@ export default defineComponent({
             const store = await Store.getClient();
             await store.set(constants.storeKeys.recentlyViewed, []);
             this.recentlyViewed = [];
+        },
+        toggleFilterRecentlyViewed() {
+            this.filterRecentlyViewed = !this.filterRecentlyViewed;
+        },
+        getFilteredItems<T>(items: T[], key: keyof T, filter: boolean) {
+            if (!filter) return items;
+
+            const newItems: Record<string, T> = {};
+            items.forEach((x) => {
+                const val = x[key] as any as string;
+                if (!newItems[val]) {
+                    newItems[val] = x;
+                }
+            });
+            return Object.values(newItems);
         },
         async setRpc() {
             const rpc = await Rpc.getClient();
