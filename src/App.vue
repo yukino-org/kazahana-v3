@@ -11,10 +11,11 @@
                     gap-8
                     lg:gap-10
                     auto-cols-fr
-                    mx-5
+                    mx-6
                     sm:mx-8
                     md:mx-10
-                    my-8
+                    my-6
+                    sm:my-8
                 "
             >
                 <aside :class="[sideBarPosition === 'right' && 'order-last']">
