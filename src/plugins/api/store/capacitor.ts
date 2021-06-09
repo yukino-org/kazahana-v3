@@ -7,7 +7,7 @@ export const Store: StoreEntity = {
             const { value } = await SecureStoragePlugin.get({
                 key,
             });
-            return JSON.parse(value);
+            return value ? JSON.parse(value) : null;
         } catch (err) {
             return null;
         }
@@ -20,4 +20,12 @@ export const Store: StoreEntity = {
             });
         } catch (err) {}
     },
+	async clear() {
+		try {
+			const { value } = await SecureStoragePlugin.clear();
+			return value;
+		} catch (err) {
+			return false;
+		}
+	}
 };

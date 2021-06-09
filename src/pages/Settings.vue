@@ -133,7 +133,27 @@
                     </div>
                 </div>
 
-                <p class="opacity-75 mt-4">
+                <div>
+                    <button
+                        class="
+                            mt-6
+                            focus:outline-none
+                            bg-red-500
+                            hover:bg-red-600
+                            transition
+                            duration-300
+                            text-white
+                            px-3.5
+                            py-1.5
+                            rounded
+                        "
+                        @click.stop.prevent="resetDatabase()"
+                    >
+                        <Icon icon="trash" /> Reset all data
+                    </button>
+                </div>
+
+                <p class="opacity-75 mt-6">
                     <Icon class="mr-1" icon="info-circle" /> Click the
                     <Icon icon="redo" /> at the top right of the screen or
                     restart app for the settings to take effect.
@@ -284,6 +304,13 @@ export default defineComponent({
             rpc?.({
                 details: "On settings page",
             });
+        },
+        async resetDatabase() {
+            const store = await Store.getClient();
+            const success = await store.clear();
+            if (success) this.$logger.emit("success", "Cleared the database!");
+            else this.$logger.emit("error", "Failed to clear the database.");
+            this.getSettings();
         },
     },
 });

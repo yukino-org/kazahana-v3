@@ -38,6 +38,11 @@ module.exports = (ipc) => {
         Store.store.set(key, data);
     });
 
+    ipc.handle("Store-Clear", (e) => {
+        Store.store.clear();
+        return true;
+    });
+
     ipc.handle("Rpc-Set", (e, act) => {
         RPC.setActivity(act);
     });

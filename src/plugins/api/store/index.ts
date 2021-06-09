@@ -1,6 +1,7 @@
 export interface StoreEntity {
     set(key: string, value: any): Promise<void>;
     get(key: string): Promise<any>;
+    clear(): Promise<boolean>;
 }
 
 export const Store = {

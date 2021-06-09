@@ -10,13 +10,13 @@
                 text="Fetching top animes, please wait..."
             />
             <p
-                class="mt-4 text-center opacity-75"
+                class="mt-6 text-center opacity-75"
                 v-else-if="animes.state === 'failed'"
             >
                 Failed to load top animes!
             </p>
             <p
-                class="mt-4 text-center opacity-75"
+                class="mt-6 text-center opacity-75"
                 v-else-if="
                     animes.state === 'resolved' && !Object.keys(animes).length
                 "

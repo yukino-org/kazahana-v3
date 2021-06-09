@@ -74,6 +74,9 @@ export default defineComponent({
                 case "warn":
                     return "bg-yellow-500";
 
+                case "success":
+                    return "bg-green-500";
+
                 default:
                     return "bg-indigo-500";
             }
@@ -86,6 +89,9 @@ export default defineComponent({
                 case "error":
                 case "warn":
                     return "exclamation-circle";
+
+                case "success":
+                    return "check-circle";
 
                 default:
                     return "question";

@@ -5,6 +5,7 @@ const PlatformBridge = {
     store: {
         get: (key) => ipcRenderer.invoke("Store-Get", key),
         set: (key, data) => ipcRenderer.invoke("Store-Set", key, data),
+        clear: () => ipcRenderer.invoke("Store-Clear"),
     },
     http: {
         get: (url, options) => ipcRenderer.invoke("Request-get", url, options),

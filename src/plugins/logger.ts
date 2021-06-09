@@ -1,4 +1,4 @@
-export type LoggerTypes = "info" | "error" | "warn";
+export type LoggerTypes = "info" | "error" | "warn" | "success";
 
 export type EventListener = (type: LoggerTypes, msg: string) => any;
 

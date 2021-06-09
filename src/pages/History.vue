@@ -22,13 +22,19 @@
                         duration-300
                         focus:outline-none
                     "
-                    @click="clearRecentlyBrowsed()"
+                    @click.stop.prevent="clearRecentlyBrowsed()"
                 >
                     <Icon icon="trash" />
                 </button>
             </div>
 
             <div>
+                <p
+                    class="mt-6 text-center opacity-75"
+                    v-if="recentlyBrowsed.length"
+                >
+                    No browse history was found.
+                </p>
                 <div
                     class="
                         flex flex-row
@@ -37,7 +43,7 @@
                         gap-2
                         overflow-x-scroll
                     "
-                    v-if="recentlyBrowsed.length"
+                    v-else
                 >
                     <router-link
                         v-for="(item, i) in recentlyBrowsed.sort(
@@ -107,9 +113,6 @@
                         </div>
                     </router-link>
                 </div>
-                <p class="mt-2 text-center opacity-75" v-else>
-                    No browse history was found.
-                </p>
             </div>
 
             <div
@@ -132,17 +135,20 @@
                         duration-300
                         focus:outline-none
                     "
-                    @click="clearRecentlyViewed()"
+                    @click.stop.prevent="clearRecentlyViewed()"
                 >
                     <Icon icon="trash" />
                 </button>
             </div>
 
             <div>
-                <div
-                    class="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2"
+                <p
+                    class="mt-6 text-center opacity-75"
                     v-if="recentlyViewed.length"
                 >
+                    No recently viewed history was found.
+                </p>
+                <div class="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2" v-else>
                     <router-link
                         class="col-span-1"
                         v-for="(item, i) in recentlyViewed.sort(
@@ -205,9 +211,6 @@
                         </div>
                     </router-link>
                 </div>
-                <p class="mt-2 text-center opacity-75" v-else>
-                    No recently viewed history was found.
-                </p>
             </div>
         </div>
     </div>

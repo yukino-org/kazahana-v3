@@ -460,11 +460,10 @@ export default defineComponent({
                     },
                 },
             });
-            allSearchedEntities.length = 50;
 
             await store.set(
                 constants.storeKeys.recentlyBrowsed,
-                allSearchedEntities
+                allSearchedEntities.slice(0, 50)
             );
         },
         getValidImageUrl: util.getValidImageUrl,

@@ -234,11 +234,10 @@ export default defineComponent({
                         },
                     },
                 });
-                allRecentlyViewed.length = 100;
 
                 await store.set(
                     constants.storeKeys.recentlyViewed,
-                    allRecentlyViewed
+                    allRecentlyViewed.slice(0, 100)
                 );
             } catch (err) {
                 this.info.state = "failed";
