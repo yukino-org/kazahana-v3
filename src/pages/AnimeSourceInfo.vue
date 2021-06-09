@@ -224,7 +224,11 @@ export default defineComponent({
                     (await store.get(constants.storeKeys.recentlyViewed)) || [];
 
                 allRecentlyViewed.splice(0, 0, {
-                    title: data.title,
+                    title: `${data.title}${
+                        this.selected
+                            ? ` (Episode ${this.selected.episode})`
+                            : ""
+                    }`,
                     image: "",
                     plugin: `${this.plugin} (Anime)`,
                     viewedAt: Date.now(),
