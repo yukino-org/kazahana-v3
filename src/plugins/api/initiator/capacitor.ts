@@ -21,25 +21,52 @@ export const initiator: InitiatorFn = async () => {
 async function notifyUpdate() {
     try {
         const client = await http.getClient();
-        const latest: any = JSON.parse(
+        const release: any = (<any[]>JSON.parse(
             await client.get(
-                "https://api.github.com/repos/zyrouge/yukino-app/releases/latest",
+                "https://api.github.com/repos/zyrouge/yukino-app/releases",
                 {
                     headers: {},
                 }
             )
-        );
+        ))
+            .sort(
+                (a, b) =>
+                    new Date(b.published_at).getTime() -
+                    new Date(a.published_at).getTime()
+            )
+            .find(
+                (x) =>
+                    !x.draft &&
+                    x.assets.some((y: any) => y.name.endsWith(".apk")) &&
+                    x.assets.some((y: any) => y.name === "latest-android.json")
+            );
 
-        if (latest && !latest.draft && app_version !== latest.name) {
-            const { value } = await Dialog.confirm({
-                title: "Update",
-                message: `Newer version of the app is available! (v${app_version} -> v${latest.name})\nWould you like to download it?`,
-            });
+        if (release) {
+            const manifest = release.assets.find(
+                (x: any) => x.name === "latest-android.json"
+            )?.url;
 
-            if (value) {
-                const opener = await ExternalLink.getClient();
-                opener?.(latest.html_url);
+            if (manifest) {
+                const { version: latestVersion } = JSON.parse(
+                    await client.get(manifest, {
+                        headers: {},
+                    })
+                );
+
+                if (app_version !== latestVersion) {
+                    const { value } = await Dialog.confirm({
+                        title: "Update",
+                        message: `Newer version of the app is available! (v${app_version} -> v${latestVersion})\nWould you like to download it?`,
+                    });
+
+                    if (value) {
+                        const opener = await ExternalLink.getClient();
+                        opener?.(release.html_url);
+                    }
+                }
             }
         }
-    } catch (err) {}
+    } catch (err) {
+        console.error(`Update failed: ${err?.message}`);
+    }
 }

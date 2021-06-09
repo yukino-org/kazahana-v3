@@ -70,11 +70,30 @@ jobs:
                       fs.renameSync(inFile, outFile);
                       return outFile;
 
+            - name: Add update manifest
+              uses: actions/github-script@v4
+              id: app_manifest
+              env:
+                  SIGNED_APK_PATH: ${{ steps.app_path.outputs.result }}
+              with:
+                  result-encoding: string
+                  script: |
+                      const path = require("path");
+                      const fs = require("fs");
+                      const packageJson = require("./package.json");
+
+                      const outFile = path.join(path.dirname(process.env.SIGNED_APK_PATH), "latest-android.json");
+                      fs.writeFileSync(outFile, JSON.stringify({
+                          version: packageJson.version,
+                          releaseDate: new Date().toISOString()
+                      }));
+                      return outFile;
+
             - name: Create and upload to release
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
-                  artifacts: ${{ steps.app_path.outputs.result }}
+                  artifacts: "${{ steps.app_path.outputs.result }},${{ steps.app_manifest.outputs.result }}"
                   name: ${{ steps.app_version.outputs.result }}
                   tag: v${{ steps.app_version.outputs.result }}
                   draft: true
