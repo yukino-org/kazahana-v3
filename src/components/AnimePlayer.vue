@@ -7,29 +7,48 @@
                     sm:flex-row
                     justify-between
                     items-center
-                    gap-2
+                    gap-3.5
                     mb-4
                 "
             >
                 <p class="text-sm opacity-75 mt-4">
                     Player (Episode {{ episode }})
                 </p>
-                <div
-                    class="text-sm flex flex-row justify-center items-center"
-                    v-if="supportsPlayerWidth"
-                >
-                    <span class="mr-2 opacity-75">Player width:</span>
-                    <div class="select w-40">
-                        <select class="capitalize" v-model="playerWidth">
-                            <option
-                                v-for="wid in Array(10)
-                                    .fill(null)
-                                    .map((x, i) => i * 10 + 10)"
-                                :value="wid"
-                            >
-                                {{ wid }}%
-                            </option>
-                        </select>
+                <div class="flex flex-row justify-center items-center gap-3.5">
+                    <div
+                        class="
+                            text-sm
+                            flex flex-row
+                            justify-center
+                            items-center
+                        "
+                    >
+                        <span class="mr-2 opacity-75">Autoplay:</span>
+                        <input type="checkbox" v-model="isAutoPlayEnabled" />
+                    </div>
+
+                    <div
+                        class="
+                            text-sm
+                            flex flex-row
+                            justify-center
+                            items-center
+                        "
+                        v-if="supportsPlayerWidth"
+                    >
+                        <span class="mr-2 opacity-75">Player width:</span>
+                        <div class="select w-40">
+                            <select class="capitalize" v-model="playerWidth">
+                                <option
+                                    v-for="wid in Array(10)
+                                        .fill(null)
+                                        .map((x, i) => i * 10 + 10)"
+                                    :value="wid"
+                                >
+                                    {{ wid }}%
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -43,6 +62,7 @@
                     v-if="currentPlaying.type === 'streamable'"
                     @loadedmetadata="initializePlayer()"
                     @timeupdate="updateLastWatched(true)"
+                    @ended="handleEnded()"
                 >
                     <source :src="getValidImageUrl(currentPlaying.url)" />
                 </video>
@@ -176,6 +196,7 @@ export default defineComponent({
         episode: String,
         plugin: String,
         link: String,
+        autoPlayHandler: Function,
     },
     data() {
         const data: {
@@ -193,32 +214,38 @@ export default defineComponent({
             playerWidth: number;
             supportsPlayerWidth: boolean;
             lastWatchUpdated: number;
+            isAutoPlayEnabled: boolean;
         } = {
             info: util.createStateController(),
             currentPlaying: null,
             playerWidth: 100,
             supportsPlayerWidth: ["electron"].includes(app_platform),
             lastWatchUpdated: 0,
+            isAutoPlayEnabled: false,
         };
 
         return data;
     },
     mounted() {
-        this.updateWidth();
+        this.updatePageSetting();
         this.watchEpisode();
         this.getInfo();
     },
     methods: {
-        async updateWidth() {
+        async updatePageSetting() {
             const store = await Store.getClient();
-            let wid = (await store.get(constants.storeKeys.settings))
-                ?.defaultPlayerWidth;
-            if (wid && !isNaN(wid)) {
-                wid = +wid;
-                if (wid > 0 && wid <= 100) {
-                    this.playerWidth = wid;
+            const settings =
+                (await store.get(constants.storeKeys.settings)) || {};
+
+            let width = settings.defaultPlayerWidth;
+            if (width && !isNaN(width)) {
+                width = +width;
+                if (width > 0 && width <= 100) {
+                    this.playerWidth = width;
                 }
             }
+
+            this.isAutoPlayEnabled = settings?.autoPlay === "enabled";
         },
         watchEpisode() {
             watch(
@@ -351,6 +378,11 @@ export default defineComponent({
                     "error",
                     `Failed to updated last watched: ${err?.message}`
                 );
+            }
+        },
+        async handleEnded() {
+            if (this.isAutoPlayEnabled && this.autoPlayHandler) {
+                this.autoPlayHandler();
             }
         },
         getValidImageUrl: util.getValidImageUrl,

@@ -26,6 +26,7 @@
                     :episode="selected.episode"
                     :plugin="plugin"
                     :link="selected.url"
+                    :autoPlayHandler="() => nextEpisode()"
                 />
                 <div
                     class="
