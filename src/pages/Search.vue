@@ -448,7 +448,7 @@ export default defineComponent({
             const allSearchedEntities: RecentlyBrowsedEntity[] =
                 (await store.get(constants.storeKeys.recentlyBrowsed)) || [];
 
-            allSearchedEntities.push({
+            allSearchedEntities.splice(0, 0, {
                 terms: this.terms,
                 searchedAt: Date.now(),
                 resultsFound: results.length,
@@ -460,6 +460,7 @@ export default defineComponent({
                     },
                 },
             });
+            allSearchedEntities.length = 50;
 
             await store.set(
                 constants.storeKeys.recentlyBrowsed,

@@ -179,7 +179,7 @@ export default defineComponent({
                 const allRecentlyViewed: RecentlyViewedEntity[] =
                     (await store.get(constants.storeKeys.recentlyViewed)) || [];
 
-                allRecentlyViewed.push({
+                allRecentlyViewed.splice(0, 0, {
                     title: data.title,
                     image: "",
                     plugin: `${this.plugin} (Manga)`,
@@ -191,6 +191,7 @@ export default defineComponent({
                         },
                     },
                 });
+                allRecentlyViewed.length = 100;
 
                 await store.set(
                     constants.storeKeys.recentlyViewed,

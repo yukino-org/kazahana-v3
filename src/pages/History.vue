@@ -2,9 +2,31 @@
     <div>
         <PageTitle title="Settings" />
         <div>
-            <p class="mt-6 text-xl text-indigo-500 font-bold">
-                Recently Browsed
-            </p>
+            <div
+                class="
+                    mt-6
+                    flex flex-row
+                    justify-between
+                    items-center
+                    flex-wrap
+                "
+            >
+                <p class="text-xl text-indigo-500 font-bold">
+                    Recently Browsed
+                </p>
+                <button
+                    class="
+                        opacity-75
+                        hover:opacity-100
+                        transition
+                        duration-300
+                        focus:outline-none
+                    "
+                    @click="clearRecentlyBrowsed()"
+                >
+                    <Icon icon="trash" />
+                </button>
+            </div>
 
             <div>
                 <div
@@ -18,7 +40,9 @@
                     v-if="recentlyBrowsed.length"
                 >
                     <router-link
-                        v-for="(item, i) in recentlyBrowsed"
+                        v-for="(item, i) in recentlyBrowsed.sort(
+                            (a, b) => b.searchedAt - a.searchedAt
+                        )"
                         :to="{
                             path: item.route.route,
                             query: {
@@ -88,9 +112,31 @@
                 </p>
             </div>
 
-            <p class="mt-8 text-xl text-indigo-500 font-bold">
-                Recently Viewed
-            </p>
+            <div
+                class="
+                    mt-6
+                    flex flex-row
+                    justify-between
+                    items-center
+                    flex-wrap
+                "
+            >
+                <p class="mt-8 text-xl text-indigo-500 font-bold">
+                    Recently Viewed
+                </p>
+                <button
+                    class="
+                        opacity-75
+                        hover:opacity-100
+                        transition
+                        duration-300
+                        focus:outline-none
+                    "
+                    @click="clearRecentlyViewed()"
+                >
+                    <Icon icon="trash" />
+                </button>
+            </div>
 
             <div>
                 <div
@@ -99,7 +145,9 @@
                 >
                     <router-link
                         class="col-span-1"
-                        v-for="(item, i) in recentlyViewed"
+                        v-for="(item, i) in recentlyViewed.sort(
+                            (a, b) => b.viewedAt - a.viewedAt
+                        )"
                         :to="{
                             path: item.route.route,
                             query: {
@@ -207,10 +255,20 @@ export default defineComponent({
             this.recentlyBrowsed =
                 (await store.get(constants.storeKeys.recentlyBrowsed)) || [];
         },
+        async clearRecentlyBrowsed() {
+            const store = await Store.getClient();
+            await store.set(constants.storeKeys.recentlyBrowsed, []);
+            this.recentlyBrowsed = [];
+        },
         async getRecentlyViewed() {
             const store = await Store.getClient();
             this.recentlyViewed =
                 (await store.get(constants.storeKeys.recentlyViewed)) || [];
+        },
+        async clearRecentlyViewed() {
+            const store = await Store.getClient();
+            await store.set(constants.storeKeys.recentlyViewed, []);
+            this.recentlyViewed = [];
         },
         async setRpc() {
             const rpc = await Rpc.getClient();

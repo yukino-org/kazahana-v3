@@ -25,6 +25,9 @@ export const constants = {
             darkPlaceholder: "/images/dark-placeholder-image.png",
         },
     },
+    links: {
+        discordInvite: "https://discord.gg/dUHbfHNUmE",
+    },
 };
 
 export const util = {
