@@ -31,7 +31,7 @@
             <div>
                 <p
                     class="mt-6 text-center opacity-75"
-                    v-if="recentlyBrowsed.length"
+                    v-if="!recentlyBrowsed.length"
                 >
                     No browse history was found.
                 </p>
@@ -144,7 +144,7 @@
             <div>
                 <p
                     class="mt-6 text-center opacity-75"
-                    v-if="recentlyViewed.length"
+                    v-if="!recentlyViewed.length"
                 >
                     No recently viewed history was found.
                 </p>
