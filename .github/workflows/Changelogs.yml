@@ -28,8 +28,9 @@ jobs:
               with:
                   script: |
                       const got = require("got").default;
-                      const getChanges = require("./scripts/utils/get-changes");
+                      const genChanges = require("./scripts/utils/get-changes");
 
+                      const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
                       const changes = await getChanges({
                             repo: {
                                 author: "zyrouge",
