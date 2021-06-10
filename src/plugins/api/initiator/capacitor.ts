@@ -44,7 +44,7 @@ async function notifyUpdate() {
         if (release) {
             const manifest = release.assets.find(
                 (x: any) => x.name === "latest-android.json"
-            )?.url;
+            )?.browser_download_url;
 
             if (manifest) {
                 const { version: latestVersion } = JSON.parse(
@@ -53,7 +53,7 @@ async function notifyUpdate() {
                     })
                 );
 
-                if (app_version !== latestVersion) {
+                if (latestVersion && app_version !== latestVersion) {
                     const { value } = await Dialog.confirm({
                         title: "Update",
                         message: `Newer version of the app is available! (v${app_version} -> v${latestVersion})\nWould you like to download it?`,
