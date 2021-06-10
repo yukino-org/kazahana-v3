@@ -58,6 +58,7 @@
     "@types/qs": "^6.9.6",
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",
+    "@zyrouge/git-compare": "^1.0.0",
     "autoprefixer": "^10.2.5",
     "cordova-res": "^0.15.3",
     "cross-env": "^7.0.3",

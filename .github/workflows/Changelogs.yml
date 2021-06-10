@@ -23,29 +23,23 @@ jobs:
             - name: Install dependencies
               run: yarn --dev
 
-            - name: Get current branch
-              uses: actions/github-script@v4
-              id: current-branch
-              with:
-                  result-encoding: string
-                  script: |
-                      const raw = require("child_process").execSync("git branch").toString();
-                      const matched = raw && raw.match(/\* (.*)/);
-                      return matched && matched[1] ? matched[1] : "main";
-
-            - name: Fetch all tags
-              run: git fetch --tags
-
             - name: Update changes
               uses: actions/github-script@v4
               with:
                   script: |
                       const got = require("got").default;
-                      const genChanges = require("./scripts/utils/get-changes");
+                      const getChanges = require("./scripts/utils/get-changes");
 
-                      const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
-                      const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-                      const changes = await genChanges(previous.tag_name, latest.tag_name);
+                      const changes = await getChanges({
+                            repo: {
+                                author: "zyrouge",
+                                repo: "yukino-app",
+                            },
+                            version: {
+                                previous: previous.tag_name,
+                                current: latest.tag_name,
+                            },
+                      });
 
                       const logs = `**Changelogs**\n\n${changes.split("\n").map(x => `- ${x}`).join("\n")}`;
                       let body = latest.body || "";
