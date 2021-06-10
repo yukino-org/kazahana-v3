@@ -30,6 +30,7 @@ jobs:
                       const got = require("got").default;
                       const genChanges = require("./scripts/utils/get-changes");
 
+                      const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
                       const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
                       const changes = await getChanges({
                             repo: {
