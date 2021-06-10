@@ -47,17 +47,17 @@ jobs:
                       if (features.length || fixes.length || refactors.length) {
                           changes.push(`**Changelogs**`);
                           if (features.length) {
-                              changes.push(`Features:`);
+                              changes.push(`\nFeatures:`);
                               changes.push(...features.map(x => `- ${x}`));
                           }
 
                           if (fixes.length) {
-                              changes.push(`Fixes:`);
+                              changes.push(`\nFixes:`);
                               changes.push(...fixes.map(x => `- ${x}`));
                           }
 
                           if (refactors.length) {
-                              changes.push(`Changes:`);
+                              changes.push(`\nChanges:`);
                               changes.push(...refactors.map(x => `- ${x}`));
                           }
                       }
