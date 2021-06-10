@@ -6,7 +6,27 @@ module.exports = async (opts) => {
         allowOnlyConventional: true,
         filterDuplicatesMsg: true,
     });
-    return changes.map((x) => `${x.id} ${x.msg}`).join("\n");
+
+    const features = [];
+    const fixes = [];
+    const refactors = [];
+
+    changes.forEach((x) => {
+        const msg = `${x.id} ${x.msg}`;
+        if (x.msg.startsWith("feat")) {
+            features.push(msg);
+        } else if (x.msg.startsWith("fix")) {
+            fixes.push(msg);
+        } else if (x.msg.startsWith("refactor")) {
+            refactors.push(msg);
+        } else console.log(msg);
+    });
+
+    return {
+        features,
+        fixes,
+        refactors,
+    };
 };
 
 // module
@@ -16,8 +36,8 @@ module.exports = async (opts) => {
 //             repo: "yukino-app",
 //         },
 //         version: {
-//             previous: "v0.0.8-beta.0",
-//             current: "v0.0.10-beta.0",
+//             previous: "v0.0.11-beta.0",
+//             current: "v0.0.12-beta.0",
 //         },
 //     })
-//     .then(console.log);
+//     .then((x) => console.log(JSON.stringify(x, null, 4)));

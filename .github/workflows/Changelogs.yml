@@ -32,10 +32,10 @@ jobs:
 
                       const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
                       const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-                      const changes = await getChanges({
+                      const { features, fixes, refactors } = await getChanges({
                             repo: {
-                                author: "zyrouge",
-                                repo: "yukino-app",
+                                author: context.repo.owner,
+                                repo: context.repo.repo,
                             },
                             version: {
                                 previous: previous.tag_name,
@@ -43,14 +43,34 @@ jobs:
                             },
                       });
 
-                      const logs = `**Changelogs**\n\n${changes.split("\n").map(x => `- ${x}`).join("\n")}`;
+                      const changes = [];
+                      if (features.length || fixes.length || refactors.length) {
+                          changes.push(`**Changelogs**`);
+                          if (features.length) {
+                              changes.push(`Features:`);
+                              changes.push(...features.map(x => `- ${x}`));
+                          }
+
+                          if (fixes.length) {
+                              changes.push(`Fixes:`);
+                              changes.push(...fixes.map(x => `- ${x}`));
+                          }
+
+                          if (refactors.length) {
+                              changes.push(`Changes:`);
+                              changes.push(...refactors.map(x => `- ${x}`));
+                          }
+                      }
+
+                      const logs = changes.join("\n");
                       let body = latest.body || "";
 
                       const changelogsRegex = /(\*\*Changelogs\*\*[\s\S]+)/;
                       if (changelogsRegex.test(body)) {
-                          body = body.replace(changelogsRegex, logs);
+                          if (!logs) body = body.replace(changelogsRegex, "");
+                          else body = body.replace(changelogsRegex, logs);
                       } else {
-                          body += `\n\n${logs}`;
+                          if (logs) body += `\n\n${logs}`;
                       }
 
                       await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
