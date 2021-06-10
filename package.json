@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.0.0",
-    "@tailwindcss/jit": "^0.1.18",
     "@types/qs": "^6.9.6",
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",
