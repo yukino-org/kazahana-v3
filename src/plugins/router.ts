@@ -31,7 +31,17 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: "/schedule",
-        component: () => import("../pages/Schedule.vue"),
+        component: () => import("../pages/Schedule/Main.vue"),
+        children: [
+            {
+                path: "",
+                component: () => import("../pages/Schedule/Season.vue"),
+            },
+            {
+                path: "week",
+                component: () => import("../pages/Schedule/Week.vue"),
+            },
+        ],
     },
 ];
 

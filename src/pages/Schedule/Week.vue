@@ -1,9 +1,8 @@
 <template>
     <div>
-        <PageTitle title="Schedule" />
         <div>
             <Loading
-                class="mt-4"
+                class="mt-8"
                 v-if="['waiting', 'resolving'].includes(schedule.state)"
                 text="Fetching schedule, please wait..."
             />
@@ -165,17 +164,15 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Extractors, ExtractorsEntity, Rpc } from "../plugins/api";
-import { Await, StateController, util } from "../plugins/util";
+import { Extractors, ExtractorsEntity } from "../../plugins/api";
+import { Await, StateController, util } from "../../plugins/util";
 
-import PageTitle from "../components/PageTitle.vue";
-import Loading from "../components/Loading.vue";
-import ExternalLink from "../components/ExternalLink.vue";
+import Loading from "../../components/Loading.vue";
+import ExternalLink from "../../components/ExternalLink.vue";
 
 export default defineComponent({
-    name: "Schedule",
+    name: "Schedule-Week",
     components: {
-        PageTitle,
         Loading,
         ExternalLink,
     },
@@ -199,7 +196,6 @@ export default defineComponent({
         return data;
     },
     mounted() {
-        this.setRpc();
         this.active = this.today;
         this.getSchedule();
     },
@@ -218,12 +214,6 @@ export default defineComponent({
                     `Could not fetch anime's information: ${err?.message}`
                 );
             }
-        },
-        async setRpc() {
-            const rpc = await Rpc.getClient();
-            rpc?.({
-                details: "Viewing schedule",
-            });
         },
         setActive(date: string) {
             this.active = this.active === date ? null : date;
