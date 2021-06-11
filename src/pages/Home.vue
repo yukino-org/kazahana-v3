@@ -121,10 +121,14 @@
                                         <p class="text-lg font-bold">
                                             {{ anime.title }}
                                         </p>
-                                        <ExternalLink
-                                            class="text-xs"
-                                            text="View on MAL"
-                                        />
+
+                                        <p class="-mt-1.5">
+                                            <ExternalLink
+                                                class="text-xs"
+                                                text="View on MyAnimeList"
+                                                :url="anime.url"
+                                            />
+                                        </p>
                                     </div>
                                     <div class="hidden sm:block">
                                         <p class="text-xs opacity-75">Score</p>

@@ -5,6 +5,7 @@ import { InitiatorFn } from "./";
 import Router from "../../router";
 import { http } from "../requester";
 import { ExternalLink } from "../externalLink";
+import { constants } from "../../util";
 
 export const initiator: InitiatorFn = async () => {
     await SplashScreen.hide();
@@ -23,7 +24,7 @@ async function notifyUpdate() {
         const client = await http.getClient();
         const release: any = (<any[]>JSON.parse(
             await client.get(
-                "https://api.github.com/repos/zyrouge/yukino-app/releases",
+                `https://api.github.com/repos/${constants.github.owner}/${constants.github.repo}/releases`,
                 {
                     headers: {},
                 }

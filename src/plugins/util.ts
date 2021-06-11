@@ -26,7 +26,14 @@ export const constants = {
         },
     },
     links: {
-        discordInvite: "https://discord.gg/dUHbfHNUmE",
+        discordInvite: "https://zyrouge.github.io/yukino-app/discord.html",
+        patreon: "https://patreon.com/zyrouge",
+        github: "https://github.com/zyrouge/yukino-app/",
+        guides: "https://zyrouge.github.io/yukino-app/guides/index.html",
+    },
+    github: {
+        owner: "zyrouge",
+        repo: "yukino-app",
     },
 };
 

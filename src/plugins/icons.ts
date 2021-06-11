@@ -29,12 +29,20 @@ import {
     faFilter,
     faCalendarAlt,
     faCaretUp,
+    faQuestion,
+    faBookOpen,
+    faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
     faWindowMinimize,
     faWindowMaximize,
 } from "@fortawesome/free-regular-svg-icons";
+import {
+    faDiscord,
+    faGithub,
+    faPatreon,
+} from "@fortawesome/free-brands-svg-icons";
 
 config.searchPseudoElements = true;
 
@@ -69,7 +77,13 @@ library.add(
     faCheckCircle,
     faFilter,
     faCalendarAlt,
-    faCaretUp
+    faCaretUp,
+    faQuestion,
+    faDiscord,
+    faBookOpen,
+    faPatreon,
+    faGithub,
+    faExchangeAlt
 );
 
 export default FontAwesomeIcon;

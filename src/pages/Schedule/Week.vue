@@ -143,6 +143,14 @@
                                                     >Date: </span
                                                 >{{ anime.date }}
                                             </p>
+
+                                            <p class="-mt-0.5">
+                                                <ExternalLink
+                                                    class="text-xs"
+                                                    text="View on MyAnimeList"
+                                                    :url="anime.url"
+                                                />
+                                            </p>
                                         </div>
                                     </div>
 

@@ -213,11 +213,13 @@
                     "
                 >
                     <div
-                        class="col-span-1"
+                        class="col-span-1 cursor-pointer"
+                        @click.stop.prevent="!!void getAnimeInfo(anime.url)"
                         v-for="anime in info.data.recommendations"
                     >
                         <div
                             class="
+                                hover-pop
                                 flex flex-row
                                 justify-start
                                 items-center
@@ -301,14 +303,19 @@ export default defineComponent({
         this.getSources();
     },
     methods: {
-        async getAnimeInfo() {
-            const url = this.$route.query.url;
+        async getAnimeInfo(_url?: string) {
+            window.scrollTo({
+                top: 0,
+            });
+            const url = (this.$route.query.url = _url || this.$route.query.url);
+
             if (typeof url !== "string") {
                 this.info.state = "failed";
                 return this.$logger.emit("error", "Missing 'url' in query!");
             }
 
             try {
+                this.info.data = null;
                 this.info.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.integrations.MyAnimeList.getAnimeInfo(

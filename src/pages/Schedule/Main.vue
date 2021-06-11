@@ -26,6 +26,8 @@
                         'cursor-pointer',
                         'hover:bg-gray-100',
                         'dark:hover:bg-gray-800',
+                        'transition',
+                        'duration-300',
                         $route.path === page.path
                             ? 'border-indigo-500 text-indigo-500 border-opacity-100'
                             : 'border-gray-800 dark:border-gray-100 border-opacity-20 dark:border-opacity-20',
@@ -45,13 +47,11 @@ import { defineComponent } from "vue";
 import { Rpc } from "../../plugins/api";
 
 import PageTitle from "../../components/PageTitle.vue";
-import Week from "./Week.vue";
 
 export default defineComponent({
     name: "Schedule-Week",
     components: {
         PageTitle,
-        Week,
     },
     data() {
         const data: {

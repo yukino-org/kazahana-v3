@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="text-center overflow-x-hidden overflow-y-auto"
+            class="text-center md:overflow-y-auto"
             style="max-height: calc(100vh - 11rem)"
         >
             <h1 class="text-indigo-500 font-bold text-5xl md:text-4xl">
@@ -159,16 +159,16 @@ export default defineComponent({
                 icon: "history",
             },
             {
-                name: "Donate",
-                url: "https://www.patreon.com/zyrouge",
-                external: true,
-                icon: "heart",
-            },
-            {
                 name: "Settings",
                 url: "/settings",
                 external: false,
                 icon: "cog",
+            },
+            {
+                name: "About",
+                url: "/about",
+                external: false,
+                icon: "question",
             },
         ];
 

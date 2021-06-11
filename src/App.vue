@@ -29,7 +29,7 @@
                             dark:bg-gray-800
                             lg:sticky
                             lg:top-16
-                            overflow-hidden
+                            md:overflow-hidden
                         "
                         :reload="reloadComponent"
                     />

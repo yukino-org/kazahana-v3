@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed top-0 left-0 right-0 w-full h-8 z-50">
+    <div class="fixed top-0 left-0 right-0 w-full h-8" style="z-index: 999">
         <div
             class="
                 flex flex-row

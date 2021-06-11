@@ -178,24 +178,6 @@
                     <Icon icon="redo" /> at the top right of the screen or
                     restart app for the settings to take effect.
                 </p>
-
-                <div class="text-xs opacity-50 mt-3">
-                    <p class="underline">App Information</p>
-                    <p>
-                        Name:
-                        <b>{{ appInfo.name }}</b>
-                    </p>
-                    <p>
-                        Platform:
-                        <b class="capitalize">{{ appInfo.platform }}</b>
-                    </p>
-                    <p>
-                        Version: <b>{{ appInfo.version }}</b>
-                    </p>
-                    <p>
-                        Built Time: <b>{{ appInfo.builtAt }}</b>
-                    </p>
-                </div>
             </div>
         </div>
     </div>
@@ -227,7 +209,6 @@ export default defineComponent({
             supportsSidebarPostion: boolean;
             supportsPlayerWidth: boolean;
             supportsRpc: boolean;
-            appInfo: Record<string, string>;
         } = {
             settings: null,
             allowedUpdateChannels: ["latest", "beta", "alpha"],
@@ -241,20 +222,6 @@ export default defineComponent({
             supportsSidebarPostion: ["electron"].includes(app_platform),
             supportsPlayerWidth: ["electron"].includes(app_platform),
             supportsRpc: ["electron"].includes(app_platform),
-            appInfo: {
-                name: app_name,
-                platform: app_platform,
-                version: app_version,
-                builtAt: new Date(app_builtAt).toLocaleString(undefined, {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    timeZoneName: "short",
-                }),
-            },
         };
 
         return data;
