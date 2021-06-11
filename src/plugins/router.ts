@@ -29,6 +29,10 @@ const routes: RouteRecordRaw[] = [
         path: "/history",
         component: () => import("../pages/History.vue"),
     },
+    {
+        path: "/schedule",
+        component: () => import("../pages/Schedule.vue"),
+    },
 ];
 
 const router = createRouter({

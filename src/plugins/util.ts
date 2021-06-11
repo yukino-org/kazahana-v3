@@ -72,4 +72,8 @@ export const util = {
     isDarkTheme() {
         return document.documentElement.classList.contains("dark");
     },
+    shorten(text: string, length: number) {
+        if (text.length < length) return text;
+        return text.slice(0, length - 3) + "...";
+    },
 };

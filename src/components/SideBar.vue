@@ -140,6 +140,12 @@ export default defineComponent({
                 icon: "search",
             },
             {
+                name: "Schedule",
+                url: "/schedule",
+                external: false,
+                icon: "calendar-alt",
+            },
+            {
                 name: "History",
                 url: "/history",
                 external: false,

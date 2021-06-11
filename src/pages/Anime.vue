@@ -265,7 +265,7 @@ import MangaSourceViewer from "../components/MangaSourceViewer.vue";
 import Loading from "../components/Loading.vue";
 
 export default defineComponent({
-    name: "Home",
+    name: "Anime",
     components: {
         PageTitle,
         ExternalLink,

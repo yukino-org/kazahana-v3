@@ -180,14 +180,10 @@ export default defineComponent({
 
         return data;
     },
-    async mounted() {
-        const rpc = await Rpc.getClient();
-        rpc?.({
-            details: "On Homepage",
-        });
-
-        await this.getCategories();
-        await this.getTopAnimes(this.selected);
+    mounted() {
+        this.setRpc();
+        this.getCategories();
+        this.getTopAnimes(this.selected);
     },
     methods: {
         async getCategories() {
@@ -211,6 +207,12 @@ export default defineComponent({
                     `Could not fetch anime's information: ${err?.message}`
                 );
             }
+        },
+        async setRpc() {
+            const rpc = await Rpc.getClient();
+            rpc?.({
+                details: "On Homepage",
+            });
         },
         selectCategory(type: string) {
             this.selected = type;

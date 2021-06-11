@@ -8,6 +8,8 @@ import MALAnimeInfo, {
     InfoResult as MALAnimeInfoInfoResult,
 } from "anime-ext/dist/integrations/myanimelist/anime-info";
 import * as MALTopAnimes from "anime-ext/dist/integrations/myanimelist/top";
+import * as MALSchedule from "anime-ext/dist/integrations/myanimelist/schedule";
+import * as MALSeason from "anime-ext/dist/integrations/myanimelist/season";
 
 import { AnimeExtractorModel } from "anime-ext/dist/extractors/anime/model";
 import FourAnime from "anime-ext/dist/extractors/anime/4anime";
@@ -30,6 +32,8 @@ export interface ExtractorsEntity {
             getAnimeInfo(url: string): Promise<MALAnimeInfoInfoResult>;
             getTopAnime(type: string): Promise<MALTopAnimes.TopResult[]>;
             getTopAnimeTypes(): Promise<string[]>;
+            schedule(): Promise<MALSchedule.ScheduleResult[]>;
+            season(): Promise<MALSeason.SeasonResult>;
         };
     };
     anime: Record<string, AnimeExtractorModel>;
@@ -59,17 +63,23 @@ export const Extractors = {
             this.__extractor = {
                 integrations: {
                     MyAnimeList: {
-                        async search(terms: string) {
+                        async search(terms) {
                             return MALSearchAnime(terms, options);
                         },
-                        async getAnimeInfo(url: string) {
+                        async getAnimeInfo(url) {
                             return MALAnimeInfo(url, options);
                         },
-                        async getTopAnime(type: string) {
+                        async getTopAnime(type) {
                             return MALTopAnimes.default(<any>type, options);
                         },
                         async getTopAnimeTypes() {
                             return ["all", ...MALTopAnimes.TopAnimeTypes];
+                        },
+                        async schedule() {
+                            return MALSchedule.default(options);
+                        },
+                        async season() {
+                            return MALSeason.default(options);
                         },
                     },
                 },
