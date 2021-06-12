@@ -69,7 +69,7 @@
     "cross-env": "^7.0.3",
     "cross-spawn": "^7.0.3",
     "electron": "^12.0.7",
-    "electron-builder": "^22.10.5",
+    "electron-builder": "^22.11.7",
     "electron-icon-builder": "^2.0.1",
     "postcss": "^8.2.15",
     "rimraf": "^3.0.2",
