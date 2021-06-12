@@ -24,12 +24,14 @@ jobs:
               uses: actions/github-script@v4
               with:
                   script: |
+                      const path = require("path");
+                      const fs = require("fs");
                       const got = require("got").default;
                       const getChanges = require("./scripts/utils/get-changes");
 
                       const res = await got.get(`https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/releases?per_page=2`);
                       const [previous, latest] = JSON.parse(res.body).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-                      const { features, fixes, refactors } = await getChanges({
+                      const allChanges = await getChanges({
                             repo: {
                                 author: context.repo.owner,
                                 repo: context.repo.repo,
@@ -40,6 +42,17 @@ jobs:
                             },
                       });
 
+                      await github.request({
+                          method: "POST",
+                          url: latest.upload_url,
+                          headers: {
+                              "content-type": "text/plain",
+                          },
+                          data: JSON.stringify(allChanges),
+                          name: "changelogs.json"
+                      });
+
+                      const { features, fixes, refactors } = allChanges;
                       const changes = [];
                       if (features.length || fixes.length || refactors.length) {
                           changes.push(`**Changelogs**`);

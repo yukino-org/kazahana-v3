@@ -168,7 +168,61 @@
                 text="Fetching changelogs, please wait..."
                 v-if="!changelogs.body"
             />
-            <p v-else-if="!changelogs.body.length">No changelogs were found.</p>
+            <p
+                v-else-if="
+                    !changelogs.body.features.length &&
+                    !changelogs.body.fixes.length &&
+                    !changelogs.body.refactors.length
+                "
+            >
+                No changes were found.
+            </p>
+            <div class="mb-1" v-else>
+                <p class="text-xl font-bold">What's new</p>
+                <p class="text-xs opacity-75">v{{ appInfo.version }}</p>
+
+                <div class="mt-3" v-if="changelogs.body.features.length">
+                    <p class="text-sm opacity-75">Features</p>
+                    <ul class="list-inside">
+                        <li class="mt-1" v-for="m in changelogs.body.features">
+                            <span class="mr-2">•</span>
+                            <span
+                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                >{{ parseChangelogMsg(m).id }}</span
+                            >
+                            {{ parseChangelogMsg(m).msg }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-3" v-if="changelogs.body.fixes.length">
+                    <p class="text-sm opacity-75">Bug fixes</p>
+                    <ul class="list-inside">
+                        <li class="mt-1" v-for="m in changelogs.body.fixes">
+                            <span class="mr-2">•</span>
+                            <span
+                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                >{{ parseChangelogMsg(m).id }}</span
+                            >
+                            {{ parseChangelogMsg(m).msg }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-3" v-if="changelogs.body.refactors.length">
+                    <p class="text-sm opacity-75">Other changes</p>
+                    <ul class="list-inside">
+                        <li class="mt-1" v-for="m in changelogs.body.refactors">
+                            <span class="mr-2">•</span>
+                            <span
+                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                >{{ parseChangelogMsg(m).id }}</span
+                            >
+                            {{ parseChangelogMsg(m).msg }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </Popup>
     </div>
 </template>
@@ -210,7 +264,11 @@ export default defineComponent({
             links: typeof constants.links;
             changelogs: {
                 open: boolean;
-                body: null | string[];
+                body: null | {
+                    features: string[];
+                    fixes: string[];
+                    refactors: string[];
+                };
             };
         } = {
             appInfo: AppInfo,
@@ -266,9 +324,20 @@ export default defineComponent({
                         })
                     );
                 } else {
-                    this.changelogs.body = [];
+                    this.changelogs.body = {
+                        features: [],
+                        fixes: [],
+                        refactors: [],
+                    };
                 }
             } catch (err) {}
+        },
+        parseChangelogMsg(text: string) {
+            const [id, ...msg] = text.split(" ");
+            return {
+                id,
+                msg: msg.join(" "),
+            };
         },
     },
 });

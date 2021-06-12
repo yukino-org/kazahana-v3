@@ -30,8 +30,6 @@
                 justify-center
                 items-center
                 overflow-hidden
-                px-4
-                py-2.5
             "
             style="
                 min-height: calc(100vh - 6rem);
@@ -44,7 +42,7 @@
             @click.stop.prevent.self="!!void close()"
         >
             <div class="overflow-y-auto max-h-full relative">
-                <div class="bg-gray-800 rounded-lg px-4 py-2.5">
+                <div class="bg-gray-800 rounded-lg px-6 py-4">
                     <slot></slot>
                 </div>
             </div>
