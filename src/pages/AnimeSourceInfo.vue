@@ -42,6 +42,7 @@
                         class="
                             bg-indigo-500
                             hover:bg-indigo-600
+                            text-white
                             transition
                             duration-300
                             px-3
@@ -58,6 +59,7 @@
                         class="
                             bg-indigo-500
                             hover:bg-indigo-600
+                            text-white
                             transition
                             duration-300
                             px-3

@@ -179,7 +179,12 @@
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
-import { Extractors, ExtractorsEntity, Store } from "../plugins/api";
+import {
+    Extractors,
+    ExtractorsEntity,
+    FullScreen,
+    Store,
+} from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
 import { LastLeftEntity } from "../plugins/types";
 
@@ -230,6 +235,7 @@ export default defineComponent({
         this.updatePageSetting();
         this.watchEpisode();
         this.getInfo();
+        this.attachFullScreenEvents();
     },
     methods: {
         async updatePageSetting() {
@@ -335,6 +341,40 @@ export default defineComponent({
         isPlayable(types: string[]) {
             if (types.includes("streamable")) return true;
             return false;
+        },
+        attachFullScreenEvents() {
+            if ("onfullscreenchange" in document) {
+                document.addEventListener(
+                    "fullscreenchange",
+                    this.toggleFullScreen
+                );
+            }
+
+            if ("onmozfullscreenchange" in document) {
+                // @ts-ignore
+                document.addEventListener(
+                    "mozfullscreenchange",
+                    this.toggleFullScreen
+                );
+            }
+
+            if ("onwebkitfullscreenchange" in document) {
+                // @ts-ignore
+                document.addEventListener(
+                    "webkitfullscreenchange",
+                    this.toggleFullScreen
+                );
+            }
+        },
+        async toggleFullScreen() {
+            const fullscreened = !!document.fullscreenElement;
+            const fullscreen = await FullScreen.getClient();
+
+            if (fullscreened) {
+                await fullscreen?.(true);
+            } else {
+                await fullscreen?.(false);
+            }
         },
         async updateLastWatched(fromPlayer: boolean = false) {
             if (fromPlayer) {

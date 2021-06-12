@@ -3,3 +3,4 @@ export * from "./requester";
 export * from "./store";
 export * from "./rpc";
 export * from "./externalLink";
+export * from "./fullscreen";

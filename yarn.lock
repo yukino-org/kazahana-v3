@@ -106,6 +106,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-1.0.1.tgz#8569252c193f6ec18ca7e71678de2432e8930e9d"
   integrity sha512-QObgyrCarZrdIHuX5E8TC/lh52a/1hguKtygVMPZQFel20/T5bydl12y6wnJeWsCAlrXWqI7unLy89u+AH+Zqw==
 
+"@capacitor/status-bar@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.1.tgz#08994946acfb31bb2e90136fd9d5fc302215e1d4"
+  integrity sha512-5JwaseLxyhT8P86WiL776+1UTxR3k7klH4hU+gBD5UdAHRP4/jyS1/FiEuUpkMAMy6yvCJcDwZl8b6P1zWbiMQ==
+
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"
