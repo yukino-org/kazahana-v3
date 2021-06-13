@@ -75,7 +75,7 @@ jobs:
                       }
 
                       const logs = changes.join("\n");
-                      got.post(process.env.DISCORD_RELEASE_HOOK, {
+                      await got.post(process.env.DISCORD_RELEASE_HOOK, {
                           headers: {
                               "Content-Type": "application/json"
                           }
