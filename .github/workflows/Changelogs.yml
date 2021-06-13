@@ -23,6 +23,8 @@ jobs:
             - name: Update changes
               uses: actions/github-script@v4
               with:
+                  env:
+                      DISCORD_RELEASE_HOOK: ${{ secrets.DISCORD_RELEASE_HOOK }}
                   script: |
                       const path = require("path");
                       const fs = require("fs");
@@ -73,8 +75,26 @@ jobs:
                       }
 
                       const logs = changes.join("\n");
-                      let body = latest.body || "";
+                      got.post(process.env.DISCORD_RELEASE_HOOK, {
+                          headers: {
+                              "Content-Type": "application/json"
+                          }
+                          body: JSON.stringify({
+                              username: "Yukino - Releases",
+                              avatar_url: "https://github.com/zyrouge/yukino-app/blob/next/resources/icon.png?raw=true",
+                              embeds: [
+                                  {
+                                      title: `v${latest.id}`,
+                                      url: latest.html_url,
+                                      color: 0x6366f1,
+                                      description: logs,
+                                      timestamp: Date.now()
+                                  }
+                              ]
+                          })
+                      });
 
+                      let body = latest.body || "";
                       const changelogsRegex = /(\*\*Changelogs\*\*[\s\S]+)/;
                       if (changelogsRegex.test(body)) {
                           if (!logs) body = body.replace(changelogsRegex, "");
