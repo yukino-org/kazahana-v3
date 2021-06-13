@@ -55,7 +55,7 @@ You can download the latest version of app from the [releases](https://github.co
 
 Ways to contribute to this project:
 
--   Submitting bugs and feature requests in [issues](https://github.com/zyrouge/yukino-app/issues)
+-   Submitting bugs and feature requests in [issues](https://github.com/zyrouge/yukino-app/issues).
 -   Opening [pull requests](https://github.com/zyrouge/yukino-app/pulls) containing bug fixes, new features, etc.
 
 ## Developer guide
