@@ -80,6 +80,23 @@
                 class="
                     focus:outline-none
                     text-white
+                    bg-indigo-500
+                    hover:bg-indigo-600
+                    transition
+                    duration-300
+                    px-3.5
+                    py-1.5
+                    rounded
+                "
+                @click.stop.prevent="!!void openURL(links.website)"
+            >
+                <Icon class="mr-1" :icon="['far', 'snowflake']" /> Website
+            </button>
+
+            <button
+                class="
+                    focus:outline-none
+                    text-white
                     bg-pink-600
                     hover:bg-pink-700
                     transition

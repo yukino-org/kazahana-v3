@@ -26,6 +26,7 @@ export const constants = {
         },
     },
     links: {
+        website: "https://zyrouge.github.io/yukino-app",
         discordInvite: "https://zyrouge.github.io/yukino-app/discord.html",
         patreon: "https://patreon.com/zyrouge",
         github: "https://github.com/zyrouge/yukino-app/",
