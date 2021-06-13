@@ -1,6 +1,7 @@
 <template>
     <div>
-        <PageTitle title="Settings" />
+        <PageTitle title="History" />
+
         <div>
             <div
                 class="
