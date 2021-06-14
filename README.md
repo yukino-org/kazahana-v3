@@ -29,11 +29,13 @@ You can download the latest version of app from the [releases](https://github.co
 ## Technology
 
 -   [Node.js](https://nodejs.org) (JavaScript Runtime)
--   [Typescript](https://www.typescriptlang.org/) (Runtime)
+-   [Typescript](https://www.typescriptlang.org/) (TypeScript compiler)
 -   [Yarn](https://yarnpkg.com/) (Package manager)
--   [Vite](https://vitejs.dev) (Base site)
+-   [Vue](https://vuejs.org/) (Framework)
+-   [Vite](https://vitejs.dev) (Builder)
 -   [Electron](https://electronjs.org) (Desktop app)
 -   [Capacitor](https://capacitorjs.com) (Mobile app)
+-   [PostCSS](https://postcss.org/) (CSS compiler)
 -   [Tailwind CSS](https://tailwindcss.com/) (Styling)
 
 ## Code structure
