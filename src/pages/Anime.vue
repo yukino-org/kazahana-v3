@@ -69,19 +69,28 @@
             </div>
 
             <div class="mt-8">
-                <p class="text-sm opacity-75">About</p>
-                <p>{{ info.data.synopsis || "-" }}</p>
+                <div v-if="info.data.synopsis">
+                    <div class="flex flex-row">
+                        <p class="text-sm opacity-75">About</p>
+                    </div>
+
+                    <p>{{ info.data.synopsis }}</p>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">Information</p>
-                <p><b>Type:</b> {{ info.data.info.type || "-" }}</p>
-                <p><b>Status:</b> {{ info.data.info.status || "-" }}</p>
-                <p><b>Season:</b> {{ info.data.season || "-" }}</p>
-                <p><b>Premiered:</b> {{ info.data.info.premiered || "-" }}</p>
-                <p><b>Episodes:</b> {{ info.data.info.episodes || "-" }}</p>
-                <p><b>Aired:</b> {{ info.data.info.aired || "-" }}</p>
-                <p><b>Genres:</b> {{ info.data.info.genres || "-" }}</p>
-                <p><b>Duration:</b> {{ info.data.info.duration || "-" }}</p>
-                <p><b>Rating:</b> {{ info.data.info.rating || "-" }}</p>
+                <div>
+                    <p><b>Type:</b> {{ info.data.info.type || "-" }}</p>
+                    <p><b>Status:</b> {{ info.data.info.status || "-" }}</p>
+                    <p><b>Season:</b> {{ info.data.season || "-" }}</p>
+                    <p>
+                        <b>Premiered:</b> {{ info.data.info.premiered || "-" }}
+                    </p>
+                    <p><b>Episodes:</b> {{ info.data.info.episodes || "-" }}</p>
+                    <p><b>Aired:</b> {{ info.data.info.aired || "-" }}</p>
+                    <p><b>Genres:</b> {{ info.data.info.genres || "-" }}</p>
+                    <p><b>Duration:</b> {{ info.data.info.duration || "-" }}</p>
+                    <p><b>Rating:</b> {{ info.data.info.rating || "-" }}</p>
+                </div>
 
                 <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
                 <div class="mt-1 grid gap-2">

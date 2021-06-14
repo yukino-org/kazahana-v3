@@ -6,5 +6,6 @@
         "**/node_modules/*/**": true,
         "**/.hg/store/**": true,
         "**/environments/capacitor/android/**": true
-    }
+    },
+    "discord.detailsEditing": "Editing {file_name} ({current_line}/{total_lines})"
 }

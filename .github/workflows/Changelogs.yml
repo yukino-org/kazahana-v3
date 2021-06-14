@@ -86,9 +86,9 @@ jobs:
                                   {
                                       title: `v${latest.id}`,
                                       url: latest.html_url,
-                                      color: 0x6366f1,
+                                      color: 6514417,
                                       description: logs,
-                                      timestamp: Date.now()
+                                      timestamp: new Date().toISOString()
                                   }
                               ]
                           })
