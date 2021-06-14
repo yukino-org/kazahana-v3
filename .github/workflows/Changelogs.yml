@@ -22,9 +22,9 @@ jobs:
 
             - name: Update changes
               uses: actions/github-script@v4
+              env:
+                  DISCORD_RELEASE_HOOK: ${{ secrets.DISCORD_RELEASE_HOOK }}
               with:
-                  env:
-                      DISCORD_RELEASE_HOOK: ${{ secrets.DISCORD_RELEASE_HOOK }}
                   script: |
                       const path = require("path");
                       const fs = require("fs");
