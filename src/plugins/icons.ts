@@ -32,11 +32,14 @@ import {
     faQuestion,
     faBookOpen,
     faExchangeAlt,
+    faBookmark,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
     faWindowMinimize,
     faWindowMaximize,
+    faHeart as faUnfilledHeart,
+    faBookmark as faUnfilledBookmark,
 } from "@fortawesome/free-regular-svg-icons";
 import {
     faDiscord,
@@ -83,7 +86,10 @@ library.add(
     faBookOpen,
     faPatreon,
     faGithub,
-    faExchangeAlt
+    faExchangeAlt,
+    faUnfilledHeart,
+    faBookmark,
+    faUnfilledBookmark
 );
 
 export default FontAwesomeIcon;

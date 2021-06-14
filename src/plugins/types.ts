@@ -39,3 +39,14 @@ export interface RecentlyViewedEntity {
         queries: Record<string, string>;
     };
 }
+
+export interface BookmarkedEntity {
+    title: string;
+    image: string;
+    plugin: string;
+    bookmarkedAt: number;
+    route: {
+        route: string;
+        queries: Record<string, string | string[]>;
+    };
+}

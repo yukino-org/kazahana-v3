@@ -156,6 +156,12 @@ export default defineComponent({
                 icon: "calendar-alt",
             },
             {
+                name: "Bookmarks",
+                url: "/bookmark",
+                external: false,
+                icon: "bookmark",
+            },
+            {
                 name: "History",
                 url: "/history",
                 external: false,

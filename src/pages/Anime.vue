@@ -29,11 +29,13 @@
             >
                 <div class="flex-grow text-center order-last md:order-none">
                     <PageTitle :title="info.data.title" />
+
                     <div
                         class="
                             flex flex-row
                             justify-center
                             items-center
+                            flex-wrap
                             mt-8
                             gap-10
                         "
@@ -44,17 +46,57 @@
                                 {{ info.data.stats.score || "-" }}
                             </p>
                         </div>
+
                         <div>
                             <p class="opacity-75">Rank</p>
                             <p class="text-3xl font-bold">
                                 {{ info.data.stats.rank || "-" }}
                             </p>
                         </div>
+
                         <div>
                             <p class="opacity-75">Popularity</p>
                             <p class="text-3xl font-bold">
                                 {{ info.data.stats.popularity || "-" }}
                             </p>
+                        </div>
+
+                        <div>
+                            <p class="opacity-75">Favorite</p>
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('favorite')"
+                            >
+                                <Icon
+                                    class="text-red-500"
+                                    icon="heart"
+                                    v-if="favorite"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'heart']"
+                                    v-else
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="opacity-75">Bookmark</p>
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('bookmarked')"
+                            >
+                                <Icon
+                                    class="text-indigo-500"
+                                    icon="bookmark"
+                                    v-if="bookmarked"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'bookmark']"
+                                    v-else
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -282,7 +324,7 @@
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
-import { RecentlyViewedEntity } from "../plugins/types";
+import { BookmarkedEntity, RecentlyViewedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -315,6 +357,8 @@ export default defineComponent({
             opened: {
                 about: boolean;
             };
+            favorite: boolean;
+            bookmarked: boolean;
         } = {
             info: util.createStateController(),
             extractors: {
@@ -324,6 +368,8 @@ export default defineComponent({
             opened: {
                 about: false,
             },
+            favorite: false,
+            bookmarked: false,
         };
 
         return data;
@@ -368,9 +414,19 @@ export default defineComponent({
                 });
 
                 const store = await Store.getClient();
+
+                (["bookmarked", "favorite"] as const).forEach(async (type) => {
+                    const allBookmarked: BookmarkedEntity[] =
+                        (await store.get(constants.storeKeys[type])) || [];
+
+                    this[type] =
+                        allBookmarked.findIndex(
+                            (x) => x.route.queries.url === this.$route.query.url
+                        ) >= 0;
+                });
+
                 const allRecentlyViewed: RecentlyViewedEntity[] =
                     (await store.get(constants.storeKeys.recentlyViewed)) || [];
-
                 allRecentlyViewed.splice(0, 0, {
                     title: data.title,
                     image: data.image,
@@ -383,7 +439,6 @@ export default defineComponent({
                         },
                     },
                 });
-
                 await store.set(
                     constants.storeKeys.recentlyViewed,
                     allRecentlyViewed.slice(0, 100)
@@ -395,6 +450,38 @@ export default defineComponent({
                     `Failed to fetch anime information: ${err?.message}`
                 );
             }
+        },
+        async toggleAnime(type: "bookmarked" | "favorite") {
+            if (!this.info.data) return;
+
+            const store = await Store.getClient();
+            const allBookmarked: BookmarkedEntity[] =
+                (await store.get(constants.storeKeys[type])) || [];
+
+            const index = allBookmarked.findIndex(
+                (x) => x.route.queries.url === this.$route.query.url
+            );
+
+            if (index >= 0) {
+                allBookmarked.splice(index, 1);
+                this[type] = false;
+            } else {
+                allBookmarked.splice(0, 0, {
+                    title: this.info.data.title,
+                    image: this.info.data.image,
+                    plugin: "MyAnimeList",
+                    bookmarkedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: {
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
+                });
+                this[type] = true;
+            }
+
+            await store.set(constants.storeKeys[type], allBookmarked);
         },
         async getSources() {
             const client = await Extractors.getClient();

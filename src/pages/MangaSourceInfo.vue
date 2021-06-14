@@ -22,7 +22,65 @@
             Failed to fetch manga information!
         </p>
         <div v-else-if="info.state === 'resolved' && info.data">
-            <PageTitle :title="info.data.title" />
+            <div
+                class="
+                    flex flex-col
+                    sm:flex-row
+                    justify-center
+                    sm:justify-between
+                    items-center
+                    flex-wrap
+                    gap-4
+                "
+            >
+                <PageTitle :title="info.data.title" />
+
+                <div
+                    class="
+                        flex flex-row
+                        justify-between
+                        items-center
+                        flex-wrap
+                        gap-4
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-2xl mt-0.5 cursor-pointer"
+                            @click.stop.prevent="toggleAnime('favorite')"
+                        >
+                            <Icon
+                                class="text-red-500"
+                                icon="heart"
+                                v-if="favorite"
+                            />
+                            <Icon
+                                class="opacity-75"
+                                :icon="['far', 'heart']"
+                                v-else
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-2xl mt-0.5 cursor-pointer"
+                            @click.stop.prevent="toggleAnime('bookmarked')"
+                        >
+                            <Icon
+                                class="text-indigo-500"
+                                icon="bookmark"
+                                v-if="bookmarked"
+                            />
+                            <Icon
+                                class="opacity-75"
+                                :icon="['far', 'bookmark']"
+                                v-else
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div v-if="selected">
                 <MangaPager
@@ -149,7 +207,7 @@
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
 import { constants } from "../plugins/util";
-import { RecentlyViewedEntity } from "../plugins/types";
+import { BookmarkedEntity, RecentlyViewedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -176,6 +234,8 @@ export default defineComponent({
             plugin: string | null;
             link: string | null;
             selected: SelectedEntity | null;
+            favorite: boolean;
+            bookmarked: boolean;
         } = {
             info: util.createStateController(),
             plugin:
@@ -187,6 +247,8 @@ export default defineComponent({
                     ? this.$route.query.url
                     : null,
             selected: null,
+            favorite: false,
+            bookmarked: false,
         };
 
         return data;
@@ -226,9 +288,19 @@ export default defineComponent({
                 this.refreshRpc();
 
                 const store = await Store.getClient();
+
+                (["bookmarked", "favorite"] as const).forEach(async (type) => {
+                    const allBookmarked: BookmarkedEntity[] =
+                        (await store.get(constants.storeKeys[type])) || [];
+
+                    this[type] =
+                        allBookmarked.findIndex(
+                            (x) => x.route.queries.url === this.$route.query.url
+                        ) >= 0;
+                });
+
                 const allRecentlyViewed: RecentlyViewedEntity[] =
                     (await store.get(constants.storeKeys.recentlyViewed)) || [];
-
                 allRecentlyViewed.splice(0, 0, {
                     title: `${data.title}${
                         this.selected
@@ -245,7 +317,6 @@ export default defineComponent({
                         },
                     },
                 });
-
                 await store.set(
                     constants.storeKeys.recentlyViewed,
                     allRecentlyViewed.slice(0, 100)
@@ -338,6 +409,38 @@ export default defineComponent({
                         : undefined,
                 });
             }
+        },
+        async toggleAnime(type: "bookmarked" | "favorite") {
+            if (!this.info.data) return;
+
+            const store = await Store.getClient();
+            const allBookmarked: BookmarkedEntity[] =
+                (await store.get(constants.storeKeys[type])) || [];
+
+            const index = allBookmarked.findIndex(
+                (x) => x.route.queries.url === this.$route.query.url
+            );
+
+            if (index >= 0) {
+                allBookmarked.splice(index, 1);
+                this[type] = false;
+            } else {
+                allBookmarked.splice(0, 0, {
+                    title: this.info.data.title,
+                    image: "",
+                    plugin: "MyAnimeList",
+                    bookmarkedAt: Date.now(),
+                    route: {
+                        route: this.$route.path,
+                        queries: {
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
+                });
+                this[type] = true;
+            }
+
+            await store.set(constants.storeKeys[type], allBookmarked);
         },
     },
 });

@@ -18,6 +18,8 @@ export const constants = {
         recentlyViewed: "recently_viewed",
         settings: "settings",
         lastWatchedLeft: "last_watched_left",
+        bookmarked: "bookmarked",
+        favorite: "favorites",
     },
     assets: {
         images: {
