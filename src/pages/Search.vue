@@ -1,7 +1,16 @@
 <template>
     <div>
         <PageTitle title="Search" />
-        <div class="mt-6 flex flex-row justify-center items-center gap-2">
+        <div
+            class="
+                mt-6
+                flex flex-row
+                justify-center
+                items-center
+                flex-wrap
+                gap-2
+            "
+        >
             <input
                 class="flex-grow text-box"
                 v-model="terms"
@@ -9,6 +18,7 @@
                 placeholder="Type in anime's name..."
                 @keypress.enter="search()"
             />
+
             <button
                 type="submit"
                 class="btn"
