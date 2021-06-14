@@ -1,9 +1,14 @@
 <template>
     <div>
         <div
-            class="text-center md:overflow-y-auto"
-            style="max-height: calc(100vh - 11rem)"
+            :class="[
+                'text-center',
+                'md:overflow-y-auto',
+                'md:max-h-[calc(100vh-11rem)]',
+            ]"
         >
+            <!-- 
+            style="max-height: calc(100vh - 11rem)" -->
             <h1 class="text-indigo-500 font-bold text-5xl md:text-4xl">
                 {{ sideBarTitle }}
             </h1>

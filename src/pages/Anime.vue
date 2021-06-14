@@ -83,6 +83,28 @@
                 <p><b>Duration:</b> {{ info.data.info.duration || "-" }}</p>
                 <p><b>Rating:</b> {{ info.data.info.rating || "-" }}</p>
 
+                <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
+                <div class="mt-1 grid gap-2">
+                    <div v-for="plugin in extractors.anime">
+                        <AnimeSourceViewer
+                            :title="info.data.title"
+                            :pluginKey="plugin"
+                            :pluginName="plugin"
+                        />
+                    </div>
+                </div>
+
+                <p class="text-sm opacity-75 mt-4">Sources (Manga)</p>
+                <div class="mt-1 grid gap-2">
+                    <div v-for="plugin in extractors.manga">
+                        <MangaSourceViewer
+                            :title="info.data.title"
+                            :pluginKey="plugin"
+                            :pluginName="plugin"
+                        />
+                    </div>
+                </div>
+
                 <p class="text-sm opacity-75 mt-4">Characters</p>
                 <div
                     class="
@@ -177,28 +199,6 @@
                                 />
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
-                <div class="mt-1 grid gap-2">
-                    <div v-for="plugin in extractors.anime">
-                        <AnimeSourceViewer
-                            :title="info.data.title"
-                            :pluginKey="plugin"
-                            :pluginName="plugin"
-                        />
-                    </div>
-                </div>
-
-                <p class="text-sm opacity-75 mt-4">Sources (Manga)</p>
-                <div class="mt-1 grid gap-2">
-                    <div v-for="plugin in extractors.manga">
-                        <MangaSourceViewer
-                            :title="info.data.title"
-                            :pluginKey="plugin"
-                            :pluginName="plugin"
-                        />
                     </div>
                 </div>
 
