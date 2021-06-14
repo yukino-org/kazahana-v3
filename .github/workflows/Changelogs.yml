@@ -44,10 +44,9 @@ jobs:
                             },
                       });
 
-                      const foundAsset = latest.assets.find(x => x.name === "changelogs.json");
                       await github.request({
-                          method: foundAsset ? "PATCH" : "POST",
-                          url: foundAsset ? foundAsset.url : latest.upload_url,
+                          method: "POST",
+                          url: latest.upload_url,
                           headers: {
                               "content-type": "text/plain",
                           },
