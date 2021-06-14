@@ -78,7 +78,7 @@ jobs:
                       await got.post(process.env.DISCORD_RELEASE_HOOK, {
                           headers: {
                               "Content-Type": "application/json"
-                          }
+                          },
                           body: JSON.stringify({
                               username: "Yukino - Releases",
                               avatar_url: "https://github.com/zyrouge/yukino-app/blob/next/resources/icon.png?raw=true",
