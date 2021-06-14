@@ -28,33 +28,31 @@
             </button>
         </div>
 
-        <div
-            class="
-                flex flex-row
-                justify-center
-                items-center
-                flex-wrap
-                gap-2
-                mt-6
-            "
-        >
+        <div class="flex flex-col gap-2 text-sm mt-6">
             <div
-                :class="[
-                    'px-2 py-0.5 rounded cursor-pointer',
-                    selectedPlugin.includes(plugin.name)
-                        ? 'bg-green-400 dark:bg-green-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300',
-                ]"
-                :title="
-                    selectedPlugin.includes(plugin.name)
-                        ? 'Selected'
-                        : 'Disabled'
-                "
-                v-for="plugin in allPlugins"
+                class="flex flex-row justify-start items-center flex-wrap gap-2"
+                v-for="[cat, plugins] in Object.entries(allPlugins)"
             >
-                <p @click.stop.prevent="!!void toggleSelected(plugin.name)">
-                    {{ plugin.name }}
-                </p>
+                <p class="opacity-75 capitalize">{{ cat }}:</p>
+
+                <div
+                    :class="[
+                        'px-2 py-0.5 rounded cursor-pointer',
+                        selectedPlugin.includes(plugin.name)
+                            ? 'bg-green-400 dark:bg-green-500 text-white'
+                            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300',
+                    ]"
+                    :title="
+                        selectedPlugin.includes(plugin.name)
+                            ? 'Selected'
+                            : 'Disabled'
+                    "
+                    v-for="plugin in plugins"
+                >
+                    <p @click.stop.prevent="!!void toggleSelected(plugin.name)">
+                        {{ plugin.name }}
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -201,7 +199,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent, watch, computed } from "vue";
 import { RouteLocationRaw } from "vue-router";
 import { Extractors, Rpc, Store } from "../plugins/api";
 import { StateController, constants, util } from "../plugins/util";
@@ -226,6 +224,12 @@ interface ResultType {
     };
 }
 
+interface PluginEntity {
+    name: string;
+    type: string;
+    category: "anime" | "manga" | "MyAnimeList";
+}
+
 export default defineComponent({
     name: "Search",
     components: {
@@ -234,15 +238,23 @@ export default defineComponent({
         ExternalLink,
     },
     data() {
+        const plugins: Record<string, PluginEntity[]> = {
+            common: [
+                {
+                    name: "MyAnimeList",
+                    type: "extended",
+                    category: "MyAnimeList",
+                },
+            ],
+            anime: [],
+            manga: [],
+        };
+
         const data: {
             terms: string;
             result: StateController<ResultType[]>;
             selectedPlugin: string[];
-            allPlugins: {
-                name: string;
-                type: string;
-                category: "integration-MAL" | "anime" | "manga";
-            }[];
+            allPlugins: typeof plugins;
         } = {
             terms:
                 typeof this.$route.query.terms === "string"
@@ -256,13 +268,7 @@ export default defineComponent({
                       )
                   )
                 : ["MyAnimeList"],
-            allPlugins: [
-                {
-                    name: "MyAnimeList",
-                    type: "extended",
-                    category: "integration-MAL",
-                },
-            ],
+            allPlugins: plugins,
         };
 
         return data;
@@ -295,7 +301,7 @@ export default defineComponent({
 
             const animePlugins = Object.keys(client.anime);
             animePlugins.forEach((x: string) => {
-                this.allPlugins.push({
+                this.allPlugins.anime.push({
                     name: x,
                     type: "short",
                     category: "anime",
@@ -304,7 +310,7 @@ export default defineComponent({
 
             const mangaPlugins = Object.keys(client.manga);
             mangaPlugins.forEach((x: string) => {
-                this.allPlugins.push({
+                this.allPlugins.manga.push({
                     name: x,
                     type: "short",
                     category: "manga",
@@ -338,9 +344,10 @@ export default defineComponent({
             this.result.state = "resolving";
             const client = await Extractors.getClient();
 
+            const allPlugins = Object.values(this.allPlugins).flat(1);
             for (const pluginName of this.selectedPlugin) {
                 try {
-                    const config = this.allPlugins.find(
+                    const config = allPlugins.find(
                         (x) => x.name === pluginName
                     );
                     if (!config) {
@@ -348,7 +355,7 @@ export default defineComponent({
                             "error",
                             "Corresponding plugin was not found!"
                         );
-                    } else if (config.category === "integration-MAL") {
+                    } else if (config.category === "MyAnimeList") {
                         const data =
                             await client.integrations.MyAnimeList.search(
                                 this.terms
