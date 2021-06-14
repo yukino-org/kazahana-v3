@@ -70,11 +70,26 @@
 
             <div class="mt-8">
                 <div v-if="info.data.synopsis">
-                    <div class="flex flex-row">
-                        <p class="text-sm opacity-75">About</p>
-                    </div>
+                    <p
+                        class="text-sm opacity-75"
+                        @click.stop.prevent="!!void toggleOpen('about')"
+                    >
+                        About
+                        <Icon
+                            class="opacity-75 ml-1"
+                            icon="caret-up"
+                            v-if="opened.about"
+                        />
+                        <Icon
+                            class="opacity-75 ml-1"
+                            icon="caret-down"
+                            v-else
+                        />
+                    </p>
 
-                    <p>{{ info.data.synopsis }}</p>
+                    <transition name="fade">
+                        <p v-if="opened.about">{{ info.data.synopsis }}</p>
+                    </transition>
                 </div>
 
                 <p class="text-sm opacity-75 mt-4">Information</p>
@@ -297,11 +312,17 @@ export default defineComponent({
                 anime: string[];
                 manga: string[];
             };
+            opened: {
+                about: boolean;
+            };
         } = {
             info: util.createStateController(),
             extractors: {
                 anime: [],
                 manga: [],
+            },
+            opened: {
+                about: false,
             },
         };
 
@@ -379,6 +400,10 @@ export default defineComponent({
             const client = await Extractors.getClient();
             this.extractors.anime = Object.keys(client.anime);
             this.extractors.manga = Object.keys(client.manga);
+        },
+        toggleOpen(key: string) {
+            // @ts-ignore
+            this.opened[key] = !this.opened[key];
         },
         getValidImageUrl: util.getValidImageUrl,
     },

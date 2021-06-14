@@ -7,8 +7,6 @@
                 'md:max-h-[calc(100vh-11rem)]',
             ]"
         >
-            <!-- 
-            style="max-height: calc(100vh - 11rem)" -->
             <h1 class="text-indigo-500 font-bold text-5xl md:text-4xl">
                 {{ sideBarTitle }}
             </h1>

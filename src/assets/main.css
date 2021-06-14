@@ -68,18 +68,14 @@ hr {
 }
 
 .fade-enter-active {
-    opacity: 0;
     transition: 0.3s ease;
-}
-
-.fade-enter-to {
-    opacity: 1;
 }
 
 .fade-leave-active {
     transition: 0.3s ease;
 }
 
+.fade-enter-from,
 .fade-leave-to {
     opacity: 0;
 }
