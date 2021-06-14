@@ -46,7 +46,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-3",
     "anime-ext": "^1.0.14",
     "capacitor-secure-storage-plugin": "^0.6.2",
-    "discord-rpc": "^3.2.0",
+    "discord-rpc": "^4.0.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "got": "^11.8.2",
