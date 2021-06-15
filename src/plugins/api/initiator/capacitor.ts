@@ -10,9 +10,20 @@ import { constants } from "../../util";
 export const initiator: InitiatorFn = async () => {
     await SplashScreen.hide();
 
-    App.addListener("backButton", () => {
+    App.addListener("backButton", async () => {
         try {
-            Router.go(-1);
+            if (window.history.state.back) {
+                Router.go(-1);
+            } else {
+                const { value } = await Dialog.confirm({
+                    title: "Exit",
+                    message: "Do you want to exit the app?",
+                });
+
+                if (value) {
+                    App.exitApp();
+                }
+            }
         } catch (err) {}
     });
 
