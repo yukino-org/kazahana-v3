@@ -90,6 +90,7 @@
                         :src="getValidImageUrl(currentPageImage)"
                         :alt="`Page ${currentPage}`"
                         :style="{ width: `${pageWidth}%` }"
+                        :key="currentPageImage"
                     />
                     <p class="mt-4">
                         Image URL:
@@ -137,6 +138,7 @@
                     <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
                     Page
                 </button>
+
                 <button
                     class="
                         text-white
@@ -156,6 +158,7 @@
                     Next Page
                     <Icon class="ml-1 opacity-75" icon="caret-right" />
                 </button>
+
                 <div class="select">
                     <select v-model="currentPage">
                         <option disabled :value="undefined">
@@ -212,12 +215,14 @@ export default defineComponent({
             currentPage: string | null;
             currentPageImage: string | null;
             pageWidth: number;
+            hasTitleBar: boolean;
         } = {
             info: util.createStateController(),
             images: null,
             currentPage: null,
             currentPageImage: null,
             pageWidth: 100,
+            hasTitleBar: ["electron"].includes(app_platform),
         };
 
         return data;
@@ -227,8 +232,25 @@ export default defineComponent({
         this.getInfo();
         this.watchChapter();
         this.watchPage();
+        this.attachKeys();
     },
     methods: {
+        attachKeys() {
+            document.addEventListener("keydown", (e) => {
+                switch (e.key) {
+                    case "ArrowLeft":
+                        this.prevPage();
+                        break;
+
+                    case "ArrowRight":
+                        this.nextPage();
+                        break;
+
+                    default:
+                        break;
+                }
+            });
+        },
         async updateWidth() {
             const store = await Store.getClient();
             let wid = (await store.get(constants.storeKeys.settings))

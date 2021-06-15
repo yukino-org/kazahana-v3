@@ -100,53 +100,57 @@
                 />
             </div>
 
-            <div
-                class="
-                    flex flex-row
-                    justify-center
-                    items-center
-                    flex-wrap
-                    gap-2
-                    mt-2
-                    mb-4
-                "
-                v-if="selected"
-            >
-                <button
+            <div v-if="selected">
+                <p class="text-center mt-8 text-sm opacity-75">
+                    Chapter controls
+                </p>
+                <div
                     class="
-                        text-white
-                        bg-indigo-500
-                        hover:bg-indigo-600
-                        transition
-                        duration-200
-                        px-3
-                        py-2
-                        rounded
-                        focus:outline-none
+                        flex flex-row
+                        justify-center
+                        items-center
+                        flex-wrap
+                        gap-2
+                        mt-2
+                        mb-4
                     "
-                    @click.stop.prevent="!!void previousChapter()"
                 >
-                    <Icon class="mr-1 opacity-75" icon="caret-left" /> Previous
-                    Chapter
-                </button>
+                    <button
+                        class="
+                            text-white
+                            bg-indigo-500
+                            hover:bg-indigo-600
+                            transition
+                            duration-200
+                            px-3
+                            py-2
+                            rounded
+                            focus:outline-none
+                        "
+                        @click.stop.prevent="!!void previousChapter()"
+                    >
+                        <Icon class="mr-1 opacity-75" icon="caret-left" />
+                        Previous Chapter
+                    </button>
 
-                <button
-                    class="
-                        text-white
-                        bg-indigo-500
-                        hover:bg-indigo-600
-                        transition
-                        duration-200
-                        px-3
-                        py-2
-                        rounded
-                        focus:outline-none
-                    "
-                    @click.stop.prevent="!!void nextChapter()"
-                >
-                    Next Chapter
-                    <Icon class="ml-1 opacity-75" icon="caret-right" />
-                </button>
+                    <button
+                        class="
+                            text-white
+                            bg-indigo-500
+                            hover:bg-indigo-600
+                            transition
+                            duration-200
+                            px-3
+                            py-2
+                            rounded
+                            focus:outline-none
+                        "
+                        @click.stop.prevent="!!void nextChapter()"
+                    >
+                        Next Chapter
+                        <Icon class="ml-1 opacity-75" icon="caret-right" />
+                    </button>
+                </div>
             </div>
 
             <div
