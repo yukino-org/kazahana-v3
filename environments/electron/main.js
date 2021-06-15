@@ -41,7 +41,6 @@ const createWindow = async () => {
         show: false,
         frame: false,
         icon: path.join(__dirname, "..", "..", "resources", "icon.png"),
-        fullscreen: true,
     });
     if (dimensions.isMaximized) win.maximize();
     Logger.info("Created main window");

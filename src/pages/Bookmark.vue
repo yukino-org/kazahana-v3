@@ -76,11 +76,28 @@
                             </div>
 
                             <div class="flex-grow">
-                                <p>
+                                <p class="flex-grow">
                                     <span class="opacity-75 mr-1"
                                         >{{ i + 1 }}.</span
                                     >
                                     <b>{{ item.title }}</b>
+
+                                    <span
+                                        class="
+                                            float-right
+                                            mr-2
+                                            opacity-75
+                                            hover:opacity-100
+                                            hover:text-red-500
+                                            transition
+                                            duration-200
+                                        "
+                                        @click.stop.prevent="
+                                            !!void removeItem(i)
+                                        "
+                                    >
+                                        <Icon icon="trash" />
+                                    </span>
                                 </p>
 
                                 <div class="mt-1">
@@ -160,6 +177,15 @@ export default defineComponent({
                 (await store.get(constants.storeKeys[this.selected])) || [];
 
             this.items = allBookmarked;
+        },
+        async removeItem(index: number) {
+            const rmed = this.items.splice(index, 1);
+            if (rmed.length) {
+                const store = await Store.getClient();
+                // perf: need a better way
+                const unproxied = JSON.parse(JSON.stringify(this.items));
+                await store.set(constants.storeKeys[this.selected], unproxied);
+            }
         },
         changeSelected(type: typeof tabs[number]) {
             this.$router.push({
