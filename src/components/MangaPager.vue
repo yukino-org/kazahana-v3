@@ -85,13 +85,99 @@
 
                 <Loading class="mt-4" v-if="!currentPageImage" />
                 <div class="mt-4" v-else>
-                    <img
-                        class="w-full"
-                        :src="getValidImageUrl(currentPageImage)"
-                        :alt="`Page ${currentPage}`"
-                        :style="{ width: `${pageWidth}%` }"
-                        :key="currentPageImage"
-                    />
+                    <div
+                        :class="
+                            fullscreen &&
+                            `fixed ${
+                                hasTitleBar ? 'top-8' : 'top-0'
+                            } bottom-0 right-0 left-0 bg-black bg-opacity-[0.85] z-50`
+                        "
+                        @click.stop.prevent="!!void toggleFullscreen()"
+                    >
+                        <div
+                            class="
+                                relative
+                                h-full
+                                w-full
+                                flex flex-row
+                                justify-around
+                                items-center
+                            "
+                        >
+                            <button
+                                class="
+                                    focus:outline-none
+                                    text-2xl
+                                    md:text-5xl
+                                    opacity-75
+                                    hover:opacity-100
+                                    transition
+                                    duration-200
+                                    absolute
+                                    md:static
+                                    left-0
+                                    md:left-auto
+                                    bg-gray-700 bg-opacity-50
+                                    md:bg-transparent
+                                    px-2
+                                    py-1
+                                    rounded-r
+                                    z-[51]
+                                "
+                                v-if="fullscreen"
+                                @click.stop.prevent="!!void prevPage()"
+                            >
+                                <Icon icon="chevron-left" />
+                            </button>
+
+                            <img
+                                :class="
+                                    fullscreen
+                                        ? 'h-full md:h-[calc(100%-3rem)] w-auto'
+                                        : 'w-full'
+                                "
+                                :src="getValidImageUrl(currentPageImage)"
+                                :alt="`Page ${currentPage}`"
+                                :title="`Page ${currentPage}`"
+                                :style="{
+                                    width: !fullscreen
+                                        ? `${pageWidth}%`
+                                        : undefined,
+                                    cursor: fullscreen ? 'zoom-out' : 'zoom-in',
+                                }"
+                                :key="currentPageImage"
+                                @click.stop.prevent="!!void toggleFullscreen()"
+                                style="object-fit: contain"
+                            />
+
+                            <button
+                                class="
+                                    focus:outline-none
+                                    text-2xl
+                                    md:text-5xl
+                                    opacity-75
+                                    hover:opacity-100
+                                    transition
+                                    duration-200
+                                    absolute
+                                    md:static
+                                    right-0
+                                    md:right-auto
+                                    bg-gray-700 bg-opacity-50
+                                    md:bg-transparent
+                                    px-2
+                                    py-1
+                                    rounded-l
+                                    z-[51]
+                                "
+                                v-if="fullscreen"
+                                @click.stop.prevent="!!void nextPage()"
+                            >
+                                <Icon icon="chevron-right" />
+                            </button>
+                        </div>
+                    </div>
+
                     <p class="mt-4">
                         Image URL:
                         <span
@@ -216,6 +302,7 @@ export default defineComponent({
             currentPageImage: string | null;
             pageWidth: number;
             hasTitleBar: boolean;
+            fullscreen: boolean;
         } = {
             info: util.createStateController(),
             images: null,
@@ -223,6 +310,7 @@ export default defineComponent({
             currentPageImage: null,
             pageWidth: 100,
             hasTitleBar: ["electron"].includes(app_platform),
+            fullscreen: false,
         };
 
         return data;
@@ -447,6 +535,9 @@ export default defineComponent({
                     `Failed to updated last watched: ${err?.message}`
                 );
             }
+        },
+        toggleFullscreen() {
+            this.fullscreen = !this.fullscreen;
         },
         getValidImageUrl: util.getValidImageUrl,
     },
