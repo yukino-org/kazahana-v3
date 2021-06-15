@@ -3,8 +3,15 @@ import { Http } from "@capacitor-community/http";
 import { Requester } from "anime-ext/dist/types";
 
 const getUrl = (url: URL) => url.origin + url.pathname;
-// @ts-ignore
-const getParams = (url: URL) => Object.fromEntries(url.searchParams);
+
+const getParams = (url: URL) =>
+    [...url.searchParams.entries()].reduce<Record<string, string>>(
+        (pv, [k, v]) => {
+            pv[k] = v;
+            return pv;
+        },
+        {}
+    );
 
 const getContentType = (headers: Record<string, any>) => {
     const contentTypeKey = Object.keys(headers).find(
