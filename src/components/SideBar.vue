@@ -5,6 +5,7 @@
                 'text-center',
                 'md:overflow-y-auto',
                 'md:max-h-[calc(100vh-11rem)]',
+                'slim-scroll',
             ]"
         >
             <h1 class="text-indigo-500 font-bold text-5xl md:text-4xl">

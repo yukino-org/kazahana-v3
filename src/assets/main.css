@@ -54,6 +54,10 @@ hr {
     @apply absolute pointer-events-none mt-0.5 right-3 bg-black dark:bg-white w-2.5 h-2.5;
 }
 
+.slim-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
 ::-webkit-scrollbar {
     width: 8px;
     height: 6px;
