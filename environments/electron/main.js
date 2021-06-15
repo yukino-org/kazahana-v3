@@ -42,7 +42,12 @@ const createWindow = async () => {
         frame: false,
         icon: path.join(__dirname, "..", "..", "resources", "icon.png"),
     });
+
     if (dimensions.isMaximized) win.maximize();
+    else win.minimize();
+
+    if (dimensions.fullscreen) win.setFullScreen(true);
+
     Logger.info("Created main window");
 
     if (isDev) {
@@ -77,6 +82,7 @@ const createWindow = async () => {
         Store.setWindowSize({
             ...win.getBounds(),
             isMaximized: win.isMaximized(),
+            isFullScreen: process.platform === "darwin" && win.isFullScreen(),
         });
 
         if (!win.isDestroyed()) {
@@ -91,7 +97,13 @@ const createWindow = async () => {
     });
 
     ipcMain.handle("toggle-maximize-window", () => {
-        if (win.isMaximized()) {
+        if (process.platform === "darwin" && win.isFullScreen()) {
+            win.setFullScreen(false);
+            Logger.warn("Main window has been exited from fullscreen!");
+        } else if (process.platform === "darwin" && win.isMaximized()) {
+            win.setFullScreen(true);
+            Logger.warn("Main window has been fullscreened!");
+        } else if (win.isMaximized()) {
             win.unmaximize();
             Logger.warn("Main window has been unmaximized!");
         } else {

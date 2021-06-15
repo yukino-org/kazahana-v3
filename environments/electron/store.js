@@ -6,7 +6,7 @@ class DataStore {
     }
 
     /**
-     * @returns {ReturnType<import("electron").BrowserWindow["getBounds"]> & { isMaximized: boolean; }}
+     * @returns {ReturnType<import("electron").BrowserWindow["getBounds"]> & { isMaximized: boolean; fullscreen: boolean; }}
      */
     getWindowSize() {
         const data = this.store.get("window_size");
@@ -18,6 +18,7 @@ class DataStore {
                 width: 800,
                 height: 600,
                 isMaximized: false,
+                fullscreen: false,
             }
         );
     }
