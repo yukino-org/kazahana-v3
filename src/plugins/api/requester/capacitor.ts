@@ -1,6 +1,6 @@
 import qs from "qs";
-import { Http } from "@capacitor-community/http";
-import { Requester } from "anime-ext/dist/types";
+import { Http, HttpOptions } from "@capacitor-community/http";
+import { Requester, RequesterOptions } from "./";
 
 const getUrl = (url: URL) => url.origin + url.pathname;
 
@@ -41,7 +41,7 @@ export const requester: Requester = {
             url: getUrl(parsed),
             params: getParams(parsed),
             headers: options.headers,
-            responseType: "text",
+            responseType: getValidResponseType(options.responseType),
             connectTimeout: options.timeout,
         });
         return getData(res.data);
@@ -54,9 +54,21 @@ export const requester: Requester = {
             params: getParams(parsed),
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
-            responseType: "text",
+            responseType: getValidResponseType(options.responseType),
             connectTimeout: options.timeout,
         });
         return getData(res.data);
     },
 };
+
+function getValidResponseType(
+    type: RequesterOptions["responseType"]
+): HttpOptions["responseType"] {
+    switch (type) {
+        case "buffer":
+            return "arraybuffer";
+
+        default:
+            return type;
+    }
+}

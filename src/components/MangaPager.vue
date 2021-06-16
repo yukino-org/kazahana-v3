@@ -177,21 +177,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <p class="mt-4">
-                        Image URL:
-                        <span
-                            class="
-                                bg-gray-100
-                                dark:bg-gray-800
-                                rounded
-                                px-1
-                                break-all
-                                select-all
-                            "
-                            >{{ currentPageImage }}</span
-                        >
-                    </p>
                 </div>
             </div>
 

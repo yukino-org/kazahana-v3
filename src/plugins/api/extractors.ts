@@ -1,4 +1,5 @@
-import { http } from "./requester";
+import { http, RequesterOptions } from "./requester";
+import { util } from "../util";
 import { Requester } from "anime-ext/dist/types";
 
 import MALSearchAnime, {
@@ -21,7 +22,10 @@ import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
 import TenshiDotMoeAnime from "anime-ext/dist/extractors/anime/tenshidotmoe";
 import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
 
-import { MangaExtractorModel } from "anime-ext/dist/extractors/manga/model";
+import {
+    MangaExtractorModel,
+    MangaExtractorPageImageResult,
+} from "anime-ext/dist/extractors/manga/model";
 import FanFoxManga from "anime-ext/dist/extractors/manga/fanfox";
 import MangaDexManga from "anime-ext/dist/extractors/manga/mangadex";
 import MangaInnManga from "anime-ext/dist/extractors/manga/mangainn";
@@ -99,7 +103,36 @@ export const Extractors = {
                     FanFox: new FanFoxManga(options),
                     MangaDex: new MangaDexManga(options),
                     MangaInn: new MangaInnManga(options),
-                    // ReadM: new ReadM(options),
+                    ReadM: new (class YReadM extends ReadM {
+                        async search(url: string) {
+                            const res = await super.search(url);
+                            for (const key in res) {
+                                const img = res[key].image;
+                                if (img) {
+                                    res[key].image = await getBase64Image(img, {
+                                        headers: {},
+                                    });
+                                }
+                            }
+                            return res;
+                        }
+
+                        async getChapterPages(url: string) {
+                            const res = await super.getChapterPages(url);
+                            res.type = "page_urls";
+                            return res;
+                        }
+
+                        async getPageImage(url: string) {
+                            const page = url.match(/p_(\d+)/)?.[1];
+                            return <MangaExtractorPageImageResult>{
+                                page: page ? `${+page}` : "-",
+                                image: await getBase64Image(url, {
+                                    headers: {},
+                                }),
+                            };
+                        }
+                    })(options),
                 },
             };
         }
@@ -107,3 +140,19 @@ export const Extractors = {
         return this.__extractor;
     },
 };
+
+async function getBase64Image(
+    url: string,
+    options: Omit<RequesterOptions, "responseType">
+) {
+    try {
+        const client = await http.getClient();
+        const res = await client.get(url, {
+            ...options,
+            responseType: "buffer",
+        });
+        return `data:image/png;base64,${util.BufferToBase64(res)}`;
+    } catch (err) {
+        throw err;
+    }
+}

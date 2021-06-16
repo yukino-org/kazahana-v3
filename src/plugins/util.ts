@@ -86,4 +86,12 @@ export const util = {
         if (text.length < length) return text;
         return text.slice(0, length - 3) + "...";
     },
+    BufferToBase64(buf: ArrayBuffer) {
+        return btoa(
+            new Uint8Array(buf).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+            )
+        );
+    },
 };

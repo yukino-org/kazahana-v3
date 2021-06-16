@@ -1,4 +1,14 @@
-import { Requester } from "anime-ext/dist/types";
+export interface RequesterOptions {
+    headers: Record<string, any>;
+    timeout?: number;
+    credentials?: boolean;
+    responseType: "buffer" | "text";
+}
+
+export interface Requester {
+    get(url: string, options: RequesterOptions): Promise<any>;
+    post(url: string, body: any, options: RequesterOptions): Promise<any>;
+}
 
 export const http = {
     __http: <Requester | null>null,

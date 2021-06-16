@@ -9,7 +9,7 @@ const http = {
         const res = await got.get(url, {
             headers: options.headers,
             timeout: options.timeout,
-            responseType: "text",
+            responseType: options.responseType,
         });
 
         return res.body;
@@ -19,7 +19,7 @@ const http = {
             body,
             headers: options.headers,
             timeout: options.timeout,
-            responseType: "text",
+            responseType: options.responseType,
         });
 
         return res.body;

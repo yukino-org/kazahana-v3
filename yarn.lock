@@ -879,9 +879,9 @@ ajv@^8.0.0, ajv@^8.1.0:
     uri-js "^4.2.2"
 
 anime-ext@^1.0.14:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.5.tgz#c61065d7c5c398d3f057b90203d98c7e039c56f1"
-  integrity sha512-Ms8fLHgoqYyj5lrF4pyeo0JST2gM3J7tV7pJPtjvmr4LdGSW9pDYbYn+C9XFXyxWIqEyCmR4RiCoOnVy8twq9A==
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.7.tgz#f78358056c2b46f41eb7679ef4a8417f89e0489a"
+  integrity sha512-V206RrMZQXkV7OmOeUIzD3aZ2zcJlNZSZTtx9KfmDAbX4mrMfyDnQT2K7cB6hQ5AVmWPWCL4OgTh5SWixRh88Q==
   dependencies:
     cheerio "^1.0.0-rc.9"
     crypto-js "^4.0.0"
