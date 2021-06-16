@@ -879,12 +879,13 @@ ajv@^8.0.0, ajv@^8.1.0:
     uri-js "^4.2.2"
 
 anime-ext@^1.0.14:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.4.tgz#d761ef53bc0eb23d00654662368e54ec22242aec"
-  integrity sha512-SWihNikfVGLZ9ZJiWeQEqL4NsW5zUldquhhbyLCC/EU+r9Tc9RoEhc2yU5SBon4z4i2g3JENqaWFgv3u4r6fAA==
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.5.tgz#c61065d7c5c398d3f057b90203d98c7e039c56f1"
+  integrity sha512-Ms8fLHgoqYyj5lrF4pyeo0JST2gM3J7tV7pJPtjvmr4LdGSW9pDYbYn+C9XFXyxWIqEyCmR4RiCoOnVy8twq9A==
   dependencies:
     cheerio "^1.0.0-rc.9"
     crypto-js "^4.0.0"
+    fuse.js "^6.4.6"
     qs "^6.10.1"
 
 ansi-align@^3.0.0:
@@ -2403,6 +2404,11 @@ function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
   integrity sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
+
+fuse.js@^6.4.6:
+  version "6.4.6"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-6.4.6.tgz#62f216c110e5aa22486aff20be7896d19a059b79"
+  integrity sha512-/gYxR/0VpXmWSfZOIPS3rWwU8SHgsRTwWuXhyb2O6s7aRuVtHtxCkR33bNYu3wyLyNx/Wpv0vU7FZy8Vj53VNw==
 
 gauge@~2.7.3:
   version "2.7.4"

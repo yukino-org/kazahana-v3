@@ -19,11 +19,13 @@ import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
 import TwistDotMoeAnime from "anime-ext/dist/extractors/anime/twistdotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
 import TenshiDotMoeAnime from "anime-ext/dist/extractors/anime/tenshidotmoe";
+import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
 
 import { MangaExtractorModel } from "anime-ext/dist/extractors/manga/model";
 import FanFoxManga from "anime-ext/dist/extractors/manga/fanfox";
 import MangaDexManga from "anime-ext/dist/extractors/manga/mangadex";
 import MangaInnManga from "anime-ext/dist/extractors/manga/mangainn";
+import ReadM from "anime-ext/dist/extractors/manga/readm";
 
 export interface ExtractorsEntity {
     integrations: {
@@ -91,11 +93,13 @@ export const Extractors = {
                     TwistMoe: new TwistDotMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
                     TenshiMoe: new TenshiDotMoeAnime(options),
+                    AnimeParadise: new AnimeParadise(options),
                 },
                 manga: {
                     FanFox: new FanFoxManga(options),
                     MangaDex: new MangaDexManga(options),
                     MangaInn: new MangaInnManga(options),
+                    // ReadM: new ReadM(options),
                 },
             };
         }
