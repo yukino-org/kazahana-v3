@@ -53,7 +53,7 @@ class RPC {
                     this.started = activity.startTimestamp;
             }
         } catch (err) {
-            Logger.error(`Failed to set Rpc activity: ${err}`);
+            Logger.error("discord-rpc", `Failed to set Rpc activity: ${err}`);
         }
     }
 
@@ -62,7 +62,7 @@ class RPC {
      */
     connect() {
         if (this.disabled) {
-            Logger.info("Rpc is disabled");
+            Logger.debug("discord-rpc", "Rpc is disabled");
             return false;
         }
 
@@ -70,7 +70,8 @@ class RPC {
             this.rpc.on("ready", () => {
                 this.ready = true;
                 if (this.rpc.user) {
-                    Logger.info(
+                    Logger.debug(
+                        "discord-rpc",
                         `RPC set for ${this.rpc.user.username}#${this.rpc.user.discriminator} (${this.rpc.user.id})`
                     );
                 }
@@ -83,7 +84,10 @@ class RPC {
                     clientId: this.id,
                 })
                 .catch((err) => {
-                    Logger.error(`Failed to connect to Rpc: ${err}`);
+                    Logger.error(
+                        "discord-rpc",
+                        `Failed to connect to Rpc: ${err}`
+                    );
                     resolve(false);
                 });
         });

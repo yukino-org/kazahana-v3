@@ -1,3 +1,5 @@
+import { Debugger } from "./api/debugger";
+
 export type LoggerTypes = "info" | "error" | "warn" | "success";
 
 export type EventListener = (type: LoggerTypes, msg: string) => any;
@@ -13,12 +15,17 @@ class Logger {
         this.listeners.push(handler);
     }
 
-    emit(type: LoggerTypes, msg: string) {
+    async emit(type: LoggerTypes, msg: string) {
         this.listeners.forEach((handler) => {
             try {
                 handler(type, msg);
             } catch (err) {}
         });
+
+        const dbug = await Debugger.getClient();
+        const fn =
+            type === "info" || type === "success" ? dbug.debug : dbug[type];
+        fn("app", msg);
     }
 }
 

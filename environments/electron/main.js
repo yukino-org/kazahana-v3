@@ -7,12 +7,12 @@ const Logger = require("./logger");
 const { name: productCode, productName } = require("../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
-Logger.info("Starting app");
+Logger.debug("main", "Starting app");
 
 /**
  * @type {string | undefined}
  */
-let launchURL;
+let launchArgs;
 
 /**
  * @type {BrowserWindow | undefined}
@@ -22,16 +22,16 @@ let win;
 const createWindow = async () => {
     if (!initiateInstance()) return;
 
-    Logger.info(`Environment: ${process.env.NODE_ENV}`);
+    Logger.debug("main", `Environment: ${process.env.NODE_ENV}`);
 
     const ignition = new Igniter();
-    Logger.info("Created igniter");
+    Logger.debug("main", "Created igniter");
 
     ignition.start();
-    Logger.info("Started igniter");
+    Logger.debug("main", "Started igniter");
 
     const continueProc = await ignition.update();
-    Logger.warn(`Continue process: ${continueProc}`);
+    Logger.warn("main", `Continue process: ${continueProc}`);
     if (!continueProc) return ignition.close();
 
     app.removeAsDefaultProtocolClient(productCode);
@@ -67,12 +67,15 @@ const createWindow = async () => {
 
     if (dimensions.fullscreen) win.setFullScreen(true);
 
-    Logger.info("Created main window");
+    Logger.debug("main", "Created window");
 
     let loadURL;
     if (isDev) {
         if (!process.env.VITE_SERVE_URL) {
-            Logger.error("Missing env variable: process.env.VITE_SERVE_URL");
+            Logger.error(
+                "main",
+                "Missing env variable: process.env.VITE_SERVE_URL"
+            );
             throw new Error("Missing 'process.env.VITE_SERVE_URL'!");
         }
 
@@ -88,17 +91,18 @@ const createWindow = async () => {
         )}`;
     }
 
-    setLauchURLIfWindows();
-    if (launchURL) loadURL += `?redirect=${launchURL}`;
-
+    setLaunchURLIfWindows();
     win.loadURL(loadURL);
-    Logger.info(`Opened URL: ${loadURL}`);
+    Logger.debug("main", `Opened URL: ${loadURL}`);
+    Logger.setBridgeDebug((...args) =>
+        win.webContents.send("Electron-Log", ...args)
+    );
 
     if (isDev) win.webContents.openDevTools();
     await Rpc.connect();
 
     win.on("ready-to-show", () => {
-        Logger.warn("Closing igniter and opening main window");
+        Logger.warn("main", "Closing igniter and opening main window");
         ignition.close();
         win.show();
     });
@@ -111,7 +115,7 @@ const createWindow = async () => {
         });
 
         if (!win.isDestroyed()) {
-            Logger.warn("Main window has been closed!");
+            Logger.warn("main", "Main window has been closed!");
             win.destroy();
         }
 
@@ -119,23 +123,23 @@ const createWindow = async () => {
     });
 
     ipcMain.handle("minimize-window", () => {
-        Logger.warn("Main window has been minimized!");
+        Logger.warn("main", "Main window has been minimized!");
         win.minimize();
     });
 
     ipcMain.handle("toggle-maximize-window", () => {
         if (process.platform === "darwin" && win.isFullScreen()) {
             win.setFullScreen(false);
-            Logger.warn("Main window has been exited from fullscreen!");
+            Logger.warn("main", "Main window has been exited from fullscreen!");
         } else if (process.platform === "darwin" && win.isMaximized()) {
             win.setFullScreen(true);
-            Logger.warn("Main window has been fullscreened!");
+            Logger.warn("main", "Main window has been fullscreened!");
         } else if (win.isMaximized()) {
             win.unmaximize();
-            Logger.warn("Main window has been unmaximized!");
+            Logger.warn("main", "Main window has been unmaximized!");
         } else {
             win.maximize();
-            Logger.warn("Main window has been maximized!");
+            Logger.warn("main", "Main window has been maximized!");
         }
     });
 
@@ -149,15 +153,15 @@ const createWindow = async () => {
         });
 
         if (resp.response === 0) {
-            Logger.warn("Closing window");
+            Logger.warn("main", "Closing window");
             win.close();
         } else {
-            Logger.info("User aborted app close!");
+            Logger.debug("main", "User aborted app close!");
         }
     });
 
     ipcMain.handle("reload-window", () => {
-        Logger.warn("Reloading window");
+        Logger.warn("main", "Reloading window");
         win.reload();
     });
 };
@@ -165,20 +169,23 @@ const createWindow = async () => {
 require("./ipc")(ipcMain);
 
 app.on("ready", async () => {
-    Logger.warn("Creating window (app ready)");
+    Logger.warn("main", "Creating window (app ready)");
     await createWindow();
 });
 
 app.on("activate", async () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-        Logger.warn("No windows were open so opening new one (app activate)");
+        Logger.warn(
+            "main",
+            "No windows were open so opening new one (app activate)"
+        );
         await createWindow();
     }
 });
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
-        Logger.warn("Qutting app");
+        Logger.warn("main", "Qutting app");
         app.quit();
     }
 });
@@ -187,15 +194,13 @@ app.on("will-finish-launching", function () {
     app.on("open-url", function (event, url) {
         event.preventDefault();
 
-        console.log("loadurl", url);
-        launchURL = url;
+        setDeepLinkURL(parseDeepLink(url));
     });
 });
 
-function setLauchURLIfWindows() {
+function setLaunchURLIfWindows() {
     if (process.platform === "win32") {
-        console.log("launchurlifwin", process.argv, process.argv.slice(1));
-        launchURL = process.argv.slice(1);
+        setDeepLinkURL(getDeepLinkedArg(process.argv));
     }
 }
 
@@ -206,7 +211,7 @@ function initiateInstance() {
             event.preventDefault();
 
             if (process.platform === "win32") {
-                launchURL = args.slice(1);
+                setDeepLinkURL(getDeepLinkedArg(args));
             }
 
             if (win) {
@@ -222,4 +227,28 @@ function initiateInstance() {
         app.quit();
         return false;
     }
+}
+
+const deepLinkMatcher = new RegExp(`^${productCode}:\/\/(.*)`);
+
+/**
+ * @param {string} url
+ */
+function parseDeepLink(url) {
+    const matched = url.match(deepLinkMatcher);
+    return matched && matched[1] ? matched[1] : undefined;
+}
+
+/**
+ * @param {string[]} args
+ */
+function getDeepLinkedArg(args) {
+    const found = args.find((arg) => deepLinkMatcher.test(arg));
+    return found && parseDeepLink(found);
+}
+
+function setDeepLinkURL(url) {
+    launchArgs = url;
+    if (!win || !url) return;
+    win.webContents.send("deeplink", url);
 }

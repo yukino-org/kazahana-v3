@@ -54,7 +54,7 @@ module.exports = (ipc) => {
     });
 
     ipc.handle("Open-Externally", async (e, url) => {
-        Logger.info(`Open external url: ${url}`);
+        Logger.info("main", `Open external url: ${url}`);
 
         const resp = await dialog.showMessageBox(null, {
             title: "External Link",
@@ -65,10 +65,29 @@ module.exports = (ipc) => {
         });
 
         if (resp.response === 0) {
-            Logger.info(`Opening external url: ${url}`);
+            Logger.info("main", `Opening external url: ${url}`);
             shell.openExternal(url);
         } else {
-            Logger.info(`User aborted opening external url: ${url}`);
+            Logger.info("main", `User aborted opening external url: ${url}`);
+        }
+    });
+
+    ipc.handle("Log", async (e, type, proc, txt) => {
+        switch (type) {
+            case "debug":
+                Logger.debug(proc, txt, true);
+                break;
+
+            case "warn":
+                Logger.warn(proc, txt, true);
+                break;
+
+            case "error":
+                Logger.error(proc, txt, true);
+                break;
+
+            default:
+                break;
         }
     });
 };

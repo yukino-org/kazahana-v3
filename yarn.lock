@@ -91,7 +91,7 @@
   resolved "https://registry.yarnpkg.com/@capacitor/dialog/-/dialog-1.0.1.tgz#8b0e6006bfad142288ce36f4ced3b1c71be53946"
   integrity sha512-sBCMbg7gNU3wijWmBlnOcj1hAVS3ywIFerAmFZuvq8rC1LUfRMbS94+rKRseFpGPWvYkbmKLzsP522lj8AlQ5w==
 
-"@capacitor/filesystem@^1.0.0":
+"@capacitor/filesystem@^1.0.0", "@capacitor/filesystem@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.1.tgz#48c1987e4eb0b14a27f0805e8debd01800734a6f"
   integrity sha512-DID5qryvvKvcptyxYCGHsq9SENiXiiECH0uuYlS9Eaasd6R+YCnwK2F8mhOOjnElvnaoVXTG1EGVe9mZEfHEEA==

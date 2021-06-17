@@ -8,7 +8,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 if (isDev) {
     app.getVersion = () => version;
-    Logger.warn(`Changed app version to ${app.getVersion()}`);
+    Logger.warn("igniter", `Changed app version to ${app.getVersion()}`);
 }
 
 class Igniter {
@@ -30,6 +30,7 @@ class Igniter {
                 "dev-mock-update.yml"
             );
             Logger.warn(
+                "igniter",
                 `Changed updater config path to ${this.autoUpdater.updateConfigPath}`
             );
         }
@@ -57,7 +58,7 @@ class Igniter {
                 "icon.png"
             ),
         });
-        Logger.info("Created ignition window");
+        Logger.debug("igniter", "Created window");
 
         const url = `file://${path.join(
             __dirname,
@@ -65,7 +66,7 @@ class Igniter {
         )}?title=${productName}&version=${app.getVersion()}`;
 
         this.win.loadURL(url);
-        Logger.info(`Opened url in ignition window: ${url}`);
+        Logger.debug("igniter", `Opened url in ignition window: ${url}`);
     }
 
     /**
@@ -76,30 +77,34 @@ class Igniter {
             this.autoUpdater.checkForUpdates();
 
             this.autoUpdater.on("update-not-available", () => {
-                Logger.info("No updates were found");
+                Logger.debug("igniter", "No updates were found");
                 resolve(true);
             });
 
             this.autoUpdater.on("update-downloaded", () => {
-                Logger.info("Downloaded update");
+                Logger.debug("igniter", "Downloaded update");
                 this.win.webContents.send("update-downloaded");
                 this.autoUpdater.quitAndInstall();
                 resolve(false);
             });
 
             this.autoUpdater.on("checking-for-update", () => {
-                Logger.info("Checking for update");
+                Logger.debug("igniter", "Checking for update");
                 this.win.webContents.send("checking-for-update");
             });
 
             this.autoUpdater.on("update-available", (info) => {
-                Logger.info(`New update is available: ${info.version}`);
+                Logger.debug(
+                    "igniter",
+                    `New update is available: ${info.version}`
+                );
                 this.win.webContents.send("new-update", info.version);
                 this.autoUpdater.downloadUpdate();
             });
 
             this.autoUpdater.on("download-progress", (progress) => {
-                Logger.info(
+                Logger.debug(
+                    "igniter",
                     `Update progress: ${progress.percent.toFixed(2)}%/100%`
                 );
                 const toMb = (n) => (n / 1000000).toFixed(2);
@@ -111,7 +116,7 @@ class Igniter {
             });
 
             this.autoUpdater.on("error", (err) => {
-                Logger.error(`Updated error: ${err}`);
+                Logger.error("igniter", `Updated error: ${err}`);
                 this.win.webContents.send(
                     "error",
                     err && err.message ? err.message : err
@@ -120,7 +125,7 @@ class Igniter {
             });
 
             this.autoUpdater.checkForUpdates();
-            Logger.info("Checking for update");
+            Logger.debug("igniter", "Checking for update");
         });
     }
 

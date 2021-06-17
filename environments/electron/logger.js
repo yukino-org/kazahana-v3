@@ -12,23 +12,33 @@ class Logger {
             recursive: true,
         });
 
+        this.bridgeDbug = null;
         this.file = fs.createWriteStream(path.join(logDir, "logger.log"));
     }
 
-    debug(txt) {
-        this.write(`[${Logger.time} DBUG] ${txt}`);
+    setBridgeDebug(dbug) {
+        this.bridgeDbug = dbug;
     }
 
-    info(txt) {
-        this.write(`[${Logger.time} INFO] ${txt}`);
+    debug(proc, txt, dontEmitBridge) {
+        this.write(`[${Logger.time} DBUG] ${proc}: ${txt}`);
+        if (this.bridgeDbug && !dontEmitBridge) {
+            this.bridgeDbug("debug", proc, txt);
+        }
     }
 
-    error(txt) {
-        this.write(`[${Logger.time} ERR!] ${txt}`);
+    error(proc, txt, dontEmitBridge) {
+        this.write(`[${Logger.time} ERR!] ${proc}: ${txt}`);
+        if (this.bridgeDbug && !dontEmitBridge) {
+            this.bridgeDbug("error", proc, txt);
+        }
     }
 
-    warn(txt) {
-        this.write(`[${Logger.time} WARN] ${txt}`);
+    warn(proc, txt, dontEmitBridge) {
+        this.write(`[${Logger.time} WARN] ${proc}: ${txt}`);
+        if (this.bridgeDbug && !dontEmitBridge) {
+            this.bridgeDbug("warn", proc, txt);
+        }
     }
 
     write(txt) {

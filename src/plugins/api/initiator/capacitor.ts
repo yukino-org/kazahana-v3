@@ -28,6 +28,11 @@ export const initiator: InitiatorFn = async () => {
     });
 
     notifyUpdate();
+
+    const launchURL = await App.getLaunchUrl();
+    if (launchURL) {
+        window.deepLinkListener(launchURL.url);
+    }
 };
 
 async function notifyUpdate() {
@@ -38,6 +43,7 @@ async function notifyUpdate() {
                 `https://api.github.com/repos/${constants.github.owner}/${constants.github.repo}/releases`,
                 {
                     headers: {},
+                    responseType: "text",
                 }
             )
         ))
@@ -62,6 +68,7 @@ async function notifyUpdate() {
                 const { version: latestVersion } = JSON.parse(
                     await client.get(manifest, {
                         headers: {},
+                        responseType: "text",
                     })
                 );
 

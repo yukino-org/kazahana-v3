@@ -247,7 +247,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Rpc, ExternalLink, http } from "../plugins/api";
-import { constants } from "../plugins/util";
+import { constants, util } from "../plugins/util";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -257,15 +257,7 @@ const AppInfo = {
     name: app_name,
     platform: app_platform,
     version: app_version,
-    builtAt: new Date(app_builtAt).toLocaleString(undefined, {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        timeZoneName: "short",
-    }),
+    builtAt: util.prettyDate(new Date(app_builtAt)),
 };
 
 export default defineComponent({
@@ -326,6 +318,7 @@ export default defineComponent({
                     `https://api.github.com/repos/${constants.github.owner}/${constants.github.repo}/releases/tags/v${app_version}`,
                     {
                         headers: {},
+                        responseType: "text"
                     }
                 );
 
@@ -338,6 +331,7 @@ export default defineComponent({
                     this.changelogs.body = JSON.parse(
                         await client.get(changes, {
                             headers: {},
+                            responseType: "text"
                         })
                     );
                 } else {
