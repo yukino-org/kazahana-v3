@@ -22,4 +22,4 @@ class Logger {
     }
 }
 
-export default Logger;
+export default new Logger();

@@ -4,12 +4,24 @@ const Store = require("./store");
 const Rpc = require("./rpc");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
-const { productName } = require("../../package.json");
+const { name: productCode, productName } = require("../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
 Logger.info("Starting app");
 
+/**
+ * @type {string | undefined}
+ */
+let launchURL;
+
+/**
+ * @type {BrowserWindow | undefined}
+ */
+let win;
+
 const createWindow = async () => {
+    if (!initiateInstance()) return;
+
     Logger.info(`Environment: ${process.env.NODE_ENV}`);
 
     const ignition = new Igniter();
@@ -22,10 +34,17 @@ const createWindow = async () => {
     Logger.warn(`Continue process: ${continueProc}`);
     if (!continueProc) return ignition.close();
 
-    await Rpc.connect();
+    app.removeAsDefaultProtocolClient(productCode);
+    if (isDev && process.platform === "win32") {
+        app.setAsDefaultProtocolClient(productCode, process.execPath, [
+            path.resolve(process.argv[1]),
+        ]);
+    } else {
+        app.setAsDefaultProtocolClient(productCode);
+    }
 
     const dimensions = Store.getWindowSize();
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         title: productName,
         x: dimensions.x,
         y: dimensions.y,
@@ -50,27 +69,33 @@ const createWindow = async () => {
 
     Logger.info("Created main window");
 
+    let loadURL;
     if (isDev) {
         if (!process.env.VITE_SERVE_URL) {
             Logger.error("Missing env variable: process.env.VITE_SERVE_URL");
             throw new Error("Missing 'process.env.VITE_SERVE_URL'!");
         }
 
-        win.loadURL(process.env.VITE_SERVE_URL);
-        win.webContents.openDevTools();
-        Logger.info(`Opened URL: ${process.env.VITE_SERVE_URL}`);
+        loadURL = process.env.VITE_SERVE_URL;
     } else {
-        const file = path.join(
+        loadURL = `file://${path.join(
             __dirname,
             "..",
             "..",
             "dist",
             "vite",
             "index.html"
-        );
-        win.loadFile(file);
-        Logger.info(`Opened file: ${file}`);
+        )}`;
     }
+
+    setLauchURLIfWindows();
+    if (launchURL) loadURL += `?redirect=${launchURL}`;
+
+    win.loadURL(loadURL);
+    Logger.info(`Opened URL: ${loadURL}`);
+
+    if (isDev) win.webContents.openDevTools();
+    await Rpc.connect();
 
     win.on("ready-to-show", () => {
         Logger.warn("Closing igniter and opening main window");
@@ -89,6 +114,8 @@ const createWindow = async () => {
             Logger.warn("Main window has been closed!");
             win.destroy();
         }
+
+        win = null;
     });
 
     ipcMain.handle("minimize-window", () => {
@@ -155,3 +182,44 @@ app.on("window-all-closed", () => {
         app.quit();
     }
 });
+
+app.on("will-finish-launching", function () {
+    app.on("open-url", function (event, url) {
+        event.preventDefault();
+
+        console.log("loadurl", url);
+        launchURL = url;
+    });
+});
+
+function setLauchURLIfWindows() {
+    if (process.platform === "win32") {
+        console.log("launchurlifwin", process.argv, process.argv.slice(1));
+        launchURL = process.argv.slice(1);
+    }
+}
+
+function initiateInstance() {
+    const isPrimaryInstance = app.requestSingleInstanceLock();
+    if (isPrimaryInstance) {
+        app.on("second-instance", (event, args) => {
+            event.preventDefault();
+
+            if (process.platform === "win32") {
+                launchURL = args.slice(1);
+            }
+
+            if (win) {
+                if (win.isMinimized()) {
+                    win.restore();
+                }
+                win.focus();
+            }
+        });
+
+        return true;
+    } else {
+        app.quit();
+        return false;
+    }
+}

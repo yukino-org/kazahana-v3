@@ -1,4 +1,15 @@
+import MergeObject from "lodash.merge";
+import { Settings } from "./types";
+
 export type Await<T> = T extends Promise<infer U> ? U : T;
+
+export type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? RecursivePartial<U>[]
+        : T[P] extends object
+        ? RecursivePartial<T[P]>
+        : T[P];
+};
 
 export type StateStates = "waiting" | "resolving" | "resolved" | "failed";
 
@@ -13,6 +24,19 @@ export interface StateControllerNoNull<T> {
 }
 
 export const constants = {
+    defaults: {
+        settings: <Settings>{
+            updateChannel: "latest",
+            sideBarPosition: "left",
+            discordRpc: "enabled",
+            discordRpcPrivacy: "disabled",
+            autoDetectTheme: "enabled",
+            darkMode: "disabled",
+            autoPlay: "disabled",
+            defaultPlayerWidth: 100,
+            defaultPageWidth: 100,
+        },
+    },
     storeKeys: {
         recentlyBrowsed: "recently_browsed",
         recentlyViewed: "recently_viewed",
@@ -94,4 +118,5 @@ export const util = {
             )
         );
     },
+    mergeObject: MergeObject,
 };

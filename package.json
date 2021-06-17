@@ -1,6 +1,7 @@
 {
   "name": "yukino-app",
   "productName": "Yukino",
+  "appId": "io.github.zyrouge.yukino",
   "version": "0.0.16-beta.0",
   "description": "Yukino lets you read manga or stream anime ad-free from multiple sources.",
   "author": {
@@ -50,12 +51,14 @@
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "got": "^11.8.2",
+    "lodash.merge": "^4.6.2",
     "qs": "^6.10.1",
     "vue": "^3.0.5",
     "vue-router": "4"
   },
   "devDependencies": {
     "@capacitor/cli": "^3.0.0",
+    "@types/lodash.merge": "^4.6.6",
     "@types/qs": "^6.9.6",
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",

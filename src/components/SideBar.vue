@@ -101,6 +101,7 @@
                             py-0.5
                             rounded-full
                         "
+                        v-if="!autoDetectTheme"
                         @click.stop.prevent="!!void switchTheme()"
                         style="width: 3rem"
                     >
@@ -122,7 +123,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ExternalLink } from "../plugins/api";
+import { ExternalLink, Store } from "../plugins/api";
+import { constants } from "../plugins/util";
+import { Settings } from "../plugins/types";
 
 export default defineComponent({
     props: {
@@ -191,6 +194,7 @@ export default defineComponent({
             sideBarTitle: string;
             hrefClassNames: string[];
             darkMode: boolean;
+            autoDetectTheme: boolean;
         } = {
             sideBarTitle: app_name,
             hrefClassNames: [
@@ -200,30 +204,37 @@ export default defineComponent({
                 "transition",
                 "duration-200",
             ],
-            darkMode: false,
+            autoDetectTheme: this.$constants.props.autoDetectTheme,
+            darkMode: this.$constants.props.isDarkTheme,
         };
 
         return data;
     },
     mounted() {
-        this.configureTheme();
+        this.listenToGlobalConsts();
     },
     methods: {
-        configureTheme() {
-            this.darkMode = localStorage.darkMode === "1";
-            if (this.darkMode) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
+        listenToGlobalConsts() {
+            this.$constants.listen((previous, current) => {
+                this.autoDetectTheme = current.autoDetectTheme;
+                this.darkMode = current.isDarkTheme;
+            });
         },
-        switchTheme() {
-            if (localStorage.darkMode === "1") {
-                delete localStorage.darkMode;
-            } else {
-                localStorage.darkMode = "1";
-            }
-            this.configureTheme();
+        async switchTheme() {
+            const store = await Store.getClient();
+
+            this.$constants.update({
+                isDarkTheme: !this.$constants.props.isDarkTheme,
+            });
+
+            const settings: Partial<Settings> = await store.get(
+                constants.storeKeys.settings
+            );
+
+            settings.darkMode = this.$constants.props.isDarkTheme
+                ? "enabled"
+                : "disabled";
+            await store.set(constants.storeKeys.settings, settings);
         },
         async openExternalUrl(url: string) {
             const opener = await ExternalLink.getClient();

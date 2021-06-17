@@ -5,6 +5,9 @@ import "./assets/main.css";
 import Icon from "./plugins/icons";
 import Router from "./plugins/router";
 import Logger from "./plugins/logger";
+import GlobalConstants, {
+    GlobalConstantsProps,
+} from "./plugins/api/globalConstants";
 import { Initiator } from "./plugins/api/initiator";
 
 const app = createApp(App);
@@ -14,7 +17,15 @@ const start = async () => {
 
     app.component("Icon", Icon);
     app.use(Router);
-    app.config.globalProperties.$logger = new Logger();
+
+    app.config.globalProperties.$logger = Logger;
+    app.config.globalProperties.$constants = await GlobalConstants.get();
+    GlobalConstants.listen(handleGlobalConstantsChange);
+    configureTheme(
+        GlobalConstants.props.autoDetectTheme,
+        GlobalConstants.props.isDarkTheme
+    );
+
     app.mount("#app");
 
     const initiator = await Initiator.getClient();
@@ -36,6 +47,31 @@ declare global {
 
 declare module "@vue/runtime-core" {
     export interface ComponentCustomProperties {
-        $logger: Logger;
+        $logger: typeof Logger;
+        $constants: typeof GlobalConstants;
+    }
+}
+
+function handleGlobalConstantsChange(
+    previous: GlobalConstantsProps,
+    current: GlobalConstantsProps
+) {
+    if (
+        current.autoDetectTheme !== previous.autoDetectTheme ||
+        current.isDarkTheme !== previous.isDarkTheme
+    ) {
+        configureTheme(current.autoDetectTheme, current.isDarkTheme);
+    }
+}
+
+function configureTheme(autoDetect: boolean, isDark: boolean) {
+    const addDark = autoDetect
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        : isDark;
+
+    if (addDark) {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
     }
 }

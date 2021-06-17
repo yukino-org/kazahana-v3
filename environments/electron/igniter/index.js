@@ -62,9 +62,8 @@ class Igniter {
         const url = `file://${path.join(
             __dirname,
             "splash.html"
-        )}?title=${encodeURIComponent(
-            productName
-        )}&version=${encodeURIComponent(app.getVersion())}`;
+        )}?title=${productName}&version=${app.getVersion()}`;
+
         this.win.loadURL(url);
         Logger.info(`Opened url in ignition window: ${url}`);
     }

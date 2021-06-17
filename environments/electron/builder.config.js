@@ -1,9 +1,14 @@
-const { productName } = require("../../package.json");
+const {
+    name: productCode,
+    productName,
+    appId,
+    author,
+} = require("../../package.json");
 
 module.exports = {
     productName,
-    appId: "io.github.zyrouge.yukino",
-    copyright: "Copyright © 2021 Zyrouge",
+    appId,
+    copyright: `Copyright © ${new Date().getUTCFullYear()} ${author.name}`,
     files: [
         "dist/vite/**/*",
         "resources/**/*",
@@ -18,6 +23,12 @@ module.exports = {
     extraMetadata: {
         main: "environments/electron/main.js",
     },
+    protocols: [
+        {
+            name: "deep-link",
+            schemes: [productCode],
+        },
+    ],
     publish: ["github"],
     win: {
         target: "nsis",
@@ -25,6 +36,7 @@ module.exports = {
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
+        perMachine: true,
     },
     linux: {
         target: "AppImage",
