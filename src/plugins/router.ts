@@ -51,6 +51,19 @@ const routes: RouteRecordRaw[] = [
         path: "/bookmark",
         component: () => import("../pages/Bookmark.vue"),
     },
+    {
+        path: "/connections",
+        component: () => import("../pages/Connections/Main.vue"),
+    },
+    {
+        path: "/connections/myanimelist",
+        component: () => import("../pages/Connections/MyAnimeList/Profile.vue"),
+    },
+    {
+        path: "/auth/myanimelist/callback",
+        component: () =>
+            import("../pages/Connections/MyAnimeList/Authenticate.vue"),
+    },
 ];
 
 const router = createRouter({

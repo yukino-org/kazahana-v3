@@ -2,41 +2,12 @@
     <div>
         <PageTitle title="Schedule" />
 
-        <div
-            class="
-                mt-4
-                w-full
-                flex flex-row
-                justify-center
-                items-center
-                text-center
-                rounded
-                overflow-hidden
-            "
-        >
-            <router-link
-                class="flex-grow"
-                :to="page.path"
-                v-for="page in pages"
-            >
-                <div
-                    :class="[
-                        'border-b-2',
-                        'leading-loose',
-                        'cursor-pointer',
-                        'hover:bg-gray-100',
-                        'dark:hover:bg-gray-800',
-                        'transition',
-                        'duration-300',
-                        $route.path === page.path
-                            ? 'border-indigo-500 text-indigo-500 border-opacity-100'
-                            : 'border-gray-800 dark:border-gray-100 border-opacity-20 dark:border-opacity-20',
-                    ]"
-                >
-                    {{ page.name }}
-                </div>
-            </router-link>
-        </div>
+        <TabBar
+            class="mt-8"
+            :items="pages"
+            :selected="selectedPage"
+            @tabClick="handlePageChange"
+        />
 
         <router-view></router-view>
     </div>
@@ -47,30 +18,31 @@ import { defineComponent } from "vue";
 import { Rpc } from "../../plugins/api";
 
 import PageTitle from "../../components/PageTitle.vue";
+import TabBar, { TabEntity } from "../../components/TabBar.vue";
 
 export default defineComponent({
-    name: "Schedule-Week",
+    name: "Schedule-Main",
     components: {
         PageTitle,
+        TabBar,
     },
     data() {
         const data: {
-            pages: {
-                name: string;
-                path: string;
-            }[];
+            pages: TabEntity[];
+            selectedPage: string;
         } = {
             pages: [
                 {
-                    name: "Season",
-                    path: "/schedule",
+                    id: "/schedule",
+                    text: "Season",
                 },
 
                 {
-                    name: "Week",
-                    path: "/schedule/week",
+                    id: "/schedule/week",
+                    text: "Week",
                 },
             ],
+            selectedPage: this.$route.path,
         };
 
         return data;
@@ -79,6 +51,10 @@ export default defineComponent({
         this.setRpc();
     },
     methods: {
+        handlePageChange(page: TabEntity) {
+            this.$router.push(page.id);
+            this.selectedPage = page.id;
+        },
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({

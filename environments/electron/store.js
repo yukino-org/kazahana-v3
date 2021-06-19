@@ -1,4 +1,10 @@
-const Store = require("electron-store");
+const ElectronStore = require("electron-store");
+
+class Store extends ElectronStore {
+    all() {
+        return this.store;
+    }
+}
 
 class DataStore {
     constructor() {

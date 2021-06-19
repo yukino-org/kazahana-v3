@@ -59,6 +59,32 @@ export const requester: Requester = {
         });
         return getData(res.data);
     },
+    async patch(url, body, options) {
+        const parsed = new URL(url);
+        const res = await Http.request({
+            method: "PATCH",
+            url: getUrl(parsed),
+            params: getParams(parsed),
+            data: getBody(body, getContentType(options.headers)),
+            headers: options.headers,
+            responseType: getValidResponseType(options.responseType),
+            connectTimeout: options.timeout,
+        });
+        return getData(res.data);
+    },
+    async put(url, body, options) {
+        const parsed = new URL(url);
+        const res = await Http.request({
+            method: "PUT",
+            url: getUrl(parsed),
+            params: getParams(parsed),
+            data: getBody(body, getContentType(options.headers)),
+            headers: options.headers,
+            responseType: getValidResponseType(options.responseType),
+            connectTimeout: options.timeout,
+        });
+        return getData(res.data);
+    },
 };
 
 function getValidResponseType(

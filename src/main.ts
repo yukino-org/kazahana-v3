@@ -12,7 +12,6 @@ import { Initiator, Debugger, DeepLink } from "./plugins/api";
 import { util } from "./plugins/util";
 
 const app = createApp(App);
-let redirect: string | undefined;
 
 const start = async () => {
     beforeApp();
@@ -31,23 +30,19 @@ const start = async () => {
         GlobalConstants.props.isDarkTheme
     );
 
-    app.mount("#app");
-
     const debug = await Debugger.getClient();
     const initiator = await Initiator.getClient();
     await initiator();
 
+    app.mount("#app");
     debug.debug("main", `App initiated in ${Date.now() - started}ms`);
-
-    if (redirect) {
-        console.log(redirect);
-    }
 };
 
 start();
 
 declare global {
     const app_name: string;
+    const app_code: string;
     const app_platform: string;
     const app_version: string;
     const app_builtAt: number;
@@ -96,14 +91,13 @@ function beforeApp() {
     console.log(`Version: ${app_version}`);
     console.log(`Built at: ${util.prettyDate(new Date(app_builtAt))}`);
 
-    DeepLink.set((url) => {
-        const queries = url.split("?").pop();
-        if (queries) {
-            const params = new URLSearchParams(queries);
-            const route = params.get("goto");
-            if (route) {
-                redirect = route;
-            }
+    DeepLink.set(async (url) => {
+        const dbug = await Debugger.getClient();
+        dbug.debug("info", `Deeplink received: ${url}`);
+
+        const exists = Router.resolve(`/${url}`);
+        if (exists.matched.length > 0) {
+            Router.push(`/${url}`);
         }
     });
 }

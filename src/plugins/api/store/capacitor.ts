@@ -20,12 +20,20 @@ export const Store: StoreEntity = {
             });
         } catch (err) {}
     },
-	async clear() {
-		try {
-			const { value } = await SecureStoragePlugin.clear();
-			return value;
-		} catch (err) {
-			return false;
-		}
-	}
+    async clear() {
+        try {
+            const { value } = await SecureStoragePlugin.clear();
+            return value;
+        } catch (err) {
+            return false;
+        }
+    },
+    async all() {
+        const { value: keys } = await SecureStoragePlugin.keys();
+        const all: Record<string, any> = {};
+        for (const key of keys) {
+            all[key] = await this.get(key);
+        }
+        return all;
+    },
 };

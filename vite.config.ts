@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import { productName, version } from "./package.json";
+import { name as productCode, productName, version } from "./package.json";
 
 const platform = process.env.YUKINO_PLATFORM || "unknown";
 
@@ -22,6 +22,7 @@ export default defineConfig({
     },
     define: {
         app_name: `"${productName}"`,
+        app_code: `"${productCode}"`,
         app_platform: `"${platform}"`,
         app_version: `"${version}"`,
         app_builtAt: Date.now(),

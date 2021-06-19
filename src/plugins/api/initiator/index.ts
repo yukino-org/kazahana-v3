@@ -1,15 +1,18 @@
-export type InitiatorFn = () => Promise<void>;
+import { initiator as common } from "./common";
 
-const noop: InitiatorFn = async () => {};
+export type InitiatorFn = () => Promise<void>;
 
 export const Initiator = {
     async getClient() {
+        let platformfn: InitiatorFn | undefined;
         switch (app_platform) {
             case "capacitor":
-                return (await import("./capacitor")).initiator;
-
-            default:
-                return noop;
+                platformfn = (await import("./capacitor")).initiator;
         }
+
+        return async () => {
+            if (platformfn) await platformfn();
+            await common();
+        };
     },
 };

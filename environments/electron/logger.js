@@ -47,7 +47,7 @@ class Logger {
     }
 
     static get time() {
-        return new Date().toLocaleString();
+        return new Date().toLocaleTimeString();
     }
 }
 

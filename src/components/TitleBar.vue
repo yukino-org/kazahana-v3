@@ -29,13 +29,10 @@
                         hover:bg-indigo-600
                         dark:hover:bg-gray-700
                     "
-                    id="titlebar-minimize"
+                    @click="!!void minimizeWindow()"
                     title="Minimize"
                 >
-                    <Icon
-                        id="titlebar-icon"
-                        :icon="['far', 'window-minimize']"
-                    />
+                    <Icon class="text-xs" :icon="['far', 'window-minimize']" />
                 </div>
                 <div
                     class="
@@ -44,13 +41,10 @@
                         hover:bg-indigo-600
                         dark:hover:bg-gray-700
                     "
-                    id="titlebar-maximize"
+                    @click="!!void maximizeWindow()"
                     title="Maximize"
                 >
-                    <Icon
-                        id="titlebar-icon"
-                        :icon="['far', 'window-maximize']"
-                    />
+                    <Icon class="text-xs" :icon="['far', 'window-maximize']" />
                 </div>
                 <div
                     class="
@@ -59,10 +53,10 @@
                         hover:bg-indigo-600
                         dark:hover:bg-gray-700
                     "
-                    id="titlebar-reload"
+                    @click="!!void reloadWindow()"
                     title="Reload"
                 >
-                    <Icon id="titlebar-icon" icon="sync-alt" />
+                    <Icon class="text-xs" icon="sync-alt" />
                 </div>
                 <div
                     class="
@@ -71,10 +65,10 @@
                         hover:bg-red-600
                         hover:text-white
                     "
-                    id="titlebar-close"
+                    @click="!!void closeWindow()"
                     title="Close"
                 >
-                    <Icon id="titlebar-icon" icon="times" />
+                    <Icon class="text-xs" icon="times" />
                 </div>
             </div>
         </div>
@@ -96,6 +90,20 @@ export default defineComponent({
 
         return data;
     },
+    methods: {
+        minimizeWindow() {
+            window.PlatformBridge?.minimizeWindow();
+        },
+        maximizeWindow() {
+            window.PlatformBridge?.maximizeWindow();
+        },
+        reloadWindow() {
+            window.PlatformBridge?.reloadWindow();
+        },
+        closeWindow() {
+            window.PlatformBridge?.closeWindow();
+        },
+    },
 });
 </script>
 
@@ -106,9 +114,5 @@ export default defineComponent({
 
 .titlebar-container {
     @apply px-3 rounded transition duration-200;
-}
-
-#titlebar-icon {
-    @apply text-xs;
 }
 </style>

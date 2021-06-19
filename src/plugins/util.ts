@@ -44,11 +44,13 @@ export const constants = {
         lastWatchedLeft: "last_watched_left",
         bookmarked: "bookmarked",
         favorite: "favorites",
+        myAnimeListToken: "my_anime_list_token",
     },
     assets: {
         images: {
             lightPlaceholder: "/images/light-placeholder-image.png",
             darkPlaceholder: "/images/dark-placeholder-image.png",
+            myAnimeListLogo: "/images/myanimelist-logo.png",
         },
     },
     links: {
@@ -111,7 +113,7 @@ export const util = {
         return text.slice(0, length - 3) + "...";
     },
     BufferToBase64(buf: ArrayBuffer) {
-        return btoa(
+        return window.btoa(
             new Uint8Array(buf).reduce(
                 (data, byte) => data + String.fromCharCode(byte),
                 ""
@@ -128,6 +130,35 @@ export const util = {
             minute: "numeric",
             timeZoneName: "short",
         });
+    },
+    async generatePkceChallenge() {
+        const verifier = util.randomText(43);
+
+        const sha = await window.crypto.subtle.digest(
+            "SHA-256",
+            new TextEncoder().encode(verifier)
+        );
+        const challenge = util
+            .BufferToBase64(sha)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=/g, "");
+
+        return {
+            code_verifier: verifier,
+            code_challenge: challenge,
+        };
+    },
+    randomText(length: number) {
+        const allowed =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(
+                ""
+            );
+
+        return Array(length)
+            .fill("")
+            .map(() => allowed[Math.floor(Math.random() * allowed.length)])
+            .join("");
     },
     mergeObject: MergeObject,
 };

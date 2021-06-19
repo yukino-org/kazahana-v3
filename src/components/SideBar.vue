@@ -97,22 +97,24 @@
                             focus:outline-none
                             bg-gray-200
                             dark:bg-gray-700
-                            px-1
-                            py-0.5
                             rounded-full
+                            w-14
+                            h-8
                         "
                         v-if="!autoDetectTheme"
                         @click.stop.prevent="!!void switchTheme()"
-                        style="width: 3rem"
                     >
                         <span
                             :class="[
+                                'mx-1.5',
+                                'text-xl',
                                 'flex',
                                 'flex-row',
                                 darkMode ? 'justify-end' : 'justify-start',
                             ]"
                         >
-                            {{ darkMode ? "🌙" : "🌞" }}
+                            <Icon icon="moon" v-if="darkMode" />
+                            <Icon icon="sun" v-else />
                         </span>
                     </button>
                 </div>
@@ -170,6 +172,12 @@ export default defineComponent({
                 url: "/history",
                 external: false,
                 icon: "history",
+            },
+            {
+                name: "Connections",
+                url: "/connections",
+                external: false,
+                icon: "link",
             },
             {
                 name: "Settings",

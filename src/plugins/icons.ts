@@ -35,6 +35,12 @@ import {
     faBookmark,
     faChevronLeft,
     faChevronRight,
+    faLink,
+    faSignInAlt,
+    faUser,
+    faSignOutAlt,
+    faSun,
+    faMoon,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -93,7 +99,13 @@ library.add(
     faBookmark,
     faUnfilledBookmark,
     faChevronLeft,
-    faChevronRight
+    faChevronRight,
+    faLink,
+    faSignInAlt,
+    faUser,
+    faSignOutAlt,
+    faSun,
+    faMoon
 );
 
 export default FontAwesomeIcon;

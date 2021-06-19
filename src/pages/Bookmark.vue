@@ -2,40 +2,18 @@
     <div>
         <PageTitle title="Bookmarks" />
 
-        <div>
-            <div
-                class="
-                    mt-4
-                    w-full
-                    flex flex-row
-                    justify-center
-                    items-center
-                    text-center
-                    rounded
-                    overflow-hidden
+        <div class="mt-8">
+            <TabBar
+                :items="
+                    pages.map((x) => ({
+                        id: x,
+                        text: x,
+                    }))
                 "
-            >
-                <div class="flex-grow" v-for="page in pages">
-                    <div
-                        :class="[
-                            'capitalize',
-                            'border-b-2',
-                            'leading-loose',
-                            'cursor-pointer',
-                            'hover:bg-gray-100',
-                            'dark:hover:bg-gray-800',
-                            'transition',
-                            'duration-300',
-                            selected === page
-                                ? 'border-indigo-500 text-indigo-500 border-opacity-100'
-                                : 'border-gray-800 dark:border-gray-100 border-opacity-20 dark:border-opacity-20',
-                        ]"
-                        @click="changeSelected(page)"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-            </div>
+                :selected="selected"
+                tabClassNames="capitalize"
+                @tabClick="changeSelected"
+            />
 
             <div>
                 <p class="mt-6 text-center opacity-75" v-if="!items.length">
@@ -136,6 +114,7 @@ import { BookmarkedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
+import TabBar, { TabEntity } from "../components/TabBar.vue";
 
 const tabs = ["bookmarked", "favorite"] as const;
 
@@ -144,6 +123,7 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
+        TabBar,
     },
     data() {
         const data: {
@@ -182,18 +162,17 @@ export default defineComponent({
             const rmed = this.items.splice(index, 1);
             if (rmed.length) {
                 const store = await Store.getClient();
-                // perf: need a better way
-                const unproxied = JSON.parse(JSON.stringify(this.items));
+                const unproxied = util.mergeObject({}, this.items);
                 await store.set(constants.storeKeys[this.selected], unproxied);
             }
         },
-        changeSelected(type: typeof tabs[number]) {
+        changeSelected({ id: type }: TabEntity) {
             this.$router.push({
                 query: {
                     selected: type,
                 },
             });
-            this.selected = type;
+            this.selected = <any>type;
             this.items = [];
             this.getSelected();
         },

@@ -261,7 +261,7 @@ const AppInfo = {
 };
 
 export default defineComponent({
-    name: "Home",
+    name: "About",
     components: {
         PageTitle,
         Loading,

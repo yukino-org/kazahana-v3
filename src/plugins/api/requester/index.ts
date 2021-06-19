@@ -8,6 +8,8 @@ export interface RequesterOptions {
 export interface Requester {
     get(url: string, options: RequesterOptions): Promise<any>;
     post(url: string, body: any, options: RequesterOptions): Promise<any>;
+    patch(url: string, body: any, options: RequesterOptions): Promise<any>;
+    put(url: string, body: any, options: RequesterOptions): Promise<any>;
 }
 
 export const http = {

@@ -122,12 +122,12 @@ const createWindow = async () => {
         win = null;
     });
 
-    ipcMain.handle("minimize-window", () => {
+    ipcMain.handle("Minimize-Window", () => {
         Logger.warn("main", "Main window has been minimized!");
         win.minimize();
     });
 
-    ipcMain.handle("toggle-maximize-window", () => {
+    ipcMain.handle("Maximize-Window", () => {
         if (process.platform === "darwin" && win.isFullScreen()) {
             win.setFullScreen(false);
             Logger.warn("main", "Main window has been exited from fullscreen!");
@@ -143,7 +143,7 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.handle("close-window", async () => {
+    ipcMain.handle("Close-Window", async () => {
         const resp = await dialog.showMessageBox(null, {
             title: "Exit",
             message: "Do you want to close the app?",
@@ -160,7 +160,7 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.handle("reload-window", () => {
+    ipcMain.handle("Reload-Window", () => {
         Logger.warn("main", "Reloading window");
         win.reload();
     });

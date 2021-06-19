@@ -13,6 +13,10 @@ const PlatformBridge = {
         get: (url, options) => ipcRenderer.invoke("Request-get", url, options),
         post: (url, body, options) =>
             ipcRenderer.invoke("Request-post", url, body, options),
+        patch: (url, body, options) =>
+            ipcRenderer.invoke("Request-patch", url, body, options),
+        put: (url, body, options) =>
+            ipcRenderer.invoke("Request-put", url, body, options),
     },
     openExternalLink: (url) => ipcRenderer.invoke("Open-Externally", url),
     debugger: {
@@ -26,60 +30,33 @@ const PlatformBridge = {
     setDebuggerListener(dbug) {
         debuggerReceiver = dbug;
     },
+    minimizeWindow: (url) => ipcRenderer.invoke("Minimize-Window", url),
+    maximizeWindow: (url) => ipcRenderer.invoke("Maximize-Window", url),
+    closeWindow: (url) => ipcRenderer.invoke("Close-Window", url),
+    reloadWindow: (url) => ipcRenderer.invoke("Reload-Window", url),
 };
 
 contextBridge.exposeInMainWorld("PlatformBridge", PlatformBridge);
 
-document.addEventListener("DOMContentLoaded", () => {
-    const minimizeBtn = document.getElementById("titlebar-minimize");
-    const maximizeBtn = document.getElementById("titlebar-maximize");
-    const closeBtn = document.getElementById("titlebar-close");
-    const reloadBtn = document.getElementById("titlebar-reload");
-
-    if (minimizeBtn) {
-        minimizeBtn.addEventListener("click", () => {
-            ipcRenderer.invoke("minimize-window");
-        });
+ipcRenderer.on("deeplink", (e, url) => {
+    let emitted = false;
+    const emit = () => {
+        if (emitted) return true;
+        if (!deepLinkListener) return false;
+        const success = deepLinkListener(url);
+        return success;
+    };
+    emitted = emit();
+    if (!emitted) {
+        const retrier = setInterval(() => {
+            emitted = emit();
+            if (emitted) clearInterval(retrier);
+        }, 1000);
     }
+});
 
-    if (maximizeBtn) {
-        maximizeBtn.addEventListener("click", () => {
-            ipcRenderer.invoke("toggle-maximize-window");
-        });
+ipcRenderer.on("Electron-Log", (e, type, proc, txt) => {
+    if (debuggerReceiver && debuggerReceiver[type]) {
+        debuggerReceiver[type](proc, txt);
     }
-
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-            ipcRenderer.invoke("close-window");
-        });
-    }
-
-    if (reloadBtn) {
-        reloadBtn.addEventListener("click", () => {
-            ipcRenderer.invoke("reload-window");
-        });
-    }
-
-    ipcRenderer.on("deeplink", (e, url) => {
-        let emitted = false;
-        const emit = () => {
-            if (emitted) return true;
-            if (!deepLinkListener) return false;
-            const success = deepLinkListener(url);
-            return success;
-        };
-        emitted = emit();
-        if (!emitted) {
-            const retrier = setInterval(() => {
-                emitted = emit();
-                if (emitted) clearInterval(retrier);
-            }, 1000);
-        }
-    });
-
-    ipcRenderer.on("Electron-Log", (e, type, proc, txt) => {
-        if (debuggerReceiver && debuggerReceiver[type]) {
-            debuggerReceiver[type](proc, txt);
-        }
-    });
 });

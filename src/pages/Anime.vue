@@ -134,7 +134,7 @@
                     </transition>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Information</p>
+                <p class="text-sm opacity-75 mt-6">Information</p>
                 <div>
                     <p><b>Type:</b> {{ info.data.info.type || "-" }}</p>
                     <p><b>Status:</b> {{ info.data.info.status || "-" }}</p>
@@ -149,7 +149,94 @@
                     <p><b>Rating:</b> {{ info.data.info.rating || "-" }}</p>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Sources (Anime)</p>
+                <p
+                    class="text-sm opacity-75 mt-6"
+                    v-if="connections.MyAnimeList.status.data"
+                >
+                    Connections
+                </p>
+                <div class="mt-1 grid gap-2">
+                    <div
+                        class="
+                            flex flex-row
+                            justify-center
+                            items-center
+                            gap-4
+                            flex-wrap
+                        "
+                    >
+                        <div class="flex-grow flex items-center gap-3">
+                            <img
+                                class="w-7 h-auto rounded"
+                                :src="connections.MyAnimeList.logo"
+                                alt="MyAnimeList"
+                            />
+                            <p class="text-xl font-bold">
+                                MyAnimeList
+                                <span
+                                    class="text-xs mx-1 opacity-75"
+                                    v-if="connections.MyAnimeList.status.data"
+                                    >(
+                                    {{
+                                        connections.MyAnimeList.status.data
+                                            .my_list_status
+                                            .num_episodes_watched
+                                    }}/{{
+                                        connections.MyAnimeList.status.data
+                                            .num_episodes
+                                    }})</span
+                                >
+                            </p>
+                        </div>
+
+                        <router-link
+                            class="
+                                px-3
+                                py-1.5
+                                focus:outline-none
+                                bg-blue-500
+                                hover:bg-blue-600
+                                transition
+                                duration-200
+                                rounded
+                            "
+                            to="/connections"
+                            v-if="!connections.MyAnimeList.loggedIn"
+                            >Login</router-link
+                        >
+                        <div
+                            class="
+                                flex flex-row
+                                justify-center
+                                items-center
+                                gap-2
+                            "
+                            v-else-if="connections.MyAnimeList.status.data"
+                        >
+                            <div class="select">
+                                <select
+                                    class="capitalize"
+                                    @change="handleMyAnimeListStatus($event)"
+                                >
+                                    <option
+                                        v-for="status in connections.MyAnimeList
+                                            .allowedStatus"
+                                        :value="status"
+                                        :selected="
+                                            status ===
+                                            connections.MyAnimeList.status.data
+                                                .my_list_status.status
+                                        "
+                                    >
+                                        {{ status.replace(/_/g, " ") }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-sm opacity-75 mt-6">Sources (Anime)</p>
                 <div class="mt-1 grid gap-2">
                     <div v-for="plugin in extractors.anime">
                         <AnimeSourceViewer
@@ -160,7 +247,7 @@
                     </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Sources (Manga)</p>
+                <p class="text-sm opacity-75 mt-6">Sources (Manga)</p>
                 <div class="mt-1 grid gap-2">
                     <div v-for="plugin in extractors.manga">
                         <MangaSourceViewer
@@ -171,7 +258,7 @@
                     </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Characters</p>
+                <p class="text-sm opacity-75 mt-6">Characters</p>
                 <div
                     class="
                         mt-1
@@ -268,7 +355,7 @@
                     </div>
                 </div>
 
-                <p class="text-sm opacity-75 mt-4">Similar</p>
+                <p class="text-sm opacity-75 mt-6">Similar</p>
                 <div
                     class="
                         mt-1
@@ -325,6 +412,10 @@ import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
 import { BookmarkedEntity, RecentlyViewedEntity } from "../plugins/types";
+import MyAnimeList, {
+    AnimeEntity as MyAnimeListAnimeEntity,
+    AnimeStatus as MyAnimeListAnimeStatus,
+} from "../plugins/integrations/myanimelist";
 
 import PageTitle from "../components/PageTitle.vue";
 import ExternalLink from "../components/ExternalLink.vue";
@@ -359,6 +450,14 @@ export default defineComponent({
             };
             favorite: boolean;
             bookmarked: boolean;
+            connections: {
+                MyAnimeList: {
+                    loggedIn: boolean;
+                    logo: string;
+                    status: StateController<MyAnimeListAnimeEntity>;
+                    allowedStatus: string[];
+                };
+            };
         } = {
             info: util.createStateController(),
             extractors: {
@@ -370,6 +469,14 @@ export default defineComponent({
             },
             favorite: false,
             bookmarked: false,
+            connections: {
+                MyAnimeList: {
+                    loggedIn: false,
+                    logo: constants.assets.images.myAnimeListLogo,
+                    status: util.createStateController(),
+                    allowedStatus: <any>MyAnimeListAnimeStatus,
+                },
+            },
         };
 
         return data;
@@ -377,6 +484,7 @@ export default defineComponent({
     mounted() {
         this.getAnimeInfo();
         this.getSources();
+        this.getMyAnimeListConnection();
     },
     methods: {
         async getAnimeInfo(_url?: string) {
@@ -451,6 +559,34 @@ export default defineComponent({
                 );
             }
         },
+        async getMyAnimeListConnection() {
+            if (typeof this.$route.query.url !== "string") return;
+            if (!MyAnimeList.isLoggedIn()) {
+                this.connections.MyAnimeList.loggedIn = false;
+                return;
+            }
+
+            this.connections.MyAnimeList.loggedIn = true;
+            this.connections.MyAnimeList.status.state = "resolving";
+            const id = this.getMyAnimeListID();
+            if (id) {
+                const info = await MyAnimeList.getAnime(id);
+                if (info) {
+                    this.connections.MyAnimeList.status.state = "resolved";
+                    this.connections.MyAnimeList.status.data = info;
+                } else {
+                    this.connections.MyAnimeList.status.state = "failed";
+                }
+            }
+        },
+        async handleMyAnimeListStatus(event: any) {
+            const value = event.target.value;
+            if (this.connections.MyAnimeList.allowedStatus.includes(value)) {
+                await MyAnimeList.updateAnime(this.getMyAnimeListID()!, {
+                    status: <any>value,
+                });
+            }
+        },
         async toggleAnime(type: "bookmarked" | "favorite") {
             if (!this.info.data) return;
 
@@ -491,6 +627,13 @@ export default defineComponent({
         toggleOpen(key: string) {
             // @ts-ignore
             this.opened[key] = !this.opened[key];
+        },
+        getMyAnimeListID() {
+            return typeof this.$route.query.url === "string"
+                ? this.$route.query.url.match(
+                      /https:\/\/myanimelist\.net\/anime\/(\d+)/
+                  )?.[1]
+                : null;
         },
         getValidImageUrl: util.getValidImageUrl,
     },
