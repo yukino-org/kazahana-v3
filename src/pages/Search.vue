@@ -462,26 +462,29 @@ export default defineComponent({
             });
 
             const store = await Store.getClient();
-            const allSearchedEntities: RecentlyBrowsedEntity[] =
-                (await store.get(constants.storeKeys.recentlyBrowsed)) || [];
+            if (!this.$constants.props.incognito) {
+                const allSearchedEntities: RecentlyBrowsedEntity[] =
+                    (await store.get(constants.storeKeys.recentlyBrowsed)) ||
+                    [];
 
-            allSearchedEntities.splice(0, 0, {
-                terms: this.terms,
-                searchedAt: Date.now(),
-                resultsFound: results.length,
-                route: {
-                    route: this.$route.path,
-                    queries: {
-                        terms: this.terms,
-                        plugins: [...this.selectedPlugin],
+                allSearchedEntities.splice(0, 0, {
+                    terms: this.terms,
+                    searchedAt: Date.now(),
+                    resultsFound: results.length,
+                    route: {
+                        route: this.$route.path,
+                        queries: {
+                            terms: this.terms,
+                            plugins: [...this.selectedPlugin],
+                        },
                     },
-                },
-            });
+                });
 
-            await store.set(
-                constants.storeKeys.recentlyBrowsed,
-                allSearchedEntities.slice(0, 50)
-            );
+                await store.set(
+                    constants.storeKeys.recentlyBrowsed,
+                    allSearchedEntities.slice(0, 50)
+                );
+            }
         },
         getValidImageUrl: util.getValidImageUrl,
     },

@@ -4,6 +4,7 @@ import { Store } from "./store";
 export interface GlobalConstantsProps {
     autoDetectTheme: boolean;
     isDarkTheme: boolean;
+    incognito: boolean;
 }
 
 export type GlobalConstantsPropsChangeHandler = (
@@ -16,6 +17,7 @@ export class GlobalConstants {
     props: GlobalConstantsProps = {
         autoDetectTheme: false,
         isDarkTheme: false,
+        incognito: false,
     };
 
     constructor() {}
@@ -32,6 +34,10 @@ export class GlobalConstants {
 
         this.props.isDarkTheme =
             (settings?.darkMode || constants.defaults.settings.darkMode) ===
+            "enabled";
+
+        this.props.incognito =
+            (settings?.incognito || constants.defaults.settings.incognito) ===
             "enabled";
 
         return this;

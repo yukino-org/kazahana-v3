@@ -27,6 +27,7 @@ export const constants = {
     defaults: {
         settings: <Settings>{
             updateChannel: "latest",
+            incognito: "disabled",
             sideBarPosition: "left",
             discordRpc: "enabled",
             discordRpcPrivacy: "disabled",

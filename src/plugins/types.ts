@@ -14,6 +14,7 @@ export type TenToHundredPercentType = typeof TenToHundredPercent[number];
 
 export interface Settings {
     updateChannel: UpdateChannelsType;
+    incognito: EnabledDisabledType;
     sideBarPosition: SideBarPositionType;
     discordRpc: EnabledDisabledType;
     discordRpcPrivacy: EnabledDisabledType;

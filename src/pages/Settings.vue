@@ -32,6 +32,24 @@
                         </div>
                     </div>
 
+                    <div class="col-span-1">
+                        <p class="text-sm opacity-75">Incognito Mode</p>
+                        <div class="select mt-1 w-full">
+                            <select
+                                class="capitalize"
+                                @change="handleSettings($event, 'incognito')"
+                            >
+                                <option
+                                    v-for="chs in allowedValues.incognito"
+                                    :value="chs"
+                                    :selected="chs === settings.incognito"
+                                >
+                                    {{ chs }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div
                         class="col-span-1"
                         v-if="supportedSettings.sidebarPostion"
@@ -267,6 +285,7 @@ export default defineComponent({
         type SettingValueOfArray<T> = { [P in keyof T]: T[P][] };
         const allowedSettingsValues: SettingValueOfArray<Settings> = {
             updateChannel: UpdateChannels as any as UpdateChannelsType[],
+            incognito: EnabledDisabled as any as EnabledDisabledType[],
             sideBarPosition: SideBarPosition as any as SideBarPositionType[],
             discordRpc: EnabledDisabled as any as EnabledDisabledType[],
             discordRpcPrivacy: EnabledDisabled as any as EnabledDisabledType[],
@@ -338,12 +357,13 @@ export default defineComponent({
 
                 if (
                     this.settings &&
-                    (key === "autoDetectTheme" || key === "darkMode")
+                    ["autoDetectTheme", "darkMode", "incognito"].includes(key)
                 ) {
                     this.$constants.update({
                         autoDetectTheme:
                             this.settings.autoDetectTheme === "enabled",
                         isDarkTheme: this.settings.darkMode === "enabled",
+                        incognito: this.settings.incognito === "enabled",
                     });
                 }
             }

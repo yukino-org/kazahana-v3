@@ -303,28 +303,31 @@ export default defineComponent({
                         ) >= 0;
                 });
 
-                const allRecentlyViewed: RecentlyViewedEntity[] =
-                    (await store.get(constants.storeKeys.recentlyViewed)) || [];
-                allRecentlyViewed.splice(0, 0, {
-                    title: `${data.title}${
-                        this.selected
-                            ? ` (Vol. ${this.selected.volume} Chap. ${this.selected.chapter})`
-                            : ""
-                    }`,
-                    image: "",
-                    plugin: `${this.plugin} (Manga)`,
-                    viewedAt: Date.now(),
-                    route: {
-                        route: this.$route.path,
-                        queries: {
-                            ...(<Record<string, string>>this.$route.query),
+                if (!this.$constants.props.incognito) {
+                    const allRecentlyViewed: RecentlyViewedEntity[] =
+                        (await store.get(constants.storeKeys.recentlyViewed)) ||
+                        [];
+                    allRecentlyViewed.splice(0, 0, {
+                        title: `${data.title}${
+                            this.selected
+                                ? ` (Vol. ${this.selected.volume} Chap. ${this.selected.chapter})`
+                                : ""
+                        }`,
+                        image: "",
+                        plugin: `${this.plugin} (Manga)`,
+                        viewedAt: Date.now(),
+                        route: {
+                            route: this.$route.path,
+                            queries: {
+                                ...(<Record<string, string>>this.$route.query),
+                            },
                         },
-                    },
-                });
-                await store.set(
-                    constants.storeKeys.recentlyViewed,
-                    allRecentlyViewed.slice(0, 100)
-                );
+                    });
+                    await store.set(
+                        constants.storeKeys.recentlyViewed,
+                        allRecentlyViewed.slice(0, 100)
+                    );
+                }
             } catch (err) {
                 this.info.state = "failed";
                 this.$logger.emit(

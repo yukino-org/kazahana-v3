@@ -491,29 +491,31 @@ export default defineComponent({
         async updateLastRead() {
             const store = await Store.getClient();
             try {
-                const extra: string[] = [];
-                if (this.volume) extra.push(`Vol. ${this.volume}`);
-                if (this.chapter) extra.push(`Chap. ${this.chapter}`);
+                if (!this.$constants.props.incognito) {
+                    const extra: string[] = [];
+                    if (this.volume) extra.push(`Vol. ${this.volume}`);
+                    if (this.chapter) extra.push(`Chap. ${this.chapter}`);
 
-                await store.set(constants.storeKeys.lastWatchedLeft, <
-                    LastLeftEntity
-                >{
-                    title: `${this.title}${
-                        extra.length ? ` (${extra.join(" ")})` : ""
-                    }`,
-                    reading: {
-                        volume: this.volume,
-                        chapter: this.chapter,
-                        read: this.currentPage,
-                        total: this.info.data?.entities.length.toString(),
-                    },
-                    updatedAt: Date.now(),
-                    route: {
-                        route: this.$route.path,
-                        queries: { ...this.$route.query },
-                    },
-                    showPopup: true,
-                });
+                    await store.set(constants.storeKeys.lastWatchedLeft, <
+                        LastLeftEntity
+                    >{
+                        title: `${this.title}${
+                            extra.length ? ` (${extra.join(" ")})` : ""
+                        }`,
+                        reading: {
+                            volume: this.volume,
+                            chapter: this.chapter,
+                            read: this.currentPage,
+                            total: this.info.data?.entities.length.toString(),
+                        },
+                        updatedAt: Date.now(),
+                        route: {
+                            route: this.$route.path,
+                            queries: { ...this.$route.query },
+                        },
+                        showPopup: true,
+                    });
+                }
             } catch (err) {
                 this.$logger.emit(
                     "error",

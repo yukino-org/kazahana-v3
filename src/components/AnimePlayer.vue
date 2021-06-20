@@ -396,23 +396,25 @@ export default defineComponent({
 
             const store = await Store.getClient();
             try {
-                await store.set(constants.storeKeys.lastWatchedLeft, <
-                    LastLeftEntity
-                >{
-                    title: `${this.title} (Episode ${this.episode})`,
-                    episode: {
-                        episode: this.episode,
-                        watched: watchedDuration,
-                        total: totalDuration,
-                    },
-                    updatedAt: Date.now(),
-                    route: {
-                        route: this.$route.path,
-                        queries: { ...this.$route.query },
-                    },
-                    showPopup: true,
-                });
-                this.lastWatchUpdated = Date.now();
+                if (!this.$constants.props.incognito) {
+                    await store.set(constants.storeKeys.lastWatchedLeft, <
+                        LastLeftEntity
+                    >{
+                        title: `${this.title} (Episode ${this.episode})`,
+                        episode: {
+                            episode: this.episode,
+                            watched: watchedDuration,
+                            total: totalDuration,
+                        },
+                        updatedAt: Date.now(),
+                        route: {
+                            route: this.$route.path,
+                            queries: { ...this.$route.query },
+                        },
+                        showPopup: true,
+                    });
+                    this.lastWatchUpdated = Date.now();
+                }
             } catch (err) {
                 this.$logger.emit(
                     "error",
