@@ -40,6 +40,8 @@ export interface AnimeListEntity {
 }
 
 export interface AnimeEntity {
+    id: number;
+    title: string;
     my_list_status: {
         status: string;
         score: number;
@@ -54,6 +56,17 @@ export interface AnimeUpdateBody {
     status: AnimeStatusType;
     score: number;
     num_watched_episodes: number;
+}
+
+export interface AnimeUpdateResultEntity {
+    status: string;
+    score: number;
+    num_episodes_watched: number;
+    is_rewatching: boolean;
+    updated_at: string;
+    priority: number;
+    num_times_rewatched: number;
+    rewatch_value: number;
 }
 
 export const AnimeStatus = [
@@ -137,7 +150,7 @@ export class MyAnimeListManager {
     async getAnime(id: string) {
         const res = await this.request(
             "get",
-            `/anime/${id}?fields=my_list_status,num_episodes`
+            `/anime/${id}?fields=id,title,my_list_status,num_episodes`
         );
         return res && <AnimeEntity>JSON.parse(res);
     }
@@ -148,7 +161,12 @@ export class MyAnimeListManager {
             `/anime/${id}/my_list_status`,
             body
         );
-        return res && <AnimeEntity>JSON.parse(res);
+        return res && <AnimeUpdateResultEntity>JSON.parse(res);
+    }
+
+    async searchAnime(title: string) {
+        const res = await this.request("get", `/anime?q=${title}&limit=10`);
+        return res && <AnimeListEntity>JSON.parse(res);
     }
 
     request(type: "get", url: string): Promise<false | string>;

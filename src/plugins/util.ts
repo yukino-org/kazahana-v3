@@ -45,6 +45,7 @@ export const constants = {
         bookmarked: "bookmarked",
         favorite: "favorites",
         myAnimeListToken: "my_anime_list_token",
+        myAnimeListCacheTitles: "my_anime_list_cache_titles",
     },
     assets: {
         images: {

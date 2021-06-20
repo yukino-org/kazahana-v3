@@ -35,6 +35,7 @@ export interface TabEntity {
 }
 
 export default defineComponent({
+    emits: ["tabClick"],
     props: {
         items: Array as PropType<TabEntity[]>,
         selected: String,

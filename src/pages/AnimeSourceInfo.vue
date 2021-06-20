@@ -133,13 +133,22 @@
                 </div>
             </div>
 
+            <p></p>
+            <p class="text-sm opacity-75 mt-6">Connections</p>
+            <div class="mt-1 grid gap-2">
+                <MyAnimeListConnection
+                    ref="MyAnimeListConnection"
+                    :altTitle="info.data.title"
+                />
+            </div>
+
             <div>
                 <div
                     class="
                         flex flex-row
                         justify-between
                         items-center
-                        mt-4
+                        mt-6
                         text-sm
                         opacity-75
                     "
@@ -201,6 +210,7 @@ import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
 import AnimePlayer from "../components/AnimePlayer.vue";
+import MyAnimeListConnection from "../components/Connections/MyAnimeList.vue";
 
 interface SelectedEntity {
     episode: string;
@@ -213,6 +223,7 @@ export default defineComponent({
         Loading,
         ExternalLink,
         AnimePlayer,
+        MyAnimeListConnection,
     },
     data() {
         const data: {
@@ -332,6 +343,14 @@ export default defineComponent({
         async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
             this.scrollToView();
+
+            const episodeNum = ep.episode.match(/\d+/)?.[0];
+            if (episodeNum && this.$refs.MyAnimeListConnection)
+                (<any>this.$refs.MyAnimeListConnection).setEpisode(
+                    +episodeNum,
+                    "watching"
+                );
+
             if (this.selected && this.info.data) {
                 const rpc = await Rpc.getClient();
                 rpc?.({

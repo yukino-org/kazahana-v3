@@ -16,7 +16,7 @@
                 v-model="terms"
                 type="text"
                 placeholder="Type in anime's name..."
-                @keypress.enter="search()"
+                @keypress.enter="!!void search()"
             />
 
             <button

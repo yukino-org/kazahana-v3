@@ -76,3 +76,8 @@ export interface BookmarkedEntity {
         queries: Record<string, string | string[]>;
     };
 }
+
+export interface MyAnimeListCachedAnimeTitles {
+    id: string;
+    altURLs: string[];
+}
