@@ -115,7 +115,6 @@ const createWindow = async () => {
         });
 
         if (!win.isDestroyed()) {
-            Logger.warn("main", "Main window has been closed!");
             win.destroy();
         }
 
@@ -154,6 +153,7 @@ const createWindow = async () => {
 
         if (resp.response === 0) {
             Logger.warn("main", "Closing window");
+            Logger.setBridgeDebug(null);
             win.close();
         } else {
             Logger.debug("main", "User aborted app close!");
