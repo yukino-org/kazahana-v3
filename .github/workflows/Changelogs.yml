@@ -44,19 +44,15 @@ jobs:
                             },
                       });
 
-                      try {
-                          await github.request({
-                              method: "POST",
-                              url: latest.upload_url,
-                              headers: {
-                                  "content-type": "text/plain",
-                              },
-                              data: JSON.stringify(allChanges),
-                              name: "changelogs.json"
-                          });
-                      } catch(err) {
-                          console.log(`Failed to upload 'changelogs.json'`);
-                      }
+                      await github.request({
+                          method: "POST",
+                          url: latest.upload_url,
+                          headers: {
+                              "content-type": "text/plain",
+                          },
+                          data: JSON.stringify(allChanges),
+                          name: "changelogs.json"
+                      });
 
                       const { features, fixes, refactors } = allChanges;
                       const changes = [];
