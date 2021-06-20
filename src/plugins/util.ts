@@ -23,6 +23,8 @@ export interface StateControllerNoNull<T> {
     data: T;
 }
 
+const publicBase =
+    import.meta.env.PROD && ["electron"].includes(app_platform) ? "." : "";
 export const constants = {
     defaults: {
         settings: <Settings>{
@@ -50,9 +52,9 @@ export const constants = {
     },
     assets: {
         images: {
-            lightPlaceholder: "/images/light-placeholder-image.png",
-            darkPlaceholder: "/images/dark-placeholder-image.png",
-            myAnimeListLogo: "/images/myanimelist-logo.png",
+            lightPlaceholder: `${publicBase}/images/light-placeholder-image.png`,
+            darkPlaceholder: `${publicBase}/images/dark-placeholder-image.png`,
+            myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`,
         },
     },
     links: {
