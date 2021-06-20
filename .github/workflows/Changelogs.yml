@@ -82,7 +82,7 @@ jobs:
                           body: JSON.stringify({
                               username: "Yukino - Releases",
                               avatar_url: "https://github.com/zyrouge/yukino-app/blob/next/resources/icon.png?raw=true",
-                              content: "<@&853667970415853589>",
+                              content: "",
                               embeds: [
                                   {
                                       title: `v${latest.name}`,
