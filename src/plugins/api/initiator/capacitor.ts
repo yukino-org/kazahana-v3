@@ -31,8 +31,12 @@ export const initiator: InitiatorFn = async () => {
 
     const launchURL = await App.getLaunchUrl();
     if (launchURL) {
-        window.deepLinkListener(launchURL.url);
+        window.deepLinkListener(parseDeepLink(launchURL.url));
     }
+
+    App.addListener("appUrlOpen", ({ url }) => {
+        window.deepLinkListener(parseDeepLink(url));
+    });
 };
 
 async function notifyUpdate() {
@@ -88,4 +92,8 @@ async function notifyUpdate() {
     } catch (err) {
         console.error(`Update failed: ${err?.message}`);
     }
+}
+
+function parseDeepLink(url: string) {
+    return url.split("://")[1];
 }

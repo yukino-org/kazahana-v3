@@ -3,5 +3,5 @@
     <string name="app_name">Yukino</string>
     <string name="title_activity_main">Yukino</string>
     <string name="package_name">io.github.zyrouge.yukino</string>
-    <string name="custom_url_scheme">io.github.zyrouge.yukino</string>
+    <string name="custom_url_scheme">yukino-app</string>
 </resources>

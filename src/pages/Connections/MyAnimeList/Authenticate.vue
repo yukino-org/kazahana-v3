@@ -2,7 +2,7 @@
     <div>
         <PageTitle title="Authentication" />
 
-        <Loading :text="msg" />
+        <Loading class="mt-6" :text="msg" />
     </div>
 </template>
 

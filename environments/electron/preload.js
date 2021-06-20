@@ -34,6 +34,7 @@ const PlatformBridge = {
     maximizeWindow: (url) => ipcRenderer.invoke("Maximize-Window", url),
     closeWindow: (url) => ipcRenderer.invoke("Close-Window", url),
     reloadWindow: (url) => ipcRenderer.invoke("Reload-Window", url),
+    platform: process.platform,
 };
 
 contextBridge.exposeInMainWorld("PlatformBridge", PlatformBridge);

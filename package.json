@@ -16,7 +16,7 @@
   },
   "homepage": "https://zyrouge.github.io/yukino-app",
   "scripts": {
-    "vite:dev": "vite",
+    "vite:dev": "cross-env TAILWIND_MODE=\"watch\" vite",
     "vite:serve": "vite preview",
     "vite:build": "rimraf ./dist/vite && vue-tsc --noEmit && vite build",
     "vite:type-check": "vue-tsc --noEmit",

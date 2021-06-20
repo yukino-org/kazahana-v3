@@ -10,18 +10,45 @@
                 dark:bg-gray-800
                 shadow
                 select-none
+                px-5
             "
         >
             <div
-                class="pl-5 pr-2 py-1 dark:text-indigo-500 font-bold draggable"
+                class="flex flex-row justify-center items-center gap-2"
+                v-if="isMac"
             >
-                {{ title }}
-                <span class="opacity-50 text-xs" v-if="version"
-                    >({{ version }})</span
-                >
+                <button
+                    class="p-1.5 bg-red-500 rounded-full shadow-inner"
+                    @click="!!void closeWindow()"
+                ></button>
+                <button
+                    class="p-1.5 bg-yellow-500 rounded-full shadow-inner"
+                    @click="!!void minimizeWindow()"
+                ></button>
+                <button
+                    class="p-1.5 bg-green-500 rounded-full shadow-inner"
+                    @click="!!void maximizeWindow()"
+                ></button>
             </div>
-            <div class="flex-grow py-4 draggable"></div>
-            <div class="flex flex-row justify-center items-center pr-3">
+            <div class="flex-grow draggable" v-if="isMac"></div>
+
+            <div
+                :class="[
+                    'py-1 dark:text-indigo-500 font-bold draggable flex justify-center items-center gap-1',
+                    isMac ? 'flex-row-reverse' : 'flex-row',
+                ]"
+            >
+                <p>
+                    {{ title }}
+                </p>
+                <p class="opacity-50 text-xs" v-if="version">({{ version }})</p>
+            </div>
+
+            <div class="flex-grow draggable" v-if="!isMac"></div>
+            <div
+                class="flex flex-row justify-center items-center"
+                v-if="!isMac"
+            >
                 <div
                     class="
                         titlebar-container
@@ -54,6 +81,7 @@
                         dark:hover:bg-gray-700
                     "
                     @click="!!void reloadWindow()"
+                    v-if="view_reload"
                     title="Reload"
                 >
                     <Icon class="text-xs" icon="sync-alt" />
@@ -83,9 +111,13 @@ export default defineComponent({
         const data: {
             title: string;
             version: string;
+            view_reload: boolean;
+            isMac: boolean;
         } = {
             title: document.title,
             version: app_version,
+            view_reload: !import.meta.env.PROD,
+            isMac: window.PlatformBridge.platform === "darwin",
         };
 
         return data;
