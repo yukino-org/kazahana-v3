@@ -18,15 +18,15 @@
                 v-if="isMac"
             >
                 <button
-                    class="p-1.5 bg-red-500 rounded-full shadow-inner"
+                    class="focus:outline-none p-1.5 bg-red-500 rounded-full shadow-inner"
                     @click="!!void closeWindow()"
                 ></button>
                 <button
-                    class="p-1.5 bg-yellow-500 rounded-full shadow-inner"
+                    class="focus:outline-none p-1.5 bg-yellow-500 rounded-full shadow-inner"
                     @click="!!void minimizeWindow()"
                 ></button>
                 <button
-                    class="p-1.5 bg-green-500 rounded-full shadow-inner"
+                    class="focus:outline-none p-1.5 bg-green-500 rounded-full shadow-inner"
                     @click="!!void maximizeWindow()"
                 ></button>
             </div>
