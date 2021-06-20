@@ -101,9 +101,10 @@ const createWindow = async () => {
     if (isDev) win.webContents.openDevTools();
     await Rpc.connect();
 
+    Logger.warn("main", "Closing igniter and opening main window");
+    ignition.close();
+
     win.on("ready-to-show", () => {
-        Logger.warn("main", "Closing igniter and opening main window");
-        ignition.close();
         win.show();
     });
 

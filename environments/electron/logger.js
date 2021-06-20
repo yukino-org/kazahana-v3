@@ -22,28 +22,30 @@ class Logger {
 
     debug(proc, txt, dontEmitBridge) {
         this.write(`[${Logger.time} DBUG] ${proc}: ${txt}`);
-        if (this.bridgeDbug && !dontEmitBridge) {
-            this.bridgeDbug("debug", proc, txt);
-        }
+        this.emitBridge("debug", proc, txt, dontEmitBridge);
     }
 
     error(proc, txt, dontEmitBridge) {
         this.write(`[${Logger.time} ERR!] ${proc}: ${txt}`);
-        if (this.bridgeDbug && !dontEmitBridge) {
-            this.bridgeDbug("error", proc, txt);
-        }
+        this.emitBridge("error", proc, txt, dontEmitBridge);
     }
 
     warn(proc, txt, dontEmitBridge) {
         this.write(`[${Logger.time} WARN] ${proc}: ${txt}`);
-        if (this.bridgeDbug && !dontEmitBridge) {
-            this.bridgeDbug("warn", proc, txt);
-        }
+        this.emitBridge("warn", proc, txt, dontEmitBridge);
     }
 
     write(txt) {
         if (this.file && this.file.writable) this.file.write(`${txt}\n`);
         if (isDev) console.log(txt);
+    }
+
+    emitBridge(type, proc, txt, dontEmitBridge) {
+        if (this.bridgeDbug && !dontEmitBridge) {
+            try {
+                this.bridgeDbug(type, proc, txt);
+            } catch (err) {}
+        }
     }
 
     static get time() {
