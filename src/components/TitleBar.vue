@@ -22,6 +22,9 @@
                         focus:outline-none
                         p-1.5
                         bg-red-500
+                        hover:bg-red-600
+                        transition
+                        duration-200
                         rounded-full
                         shadow-inner
                     "
@@ -32,6 +35,9 @@
                         focus:outline-none
                         p-1.5
                         bg-yellow-500
+                        hover:bg-yellow-600
+                        transition
+                        duration-200
                         rounded-full
                         shadow-inner
                     "
@@ -42,6 +48,9 @@
                         focus:outline-none
                         p-1.5
                         bg-green-500
+                        hover:bg-green-600
+                        transition
+                        duration-200
                         rounded-full
                         shadow-inner
                     "
@@ -135,7 +144,7 @@ export default defineComponent({
             title: document.title,
             version: app_version,
             view_reload: !import.meta.env.PROD,
-            isMac: window.PlatformBridge.platform === "darwin",
+            isMac: !(window.PlatformBridge.platform === "darwin"),
         };
 
         return data;
