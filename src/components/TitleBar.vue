@@ -144,7 +144,7 @@ export default defineComponent({
             title: document.title,
             version: app_version,
             view_reload: !import.meta.env.PROD,
-            isMac: !(window.PlatformBridge.platform === "darwin"),
+            isMac: window.PlatformBridge.platform === "darwin",
         };
 
         return data;
