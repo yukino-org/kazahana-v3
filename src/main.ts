@@ -87,6 +87,9 @@ async function createGlobalState() {
         incognito:
             (settings?.incognito || constants.defaults.settings.incognito) ===
             "enabled",
+        sideBar:
+            settings?.sideBarPosition ||
+            constants.defaults.settings.sideBarPosition,
     });
 
     state.subscribe(({ previous, current }) => {

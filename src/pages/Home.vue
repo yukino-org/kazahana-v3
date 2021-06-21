@@ -49,7 +49,7 @@
                             ]"
                             @click.stop.prevent="!!void selectCategory(cat)"
                         >
-                            {{ cat }}
+                            {{ makeProperCategory(cat) }}
                         </p>
                     </div>
                 </div>
@@ -224,6 +224,10 @@ export default defineComponent({
         },
         getHighResImage(url: string) {
             return util.getHighResMALImage(url);
+        },
+        makeProperCategory(cat: string) {
+            if (cat === "bypopularity") cat = "Popularity";
+            return cat;
         },
     },
 });

@@ -153,9 +153,10 @@ export default defineComponent({
                 try {
                     this.info.showPopup = !this.info.showPopup;
                     const store = await Store.getClient();
-                    await store.set(constants.storeKeys.lastWatchedLeft, {
-                        ...this.info,
-                    });
+                    await store.set(
+                        constants.storeKeys.lastWatchedLeft,
+                        util.mergeObject({}, this.info)
+                    );
                 } catch (err) {}
             }
         },

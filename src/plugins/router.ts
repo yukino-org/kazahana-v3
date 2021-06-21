@@ -44,10 +44,6 @@ const routes: RouteRecordRaw[] = [
         ],
     },
     {
-        path: "/about",
-        component: () => import("../pages/About.vue"),
-    },
-    {
         path: "/bookmark",
         component: () => import("../pages/Bookmark.vue"),
     },
@@ -72,3 +68,53 @@ const router = createRouter({
 });
 
 export default router;
+
+export const BarRoutes: {
+    name: string;
+    url: string;
+    external: boolean;
+    icon: string;
+}[] = [
+    {
+        name: "Home",
+        url: "/",
+        external: false,
+        icon: "home",
+    },
+    {
+        name: "Search",
+        url: "/search",
+        external: false,
+        icon: "search",
+    },
+    {
+        name: "Schedule",
+        url: "/schedule",
+        external: false,
+        icon: "calendar-alt",
+    },
+    {
+        name: "Bookmarks",
+        url: "/bookmark",
+        external: false,
+        icon: "bookmark",
+    },
+    {
+        name: "History",
+        url: "/history",
+        external: false,
+        icon: "history",
+    },
+    {
+        name: "Connections",
+        url: "/connections",
+        external: false,
+        icon: "link",
+    },
+    {
+        name: "Settings",
+        url: "/settings",
+        external: false,
+        icon: "cog",
+    },
+];

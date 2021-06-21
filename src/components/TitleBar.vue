@@ -18,23 +18,41 @@
                 v-if="isMac"
             >
                 <button
-                    class="focus:outline-none p-1.5 bg-red-500 rounded-full shadow-inner"
+                    class="
+                        focus:outline-none
+                        p-1.5
+                        bg-red-500
+                        rounded-full
+                        shadow-inner
+                    "
                     @click="!!void closeWindow()"
                 ></button>
                 <button
-                    class="focus:outline-none p-1.5 bg-yellow-500 rounded-full shadow-inner"
+                    class="
+                        focus:outline-none
+                        p-1.5
+                        bg-yellow-500
+                        rounded-full
+                        shadow-inner
+                    "
                     @click="!!void minimizeWindow()"
                 ></button>
                 <button
-                    class="focus:outline-none p-1.5 bg-green-500 rounded-full shadow-inner"
+                    class="
+                        focus:outline-none
+                        p-1.5
+                        bg-green-500
+                        rounded-full
+                        shadow-inner
+                    "
                     @click="!!void maximizeWindow()"
                 ></button>
             </div>
-            <div class="flex-grow draggable" v-if="isMac"></div>
+            <div class="flex-grow draggable pb-8" v-if="isMac"></div>
 
             <div
                 :class="[
-                    'py-1 dark:text-indigo-500 font-bold draggable flex justify-center items-center gap-1',
+                    'py-1 dark:text-indigo-500 font-bold flex justify-center items-center gap-1 draggable',
                     isMac ? 'flex-row-reverse' : 'flex-row',
                 ]"
             >
@@ -44,7 +62,7 @@
                 <p class="opacity-50 text-xs" v-if="version">({{ version }})</p>
             </div>
 
-            <div class="flex-grow draggable" v-if="!isMac"></div>
+            <div class="flex-grow draggable pb-8" v-if="!isMac"></div>
             <div
                 class="flex flex-row justify-center items-center"
                 v-if="!isMac"

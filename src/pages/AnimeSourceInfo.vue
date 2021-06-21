@@ -134,7 +134,7 @@
             </div>
 
             <p></p>
-            <p class="text-sm opacity-75 mt-6">Connections</p>
+            <p class="text-sm opacity-75 mt-8">Connections</p>
             <div class="mt-1 grid gap-2">
                 <MyAnimeListConnection :altTitle="info.data.title" />
             </div>
@@ -145,7 +145,7 @@
                         flex flex-row
                         justify-between
                         items-center
-                        mt-6
+                        mt-8
                         text-sm
                         opacity-75
                     "
@@ -163,7 +163,7 @@
                         mt-1
                         grid grid-cols-2
                         md:grid-cols-3
-                        lg:grid-cols-4
+                        lg:grid-cols-5
                         gap-2
                         items-center
                     "

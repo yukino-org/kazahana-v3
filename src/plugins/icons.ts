@@ -29,7 +29,6 @@ import {
     faFilter,
     faCalendarAlt,
     faCaretUp,
-    faQuestion,
     faBookOpen,
     faExchangeAlt,
     faBookmark,
@@ -41,6 +40,7 @@ import {
     faSignOutAlt,
     faSun,
     faMoon,
+    faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -89,7 +89,6 @@ library.add(
     faFilter,
     faCalendarAlt,
     faCaretUp,
-    faQuestion,
     faDiscord,
     faBookOpen,
     faPatreon,
@@ -105,7 +104,8 @@ library.add(
     faUser,
     faSignOutAlt,
     faSun,
-    faMoon
+    faMoon,
+    faBars
 );
 
 export default FontAwesomeIcon;

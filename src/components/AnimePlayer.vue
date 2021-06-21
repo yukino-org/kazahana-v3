@@ -143,6 +143,7 @@
                                 justify-center
                                 items-center
                                 flex-wrap
+                                gap-2
                                 mb-1.5
                             "
                             v-if="isPlayable(stream.type)"
@@ -399,7 +400,7 @@ export default defineComponent({
                 if (ep) {
                     this.$bus.MyAnimeListConnection.dispatch({
                         episode: +ep,
-                        status: "watching"
+                        status: "watching",
                     });
                 }
             }

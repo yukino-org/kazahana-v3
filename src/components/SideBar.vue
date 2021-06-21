@@ -1,123 +1,52 @@
 <template>
-    <div>
-        <div
-            :class="[
-                'text-center',
-                'md:overflow-y-auto',
-                'md:max-h-[calc(100vh-11rem)]',
-                'slim-scroll',
-            ]"
-        >
-            <h1 class="text-indigo-500 font-bold text-5xl md:text-4xl">
-                {{ sideBarTitle }}
-            </h1>
-
+    <div
+        :class="[
+            'fixed top-8 bottom-0 h-[calc(100vh-2rem)] text-white z-50 max-w-[calc(100vw-25%)] w-14',
+            sideBarPosition === 'left' ? 'left-0' : 'right-0',
+        ]"
+        id="side-bar"
+    >
+        <div class="flex flex-col justify-center items-center w-full h-full">
             <div
-                class="
-                    mt-8
-                    flex flex-row
-                    lg:flex-col
-                    justify-center
-                    items-center
-                    gap-4
-                    lg:gap-0
-                    flex-wrap
-                "
+                :class="[
+                    'bg-indigo-500 dark:bg-gray-800 flex flex-col justify-center items-center w-full py-6 gap-4 shadow-lg',
+                    sideBarPosition === 'left'
+                        ? 'rounded-r-lg'
+                        : 'rounded-l-lg',
+                ]"
             >
-                <div v-for="link in links" class="md:mb-2">
-                    <button
-                        :class="[hrefClassNames, 'focus:outline-none']"
-                        @click.stop.prevent="!!void openExternalUrl(link.url)"
-                        v-if="link.external"
-                    >
-                        <span class="mr-1 opacity-75"
-                            ><Icon :icon="link.icon"
-                        /></span>
-                        {{ link.name }}
-                    </button>
-                    <router-link
-                        :class="hrefClassNames"
-                        active-class="text-indigo-500"
-                        :to="link.url"
-                        v-else
-                        ><span class="mr-1 opacity-75"
-                            ><Icon :icon="link.icon"
-                        /></span>
-                        {{ link.name }}
-                    </router-link>
-                </div>
-
-                <div
-                    class="
-                        flex flex-row
-                        justify-center
-                        items-center
-                        flex-wrap
-                        gap-3
-                        lg:mt-5
-                        md:mb-2
-                    "
+                <button
+                    :class="[
+                        'relative focus:outline-none hover:text-indigo-100 dark:hover:text-indigo-500 transition duration-200',
+                        !item.external &&
+                            $route.path === item.url &&
+                            'text-indigo-200 dark:text-indigo-500',
+                    ]"
+                    @click.stop.prevent="!!void goto(item.url, item.external)"
+                    v-for="item in links"
+                    id="side-item"
                 >
-                    <button
-                        :class="[
-                            hrefClassNames,
-                            'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
-                        ]"
-                        title="Go back"
-                        @click.stop.prevent="!!void $router.go(-1)"
-                    >
-                        <Icon icon="arrow-left" />
-                    </button>
+                    <Icon class="text-xl" :icon="item.icon" />
 
-                    <button
-                        :class="[
-                            hrefClassNames,
-                            'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
-                        ]"
-                        title="Go forward"
-                        @click.stop.prevent="!!void $router.go(1)"
-                    >
-                        <Icon icon="arrow-right" />
-                    </button>
-
-                    <button
-                        :class="[
-                            hrefClassNames,
-                            'focus:outline-none bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 flex justify-center items-center',
-                        ]"
-                        title="Reload page"
-                        @click.stop.prevent="!!void reload()"
-                        v-if="reload"
-                    >
-                        <Icon icon="redo" />
-                    </button>
-
-                    <button
+                    <p
                         class="
-                            focus:outline-none
+                            absolute
+                            -top-1
+                            left-14
+                            z-50
+                            text-gray-500
+                            dark:text-white
                             bg-gray-200
                             dark:bg-gray-700
-                            rounded-full
-                            w-14
-                            h-8
+                            px-2.5
+                            py-1
+                            rounded
                         "
-                        v-if="!autoDetectTheme"
-                        @click.stop.prevent="!!void switchTheme()"
+                        id="side-tooltip"
                     >
-                        <span
-                            :class="[
-                                'mx-1.5',
-                                'text-xl',
-                                'flex',
-                                'flex-row',
-                                darkMode ? 'justify-end' : 'justify-start',
-                            ]"
-                        >
-                            <Icon icon="moon" v-if="darkMode" />
-                            <Icon icon="sun" v-else />
-                        </span>
-                    </button>
-                </div>
+                        {{ item.name }}
+                    </p>
+                </button>
             </div>
         </div>
     </div>
@@ -125,95 +54,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ExternalLink, Store } from "../plugins/api";
-import { constants } from "../plugins/util";
-import { GlobalStateProps, Settings } from "../plugins/types";
+import { ExternalLink } from "../plugins/api";
+import { BarRoutes } from "../plugins/router";
+import { GlobalStateProps } from "../plugins/types";
 
 export default defineComponent({
-    props: {
-        reload: {
-            type: Function,
-            default: null,
-        },
-    },
-    setup() {
-        const links: {
-            name: string;
-            url: string;
-            external: boolean;
-            icon: string;
-        }[] = [
-            {
-                name: "Home",
-                url: "/",
-                external: false,
-                icon: "home",
-            },
-            {
-                name: "Search",
-                url: "/search",
-                external: false,
-                icon: "search",
-            },
-            {
-                name: "Schedule",
-                url: "/schedule",
-                external: false,
-                icon: "calendar-alt",
-            },
-            {
-                name: "Bookmarks",
-                url: "/bookmark",
-                external: false,
-                icon: "bookmark",
-            },
-            {
-                name: "History",
-                url: "/history",
-                external: false,
-                icon: "history",
-            },
-            {
-                name: "Connections",
-                url: "/connections",
-                external: false,
-                icon: "link",
-            },
-            {
-                name: "Settings",
-                url: "/settings",
-                external: false,
-                icon: "cog",
-            },
-            {
-                name: "About",
-                url: "/about",
-                external: false,
-                icon: "question",
-            },
-        ];
-
-        return {
-            links,
-        };
-    },
     data() {
         const data: {
-            sideBarTitle: string;
-            hrefClassNames: string[];
-            darkMode: boolean;
-            autoDetectTheme: boolean;
+            sideBarPosition: string;
+            links: typeof BarRoutes;
         } = {
-            sideBarTitle: app_name,
-            hrefClassNames: [
-                "text-lg",
-                "hover:text-indigo-600",
-                "dark:hover:text-indigo-400",
-                "transition",
-                "duration-200",
-            ],
-            autoDetectTheme: this.$state.props.autoDetectTheme,
-            darkMode: this.$state.props.isDarkTheme,
+            sideBarPosition: this.$state.props.sideBar,
+            links: BarRoutes,
         };
 
         return data;
@@ -226,35 +78,38 @@ export default defineComponent({
     },
     methods: {
         stateListener({
-            previous,
             current,
         }: {
             previous: GlobalStateProps;
             current: GlobalStateProps;
         }) {
-            this.autoDetectTheme = current.autoDetectTheme;
-            this.darkMode = current.isDarkTheme;
+            this.sideBarPosition = current.sideBar;
         },
-        async switchTheme() {
-            const store = await Store.getClient();
-
-            this.$state.update({
-                isDarkTheme: !this.$state.props.isDarkTheme,
-            });
-
-            const settings: Partial<Settings> = await store.get(
-                constants.storeKeys.settings
-            );
-
-            settings.darkMode = this.$state.props.isDarkTheme
-                ? "enabled"
-                : "disabled";
-            await store.set(constants.storeKeys.settings, settings);
-        },
-        async openExternalUrl(url: string) {
-            const opener = await ExternalLink.getClient();
-            opener?.(url);
+        async goto(url: string, external: boolean) {
+            if (external) {
+                const opener = await ExternalLink.getClient();
+                opener?.(url);
+            } else {
+                this.$router.push({
+                    path: url,
+                });
+            }
         },
     },
 });
 </script>
+
+<style scoped>
+#side-item #side-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-0.5rem) scale(0.9);
+    transition: 0.3s;
+}
+
+#side-item:hover #side-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+</style>

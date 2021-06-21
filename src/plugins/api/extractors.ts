@@ -19,7 +19,6 @@ import GogoStreamAnime from "anime-ext/dist/extractors/anime/gogostream";
 import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
 import TwistDotMoeAnime from "anime-ext/dist/extractors/anime/twistdotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
-import TenshiDotMoeAnime from "anime-ext/dist/extractors/anime/tenshidotmoe";
 import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
 
 import {
@@ -96,7 +95,6 @@ export const Extractors = {
                     SimplyMoe: new SimplyMoeAnime(options),
                     TwistMoe: new TwistDotMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
-                    TenshiMoe: new TenshiDotMoeAnime(options),
                     AnimeParadise: new AnimeParadise(options),
                 },
                 manga: {

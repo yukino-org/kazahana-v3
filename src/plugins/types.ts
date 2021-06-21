@@ -89,6 +89,7 @@ export interface GlobalStateProps {
     autoDetectTheme: boolean;
     isDarkTheme: boolean;
     incognito: boolean;
+    sideBar: SideBarPositionType;
 }
 
 export interface MyAnimeListConnectionSubscriber {
