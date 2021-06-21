@@ -1,3 +1,5 @@
+<br />
+
 <p align="center">
     <img src="./resources/large.png" width="50%">
 </p>
