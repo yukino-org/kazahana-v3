@@ -174,7 +174,10 @@ import MyAnimeList, {
 } from "../../plugins/integrations/myanimelist";
 import { Store } from "../../plugins/api";
 import { StateController, constants, util } from "../../plugins/util";
-import { MyAnimeListCachedAnimeTitles } from "../../plugins/types";
+import {
+    MyAnimeListCachedAnimeTitles,
+    MyAnimeListConnectionSubscriber,
+} from "../../plugins/types";
 
 import Loading from "../Loading.vue";
 import Popup from "../Popup.vue";
@@ -218,6 +221,10 @@ export default defineComponent({
     },
     mounted() {
         this.initiate();
+        this.$bus.MyAnimeListConnection.subscribe(this.setStatus);
+    },
+    beforeDestroy() {
+        this.$bus.MyAnimeListConnection.unsubscribe(this.setStatus);
     },
     methods: {
         async initiate() {
@@ -321,26 +328,25 @@ export default defineComponent({
                 });
             }
         },
-        async setEpisode(
-            episode: number,
-            status: AnimeStatusType = "watching",
-            autoComplete: boolean = true
-        ) {
+        async setStatus(data: MyAnimeListConnectionSubscriber) {
             if (
                 !this.computedId ||
                 !this.info.data ||
-                episode > this.info.data.num_episodes
+                data.episode > this.info.data.num_episodes
             )
                 return;
 
-            if (autoComplete && this.info.data.num_episodes === episode) {
+            if (
+                data.autoComplete &&
+                this.info.data.num_episodes === data.episode
+            ) {
                 status = "completed";
             }
 
             try {
                 const res = await MyAnimeList.updateAnime(this.computedId, {
-                    num_watched_episodes: episode,
-                    status,
+                    num_watched_episodes: data.episode,
+                    status: data.status || "watching",
                 });
                 if (res) {
                     this.info.data.my_list_status = {

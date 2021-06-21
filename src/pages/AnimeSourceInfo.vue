@@ -136,10 +136,7 @@
             <p></p>
             <p class="text-sm opacity-75 mt-6">Connections</p>
             <div class="mt-1 grid gap-2">
-                <MyAnimeListConnection
-                    ref="MyAnimeListConnection"
-                    :altTitle="info.data.title"
-                />
+                <MyAnimeListConnection :altTitle="info.data.title" />
             </div>
 
             <div>
@@ -306,7 +303,7 @@ export default defineComponent({
                         ) >= 0;
                 });
 
-                if (!this.$constants.props.incognito) {
+                if (!this.$state.props.incognito) {
                     const allRecentlyViewed: RecentlyViewedEntity[] =
                         (await store.get(constants.storeKeys.recentlyViewed)) ||
                         [];
@@ -346,13 +343,6 @@ export default defineComponent({
         async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
             this.scrollToView();
-
-            const episodeNum = ep.episode.match(/\d+/)?.[0];
-            if (episodeNum && this.$refs.MyAnimeListConnection)
-                (<any>this.$refs.MyAnimeListConnection).setEpisode(
-                    +episodeNum,
-                    "watching"
-                );
 
             if (this.selected && this.info.data) {
                 const rpc = await Rpc.getClient();

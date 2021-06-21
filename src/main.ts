@@ -5,11 +5,19 @@ import "./assets/main.css";
 import Icon from "./plugins/icons";
 import Router from "./plugins/router";
 import Logger from "./plugins/logger";
-import GlobalConstants, {
-    GlobalConstantsProps,
-} from "./plugins/api/globalConstants";
-import { Initiator, Debugger, DeepLink } from "./plugins/api";
-import { util } from "./plugins/util";
+import {
+    Initiator,
+    Debugger,
+    DeepLink,
+    Emitter,
+    State,
+    Store,
+} from "./plugins/api";
+import { constants, util } from "./plugins/util";
+import {
+    GlobalStateProps,
+    MyAnimeListConnectionSubscriber,
+} from "./plugins/types";
 
 const app = createApp(App);
 
@@ -23,11 +31,12 @@ const start = async () => {
     app.use(Router);
 
     app.config.globalProperties.$logger = Logger;
-    app.config.globalProperties.$constants = await GlobalConstants.get();
-    GlobalConstants.listen(handleGlobalConstantsChange);
+    app.config.globalProperties.$state = await createGlobalState();
+    app.config.globalProperties.$bus = createEventBus();
+
     configureTheme(
-        GlobalConstants.props.autoDetectTheme,
-        GlobalConstants.props.isDarkTheme
+        app.config.globalProperties.$state.props.autoDetectTheme,
+        app.config.globalProperties.$state.props.isDarkTheme
     );
 
     const debug = await Debugger.getClient();
@@ -56,20 +65,48 @@ declare global {
 declare module "@vue/runtime-core" {
     export interface ComponentCustomProperties {
         $logger: typeof Logger;
-        $constants: typeof GlobalConstants;
+        $state: State<GlobalStateProps>;
+        $bus: ReturnType<typeof createEventBus>;
     }
 }
 
-function handleGlobalConstantsChange(
-    previous: GlobalConstantsProps,
-    current: GlobalConstantsProps
-) {
-    if (
-        current.autoDetectTheme !== previous.autoDetectTheme ||
-        current.isDarkTheme !== previous.isDarkTheme
-    ) {
-        configureTheme(current.autoDetectTheme, current.isDarkTheme);
-    }
+async function createGlobalState() {
+    const store = await Store.getClient();
+
+    const settings: Record<string, any> | undefined = await store.get(
+        constants.storeKeys.settings
+    );
+
+    const state = new State<GlobalStateProps>({
+        autoDetectTheme:
+            (settings?.autoDetectTheme ||
+                constants.defaults.settings.autoDetectTheme) === "enabled",
+        isDarkTheme:
+            (settings?.darkMode || constants.defaults.settings.darkMode) ===
+            "enabled",
+        incognito:
+            (settings?.incognito || constants.defaults.settings.incognito) ===
+            "enabled",
+    });
+
+    state.subscribe(({ previous, current }) => {
+        if (
+            current.autoDetectTheme !== previous.autoDetectTheme ||
+            current.isDarkTheme !== previous.isDarkTheme
+        ) {
+            configureTheme(current.autoDetectTheme, current.isDarkTheme);
+        }
+    });
+
+    return state;
+}
+
+function createEventBus() {
+    const bus = {
+        MyAnimeListConnection: new Emitter<MyAnimeListConnectionSubscriber>(),
+    };
+
+    return bus;
 }
 
 function configureTheme(autoDetect: boolean, isDark: boolean) {

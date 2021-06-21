@@ -462,7 +462,7 @@ export default defineComponent({
             });
 
             const store = await Store.getClient();
-            if (!this.$constants.props.incognito) {
+            if (!this.$state.props.incognito) {
                 const allSearchedEntities: RecentlyBrowsedEntity[] =
                     (await store.get(constants.storeKeys.recentlyBrowsed)) ||
                     [];

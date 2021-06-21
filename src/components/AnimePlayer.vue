@@ -61,7 +61,7 @@
                     :style="{ width: `${playerWidth}%` }"
                     v-if="currentPlaying.type === 'streamable'"
                     @loadedmetadata="initializePlayer()"
-                    @timeupdate="updateLastWatched(true)"
+                    @timeupdate="updateStats(true)"
                     @ended="handleEnded()"
                 >
                     <source :src="getValidImageUrl(currentPlaying.url)" />
@@ -317,7 +317,7 @@ export default defineComponent({
                     video.currentTime = watched;
                 }
 
-                this.updateLastWatched();
+                this.updateStats();
             }
         },
         getHostFromUrl(url: string) {
@@ -376,7 +376,7 @@ export default defineComponent({
                 await fullscreen?.(false);
             }
         },
-        async updateLastWatched(fromPlayer: boolean = false) {
+        async updateStats(fromPlayer: boolean = false) {
             if (fromPlayer) {
                 const timeout = 10000;
                 const diff = Date.now() - this.lastWatchUpdated;
@@ -394,9 +394,19 @@ export default defineComponent({
                     totalDuration = video.duration;
             }
 
+            if (watchedDuration / totalDuration > 0.8) {
+                const ep = this.episode?.match(/\d+/)?.[0];
+                if (ep) {
+                    this.$bus.MyAnimeListConnection.dispatch({
+                        episode: +ep,
+                        status: "watching"
+                    });
+                }
+            }
+
             const store = await Store.getClient();
             try {
-                if (!this.$constants.props.incognito) {
+                if (!this.$state.props.incognito) {
                     await store.set(constants.storeKeys.lastWatchedLeft, <
                         LastLeftEntity
                     >{

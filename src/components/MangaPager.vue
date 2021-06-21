@@ -491,7 +491,7 @@ export default defineComponent({
         async updateLastRead() {
             const store = await Store.getClient();
             try {
-                if (!this.$constants.props.incognito) {
+                if (!this.$state.props.incognito) {
                     const extra: string[] = [];
                     if (this.volume) extra.push(`Vol. ${this.volume}`);
                     if (this.chapter) extra.push(`Chap. ${this.chapter}`);

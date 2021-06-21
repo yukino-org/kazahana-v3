@@ -359,7 +359,7 @@ export default defineComponent({
                     this.settings &&
                     ["autoDetectTheme", "darkMode", "incognito"].includes(key)
                 ) {
-                    this.$constants.update({
+                    this.$state.update({
                         autoDetectTheme:
                             this.settings.autoDetectTheme === "enabled",
                         isDarkTheme: this.settings.darkMode === "enabled",

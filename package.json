@@ -19,7 +19,7 @@
     "vite:dev": "cross-env TAILWIND_MODE=\"watch\" vite",
     "vite:serve": "vite preview",
     "vite:build": "rimraf ./dist/vite && vue-tsc --noEmit && vite build",
-    "vite:type-check": "vue-tsc --noEmit",
+    "vite:typecheck": "vue-tsc --noEmit",
     "electron:icons": "electron-icon-builder --flatten --input=./resources/icon.png --output=./resources && node scripts/mac-icons",
     "electron:start": "cross-env YUKINO_PLATFORM=\"electron\" electron environments/electron/main.js",
     "electron:dev": "cross-env YUKINO_PLATFORM=\"electron\" node scripts/electron-dev",

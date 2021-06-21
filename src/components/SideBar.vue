@@ -127,7 +127,7 @@
 import { defineComponent } from "vue";
 import { ExternalLink, Store } from "../plugins/api";
 import { constants } from "../plugins/util";
-import { Settings } from "../plugins/types";
+import { GlobalStateProps, Settings } from "../plugins/types";
 
 export default defineComponent({
     props: {
@@ -212,34 +212,41 @@ export default defineComponent({
                 "transition",
                 "duration-200",
             ],
-            autoDetectTheme: this.$constants.props.autoDetectTheme,
-            darkMode: this.$constants.props.isDarkTheme,
+            autoDetectTheme: this.$state.props.autoDetectTheme,
+            darkMode: this.$state.props.isDarkTheme,
         };
 
         return data;
     },
     mounted() {
-        this.listenToGlobalConsts();
+        this.$state.subscribe(this.stateListener);
+    },
+    beforeDestroy() {
+        this.$state.unsubscribe(this.stateListener);
     },
     methods: {
-        listenToGlobalConsts() {
-            this.$constants.listen((previous, current) => {
-                this.autoDetectTheme = current.autoDetectTheme;
-                this.darkMode = current.isDarkTheme;
-            });
+        stateListener({
+            previous,
+            current,
+        }: {
+            previous: GlobalStateProps;
+            current: GlobalStateProps;
+        }) {
+            this.autoDetectTheme = current.autoDetectTheme;
+            this.darkMode = current.isDarkTheme;
         },
         async switchTheme() {
             const store = await Store.getClient();
 
-            this.$constants.update({
-                isDarkTheme: !this.$constants.props.isDarkTheme,
+            this.$state.update({
+                isDarkTheme: !this.$state.props.isDarkTheme,
             });
 
             const settings: Partial<Settings> = await store.get(
                 constants.storeKeys.settings
             );
 
-            settings.darkMode = this.$constants.props.isDarkTheme
+            settings.darkMode = this.$state.props.isDarkTheme
                 ? "enabled"
                 : "disabled";
             await store.set(constants.storeKeys.settings, settings);

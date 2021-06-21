@@ -442,7 +442,7 @@ export default defineComponent({
                         ) >= 0;
                 });
 
-                if (!this.$constants.props.incognito) {
+                if (!this.$state.props.incognito) {
                     const allRecentlyViewed: RecentlyViewedEntity[] =
                         (await store.get(constants.storeKeys.recentlyViewed)) ||
                         [];

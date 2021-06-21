@@ -1,3 +1,5 @@
+import { AnimeStatusType } from "./integrations/myanimelist";
+
 export const EnabledDisabled = ["enabled", "disabled"] as const;
 export type EnabledDisabledType = typeof EnabledDisabled[number];
 
@@ -81,4 +83,16 @@ export interface BookmarkedEntity {
 export interface MyAnimeListCachedAnimeTitles {
     id: string;
     altURLs: string[];
+}
+
+export interface GlobalStateProps {
+    autoDetectTheme: boolean;
+    isDarkTheme: boolean;
+    incognito: boolean;
+}
+
+export interface MyAnimeListConnectionSubscriber {
+    episode: number;
+    status?: AnimeStatusType;
+    autoComplete?: boolean;
 }
