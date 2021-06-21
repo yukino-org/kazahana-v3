@@ -49,13 +49,13 @@
 
         <div
             :class="[
-                'fixed w-[calc(100vw-8rem)] right-10 bottom-20 text-white z-[51] bg-indigo-500 dark:bg-gray-700 px-4 py-2.5 shadow rounded-md grid gap-2',
+                'fixed w-[calc(100vw-8rem)] right-10 bottom-20 text-white z-[51] bg-indigo-500 dark:bg-gray-700 px-4 py-2.5 shadow rounded-md grid gap-1',
                 isOpen && 'active',
             ]"
             id="bottom-other"
         >
             <button
-                class="focus:outline-none"
+                class="focus:outline-none py-0.5 text-lg"
                 @click.stop.prevent="
                     !!void goto(item.url, item.external).then(() =>
                         toggleMenu()
