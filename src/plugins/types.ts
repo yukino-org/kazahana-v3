@@ -23,6 +23,7 @@ export interface Settings {
     autoDetectTheme: EnabledDisabledType;
     darkMode: EnabledDisabledType;
     autoPlay: EnabledDisabledType;
+    autoNext: EnabledDisabledType;
     defaultPlayerWidth: TenToHundredPercentType;
     defaultPageWidth: TenToHundredPercentType;
 }

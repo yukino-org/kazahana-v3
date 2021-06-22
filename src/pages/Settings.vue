@@ -141,6 +141,24 @@
                     </div>
 
                     <div class="col-span-1">
+                        <p class="text-sm opacity-75">Auto next</p>
+                        <div class="select mt-1 w-full">
+                            <select
+                                class="capitalize"
+                                @change="handleSettings($event, 'autoNext')"
+                            >
+                                <option
+                                    v-for="chs in allowedValues.autoNext"
+                                    :value="chs"
+                                    :selected="chs === settings.autoNext"
+                                >
+                                    {{ chs }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1">
                         <p class="text-sm opacity-75">
                             Use system preferred theme
                         </p>
@@ -536,6 +554,7 @@ export default defineComponent({
             autoDetectTheme: EnabledDisabled as any as EnabledDisabledType[],
             darkMode: EnabledDisabled as any as EnabledDisabledType[],
             autoPlay: EnabledDisabled as any as EnabledDisabledType[],
+            autoNext: EnabledDisabled as any as EnabledDisabledType[],
             defaultPlayerWidth:
                 TenToHundredPercent as any as TenToHundredPercentType[],
             defaultPageWidth:

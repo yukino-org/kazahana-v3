@@ -17,7 +17,7 @@
                     <p class="opacity-75 text-xs" v-if="altTitle && info.data">
                         Computed as <b>{{ info.data.title }}</b>
                         <span
-                            class="ml-1 text-red-500 font-bold cursor-pointer"
+                            class="ml-2 text-red-500 font-bold cursor-pointer"
                             @click.stop.prevent="!!void toggleSearch()"
                             >Not this?</span
                         >

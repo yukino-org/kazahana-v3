@@ -24,7 +24,19 @@
                         "
                     >
                         <span class="mr-2 opacity-75">Autoplay:</span>
-                        <input type="checkbox" v-model="isAutoPlayEnabled" />
+                        <input type="checkbox" v-model="autoPlay" />
+                    </div>
+
+                    <div
+                        class="
+                            text-sm
+                            flex flex-row
+                            justify-center
+                            items-center
+                        "
+                    >
+                        <span class="mr-2 opacity-75">Auto next:</span>
+                        <input type="checkbox" v-model="autoNext" />
                     </div>
 
                     <div
@@ -63,6 +75,7 @@
                     @loadedmetadata="initializePlayer()"
                     @timeupdate="updateStats(true)"
                     @ended="handleEnded()"
+                    :key="currentPlaying.url"
                 >
                     <source :src="getValidImageUrl(currentPlaying.url)" />
                 </video>
@@ -184,25 +197,26 @@ import {
     Extractors,
     ExtractorsEntity,
     FullScreen,
-    Store,
+    Store
 } from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
-import { LastLeftEntity } from "../plugins/types";
+import { LastLeftEntity, Settings } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
 
 export default defineComponent({
+    emits: ["playNext"],
     components: {
         Loading,
-        ExternalLink,
+        ExternalLink
     },
     props: {
         title: String,
         episode: String,
         plugin: String,
         link: String,
-        autoPlayHandler: Function,
+        autoPlayHandler: Function
     },
     data() {
         const data: {
@@ -220,14 +234,16 @@ export default defineComponent({
             playerWidth: number;
             supportsPlayerWidth: boolean;
             lastWatchUpdated: number;
-            isAutoPlayEnabled: boolean;
+            autoPlay: boolean;
+            autoNext: boolean;
         } = {
             info: util.createStateController(),
             currentPlaying: null,
             playerWidth: 100,
             supportsPlayerWidth: ["electron"].includes(app_platform),
             lastWatchUpdated: 0,
-            isAutoPlayEnabled: false,
+            autoPlay: false,
+            autoNext: false
         };
 
         return data;
@@ -241,10 +257,10 @@ export default defineComponent({
     methods: {
         async updatePageSetting() {
             const store = await Store.getClient();
-            const settings =
+            const settings: Partial<Settings> =
                 (await store.get(constants.storeKeys.settings)) || {};
 
-            let width = settings.defaultPlayerWidth;
+            let width: number | undefined = settings.defaultPlayerWidth;
             if (width && !isNaN(width)) {
                 width = +width;
                 if (width > 0 && width <= 100) {
@@ -252,7 +268,12 @@ export default defineComponent({
                 }
             }
 
-            this.isAutoPlayEnabled = settings?.autoPlay === "enabled";
+            this.autoPlay =
+                (settings?.autoPlay || constants.defaults.settings.autoPlay) ===
+                "enabled";
+            this.autoNext =
+                (settings?.autoNext || constants.defaults.settings.autoNext) ===
+                "enabled";
         },
         watchEpisode() {
             watch(
@@ -271,7 +292,7 @@ export default defineComponent({
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop,
-                    behavior: "smooth",
+                    behavior: "smooth"
                 });
             }
         },
@@ -294,8 +315,8 @@ export default defineComponent({
                     this.link
                 );
 
-                this.info.data = data.sort((x) =>
-                    x.type.some((y) => ["streamable"].includes(y)) ? -1 : 1
+                this.info.data = data.sort(x =>
+                    x.type.some(y => ["streamable"].includes(y)) ? -1 : 1
                 );
                 this.info.state = "resolved";
             } catch (err) {
@@ -319,6 +340,7 @@ export default defineComponent({
                 }
 
                 this.updateStats();
+                this.autoPlay = video.play();
             }
         },
         getHostFromUrl(url: string) {
@@ -329,7 +351,7 @@ export default defineComponent({
 
             this.currentPlaying = {
                 type,
-                url,
+                url
             };
 
             if (url?.includes("m3u8")) {
@@ -400,7 +422,7 @@ export default defineComponent({
                 if (ep) {
                     this.$bus.MyAnimeListConnection.dispatch({
                         episode: +ep,
-                        status: "watching",
+                        status: "watching"
                     });
                 }
             }
@@ -408,22 +430,27 @@ export default defineComponent({
             const store = await Store.getClient();
             try {
                 if (!this.$state.props.incognito) {
-                    await store.set(constants.storeKeys.lastWatchedLeft, <
-                        LastLeftEntity
-                    >{
+                    const lastLeft: LastLeftEntity = {
                         title: `${this.title} (Episode ${this.episode})`,
                         episode: {
-                            episode: this.episode,
+                            episode: this.episode!,
                             watched: watchedDuration,
-                            total: totalDuration,
+                            total: totalDuration
                         },
                         updatedAt: Date.now(),
                         route: {
                             route: this.$route.path,
-                            queries: { ...this.$route.query },
+                            queries: <Record<string, string>>{
+                                ...this.$route.query
+                            }
                         },
-                        showPopup: true,
-                    });
+                        showPopup: true
+                    };
+
+                    await store.set(
+                        constants.storeKeys.lastWatchedLeft,
+                        lastLeft
+                    );
                     this.lastWatchUpdated = Date.now();
                 }
             } catch (err) {
@@ -434,11 +461,11 @@ export default defineComponent({
             }
         },
         async handleEnded() {
-            if (this.isAutoPlayEnabled && this.autoPlayHandler) {
-                this.autoPlayHandler();
+            if (this.autoNext) {
+                this.$emit("playNext");
             }
         },
-        getValidImageUrl: util.getValidImageUrl,
-    },
+        getValidImageUrl: util.getValidImageUrl
+    }
 });
 </script>

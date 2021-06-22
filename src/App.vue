@@ -13,13 +13,13 @@
                         ? 'pl-24 pr-10'
                         : 'pl-10 pr-24'
                     : 'px-8',
-                showBottomBar && 'pb-20',
+                showBottomBar && 'pb-20'
             ]"
         >
             <main
                 :class="[
                     'pb-10 lg:col-span-3',
-                    showBottomBar ? 'pt-8' : 'pt-10',
+                    showBottomBar ? 'pt-8' : 'pt-10'
                 ]"
             >
                 <router-view
@@ -61,7 +61,7 @@
         <div
             :class="[
                 'fixed right-6 top-6 max-w-xs z-50',
-                showTitleBar && 'mt-8',
+                showTitleBar && 'mt-8'
             ]"
         >
             <Notifications />
@@ -70,7 +70,7 @@
         <div
             :class="[
                 'fixed left-0 bottom-8 max-w-md mr-8 z-50',
-                showBottomBar ? 'bottom-20' : 'bottom-8',
+                showBottomBar ? 'bottom-20' : 'bottom-8'
             ]"
         >
             <transition name="fade">
@@ -97,7 +97,7 @@ export default defineComponent({
         SideBar,
         BottomBar,
         Notifications,
-        LastLeft,
+        LastLeft
     },
     data() {
         const data: {
@@ -109,9 +109,9 @@ export default defineComponent({
         } = {
             showTitleBar: ["electron"].includes(app_platform),
             showSideBar: ["electron"].includes(app_platform),
-            showBottomBar: ["capacitor"].includes(app_platform),
+            showBottomBar: !["capacitor"].includes(app_platform),
             pageKey: 0,
-            sideBarPosition: this.$state.props.sideBar,
+            sideBarPosition: this.$state.props.sideBar
         };
 
         return data;
@@ -126,7 +126,7 @@ export default defineComponent({
     },
     methods: {
         stateListener({
-            current,
+            current
         }: {
             previous: GlobalStateProps;
             current: GlobalStateProps;
@@ -148,13 +148,13 @@ export default defineComponent({
             window.scroll({
                 top: 0,
                 left: 0,
-                behavior: "smooth",
+                behavior: "smooth"
             });
         },
         reloadComponent() {
             this.pageKey += 1;
-        },
-    },
+        }
+    }
 });
 </script>
 

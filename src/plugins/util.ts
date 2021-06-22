@@ -36,6 +36,7 @@ export const constants = {
             autoDetectTheme: "enabled",
             darkMode: "disabled",
             autoPlay: "disabled",
+            autoNext: "disabled",
             defaultPlayerWidth: 100,
             defaultPageWidth: 100,
         },
