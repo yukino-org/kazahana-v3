@@ -15,7 +15,6 @@ import * as MALSeason from "anime-ext/dist/integrations/myanimelist/season";
 import { AnimeExtractorModel } from "anime-ext/dist/extractors/anime/model";
 import FourAnime from "anime-ext/dist/extractors/anime/4anime";
 import GogoAnime from "anime-ext/dist/extractors/anime/gogoanime";
-import GogoStreamAnime from "anime-ext/dist/extractors/anime/gogostream";
 import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
 import TwistDotMoeAnime from "anime-ext/dist/extractors/anime/twistdotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
@@ -91,7 +90,6 @@ export const Extractors = {
                 anime: {
                     "4Anime": new FourAnime(options),
                     GogoAnime: new GogoAnime(options),
-                    GogoStream: new GogoStreamAnime(options),
                     SimplyMoe: new SimplyMoeAnime(options),
                     TwistMoe: new TwistDotMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
