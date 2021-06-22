@@ -109,7 +109,7 @@ export default defineComponent({
         } = {
             showTitleBar: ["electron"].includes(app_platform),
             showSideBar: ["electron"].includes(app_platform),
-            showBottomBar: !["capacitor"].includes(app_platform),
+            showBottomBar: ["capacitor"].includes(app_platform),
             pageKey: 0,
             sideBarPosition: this.$state.props.sideBar
         };
