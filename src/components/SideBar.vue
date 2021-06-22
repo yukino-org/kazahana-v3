@@ -1,8 +1,8 @@
 <template>
     <div
         :class="[
-            'fixed top-8 bottom-0 h-[calc(100vh-2rem)] text-white z-50 max-w-[calc(100vw-25%)] w-14',
-            sideBarPosition === 'left' ? 'left-0' : 'right-0',
+            'fixed top-8 bottom-0 h-[calc(100vh-2rem)] text-indigo-200 dark:text-white z-50 max-w-[calc(100vw-25%)] w-14',
+            sideBarPosition === 'left' ? 'left-0' : 'right-0'
         ]"
         id="side-bar"
     >
@@ -10,17 +10,15 @@
             <div
                 :class="[
                     'bg-indigo-500 dark:bg-gray-800 flex flex-col justify-center items-center w-full py-6 gap-4 shadow-lg',
-                    sideBarPosition === 'left'
-                        ? 'rounded-r-lg'
-                        : 'rounded-l-lg',
+                    sideBarPosition === 'left' ? 'rounded-r-lg' : 'rounded-l-lg'
                 ]"
             >
                 <button
                     :class="[
-                        'relative focus:outline-none hover:text-indigo-100 dark:hover:text-indigo-500 transition duration-200',
+                        'relative focus:outline-none hover:text-indigo-100 dark:hover:text-gray-300 transition duration-200',
                         !item.external &&
                             $route.path === item.url &&
-                            'text-indigo-200 dark:text-indigo-500',
+                            'text-white dark:text-indigo-500'
                     ]"
                     @click.stop.prevent="!!void goto(item.url, item.external)"
                     v-for="item in links"
@@ -65,7 +63,7 @@ export default defineComponent({
             links: typeof BarRoutes;
         } = {
             sideBarPosition: this.$state.props.sideBar,
-            links: BarRoutes,
+            links: BarRoutes
         };
 
         return data;
@@ -78,7 +76,7 @@ export default defineComponent({
     },
     methods: {
         stateListener({
-            current,
+            current
         }: {
             previous: GlobalStateProps;
             current: GlobalStateProps;
@@ -91,11 +89,11 @@ export default defineComponent({
                 opener?.(url);
             } else {
                 this.$router.push({
-                    path: url,
+                    path: url
                 });
             }
-        },
-    },
+        }
+    }
 });
 </script>
 

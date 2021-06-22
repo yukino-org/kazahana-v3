@@ -7,7 +7,8 @@
                 left-0
                 right-0
                 h-16
-                text-white
+                text-indigo-200
+                dark:text-white
                 z-50
                 bg-indigo-500
                 dark:bg-gray-800
@@ -22,7 +23,7 @@
                     'relative focus:outline-none transition duration-200',
                     !item.external &&
                         $route.path === item.url &&
-                        'text-indigo-200 dark:text-indigo-500',
+                        'text-white dark:text-indigo-500'
                 ]"
                 @click.stop.prevent="!!void goto(item.url, item.external)"
                 v-for="item in links"
@@ -37,7 +38,7 @@
             <button
                 :class="[
                     'relative focus:outline-none transition duration-200',
-                    isOpen && 'text-indigo-200 dark:text-indigo-500',
+                    isOpen && 'text-white dark:text-indigo-500'
                 ]"
                 @click.stop.prevent="!!void toggleMenu()"
             >
@@ -49,13 +50,17 @@
 
         <div
             :class="[
-                'fixed w-[calc(100vw-8rem)] right-10 bottom-20 text-white z-[51] bg-indigo-500 dark:bg-gray-700 px-4 py-2.5 shadow rounded-md grid gap-1',
-                isOpen && 'active',
+                'fixed w-[calc(100vw-8rem)] right-10 bottom-20 text-indigo-200 dark:text-white z-[51] bg-indigo-500 dark:bg-gray-700 px-4 py-2.5 shadow rounded-md grid gap-1',
+                isOpen && 'active'
             ]"
             id="bottom-other"
         >
             <button
-                class="focus:outline-none py-0.5 text-lg"
+                :class="[
+                    'focus:outline-none py-0.5 text-lg',
+                    $route.path === item.url &&
+                        'text-white dark:text-indigo-500'
+                ]"
                 @click.stop.prevent="
                     !!void goto(item.url, item.external).then(() =>
                         toggleMenu()
@@ -83,7 +88,7 @@ export default defineComponent({
         } = {
             links: BarRoutes.slice(0, 2),
             others: BarRoutes.slice(2),
-            isOpen: false,
+            isOpen: false
         };
 
         return data;
@@ -98,11 +103,11 @@ export default defineComponent({
                 opener?.(url);
             } else {
                 this.$router.push({
-                    path: url,
+                    path: url
                 });
             }
-        },
-    },
+        }
+    }
 });
 </script>
 
