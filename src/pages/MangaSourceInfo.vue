@@ -21,62 +21,88 @@
         >
             Failed to fetch manga information!
         </p>
-        <div v-else-if="info.state === 'resolved' && info.data">
+        <div
+            :class="['mt-8', selected ? 'md:mt-0' : 'md:mt-4']"
+            v-else-if="info.state === 'resolved' && info.data"
+        >
             <div
-                class="
-                    flex flex-col
-                    sm:flex-row
-                    justify-center
-                    sm:justify-between
-                    items-center
-                    flex-wrap
-                    gap-4
-                "
+                class="flex flex-col md:flex-row justify-center items-center gap-6"
             >
-                <PageTitle :title="info.data.title" />
+                <img
+                    class="flex-none w-36 lg:w-44 rounded"
+                    :src="info.data.thumbnail"
+                    :alt="info.data.title"
+                    v-if="!selected"
+                />
 
                 <div
-                    class="
-                        flex flex-row
-                        justify-between
-                        items-center
-                        flex-wrap
-                        gap-4
-                    "
+                    :class="[
+                        'flex-grow text-center',
+                        selected &&
+                            'flex flex-col md:flex-row justify-between items-center gap-6'
+                    ]"
                 >
-                    <div>
-                        <div
-                            class="text-2xl mt-0.5 cursor-pointer"
-                            @click.stop.prevent="toggleAnime('favorite')"
-                        >
-                            <Icon
-                                class="text-red-500"
-                                icon="heart"
-                                v-if="favorite"
-                            />
-                            <Icon
-                                class="opacity-75"
-                                :icon="['far', 'heart']"
-                                v-else
-                            />
-                        </div>
-                    </div>
+                    <PageTitle :title="info.data.title" />
 
-                    <div>
-                        <div
-                            class="text-2xl mt-0.5 cursor-pointer"
-                            @click.stop.prevent="toggleAnime('bookmarked')"
-                        >
-                            <Icon
-                                class="text-indigo-500"
-                                icon="bookmark"
-                                v-if="bookmarked"
-                            />
-                            <Icon
-                                class="opacity-75"
-                                :icon="['far', 'bookmark']"
-                                v-else
-                            />
+                    <div
+                        :class="[
+                            !selected && 'mt-6',
+                            'flex-grow md:flex-initial flex flex-row justify-center items-center flex-wrap',
+                            selected ? 'gap-6' : 'gap-8'
+                        ]"
+                    >
+                        <div>
+                            <p
+                                :class="[
+                                    'opacity-75 block',
+                                    selected && 'md:hidden'
+                                ]"
+                            >
+                                Favorite
+                            </p>
+
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('favorite')"
+                            >
+                                <Icon
+                                    class="text-red-500"
+                                    icon="heart"
+                                    v-if="favorite"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'heart']"
+                                    v-else
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <p
+                                :class="[
+                                    'opacity-75 block',
+                                    selected && 'md:hidden'
+                                ]"
+                            >
+                                Bookmark
+                            </p>
+
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('bookmarked')"
+                            >
+                                <Icon
+                                    class="text-indigo-500"
+                                    icon="bookmark"
+                                    v-if="bookmarked"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'bookmark']"
+                                    v-else
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -84,7 +110,7 @@
 
             <div v-if="selected">
                 <MangaPager
-                    class="mt-1"
+                    class="mt-10"
                     v-if="plugin && selected.url"
                     :title="info.data.title"
                     :plugin="plugin"
@@ -153,7 +179,7 @@
                     flex flex-row
                     justify-between
                     items-center
-                    mt-6
+                    mt-10
                     text-sm
                     opacity-75
                 "
@@ -270,6 +296,8 @@ export default defineComponent({
                 this.info.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.plugin].getInfo(this.link);
+
+                data.chapters = util.tryArrange(data.chapters, "chapter");
                 this.info.data = data;
                 this.info.state = "resolved";
 
@@ -308,7 +336,7 @@ export default defineComponent({
                                 ? ` (Vol. ${this.selected.volume} Chap. ${this.selected.chapter})`
                                 : ""
                         }`,
-                        image: "",
+                        image: data.thumbnail,
                         plugin: `${this.plugin} (Manga)`,
                         viewedAt: Date.now(),
                         route: {
@@ -430,8 +458,8 @@ export default defineComponent({
             } else {
                 allBookmarked.splice(0, 0, {
                     title: this.info.data.title,
-                    image: "",
-                    plugin: "MyAnimeList",
+                    image: this.info.data.thumbnail || "",
+                    plugin: <string>this.$route.query.plugin,
                     bookmarkedAt: Date.now(),
                     route: {
                         route: this.$route.path,

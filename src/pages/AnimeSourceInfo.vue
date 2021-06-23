@@ -15,62 +15,88 @@
         >
             No results were found!
         </p>
-        <div v-else-if="info.state === 'resolved' && info.data">
+        <div
+            :class="['mt-8', selected ? 'md:mt-0' : 'md:mt-4']"
+            v-else-if="info.state === 'resolved' && info.data"
+        >
             <div
-                class="
-                    flex flex-col
-                    sm:flex-row
-                    justify-center
-                    sm:justify-between
-                    items-center
-                    flex-wrap
-                    gap-4
-                "
+                class="flex flex-col md:flex-row justify-center items-center gap-6"
             >
-                <PageTitle :title="info.data.title" />
+                <img
+                    class="flex-none w-36 lg:w-44 rounded"
+                    :src="info.data.thumbnail"
+                    :alt="info.data.title"
+                    v-if="!selected"
+                />
 
                 <div
-                    class="
-                        flex flex-row
-                        justify-between
-                        items-center
-                        flex-wrap
-                        gap-4
-                    "
+                    :class="[
+                        'flex-grow text-center',
+                        selected &&
+                            'flex flex-col md:flex-row justify-between items-center gap-6'
+                    ]"
                 >
-                    <div>
-                        <div
-                            class="text-2xl mt-0.5 cursor-pointer"
-                            @click.stop.prevent="toggleAnime('favorite')"
-                        >
-                            <Icon
-                                class="text-red-500"
-                                icon="heart"
-                                v-if="favorite"
-                            />
-                            <Icon
-                                class="opacity-75"
-                                :icon="['far', 'heart']"
-                                v-else
-                            />
-                        </div>
-                    </div>
+                    <PageTitle :title="info.data.title" />
 
-                    <div>
-                        <div
-                            class="text-2xl mt-0.5 cursor-pointer"
-                            @click.stop.prevent="toggleAnime('bookmarked')"
-                        >
-                            <Icon
-                                class="text-indigo-500"
-                                icon="bookmark"
-                                v-if="bookmarked"
-                            />
-                            <Icon
-                                class="opacity-75"
-                                :icon="['far', 'bookmark']"
-                                v-else
-                            />
+                    <div
+                        :class="[
+                            !selected && 'mt-6',
+                            'flex-grow md:flex-initial flex flex-row justify-center items-center flex-wrap',
+                            selected ? 'gap-6' : 'gap-8'
+                        ]"
+                    >
+                        <div>
+                            <p
+                                :class="[
+                                    'opacity-75 block',
+                                    selected && 'md:hidden'
+                                ]"
+                            >
+                                Favorite
+                            </p>
+
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('favorite')"
+                            >
+                                <Icon
+                                    class="text-red-500"
+                                    icon="heart"
+                                    v-if="favorite"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'heart']"
+                                    v-else
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <p
+                                :class="[
+                                    'opacity-75 block',
+                                    selected && 'md:hidden'
+                                ]"
+                            >
+                                Bookmark
+                            </p>
+
+                            <div
+                                class="text-3xl mt-0.5 cursor-pointer"
+                                @click.stop.prevent="toggleAnime('bookmarked')"
+                            >
+                                <Icon
+                                    class="text-indigo-500"
+                                    icon="bookmark"
+                                    v-if="bookmarked"
+                                />
+                                <Icon
+                                    class="opacity-75"
+                                    :icon="['far', 'bookmark']"
+                                    v-else
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +104,7 @@
 
             <div v-if="selected">
                 <AnimePlayer
-                    class="mt-1"
+                    class="mt-10"
                     v-if="selected.episode && plugin && selected.url"
                     :title="info.data.title"
                     :episode="selected.episode"
@@ -133,8 +159,7 @@
                 </div>
             </div>
 
-            <p></p>
-            <p class="text-sm opacity-75 mt-8">Connections</p>
+            <p class="text-sm opacity-75 mt-10">Connections</p>
             <div class="mt-1 grid gap-2">
                 <MyAnimeListConnection :altTitle="info.data.title" />
             </div>
@@ -145,7 +170,7 @@
                         flex flex-row
                         justify-between
                         items-center
-                        mt-8
+                        mt-10
                         text-sm
                         opacity-75
                     "
@@ -220,7 +245,7 @@ export default defineComponent({
         Loading,
         ExternalLink,
         AnimePlayer,
-        MyAnimeListConnection,
+        MyAnimeListConnection
     },
     data() {
         const data: {
@@ -244,7 +269,7 @@ export default defineComponent({
                     : null,
             selected: null,
             favorite: false,
-            bookmarked: false,
+            bookmarked: false
         };
 
         return data;
@@ -258,7 +283,7 @@ export default defineComponent({
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop,
-                    behavior: "smooth",
+                    behavior: "smooth"
                 });
             }
         },
@@ -276,13 +301,15 @@ export default defineComponent({
                 this.info.state = "resolving";
                 const client = await Extractors.getClient();
                 const data = await client.anime[this.plugin].getInfo(this.link);
+
+                data.episodes = util.tryArrange(data.episodes, "episode");
                 this.info.data = data;
                 this.info.state = "resolved";
 
                 const episode = this.$route.query.episode;
                 if (typeof episode === "string") {
                     const foundEp = this.info.data.episodes.find(
-                        (x) => x.episode === episode
+                        x => x.episode === episode
                     );
                     if (foundEp) {
                         this.selectEpisode(foundEp);
@@ -293,13 +320,13 @@ export default defineComponent({
 
                 const store = await Store.getClient();
 
-                (["bookmarked", "favorite"] as const).forEach(async (type) => {
+                (["bookmarked", "favorite"] as const).forEach(async type => {
                     const allBookmarked: BookmarkedEntity[] =
                         (await store.get(constants.storeKeys[type])) || [];
 
                     this[type] =
                         allBookmarked.findIndex(
-                            (x) => x.route.queries.url === this.$route.query.url
+                            x => x.route.queries.url === this.$route.query.url
                         ) >= 0;
                 });
 
@@ -313,15 +340,15 @@ export default defineComponent({
                                 ? ` (Episode ${this.selected.episode})`
                                 : ""
                         }`,
-                        image: "",
+                        image: data.thumbnail,
                         plugin: `${this.plugin} (Anime)`,
                         viewedAt: Date.now(),
                         route: {
                             route: this.$route.path,
                             queries: {
-                                ...(<Record<string, string>>this.$route.query),
-                            },
-                        },
+                                ...(<Record<string, string>>this.$route.query)
+                            }
+                        }
                     });
                     await store.set(
                         constants.storeKeys.recentlyViewed,
@@ -355,10 +382,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link,
-                              },
+                                  url: this.link
+                              }
                           ]
-                        : undefined,
+                        : undefined
                 });
             } else {
                 this.refreshRpc();
@@ -367,7 +394,7 @@ export default defineComponent({
         prevEpisode() {
             if (!this.info.data || !this.selected) return;
             const cur = this.info.data.episodes.findIndex(
-                (x) => x.episode === this.selected?.episode
+                x => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
                 const prev = this.info.data.episodes[cur - 1];
@@ -377,7 +404,7 @@ export default defineComponent({
         nextEpisode() {
             if (!this.info.data || !this.selected) return;
             const cur = this.info.data.episodes.findIndex(
-                (x) => x.episode === this.selected?.episode
+                x => x.episode === this.selected?.episode
             );
             if (typeof cur === "number") {
                 const next = this.info.data.episodes[cur + 1];
@@ -394,10 +421,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link,
-                              },
+                                  url: this.link
+                              }
                           ]
-                        : undefined,
+                        : undefined
                 });
             }
         },
@@ -409,7 +436,7 @@ export default defineComponent({
                 (await store.get(constants.storeKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
-                (x) => x.route.queries.url === this.$route.query.url
+                x => x.route.queries.url === this.$route.query.url
             );
 
             if (index >= 0) {
@@ -418,21 +445,21 @@ export default defineComponent({
             } else {
                 allBookmarked.splice(0, 0, {
                     title: this.info.data.title,
-                    image: "",
-                    plugin: "MyAnimeList",
+                    image: this.info.data.thumbnail || "",
+                    plugin: <string>this.$route.query.plugin,
                     bookmarkedAt: Date.now(),
                     route: {
                         route: this.$route.path,
                         queries: {
-                            ...(<Record<string, string>>this.$route.query),
-                        },
-                    },
+                            ...(<Record<string, string>>this.$route.query)
+                        }
+                    }
                 });
                 this[type] = true;
             }
 
             await store.set(constants.storeKeys[type], allBookmarked);
-        },
-    },
+        }
+    }
 });
 </script>

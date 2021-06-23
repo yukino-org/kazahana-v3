@@ -38,8 +38,8 @@ export const constants = {
             autoPlay: "disabled",
             autoNext: "disabled",
             defaultPlayerWidth: 100,
-            defaultPageWidth: 100,
-        },
+            defaultPageWidth: 100
+        }
     },
     storeKeys: {
         recentlyBrowsed: "recently_browsed",
@@ -49,26 +49,26 @@ export const constants = {
         bookmarked: "bookmarked",
         favorite: "favorites",
         myAnimeListToken: "my_anime_list_token",
-        myAnimeListCacheTitles: "my_anime_list_cache_titles",
+        myAnimeListCacheTitles: "my_anime_list_cache_titles"
     },
     assets: {
         images: {
             lightPlaceholder: `${publicBase}/images/light-placeholder-image.png`,
             darkPlaceholder: `${publicBase}/images/dark-placeholder-image.png`,
-            myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`,
-        },
+            myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`
+        }
     },
     links: {
         website: "https://zyrouge.github.io/yukino-app",
         discordInvite: "https://zyrouge.github.io/yukino-app/discord.html",
         patreon: "https://patreon.com/zyrouge",
         github: "https://github.com/zyrouge/yukino-app/",
-        guides: "https://zyrouge.github.io/yukino-app/guides/index.html",
+        guides: "https://zyrouge.github.io/yukino-app/guides/index.html"
     },
     github: {
         owner: "zyrouge",
-        repo: "yukino-app",
-    },
+        repo: "yukino-app"
+    }
 };
 
 export const util = {
@@ -86,13 +86,13 @@ export const util = {
     createStateController<T>() {
         return <StateController<T>>{
             state: "waiting",
-            data: null,
+            data: null
         };
     },
     createStateControllerNoNull<T>(data: T) {
         return <StateControllerNoNull<T>>{
             state: "waiting",
-            data,
+            data
         };
     },
     parseMs: (ms: number) => {
@@ -107,7 +107,7 @@ export const util = {
             days: Math.trunc(days),
             hours: Math.trunc(hours),
             mins: Math.trunc(mins),
-            secs: Math.trunc(secs),
+            secs: Math.trunc(secs)
         };
     },
     isDarkTheme() {
@@ -133,7 +133,7 @@ export const util = {
             year: "numeric",
             hour: "numeric",
             minute: "numeric",
-            timeZoneName: "short",
+            timeZoneName: "short"
         });
     },
     async generatePkceChallenge() {
@@ -151,19 +151,34 @@ export const util = {
 
         return {
             code_verifier: verifier,
-            code_challenge: challenge,
+            code_challenge: challenge
         };
     },
     randomText(length: number) {
-        const allowed =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(
-                ""
-            );
+        const allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(
+            ""
+        );
 
         return Array(length)
             .fill("")
             .map(() => allowed[Math.floor(Math.random() * allowed.length)])
             .join("");
     },
-    mergeObject: MergeObject,
+    tryArrange<T extends Record<any, any>>(arr: T[], key: keyof T) {
+        return arr.length > 1 && +arr[0][key] - +arr[1][key]
+            ? arr.reverse()
+            : arr;
+    },
+    shrinkedText(txt: string, max: number) {
+        if (txt.length < max) return txt;
+        const mid = Math.floor(txt.length / 4) - 4;
+        return `${txt.slice(0, mid)}...${txt.slice(-mid)}`;
+    },
+    async copyToClipboard(text: string) {
+        return navigator.clipboard
+            .writeText(text)
+            .then(() => true)
+            .catch(() => false);
+    },
+    mergeObject: MergeObject
 };
