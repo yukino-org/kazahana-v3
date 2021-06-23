@@ -26,7 +26,7 @@
                     class="text-sm text-center opacity-75 my-2"
                     v-else-if="
                         sources.state === 'resolved' &&
-                        sources.data?.length === 0
+                            sources.data?.length === 0
                     "
                 >
                     <p>No sources could be found.</p>
@@ -47,8 +47,8 @@
                                 path: '/manga/source',
                                 query: {
                                     plugin: pluginKey,
-                                    url: src.url,
-                                },
+                                    url: src.url
+                                }
                             }"
                         >
                             <div
@@ -66,9 +66,9 @@
                             >
                                 <img
                                     class="w-16 md:w-20 rounded"
-                                    :src="getValidImageUrl(src.image)"
+                                    :src="getValidImageUrl(src.thumbnail)"
                                     :alt="src.title"
-                                    v-if="src.image"
+                                    v-if="src.thumbnail"
                                 />
                                 <div class="flex-grow">
                                     <p class="text-lg font-bold">
@@ -100,12 +100,12 @@ import ExternalLink from "./ExternalLink.vue";
 export default defineComponent({
     components: {
         Loading,
-        ExternalLink,
+        ExternalLink
     },
     props: {
         title: String,
         pluginKey: String,
-        pluginName: String,
+        pluginName: String
     },
     data() {
         const data: {
@@ -115,7 +115,7 @@ export default defineComponent({
             >;
         } = {
             isOpen: false,
-            sources: util.createStateController(),
+            sources: util.createStateController()
         };
 
         return data;
@@ -145,7 +145,7 @@ export default defineComponent({
                 );
             }
         },
-        getValidImageUrl: util.getValidImageUrl,
-    },
+        getValidImageUrl: util.getValidImageUrl
+    }
 });
 </script>
