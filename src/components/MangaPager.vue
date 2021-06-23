@@ -88,9 +88,9 @@
                     <div
                         :class="
                             fullscreen &&
-                            `fixed ${
-                                hasTitleBar ? 'top-8' : 'top-0'
-                            } bottom-0 right-0 left-0 bg-black bg-opacity-[0.85] z-50`
+                                `fixed ${
+                                    hasTitleBar ? 'top-8' : 'top-0'
+                                } bottom-0 right-0 left-0 bg-black bg-opacity-[0.85] z-50`
                         "
                         @click.stop.prevent="!!void toggleFullscreen()"
                     >
@@ -143,7 +143,7 @@
                                     width: !fullscreen
                                         ? `${pageWidth}%`
                                         : undefined,
-                                    cursor: fullscreen ? 'zoom-out' : 'zoom-in',
+                                    cursor: fullscreen ? 'zoom-out' : 'zoom-in'
                                 }"
                                 :key="currentPageImage"
                                 @click.stop.prevent="!!void toggleFullscreen()"
@@ -260,7 +260,7 @@ import ExternalLink from "./ExternalLink.vue";
 export default defineComponent({
     components: {
         Loading,
-        ExternalLink,
+        ExternalLink
     },
     props: {
         title: String,
@@ -268,7 +268,7 @@ export default defineComponent({
         chapTitle: String,
         volume: String,
         chapter: String,
-        link: String,
+        link: String
     },
     data() {
         const data: {
@@ -295,7 +295,7 @@ export default defineComponent({
             currentPageImage: null,
             pageWidth: 100,
             hasTitleBar: ["electron"].includes(app_platform),
-            fullscreen: false,
+            fullscreen: false
         };
 
         return data;
@@ -309,7 +309,7 @@ export default defineComponent({
     },
     methods: {
         attachKeys() {
-            document.addEventListener("keydown", (e) => {
+            document.addEventListener("keydown", e => {
                 switch (e.key) {
                     case "ArrowLeft":
                         this.prevPage();
@@ -346,7 +346,7 @@ export default defineComponent({
         watchPage() {
             watch(
                 () => this.currentPage,
-                (cur) => {
+                cur => {
                     if (cur) {
                         this.updatePageImage();
                     }
@@ -382,6 +382,7 @@ export default defineComponent({
                     typeof page === "string"
                         ? page
                         : this.info.data.entities[0].page;
+                delete this.$route.query.page;
 
                 this.info.state = "resolved";
             } catch (err) {
@@ -399,12 +400,11 @@ export default defineComponent({
 
             if (!this.images) this.images = [];
 
-            const found = this.images.find((x) => x.page === page);
+            const found = this.images.find(x => x.page === page);
             if (found) return found.image;
 
-            const url = this.info.data?.entities.find(
-                (x) => x.page === page
-            )?.url;
+            const url = this.info.data?.entities.find(x => x.page === page)
+                ?.url;
             if (!url) {
                 return this.$logger.emit(
                     "error",
@@ -415,12 +415,13 @@ export default defineComponent({
             try {
                 const client = await Extractors.getClient();
                 const data = await client.manga[this.plugin].getPageImage?.(
-                    url
+                    url,
+                    { ...this.info.data?.headers }
                 );
                 if (data) {
                     this.images.push({
                         page,
-                        image: data.image,
+                        image: data.image
                     });
                     return data.image;
                 }
@@ -442,7 +443,7 @@ export default defineComponent({
                 this.info.data?.type === "page_urls"
                     ? await this.getPageImage(this.currentPage)
                     : this.info.data?.entities.find(
-                          (x) => x.page === this.currentPage
+                          x => x.page === this.currentPage
                       )?.url;
             if (img) {
                 this.currentPageImage = img;
@@ -454,7 +455,7 @@ export default defineComponent({
                 if (this.currentPage) {
                     const prevIndex =
                         this.info.data.entities.findIndex(
-                            (x) => x.page === this.currentPage
+                            x => x.page === this.currentPage
                         ) - 1;
 
                     const prev = this.info.data.entities[prevIndex];
@@ -469,7 +470,7 @@ export default defineComponent({
                 if (this.currentPage) {
                     const nextIndex =
                         this.info.data.entities.findIndex(
-                            (x) => x.page === this.currentPage
+                            x => x.page === this.currentPage
                         ) + 1;
 
                     const next = this.info.data.entities[nextIndex];
@@ -484,7 +485,7 @@ export default defineComponent({
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop,
-                    behavior: "smooth",
+                    behavior: "smooth"
                 });
             }
         },
@@ -506,14 +507,14 @@ export default defineComponent({
                             volume: this.volume,
                             chapter: this.chapter,
                             read: this.currentPage,
-                            total: this.info.data?.entities.length.toString(),
+                            total: this.info.data?.entities.length.toString()
                         },
                         updatedAt: Date.now(),
                         route: {
                             route: this.$route.path,
-                            queries: { ...this.$route.query },
+                            queries: { ...this.$route.query }
                         },
-                        showPopup: true,
+                        showPopup: true
                     });
                 }
             } catch (err) {
@@ -526,7 +527,7 @@ export default defineComponent({
         toggleFullscreen() {
             this.fullscreen = !this.fullscreen;
         },
-        getValidImageUrl: util.getValidImageUrl,
-    },
+        getValidImageUrl: util.getValidImageUrl
+    }
 });
 </script>

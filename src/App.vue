@@ -21,6 +21,7 @@
                     'pb-10 lg:col-span-3',
                     showBottomBar ? 'pt-8' : 'pt-10'
                 ]"
+                id="main-container"
             >
                 <router-view
                     v-slot="{ Component: RouterComponent }"
