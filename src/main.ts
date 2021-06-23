@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
+import "swiper/swiper-bundle.min.css";
 
 import Icon from "./plugins/icons";
 import Router from "./plugins/router";
@@ -11,12 +12,12 @@ import {
     DeepLink,
     Emitter,
     State,
-    Store,
+    Store
 } from "./plugins/api";
 import { constants, util } from "./plugins/util";
 import {
     GlobalStateProps,
-    MyAnimeListConnectionSubscriber,
+    MyAnimeListConnectionSubscriber
 } from "./plugins/types";
 
 const app = createApp(App);
@@ -89,7 +90,7 @@ async function createGlobalState() {
             "enabled",
         sideBar:
             settings?.sideBarPosition ||
-            constants.defaults.settings.sideBarPosition,
+            constants.defaults.settings.sideBarPosition
     });
 
     state.subscribe(({ previous, current }) => {
@@ -106,7 +107,7 @@ async function createGlobalState() {
 
 function createEventBus() {
     const bus = {
-        MyAnimeListConnection: new Emitter<MyAnimeListConnectionSubscriber>(),
+        MyAnimeListConnection: new Emitter<MyAnimeListConnectionSubscriber>()
     };
 
     return bus;
@@ -131,7 +132,7 @@ function beforeApp() {
     console.log(`Version: ${app_version}`);
     console.log(`Built at: ${util.prettyDate(new Date(app_builtAt))}`);
 
-    DeepLink.set(async (url) => {
+    DeepLink.set(async url => {
         const dbug = await Debugger.getClient();
         dbug.debug("info", `Deeplink received: ${url}`);
 

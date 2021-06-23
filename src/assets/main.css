@@ -83,3 +83,19 @@ hr {
 .fade-leave-to {
     opacity: 0;
 }
+
+.swiper-pagination.swiper-pagination-bullets {
+    bottom: 0;
+}
+
+.swiper-pagination-bullet {
+    @apply bg-gray-200 opacity-100;
+}
+
+.dark .swiper-pagination-bullet {
+    @apply bg-gray-700 opacity-100;
+}
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
+    @apply bg-indigo-500 opacity-100;
+}
