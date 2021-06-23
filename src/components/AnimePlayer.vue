@@ -481,7 +481,7 @@ export default defineComponent({
                 this.$emit("playNext");
             }
         },
-        shrinkText: (txt: string) => util.shrinkedText(txt, 30),
+        shrinkText: (txt: string) => util.shrinkedText(txt, 80),
         getValidImageUrl: util.getValidImageUrl,
         copyToClipboard: util.copyToClipboard
     }
