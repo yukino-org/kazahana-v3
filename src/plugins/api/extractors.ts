@@ -3,10 +3,10 @@ import { util } from "../util";
 import { Requester } from "anime-ext/dist/types";
 
 import MALSearchAnime, {
-    SearchResult as MALSearchAnimeSearchResult,
+    SearchResult as MALSearchAnimeSearchResult
 } from "anime-ext/dist/integrations/myanimelist/search-anime";
 import MALAnimeInfo, {
-    InfoResult as MALAnimeInfoInfoResult,
+    InfoResult as MALAnimeInfoInfoResult
 } from "anime-ext/dist/integrations/myanimelist/anime-info";
 import * as MALTopAnimes from "anime-ext/dist/integrations/myanimelist/top";
 import * as MALSchedule from "anime-ext/dist/integrations/myanimelist/schedule";
@@ -19,15 +19,19 @@ import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
 import TwistDotMoeAnime from "anime-ext/dist/extractors/anime/twistdotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
 import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
+import TenshiMoe from "anime-ext/dist/extractors/anime/tenshidotmoe";
 
 import {
+    MangaExtractorConstructorOptions,
     MangaExtractorModel,
-    MangaExtractorPageImageResult,
+    MangaExtractorPageImageResult
 } from "anime-ext/dist/extractors/manga/model";
 import FanFoxManga from "anime-ext/dist/extractors/manga/fanfox";
 import MangaDexManga from "anime-ext/dist/extractors/manga/mangadex";
 import MangaInnManga from "anime-ext/dist/extractors/manga/mangainn";
 import ReadM from "anime-ext/dist/extractors/manga/readm";
+import MangaNato from "anime-ext/dist/extractors/manga/manganato";
+import ManhwaTop from "anime-ext/dist/extractors/manga/manhwatop";
 
 export interface ExtractorsEntity {
     integrations: {
@@ -54,7 +58,7 @@ export const Extractors = {
     async getOptions() {
         if (!this.__options) {
             this.__options = {
-                http: await http.getClient(),
+                http: await http.getClient()
             };
         }
 
@@ -84,8 +88,8 @@ export const Extractors = {
                         },
                         async season() {
                             return MALSeason.default(options);
-                        },
-                    },
+                        }
+                    }
                 },
                 anime: {
                     "4Anime": new FourAnime(options),
@@ -94,48 +98,65 @@ export const Extractors = {
                     TwistMoe: new TwistDotMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
                     AnimeParadise: new AnimeParadise(options),
+                    TenshiMoe: new TenshiMoe(options)
                 },
                 manga: {
                     FanFox: new FanFoxManga(options),
                     MangaDex: new MangaDexManga(options),
                     MangaInn: new MangaInnManga(options),
-                    ReadM: new (class YReadM extends ReadM {
-                        async search(url: string) {
-                            const res = await super.search(url);
-                            for (const key in res) {
-                                const img = res[key].image;
-                                if (img) {
-                                    res[key].image = await getBase64Image(img, {
-                                        headers: {},
-                                    });
-                                }
-                            }
-                            return res;
-                        }
-
-                        async getChapterPages(url: string) {
-                            const res = await super.getChapterPages(url);
-                            res.type = "page_urls";
-                            return res;
-                        }
-
-                        async getPageImage(url: string) {
-                            const page = url.match(/p_(\d+)/)?.[1];
-                            return <MangaExtractorPageImageResult>{
-                                page: page ? `${+page}` : "-",
-                                image: await getBase64Image(url, {
-                                    headers: {},
-                                }),
-                            };
-                        }
-                    })(options),
-                },
+                    ReadM: new (Mangab64Chapters(Mangab64Search(ReadM)))(
+                        options
+                    ),
+                    MangaNato: new (Mangab64Chapters(MangaNato))(options),
+                    ManhwaTop: new (Mangab64Chapters(
+                        Mangab64Search(ManhwaTop)
+                    ))(options)
+                }
             };
         }
 
         return this.__extractor;
-    },
+    }
 };
+
+type MangaModelClass = new (
+    options: MangaExtractorConstructorOptions
+) => MangaExtractorModel;
+function Mangab64Search(cls: MangaModelClass) {
+    return class extends cls {
+        async search(url: string) {
+            const res = await super.search(url);
+            for (const key in res) {
+                const img = res[key].thumbnail;
+                if (img && img.startsWith("http")) {
+                    res[key].thumbnail = await getBase64Image(img, {
+                        headers: {}
+                    });
+                }
+            }
+            return res;
+        }
+    };
+}
+
+function Mangab64Chapters(cls: MangaModelClass) {
+    return class extends cls {
+        async getChapterPages(url: string) {
+            const res = await super.getChapterPages(url);
+            res.type = "page_urls";
+            return res;
+        }
+
+        async getPageImage(url: string, headers?: Record<string, string>) {
+            return <MangaExtractorPageImageResult>{
+                page: "-",
+                image: await getBase64Image(url, {
+                    headers: headers || {}
+                })
+            };
+        }
+    };
+}
 
 async function getBase64Image(
     url: string,
@@ -145,7 +166,7 @@ async function getBase64Image(
         const client = await http.getClient();
         const res = await client.get(url, {
             ...options,
-            responseType: "buffer",
+            responseType: "buffer"
         });
         return `data:image/png;base64,${util.BufferToBase64(res)}`;
     } catch (err) {

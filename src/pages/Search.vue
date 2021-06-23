@@ -426,7 +426,7 @@ export default defineComponent({
                                 const res: ResultType = {
                                     title: x.title,
                                     description: "",
-                                    thumbnail: x.image || "",
+                                    thumbnail: x.thumbnail || "",
                                     url: x.url,
                                     air: "",
                                     plugin: config.name,
