@@ -1,4 +1,4 @@
-export type FullScreenEntity = (immersive: boolean) => Promise<void>;
+export type FullScreenEntity = (setFullScreen: boolean) => Promise<void>;
 
 export const FullScreen = {
     __fullscreen: <FullScreenEntity | null>null,
@@ -8,8 +8,8 @@ export const FullScreen = {
                 case "capacitor": {
                     const { StatusBar } = await import("@capacitor/status-bar");
 
-                    this.__fullscreen = async (immersive) => {
-                        if (immersive) {
+                    this.__fullscreen = async setFullScreen => {
+                        if (setFullScreen) {
                             await StatusBar.hide();
                         } else {
                             await StatusBar.show();
@@ -23,5 +23,5 @@ export const FullScreen = {
         }
 
         return this.__fullscreen;
-    },
+    }
 };

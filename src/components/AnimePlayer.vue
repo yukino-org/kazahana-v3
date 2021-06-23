@@ -236,6 +236,7 @@ export default defineComponent({
             lastWatchUpdated: number;
             autoPlay: boolean;
             autoNext: boolean;
+            fullScreenWatcher: ReturnType<typeof setInterval> | null;
         } = {
             info: util.createStateController(),
             currentPlaying: null,
@@ -243,7 +244,8 @@ export default defineComponent({
             supportsPlayerWidth: ["electron"].includes(app_platform),
             lastWatchUpdated: 0,
             autoPlay: false,
-            autoNext: false
+            autoNext: false,
+            fullScreenWatcher: null
         };
 
         return data;
@@ -253,6 +255,11 @@ export default defineComponent({
         this.watchEpisode();
         this.getInfo();
         this.attachFullScreenEvents();
+    },
+    beforeDestroy() {
+        if (this.fullScreenWatcher !== null) {
+            clearInterval(this.fullScreenWatcher);
+        }
     },
     methods: {
         async updatePageSetting() {
@@ -369,7 +376,7 @@ export default defineComponent({
             if ("onfullscreenchange" in document) {
                 document.addEventListener(
                     "fullscreenchange",
-                    this.toggleFullScreen
+                    this.setFullScreen
                 );
             }
 
@@ -377,7 +384,7 @@ export default defineComponent({
                 // @ts-ignore
                 document.addEventListener(
                     "mozfullscreenchange",
-                    this.toggleFullScreen
+                    this.setFullScreen
                 );
             }
 
@@ -385,11 +392,15 @@ export default defineComponent({
                 // @ts-ignore
                 document.addEventListener(
                     "webkitfullscreenchange",
-                    this.toggleFullScreen
+                    this.setFullScreen
                 );
             }
+
+            if (["capacitor"].includes(app_platform)) {
+                this.fullScreenWatcher = setInterval(this.setFullScreen, 5000);
+            }
         },
-        async toggleFullScreen() {
+        async setFullScreen() {
             const fullscreened = !!document.fullscreenElement;
             const fullscreen = await FullScreen.getClient();
 
