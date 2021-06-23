@@ -172,7 +172,7 @@ export const util = {
     shrinkedText(txt: string, max: number) {
         if (txt.length < max) return txt;
         const mid = Math.floor(max / 2) - 3;
-        return `${txt.slice(0, mid)}...${txt.slice(-mid)}`;
+        return `${txt.slice(0, mid)}...${txt.slice(-mid)} `;
     },
     async copyToClipboard(text: string) {
         return navigator.clipboard
