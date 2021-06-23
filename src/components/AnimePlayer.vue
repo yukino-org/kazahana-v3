@@ -89,6 +89,7 @@
                         break-all
                         select-all
                         cursor-pointer
+                        fa fa-clipboard fa-lg
                     "
                     @click.stop.prevent="
                         !!void (
@@ -96,7 +97,7 @@
                             copyToClipboard(currentPlaying.url)
                         )
                     "
-                    >{{ shrinkText(currentPlaying.url) }}</span
+                    >{{ shrinkText(currentPlaying.url) }} </span
                 >
             </p>
         </div>
