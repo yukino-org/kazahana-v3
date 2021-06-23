@@ -9,7 +9,7 @@
         <div class="flex flex-col justify-center items-center w-full h-full">
             <div
                 :class="[
-                    'bg-indigo-500 dark:bg-gray-800 flex flex-col justify-center items-center w-full py-6 gap-4 shadow-lg',
+                    'bg-indigo-500 dark:bg-gray-800 flex flex-col justify-center items-center w-full py-5 gap-4 shadow-lg',
                     sideBarPosition === 'left' ? 'rounded-r-lg' : 'rounded-l-lg'
                 ]"
             >
