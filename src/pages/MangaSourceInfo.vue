@@ -85,12 +85,7 @@
             <div v-if="selected">
                 <MangaPager
                     class="mt-1"
-                    v-if="
-                        plugin &&
-                        selected.volume &&
-                        selected.chapter &&
-                        selected.url
-                    "
+                    v-if="plugin && selected.url"
                     :title="info.data.title"
                     :plugin="plugin"
                     :chapTitle="selected.title"
@@ -228,7 +223,7 @@ export default defineComponent({
         PageTitle,
         Loading,
         ExternalLink,
-        MangaPager,
+        MangaPager
     },
     data() {
         const data: {
@@ -252,7 +247,7 @@ export default defineComponent({
                     : null,
             selected: null,
             favorite: false,
-            bookmarked: false,
+            bookmarked: false
         };
 
         return data;
@@ -282,7 +277,7 @@ export default defineComponent({
                     volume = this.$route.query.volume;
                 if (typeof chapter === "string" && typeof volume === "string") {
                     const foundChap = this.info.data.chapters.find(
-                        (x) => x.chapter === chapter && x.volume === volume
+                        x => x.chapter === chapter && x.volume === volume
                     );
                     if (foundChap) {
                         this.selectChapter(foundChap);
@@ -293,13 +288,13 @@ export default defineComponent({
 
                 const store = await Store.getClient();
 
-                (["bookmarked", "favorite"] as const).forEach(async (type) => {
+                (["bookmarked", "favorite"] as const).forEach(async type => {
                     const allBookmarked: BookmarkedEntity[] =
                         (await store.get(constants.storeKeys[type])) || [];
 
                     this[type] =
                         allBookmarked.findIndex(
-                            (x) => x.route.queries.url === this.$route.query.url
+                            x => x.route.queries.url === this.$route.query.url
                         ) >= 0;
                 });
 
@@ -319,9 +314,9 @@ export default defineComponent({
                         route: {
                             route: this.$route.path,
                             queries: {
-                                ...(<Record<string, string>>this.$route.query),
-                            },
-                        },
+                                ...(<Record<string, string>>this.$route.query)
+                            }
+                        }
                     });
                     await store.set(
                         constants.storeKeys.recentlyViewed,
@@ -338,6 +333,7 @@ export default defineComponent({
         },
         async selectChapter(chapter: SelectedEntity) {
             this.selected = chapter;
+
             if (this.selected && this.info.data) {
                 const rpc = await Rpc.getClient();
                 const extra: string[] = [];
@@ -355,10 +351,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link,
-                              },
+                                  url: this.link
+                              }
                           ]
-                        : undefined,
+                        : undefined
                 });
             } else {
                 this.refreshRpc();
@@ -369,7 +365,7 @@ export default defineComponent({
 
             if (this.selected) {
                 const currentIndex = this.info.data.chapters.findIndex(
-                    (x) => x.url === this.selected?.url
+                    x => x.url === this.selected?.url
                 );
                 const prevChapter = this.info.data.chapters[currentIndex - 1];
                 if (prevChapter) {
@@ -386,7 +382,7 @@ export default defineComponent({
 
             if (this.selected) {
                 const currentIndex = this.info.data.chapters.findIndex(
-                    (x) => x.url === this.selected?.url
+                    x => x.url === this.selected?.url
                 );
                 const nextChapter = this.info.data.chapters[currentIndex + 1];
                 if (nextChapter) {
@@ -410,10 +406,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link,
-                              },
+                                  url: this.link
+                              }
                           ]
-                        : undefined,
+                        : undefined
                 });
             }
         },
@@ -425,7 +421,7 @@ export default defineComponent({
                 (await store.get(constants.storeKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
-                (x) => x.route.queries.url === this.$route.query.url
+                x => x.route.queries.url === this.$route.query.url
             );
 
             if (index >= 0) {
@@ -440,15 +436,15 @@ export default defineComponent({
                     route: {
                         route: this.$route.path,
                         queries: {
-                            ...(<Record<string, string>>this.$route.query),
-                        },
-                    },
+                            ...(<Record<string, string>>this.$route.query)
+                        }
+                    }
                 });
                 this[type] = true;
             }
 
             await store.set(constants.storeKeys[type], allBookmarked);
-        },
-    },
+        }
+    }
 });
 </script>

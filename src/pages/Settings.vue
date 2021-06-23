@@ -453,8 +453,8 @@
             <p
                 v-else-if="
                     !changelogs.body.features.length &&
-                    !changelogs.body.fixes.length &&
-                    !changelogs.body.refactors.length
+                        !changelogs.body.fixes.length &&
+                        !changelogs.body.refactors.length
                 "
             >
                 No changes were found.
@@ -469,7 +469,7 @@
                         <li class="mt-1" v-for="m in changelogs.body.features">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -483,7 +483,7 @@
                         <li class="mt-1" v-for="m in changelogs.body.fixes">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -497,7 +497,7 @@
                         <li class="mt-1" v-for="m in changelogs.body.refactors">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -522,7 +522,7 @@ import {
     UpdateChannels,
     UpdateChannelsType,
     SideBarPosition,
-    SideBarPositionType,
+    SideBarPositionType
 } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
@@ -533,7 +533,7 @@ const AppInfo = {
     name: app_name,
     platform: app_platform,
     version: app_version,
-    builtAt: util.prettyDate(new Date(app_builtAt)),
+    builtAt: util.prettyDate(new Date(app_builtAt))
 };
 
 export default defineComponent({
@@ -541,24 +541,22 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        Popup,
+        Popup
     },
     data() {
         type SettingValueOfArray<T> = { [P in keyof T]: T[P][] };
         const allowedSettingsValues: SettingValueOfArray<Settings> = {
-            updateChannel: UpdateChannels as any as UpdateChannelsType[],
-            incognito: EnabledDisabled as any as EnabledDisabledType[],
-            sideBarPosition: SideBarPosition as any as SideBarPositionType[],
-            discordRpc: EnabledDisabled as any as EnabledDisabledType[],
-            discordRpcPrivacy: EnabledDisabled as any as EnabledDisabledType[],
-            autoDetectTheme: EnabledDisabled as any as EnabledDisabledType[],
-            darkMode: EnabledDisabled as any as EnabledDisabledType[],
-            autoPlay: EnabledDisabled as any as EnabledDisabledType[],
-            autoNext: EnabledDisabled as any as EnabledDisabledType[],
-            defaultPlayerWidth:
-                TenToHundredPercent as any as TenToHundredPercentType[],
-            defaultPageWidth:
-                TenToHundredPercent as any as TenToHundredPercentType[],
+            updateChannel: (UpdateChannels as any) as UpdateChannelsType[],
+            incognito: (EnabledDisabled as any) as EnabledDisabledType[],
+            sideBarPosition: (SideBarPosition as any) as SideBarPositionType[],
+            discordRpc: (EnabledDisabled as any) as EnabledDisabledType[],
+            discordRpcPrivacy: (EnabledDisabled as any) as EnabledDisabledType[],
+            autoDetectTheme: (EnabledDisabled as any) as EnabledDisabledType[],
+            darkMode: (EnabledDisabled as any) as EnabledDisabledType[],
+            autoPlay: (EnabledDisabled as any) as EnabledDisabledType[],
+            autoNext: (EnabledDisabled as any) as EnabledDisabledType[],
+            defaultPlayerWidth: (TenToHundredPercent as any) as TenToHundredPercentType[],
+            defaultPageWidth: (TenToHundredPercent as any) as TenToHundredPercentType[]
         };
 
         const isElectron = app_platform === "electron";
@@ -566,7 +564,7 @@ export default defineComponent({
             updateChannel: isElectron,
             sidebarPostion: isElectron,
             playerWidth: isElectron,
-            rpc: isElectron,
+            rpc: isElectron
         };
 
         const data: {
@@ -591,8 +589,8 @@ export default defineComponent({
             links: constants.links,
             changelogs: {
                 open: false,
-                body: null,
-            },
+                body: null
+            }
         };
 
         return data;
@@ -640,7 +638,7 @@ export default defineComponent({
                         "autoDetectTheme",
                         "darkMode",
                         "incognito",
-                        "sideBarPosition",
+                        "sideBarPosition"
                     ].includes(key)
                 ) {
                     this.$state.update({
@@ -648,7 +646,7 @@ export default defineComponent({
                             this.settings.autoDetectTheme === "enabled",
                         isDarkTheme: this.settings.darkMode === "enabled",
                         incognito: this.settings.incognito === "enabled",
-                        sideBar: this.settings.sideBarPosition,
+                        sideBar: this.settings.sideBarPosition
                     });
                 }
             }
@@ -656,7 +654,7 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "On settings page",
+                details: "On settings page"
             });
         },
         async resetDatabase() {
@@ -683,27 +681,27 @@ export default defineComponent({
                     `https://api.github.com/repos/${constants.github.owner}/${constants.github.repo}/releases/tags/v${app_version}`,
                     {
                         headers: {},
-                        responseType: "text",
+                        responseType: "text"
                     }
                 );
 
                 const data = JSON.parse(res);
                 const changes = (<any[]>data.assets).find(
-                    (x) => x.name === "changelogs.json"
+                    x => x.name === "changelogs.json"
                 )?.browser_download_url;
 
                 if (changes) {
                     this.changelogs.body = JSON.parse(
                         await client.get(changes, {
                             headers: {},
-                            responseType: "text",
+                            responseType: "text"
                         })
                     );
                 } else {
                     this.changelogs.body = {
                         features: [],
                         fixes: [],
-                        refactors: [],
+                        refactors: []
                     };
                 }
             } catch (err) {}
@@ -712,9 +710,9 @@ export default defineComponent({
             const [id, ...msg] = text.split(" ");
             return {
                 id,
-                msg: msg.join(" "),
+                msg: msg.join(" ")
             };
-        },
-    },
+        }
+    }
 });
 </script>
