@@ -8,12 +8,9 @@
                     justify-between
                     items-center
                     gap-3.5
-                    mb-4
                 "
             >
-                <p class="text-sm opacity-75 mt-4">
-                    Player (Episode {{ episode }})
-                </p>
+                <p class="text-sm opacity-75">Player (Episode {{ episode }})</p>
                 <div class="flex flex-row justify-center items-center gap-3.5">
                     <div
                         class="
@@ -65,7 +62,7 @@
                 </div>
             </div>
 
-            <div class="my-2">
+            <div class="mt-2">
                 <video
                     class="outline-none"
                     id="video-player"
@@ -80,7 +77,8 @@
                     <source :src="getValidImageUrl(currentPlaying.url)" />
                 </video>
             </div>
-            <p class="mt-2">
+
+            <p class="mt-2" v-if="currentPlaying.url">
                 Stream URL:
                 <span
                     class="
@@ -90,8 +88,15 @@
                         px-1
                         break-all
                         select-all
+                        cursor-pointer
                     "
-                    >{{ currentPlaying.url }}</span
+                    @click.stop.prevent="
+                        !!void (
+                            currentPlaying &&
+                            copyToClipboard(currentPlaying.url)
+                        )
+                    "
+                    >{{ shrinkText(currentPlaying.url) }}</span
                 >
             </p>
         </div>
@@ -476,7 +481,9 @@ export default defineComponent({
                 this.$emit("playNext");
             }
         },
-        getValidImageUrl: util.getValidImageUrl
+        shrinkText: (txt: string) => util.shrinkedText(txt, 30),
+        getValidImageUrl: util.getValidImageUrl,
+        copyToClipboard: util.copyToClipboard
     }
 });
 </script>
