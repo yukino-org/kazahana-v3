@@ -73,10 +73,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-1.0.1.tgz#7d4648359b9ef4b6ddd6d91a31025131ffe8f3c5"
   integrity sha512-3QQxrFSRClPenN/3uAe4JG6dIEybXpzzveRPvYc6QKqkAX1jvZl2CwRFhj9WK8jxj7Tvb+PkenazGK7+F/KLQA==
 
-"@capacitor/cli@^3.0.0":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.0.1.tgz#54f47962ca03662ffb874145a801900b8f72c9e5"
-  integrity sha512-OIzpWgtpg0wshdS60Fz6QgXfsYqnWSfQx/9/bmp0eiiKgvtOJa9QmdfFAaGI2BRVoOyiulTMLetSvOAkuTJBPA==
+"@capacitor/cli@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.0.2.tgz#46b9aa5fab4f6c61a2220f99b83c85bd906c063c"
+  integrity sha512-vKjfeNlX9h81DQJD9xXeAanLsgjXGgCP2oA25APKj4cuqX5i1naB5g2hJapGT4zpdy+p3FAaVZ62qxsRd0eoJw==
   dependencies:
     "@ionic/cli-framework-output" "^2.2.1"
     "@ionic/utils-fs" "^3.1.5"
@@ -2180,14 +2180,7 @@ debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
-debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
-  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
-  dependencies:
-    ms "2.1.2"
-
-debug@^4.3.2:
+debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1, debug@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
   integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
@@ -6014,12 +6007,7 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
-  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
-
-tslib@^2.2.0:
+tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
