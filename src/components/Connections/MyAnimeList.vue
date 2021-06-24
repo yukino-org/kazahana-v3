@@ -70,8 +70,7 @@
                             v-for="status in allowedStatus"
                             :value="status"
                             :selected="
-                                status ===
-                                    (info.data.my_list_status?.status || 0)
+                                status === info.data.my_list_status?.status
                             "
                         >
                             {{ status.replace(/_/g, " ") }}
@@ -189,8 +188,7 @@ import { defineComponent } from "vue";
 import MyAnimeList, {
     AnimeListEntity,
     AnimeEntity,
-    AnimeStatus,
-    AnimeStatusType
+    AnimeStatus
 } from "../../plugins/integrations/myanimelist";
 import { Store } from "../../plugins/api";
 import { StateController, constants, util } from "../../plugins/util";
@@ -258,16 +256,19 @@ export default defineComponent({
                 return this.getInfo();
             }
 
-            let proceed = true;
             if (this.altURL) {
-                proceed = await this.getCached();
+                await this.getCached();
             }
-            if (!proceed) return this.getInfo();
+
+            if (this.computedId) {
+                return this.getInfo();
+            }
 
             if (this.altTitle) {
-                proceed = await this.searchMAL();
+                await this.searchMAL();
+
                 const first = this.others.animeSearchResults.data?.[0];
-                if (proceed && first) {
+                if (first) {
                     this.computedId = first.node.id.toString();
                     this.saveCache();
                     this.getInfo();
@@ -275,7 +276,7 @@ export default defineComponent({
             }
         },
         async getCached() {
-            if (!this.altURL) return false;
+            if (!this.altURL) return;
 
             const store = await Store.getClient();
             const all: MyAnimeListCachedAnimeTitles[] =
@@ -285,9 +286,7 @@ export default defineComponent({
             const cached = all.find(x => x.altURLs.includes(this.altURL!));
             if (cached) {
                 this.computedId = cached.id;
-                return true;
             }
-            return false;
         },
         async saveCache() {
             if (!this.computedId || !this.altURL) return false;
@@ -297,14 +296,21 @@ export default defineComponent({
                 (await store.get(constants.storeKeys.myAnimeListCacheTitles)) ||
                 [];
 
-            const index = all.findIndex(x => x.id === this.computedId);
-            if (index >= 0) {
-                const ele = all[index];
-                all[index] = {
-                    id: ele.id,
-                    altURLs: [...ele.altURLs, this.altURL]
-                };
-            } else {
+            let added = false;
+            all.map(item => {
+                if (item.id === this.computedId) {
+                    if (!item.altURLs.includes(this.altURL!)) {
+                        item.altURLs.push(this.altURL!);
+                    }
+                    added = true;
+                } else if (item.altURLs.includes(this.altURL!)) {
+                    item.altURLs = item.altURLs.filter(x => x !== this.altURL!);
+                }
+
+                return item;
+            });
+
+            if (!added) {
                 all.push({
                     id: this.computedId,
                     altURLs: [this.altURL]
@@ -383,8 +389,6 @@ export default defineComponent({
                         updated_at: res.updated_at
                     };
                 }
-
-                console.log(this.info.data.my_list_status.num_episodes_watched);
             } catch (err) {
                 this.$logger.emit(
                     "error",
@@ -397,6 +401,9 @@ export default defineComponent({
         },
         toggleSearch() {
             this.showSearch = !this.showSearch;
+            if (!this.others.animeSearchResults.data) {
+                this.searchMAL();
+            }
         },
         setWatched(watched: boolean) {
             if (typeof this.currentEpisode !== "number") return;
