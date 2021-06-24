@@ -17,11 +17,13 @@ let launchArgs;
 /**
  * @type {BrowserWindow | undefined}
  */
-let win;
+let win,
+    isBooting = false;
 
 const createWindow = async () => {
     if (!initiateInstance()) return;
 
+    isBooting = true;
     Logger.debug("main", `Environment: ${process.env.NODE_ENV}`);
 
     const ignition = new Igniter();
@@ -32,7 +34,11 @@ const createWindow = async () => {
 
     const continueProc = await ignition.update();
     Logger.warn("main", `Continue process: ${continueProc}`);
-    if (!continueProc) return ignition.close();
+    if (!continueProc) {
+        isBooting = false;
+        ignition.close();
+        return;
+    }
 
     app.removeAsDefaultProtocolClient(productCode);
     if (isDev && process.platform === "win32") {
@@ -165,6 +171,8 @@ const createWindow = async () => {
         Logger.warn("main", "Reloading window");
         win.reload();
     });
+
+    isBooting = false;
 };
 
 require("./ipc")(ipcMain);
@@ -175,7 +183,7 @@ app.on("ready", async () => {
 });
 
 app.on("activate", async () => {
-    if (!win) {
+    if (!win && !isBooting) {
         Logger.warn(
             "main",
             "No windows were open so opening new one (app activate)"
