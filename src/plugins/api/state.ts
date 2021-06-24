@@ -1,28 +1,31 @@
-import { Emitter } from "./emitter";
 import { util, RecursivePartial } from "../util";
 
-export type StateUpdateHandler<T> = {
+export type StateUpdateState<T> = {
     previous: T;
     current: T;
 };
 
-export class State<T> extends Emitter<StateUpdateHandler<T>> {
-    handlers: StateUpdateHandler<T>[] = [];
+export type StateUpdateDispatcher<T> = (state: StateUpdateState<T>) => void;
+
+export class State<T> {
+    dispatcher?: StateUpdateDispatcher<T>;
     _props: T;
 
     constructor(props: T) {
-        super();
-
         this._props = props;
+    }
+
+    setDispatcher(dispatcher: StateUpdateDispatcher<T>) {
+        this.dispatcher = dispatcher;
     }
 
     update(value: RecursivePartial<T>) {
         const previous = { ...this._props };
         const current = util.mergeObject(this._props, value);
         this._props = current;
-        this.dispatch({
+        this.dispatcher?.({
             previous,
-            current,
+            current
         });
     }
 
@@ -30,5 +33,3 @@ export class State<T> extends Emitter<StateUpdateHandler<T>> {
         return { ...this._props };
     }
 }
-
-// export default new GlobalConstants();

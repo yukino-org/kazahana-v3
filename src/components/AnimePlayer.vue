@@ -447,7 +447,7 @@ export default defineComponent({
             if (watchedDuration / totalDuration > 0.8) {
                 const ep = this.episode?.match(/\d+/)?.[0];
                 if (ep) {
-                    this.$bus.MyAnimeListConnection.dispatch({
+                    this.$bus.dispatch("update-MAL-status", {
                         episode: +ep,
                         status: "watching"
                     });

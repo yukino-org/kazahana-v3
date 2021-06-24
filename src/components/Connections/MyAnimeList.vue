@@ -44,6 +44,26 @@
                 class="flex flex-row justify-center items-center gap-2"
                 v-else-if="info.data"
             >
+                <div v-if="typeof currentEpisode === 'number'">
+                    <button
+                        class="focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300"
+                        v-if="
+                            info.data.my_list_status?.num_episodes_watched >=
+                                info.data.num_episodes
+                        "
+                        @click.stop.prevent="!!void setWatched(false)"
+                    >
+                        <Icon icon="times" /> Mark as unwatched
+                    </button>
+                    <button
+                        class="focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300"
+                        v-else
+                        @click.stop.prevent="!!void setWatched(true)"
+                    >
+                        <Icon icon="check" /> Mark as watched
+                    </button>
+                </div>
+
                 <div class="select">
                     <select class="capitalize" @change="updateStatus($event)">
                         <option
@@ -51,7 +71,7 @@
                             :value="status"
                             :selected="
                                 status ===
-                                (info.data.my_list_status?.status || 0)
+                                    (info.data.my_list_status?.status || 0)
                             "
                         >
                             {{ status.replace(/_/g, " ") }}
@@ -115,7 +135,7 @@
                     class="mt-6 opacity-75 text-center"
                     v-else-if="
                         others.animeSearchResults.state === 'resolved' &&
-                        !others.animeSearchResults.data
+                            !others.animeSearchResults.data
                     "
                 >
                     No results were found.
@@ -124,7 +144,7 @@
                     class="grid md:grid-cols-1 grid-cols-2 gap-2"
                     v-else="
                         others.animeSearchResults.state === 'resolved' &&
-                        others.animeSearchResults.data
+                            others.animeSearchResults.data
                     "
                 >
                     <div
@@ -170,13 +190,13 @@ import MyAnimeList, {
     AnimeListEntity,
     AnimeEntity,
     AnimeStatus,
-    AnimeStatusType,
+    AnimeStatusType
 } from "../../plugins/integrations/myanimelist";
 import { Store } from "../../plugins/api";
 import { StateController, constants, util } from "../../plugins/util";
 import {
     MyAnimeListCachedAnimeTitles,
-    MyAnimeListConnectionSubscriber,
+    MyAnimeListConnectionSubscriber
 } from "../../plugins/types";
 
 import Loading from "../Loading.vue";
@@ -186,11 +206,11 @@ export default defineComponent({
     props: {
         id: String,
         altTitle: String,
-        altURL: String,
+        altURL: String
     },
     components: {
         Loading,
-        Popup,
+        Popup
     },
     data() {
         const data: {
@@ -204,6 +224,7 @@ export default defineComponent({
                 animeSearchResults: StateController<AnimeListEntity["data"]>;
             };
             showSearch: boolean;
+            currentEpisode: number | null;
         } = {
             computedId: this.id || null,
             computedAltTitle: this.altTitle || null,
@@ -212,19 +233,22 @@ export default defineComponent({
             info: util.createStateController(),
             allowedStatus: <any>AnimeStatus,
             others: {
-                animeSearchResults: util.createStateController(),
+                animeSearchResults: util.createStateController()
             },
             showSearch: false,
+            currentEpisode: null
         };
 
         return data;
     },
     mounted() {
         this.initiate();
-        this.$bus.MyAnimeListConnection.subscribe(this.setStatus);
+        this.$bus.subscribe("set-MAL-episode", this.setEpisode);
+        this.$bus.subscribe("update-MAL-status", this.setStatus);
     },
     beforeDestroy() {
-        this.$bus.MyAnimeListConnection.unsubscribe(this.setStatus);
+        this.$bus.subscribe("set-MAL-episode", this.setEpisode);
+        this.$bus.unsubscribe("update-MAL-status", this.setStatus);
     },
     methods: {
         async initiate() {
@@ -256,7 +280,7 @@ export default defineComponent({
                 (await store.get(constants.storeKeys.myAnimeListCacheTitles)) ||
                 [];
 
-            const cached = all.find((x) => x.altURLs.includes(this.altURL!));
+            const cached = all.find(x => x.altURLs.includes(this.altURL!));
             if (cached) {
                 this.computedId = cached.id;
                 return true;
@@ -271,17 +295,17 @@ export default defineComponent({
                 (await store.get(constants.storeKeys.myAnimeListCacheTitles)) ||
                 [];
 
-            const index = all.findIndex((x) => x.id === this.computedId);
+            const index = all.findIndex(x => x.id === this.computedId);
             if (index >= 0) {
                 const ele = all[index];
                 all[index] = {
                     id: ele.id,
-                    altURLs: [...ele.altURLs, this.altURL],
+                    altURLs: [...ele.altURLs, this.altURL]
                 };
             } else {
                 all.push({
                     id: this.computedId,
-                    altURLs: [this.altURL],
+                    altURLs: [this.altURL]
                 });
             }
 
@@ -324,7 +348,7 @@ export default defineComponent({
             const value = event.target.value;
             if (this.allowedStatus.includes(value)) {
                 await MyAnimeList.updateAnime(this.computedId, {
-                    status: <any>value,
+                    status: <any>value
                 });
             }
         },
@@ -346,7 +370,7 @@ export default defineComponent({
             try {
                 const res = await MyAnimeList.updateAnime(this.computedId, {
                     num_watched_episodes: data.episode,
-                    status: data.status || "watching",
+                    status: data.status || "watching"
                 });
                 if (res) {
                     this.info.data.my_list_status = {
@@ -354,7 +378,7 @@ export default defineComponent({
                         score: res.score,
                         num_episodes_watched: res.num_episodes_watched,
                         is_rewatching: res.is_rewatching,
-                        updated_at: res.updated_at,
+                        updated_at: res.updated_at
                     };
                 }
             } catch (err) {
@@ -364,9 +388,19 @@ export default defineComponent({
                 );
             }
         },
+        setEpisode(episode: number) {
+            this.currentEpisode = episode;
+        },
         toggleSearch() {
             this.showSearch = !this.showSearch;
         },
-    },
+        setWatched(watched: boolean) {
+            if (typeof this.currentEpisode !== "number") return;
+
+            this.setStatus({
+                episode: watched ? this.currentEpisode : this.currentEpisode - 1
+            });
+        }
+    }
 });
 </script>

@@ -69,10 +69,10 @@ export default defineComponent({
         return data;
     },
     mounted() {
-        this.$state.subscribe(this.stateListener);
+        this.$bus.subscribe("state-update", this.stateListener);
     },
     beforeDestroy() {
-        this.$state.unsubscribe(this.stateListener);
+        this.$bus.unsubscribe("state-update", this.stateListener);
     },
     methods: {
         stateListener({

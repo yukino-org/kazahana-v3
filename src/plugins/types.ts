@@ -1,3 +1,5 @@
+import { EmitterSkeleton } from "./api/emitter";
+import { StateUpdateState } from "./api/state";
 import { AnimeStatusType } from "./integrations/myanimelist";
 
 export const EnabledDisabled = ["enabled", "disabled"] as const;
@@ -10,7 +12,16 @@ export const SideBarPosition = ["left", "right"] as const;
 export type SideBarPositionType = typeof SideBarPosition[number];
 
 export const TenToHundredPercent = [
-    10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100
 ] as const;
 export type TenToHundredPercentType = typeof TenToHundredPercent[number];
 
@@ -97,4 +108,10 @@ export interface MyAnimeListConnectionSubscriber {
     episode: number;
     status?: AnimeStatusType;
     autoComplete?: boolean;
+}
+
+export interface EventBus extends EmitterSkeleton {
+    "update-MAL-status": (status: MyAnimeListConnectionSubscriber) => void;
+    "set-MAL-episode": (episode: number) => void;
+    "state-update": (state: StateUpdateState<GlobalStateProps>) => void;
 }

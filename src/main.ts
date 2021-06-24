@@ -12,13 +12,11 @@ import {
     DeepLink,
     Emitter,
     State,
-    Store
+    Store,
+    StateUpdateState
 } from "./plugins/api";
 import { constants, util } from "./plugins/util";
-import {
-    GlobalStateProps,
-    MyAnimeListConnectionSubscriber
-} from "./plugins/types";
+import { GlobalStateProps, EventBus } from "./plugins/types";
 
 const app = createApp(App);
 
@@ -33,8 +31,13 @@ const start = async () => {
 
     app.config.globalProperties.$logger = Logger;
     app.config.globalProperties.$state = await createGlobalState();
-    app.config.globalProperties.$bus = createEventBus();
+    app.config.globalProperties.$bus = new Emitter<EventBus>();
 
+    app.config.globalProperties.$state.setDispatcher(
+        (state: StateUpdateState<GlobalStateProps>) =>
+            app.config.globalProperties.$bus.dispatch("state-update", state)
+    );
+    app.config.globalProperties.$bus.subscribe("state-update", stateSubscriber);
     configureTheme(
         app.config.globalProperties.$state.props.autoDetectTheme,
         app.config.globalProperties.$state.props.isDarkTheme
@@ -67,7 +70,7 @@ declare module "@vue/runtime-core" {
     export interface ComponentCustomProperties {
         $logger: typeof Logger;
         $state: State<GlobalStateProps>;
-        $bus: ReturnType<typeof createEventBus>;
+        $bus: Emitter<EventBus>;
     }
 }
 
@@ -93,24 +96,19 @@ async function createGlobalState() {
             constants.defaults.settings.sideBarPosition
     });
 
-    state.subscribe(({ previous, current }) => {
-        if (
-            current.autoDetectTheme !== previous.autoDetectTheme ||
-            current.isDarkTheme !== previous.isDarkTheme
-        ) {
-            configureTheme(current.autoDetectTheme, current.isDarkTheme);
-        }
-    });
-
     return state;
 }
 
-function createEventBus() {
-    const bus = {
-        MyAnimeListConnection: new Emitter<MyAnimeListConnectionSubscriber>()
-    };
-
-    return bus;
+function stateSubscriber({
+    previous,
+    current
+}: StateUpdateState<GlobalStateProps>) {
+    if (
+        current.autoDetectTheme !== previous.autoDetectTheme ||
+        current.isDarkTheme !== previous.isDarkTheme
+    ) {
+        configureTheme(current.autoDetectTheme, current.isDarkTheme);
+    }
 }
 
 function configureTheme(autoDetect: boolean, isDark: boolean) {

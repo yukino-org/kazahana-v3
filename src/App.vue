@@ -119,11 +119,11 @@ export default defineComponent({
     },
     mounted() {
         window.addEventListener("scroll", this.onScroll);
-        this.$state.subscribe(this.stateListener);
+        this.$bus.subscribe("state-update", this.stateListener);
     },
     beforeDestroy() {
         window.removeEventListener("scroll", this.onScroll);
-        this.$state.unsubscribe(this.stateListener);
+        this.$bus.unsubscribe("state-update", this.stateListener);
     },
     methods: {
         stateListener({
