@@ -46,21 +46,21 @@
             >
                 <div v-if="typeof currentEpisode === 'number'">
                     <button
-                        class="focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300"
+                        class="focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
                         v-if="
-                            info.data.my_list_status?.num_episodes_watched >=
-                                info.data.num_episodes
+                            (info.data.my_list_status.num_episodes_watched ||
+                                0) >= currentEpisode
                         "
                         @click.stop.prevent="!!void setWatched(false)"
                     >
-                        <Icon icon="times" /> Mark as unwatched
+                        <Icon class="mr-1" icon="times" /> Mark as unwatched
                     </button>
                     <button
-                        class="focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300"
+                        class="focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300 px-3 py-2 rounded"
                         v-else
                         @click.stop.prevent="!!void setWatched(true)"
                     >
-                        <Icon icon="check" /> Mark as watched
+                        <Icon class="mr-1" icon="check" /> Mark as watched
                     </button>
                 </div>
 
@@ -225,6 +225,7 @@ export default defineComponent({
             };
             showSearch: boolean;
             currentEpisode: number | null;
+            hasWatchedEpisode: boolean | null;
         } = {
             computedId: this.id || null,
             computedAltTitle: this.altTitle || null,
@@ -236,7 +237,8 @@ export default defineComponent({
                 animeSearchResults: util.createStateController()
             },
             showSearch: false,
-            currentEpisode: null
+            currentEpisode: null,
+            hasWatchedEpisode: null
         };
 
         return data;
@@ -381,6 +383,8 @@ export default defineComponent({
                         updated_at: res.updated_at
                     };
                 }
+
+                console.log(this.info.data.my_list_status.num_episodes_watched);
             } catch (err) {
                 this.$logger.emit(
                     "error",
@@ -388,7 +392,7 @@ export default defineComponent({
                 );
             }
         },
-        setEpisode(episode: number) {
+        setEpisode(episode: number | null) {
             this.currentEpisode = episode;
         },
         toggleSearch() {

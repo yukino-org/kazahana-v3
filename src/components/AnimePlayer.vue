@@ -275,6 +275,7 @@ export default defineComponent({
         if (this.fullScreenWatcher !== null) {
             clearInterval(this.fullScreenWatcher);
         }
+        this.$bus.dispatch("set-MAL-episode", null);
     },
     methods: {
         async updatePageSetting() {
@@ -319,6 +320,8 @@ export default defineComponent({
             }
         },
         async getInfo() {
+            this.$bus.dispatch("set-MAL-episode", null);
+
             if (!this.plugin) {
                 this.info.state = "failed";
                 return this.$logger.emit("error", "Invalid 'plugin' on query!");
@@ -341,6 +344,13 @@ export default defineComponent({
                     x.type.some(y => ["streamable"].includes(y)) ? -1 : 1
                 );
                 this.info.state = "resolved";
+
+                if (this.episode) {
+                    const ep = +this.episode;
+                    if (!isNaN(ep)) {
+                        this.$bus.dispatch("set-MAL-episode", ep);
+                    }
+                }
             } catch (err) {
                 this.info.state = "failed";
                 this.$logger.emit(

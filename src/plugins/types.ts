@@ -112,6 +112,6 @@ export interface MyAnimeListConnectionSubscriber {
 
 export interface EventBus extends EmitterSkeleton {
     "update-MAL-status": (status: MyAnimeListConnectionSubscriber) => void;
-    "set-MAL-episode": (episode: number) => void;
+    "set-MAL-episode": (episode: number | null) => void;
     "state-update": (state: StateUpdateState<GlobalStateProps>) => void;
 }
