@@ -2,7 +2,7 @@
     <div>
         <PageTitle title="Connections" />
 
-        <div class="mt-6 grid gap-4">
+        <div class="mt-6 grid gap-8">
             <div v-for="con in connections">
                 <div class="flex items-center gap-3">
                     <img
@@ -91,6 +91,7 @@
 import { defineComponent } from "vue";
 import { ExternalLink, Rpc } from "../../plugins/api";
 import MyAnimeList from "../../plugins/integrations/myanimelist";
+import AniList from "../../plugins/integrations/anilist";
 import { constants } from "../../plugins/util";
 
 import PageTitle from "../../components/PageTitle.vue";
@@ -107,13 +108,13 @@ interface ConnectionEntity {
 export default defineComponent({
     name: "Connections-Main",
     components: {
-        PageTitle,
+        PageTitle
     },
     data() {
         const data: {
             connections: ConnectionEntity[];
         } = {
-            connections: [],
+            connections: []
         };
 
         return data;
@@ -125,19 +126,29 @@ export default defineComponent({
     methods: {
         async getConnections() {
             this.connections = [];
+
             this.connections.push({
                 name: "MyAnimeList",
                 auth: await MyAnimeList.auth.getOauthURL(),
                 route: "/connections/myanimelist",
                 loggedIn: MyAnimeList.isLoggedIn(),
                 image: constants.assets.images.myAnimeListLogo,
-                logout: MyAnimeList.logout,
+                logout: MyAnimeList.logout
+            });
+
+            this.connections.push({
+                name: "AniList",
+                auth: await AniList.auth.getOauthURL(),
+                route: "/connections/anilist",
+                loggedIn: AniList.isLoggedIn(),
+                image: constants.assets.images.aniListLogo,
+                logout: AniList.logout
             });
         },
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their connections",
+                details: "Viewing their connections"
             });
         },
         async openExternal(url: string) {
@@ -147,7 +158,7 @@ export default defineComponent({
         async executeAndRefresh(fn: () => Promise<any>) {
             await fn();
             this.getConnections();
-        },
-    },
+        }
+    }
 });
 </script>

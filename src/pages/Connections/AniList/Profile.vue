@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageTitle title="MyAnimeList Profile" />
+        <PageTitle title="AniList Profile" />
 
         <Loading
             class="mt-8"
@@ -20,13 +20,26 @@
             Failed to fetch user information!
         </p>
         <div class="mt-6" v-else-if="userinfo.data">
-            <p class="text-xs opacity-75">Logged in as</p>
-            <p class="text-xl font-bold">
-                {{ userinfo.data.name }}
-                <span class="ml-1 text-xs opacity-75"
-                    >({{ userinfo.data.id }})</span
-                >
-            </p>
+            <div
+                class="flex flex-row justify-center items-center flex-wrap gap-4"
+            >
+                <img
+                    class="flex-none w-16 h-16 rounded-full"
+                    :src="userinfo.data.avatar.medium"
+                    :alt="userinfo.data.name"
+                    v-if="userinfo.data.avatar.medium"
+                />
+
+                <div class="flex-grow">
+                    <p class="text-xs opacity-75">Logged in as</p>
+                    <p class="text-xl font-bold">
+                        {{ userinfo.data.name }}
+                        <span class="ml-1 text-xs opacity-75"
+                            >({{ userinfo.data.id }})</span
+                        >
+                    </p>
+                </div>
+            </div>
 
             <div class="mt-6">
                 <TabBar
@@ -52,26 +65,24 @@
                 <p
                     class="mt-6 opacity-75 text-center"
                     v-else-if="
-                        items.state === 'resolved' && !items.data?.data.length
+                        items.state === 'resolved' && !items.data?.length
                     "
                 >
                     Nothing was found here.
                 </p>
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 gap-2"
-                    v-else-if="
-                        items.state === 'resolved' && items.data?.data.length
-                    "
+                    v-else-if="items.state === 'resolved' && items.data?.length"
                 >
                     <router-link
                         class="col-span-1"
                         :to="{
                             path: '/anime',
                             query: {
-                                url: `${malBaseURL}/anime/${item.node.id}`,
-                            },
+                                url: `${malBaseURL}/anime/${item.media.idMal}`
+                            }
                         }"
-                        v-for="item in items.data.data"
+                        v-for="item in items.data"
                     >
                         <div
                             class="
@@ -88,13 +99,13 @@
                         >
                             <img
                                 class="flex-none w-20 rounded"
-                                :src="item.node.main_picture.medium"
-                                :alt="item.node.title"
+                                :src="item.media.coverImage.medium"
+                                :alt="item.media.title.userPreferred"
                             />
 
                             <div class="flex-grow">
                                 <p class="text-lg font-bold">
-                                    {{ item.node.title }}
+                                    {{ item.media.title.userPreferred }}
                                 </p>
                                 <div class="mt-1 flex flex-row flex-wrap gap-1">
                                     <span
@@ -105,11 +116,7 @@
                                             rounded-sm
                                             bg-blue-500
                                         "
-                                        >Completed:
-                                        {{
-                                            item.list_status
-                                                .num_episodes_watched
-                                        }}</span
+                                        >Completed: {{ item.progress }}</span
                                     >
                                     <span
                                         class="
@@ -120,32 +127,22 @@
                                             bg-purple-500
                                         "
                                         >Score:
-                                        {{ item.list_status.score }}</span
-                                    >
-                                    <span
-                                        class="
-                                            text-white text-xs
-                                            px-1
-                                            py-0.5
-                                            rounded-sm
-                                            bg-pink-500
-                                        "
-                                        >Rewatching:
-                                        {{
-                                            item.list_status.is_rewatching
-                                                ? "Yes"
-                                                : "No"
-                                        }}</span
+                                        {{ item.media.meanScore / 10 }}</span
                                     >
                                 </div>
                                 <p class="mt-1.5 text-xs opacity-75">
                                     Last updated:
                                     {{
                                         new Date(
-                                            item.list_status.updated_at
+                                            item.media.updatedAt
                                         ).toLocaleString()
                                     }}
                                 </p>
+                                <ExternalLink
+                                    class="text-xs relative -top-0.5"
+                                    text="View on AniList"
+                                    :url="item.media.siteUrl"
+                                />
                             </div>
                         </div>
                     </router-link>
@@ -202,15 +199,17 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Rpc } from "../../../plugins/api";
-import MyAnimeList, {
+import MyAnimeList from "../../../plugins/integrations/myanimelist";
+import AniList, {
     UserInfoEntity,
     AnimeListEntity,
-    AnimeStatus,
-} from "../../../plugins/integrations/myanimelist";
+    AnimeStatus
+} from "../../../plugins/integrations/anilist";
 import { util, StateController } from "../../../plugins/util";
 
 import PageTitle from "../../../components/PageTitle.vue";
 import Loading from "../../../components/Loading.vue";
+import ExternalLink from "../../../components/ExternalLink.vue";
 import TabBar, { TabEntity } from "../../../components/TabBar.vue";
 
 export default defineComponent({
@@ -219,25 +218,29 @@ export default defineComponent({
         PageTitle,
         Loading,
         TabBar,
+        ExternalLink
     },
     data() {
         const data: {
             userinfo: StateController<UserInfoEntity>;
             tabs: TabEntity[];
             selectedTab: string;
-            items: StateController<AnimeListEntity>;
+            items: StateController<AnimeListEntity[]>;
             page: number;
             malBaseURL: string;
         } = {
             userinfo: util.createStateController(),
-            tabs: AnimeStatus.map((x) => ({
+            tabs: AnimeStatus.map(x => ({
                 id: x,
-                text: x.replace(/_/g, " "),
+                text: `${x[0].toUpperCase()}${x.slice(1).toLowerCase()}`
             })),
-            selectedTab: AnimeStatus[0],
+            selectedTab:
+                typeof this.$route.query.selected === "string"
+                    ? this.$route.query.selected
+                    : AnimeStatus[0],
             items: util.createStateController(),
             page: 0,
-            malBaseURL: MyAnimeList.webURL,
+            malBaseURL: MyAnimeList.webURL
         };
 
         return data;
@@ -252,13 +255,13 @@ export default defineComponent({
             try {
                 this.userinfo.state = "resolving";
 
-                if (!MyAnimeList.isLoggedIn()) {
+                if (!AniList.isLoggedIn()) {
                     return this.$router.push("/connections");
                 }
 
-                const info = await MyAnimeList.userInfo();
+                const info = await AniList.userInfo();
                 if (!info) {
-                    this.userinfo.state = "failed"
+                    this.userinfo.state = "failed";
                     return;
                 }
 
@@ -276,13 +279,12 @@ export default defineComponent({
             try {
                 this.items.state = "resolving";
                 this.items.data = null;
-
-                const items = await MyAnimeList.animelist(
+                const items = await AniList.getList(
+                    "ANIME",
                     <any>this.selectedTab,
                     this.page
                 );
                 this.items.state = "resolved";
-
                 this.items.data = items || null;
             } catch (err) {
                 this.items.state = "failed";
@@ -306,13 +308,18 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their MyAnimeList profile",
+                details: "Viewing their AniList profile"
             });
         },
         handleTabChange(tab: TabEntity) {
             this.selectedTab = tab.id;
+            this.$router.replace({
+                query: {
+                    selected: tab.id
+                }
+            });
             this.getItems();
-        },
-    },
+        }
+    }
 });
 </script>

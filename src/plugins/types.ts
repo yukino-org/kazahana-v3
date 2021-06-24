@@ -1,6 +1,7 @@
 import { EmitterSkeleton } from "./api/emitter";
 import { StateUpdateState } from "./api/state";
-import { AnimeStatusType } from "./integrations/myanimelist";
+import { AnimeStatusType as MyAnimeListAnimeStatusType } from "./integrations/myanimelist";
+import { AnimeStatusType as AniListAnimeStatusType } from "./integrations/anilist";
 
 export const EnabledDisabled = ["enabled", "disabled"] as const;
 export type EnabledDisabledType = typeof EnabledDisabled[number];
@@ -97,6 +98,11 @@ export interface MyAnimeListCachedAnimeTitles {
     altURLs: string[];
 }
 
+export interface AniListCachedAnimeTitles {
+    id: number;
+    altURLs: string[];
+}
+
 export interface GlobalStateProps {
     autoDetectTheme: boolean;
     isDarkTheme: boolean;
@@ -106,12 +112,22 @@ export interface GlobalStateProps {
 
 export interface MyAnimeListConnectionSubscriber {
     episode: number;
-    status?: AnimeStatusType;
+    status?: MyAnimeListAnimeStatusType;
+    autoComplete?: boolean;
+}
+
+export interface AniListConnectionSubscriber {
+    episode: number;
+    status?: AniListAnimeStatusType;
     autoComplete?: boolean;
 }
 
 export interface EventBus extends EmitterSkeleton {
     "update-MAL-status": (status: MyAnimeListConnectionSubscriber) => void;
     "set-MAL-episode": (episode: number | null) => void;
+
+    "update-AniList-status": (status: AniListConnectionSubscriber) => void;
+    "set-AniList-episode": (episode: number | null) => void;
+
     "state-update": (state: StateUpdateState<GlobalStateProps>) => void;
 }

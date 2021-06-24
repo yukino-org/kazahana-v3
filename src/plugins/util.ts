@@ -49,13 +49,16 @@ export const constants = {
         bookmarked: "bookmarked",
         favorite: "favorites",
         myAnimeListToken: "my_anime_list_token",
-        myAnimeListCacheTitles: "my_anime_list_cache_titles"
+        myAnimeListCacheTitles: "my_anime_list_cache_titles",
+        aniListToken: "ani_list_token",
+        aniListCacheTitles: "ani_list_cache_titles"
     },
     assets: {
         images: {
             lightPlaceholder: `${publicBase}/images/light-placeholder-image.png`,
             darkPlaceholder: `${publicBase}/images/dark-placeholder-image.png`,
-            myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`
+            myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`,
+            aniListLogo: `${publicBase}/images/anilist-logo.png`
         }
     },
     links: {

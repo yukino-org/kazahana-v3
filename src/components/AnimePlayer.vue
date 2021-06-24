@@ -276,6 +276,7 @@ export default defineComponent({
             clearInterval(this.fullScreenWatcher);
         }
         this.$bus.dispatch("set-MAL-episode", null);
+        this.$bus.dispatch("set-AniList-episode", null);
     },
     methods: {
         async updatePageSetting() {
@@ -321,6 +322,7 @@ export default defineComponent({
         },
         async getInfo() {
             this.$bus.dispatch("set-MAL-episode", null);
+            this.$bus.dispatch("set-AniList-episode", null);
 
             if (!this.plugin) {
                 this.info.state = "failed";
@@ -349,6 +351,7 @@ export default defineComponent({
                     const ep = +this.episode;
                     if (!isNaN(ep)) {
                         this.$bus.dispatch("set-MAL-episode", ep);
+                        this.$bus.dispatch("set-AniList-episode", ep);
                     }
                 }
             } catch (err) {
@@ -460,6 +463,11 @@ export default defineComponent({
                     this.$bus.dispatch("update-MAL-status", {
                         episode: +ep,
                         status: "watching"
+                    });
+
+                    this.$bus.dispatch("update-AniList-status", {
+                        episode: +ep,
+                        status: "CURRENT"
                     });
                 }
             }

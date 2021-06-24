@@ -150,10 +150,16 @@
                 </div>
 
                 <p class="text-sm opacity-75 mt-6">Connections</p>
-                <div class="mt-1 grid gap-2">
+                <div class="mt-1 grid gap-4">
                     <MyAnimeListConnection
                         :id="MyAnimeListID"
                         v-if="MyAnimeListID"
+                    />
+
+                    <AniListConnection
+                        :altTitle="info.data.title"
+                        :altURL="typeof $route.query.url === 'string' ? $route.query.url : undefined"
+                        v-if="info.data.title"
                     />
                 </div>
 
@@ -340,6 +346,7 @@ import AnimeSourceViewer from "../components/AnimeSourceViewer.vue";
 import MangaSourceViewer from "../components/MangaSourceViewer.vue";
 import Loading from "../components/Loading.vue";
 import MyAnimeListConnection from "../components/Connections/MyAnimeList.vue";
+import AniListConnection from "../components/Connections/AniList.vue";
 
 export default defineComponent({
     name: "Anime",
@@ -350,6 +357,7 @@ export default defineComponent({
         MangaSourceViewer,
         Loading,
         MyAnimeListConnection,
+        AniListConnection
     },
     data() {
         const data: {
@@ -374,10 +382,10 @@ export default defineComponent({
             info: util.createStateController(),
             extractors: {
                 anime: [],
-                manga: [],
+                manga: []
             },
             opened: {
-                about: false,
+                about: false
             },
             favorite: false,
             bookmarked: false,
@@ -386,7 +394,7 @@ export default defineComponent({
                     this.$route.query.url.match(
                         /https:\/\/myanimelist\.net\/anime\/(\d+)/
                     )?.[1]) ||
-                null,
+                null
         };
 
         return data;
@@ -398,7 +406,7 @@ export default defineComponent({
     methods: {
         async getAnimeInfo(_url?: string) {
             window.scrollTo({
-                top: 0,
+                top: 0
             });
             const url = (this.$route.query.url = _url || this.$route.query.url);
 
@@ -425,20 +433,20 @@ export default defineComponent({
                     buttons: [
                         {
                             label: "View",
-                            url,
-                        },
-                    ],
+                            url
+                        }
+                    ]
                 });
 
                 const store = await Store.getClient();
 
-                (["bookmarked", "favorite"] as const).forEach(async (type) => {
+                (["bookmarked", "favorite"] as const).forEach(async type => {
                     const allBookmarked: BookmarkedEntity[] =
                         (await store.get(constants.storeKeys[type])) || [];
 
                     this[type] =
                         allBookmarked.findIndex(
-                            (x) => x.route.queries.url === this.$route.query.url
+                            x => x.route.queries.url === this.$route.query.url
                         ) >= 0;
                 });
 
@@ -454,9 +462,9 @@ export default defineComponent({
                         route: {
                             route: this.$route.path,
                             queries: {
-                                ...(<Record<string, string>>this.$route.query),
-                            },
-                        },
+                                ...(<Record<string, string>>this.$route.query)
+                            }
+                        }
                     });
                     await store.set(
                         constants.storeKeys.recentlyViewed,
@@ -479,7 +487,7 @@ export default defineComponent({
                 (await store.get(constants.storeKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
-                (x) => x.route.queries.url === this.$route.query.url
+                x => x.route.queries.url === this.$route.query.url
             );
 
             if (index >= 0) {
@@ -494,9 +502,9 @@ export default defineComponent({
                     route: {
                         route: this.$route.path,
                         queries: {
-                            ...(<Record<string, string>>this.$route.query),
-                        },
-                    },
+                            ...(<Record<string, string>>this.$route.query)
+                        }
+                    }
                 });
                 this[type] = true;
             }
@@ -512,7 +520,7 @@ export default defineComponent({
             // @ts-ignore
             this.opened[key] = !this.opened[key];
         },
-        getValidImageUrl: util.getValidImageUrl,
-    },
+        getValidImageUrl: util.getValidImageUrl
+    }
 });
 </script>

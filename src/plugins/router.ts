@@ -3,31 +3,31 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
-        component: () => import("../pages/Home.vue"),
+        component: () => import("../pages/Home.vue")
     },
     {
         path: "/search",
-        component: () => import("../pages/Search.vue"),
+        component: () => import("../pages/Search.vue")
     },
     {
         path: "/anime",
-        component: () => import("../pages/Anime.vue"),
+        component: () => import("../pages/Anime.vue")
     },
     {
         path: "/anime/source",
-        component: () => import("../pages/AnimeSourceInfo.vue"),
+        component: () => import("../pages/AnimeSourceInfo.vue")
     },
     {
         path: "/manga/source",
-        component: () => import("../pages/MangaSourceInfo.vue"),
+        component: () => import("../pages/MangaSourceInfo.vue")
     },
     {
         path: "/settings",
-        component: () => import("../pages/Settings.vue"),
+        component: () => import("../pages/Settings.vue")
     },
     {
         path: "/history",
-        component: () => import("../pages/History.vue"),
+        component: () => import("../pages/History.vue")
     },
     {
         path: "/schedule",
@@ -35,36 +35,44 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: "",
-                component: () => import("../pages/Schedule/Season.vue"),
+                component: () => import("../pages/Schedule/Season.vue")
             },
             {
                 path: "week",
-                component: () => import("../pages/Schedule/Week.vue"),
-            },
-        ],
+                component: () => import("../pages/Schedule/Week.vue")
+            }
+        ]
     },
     {
         path: "/bookmark",
-        component: () => import("../pages/Bookmark.vue"),
+        component: () => import("../pages/Bookmark.vue")
     },
     {
         path: "/connections",
-        component: () => import("../pages/Connections/Main.vue"),
+        component: () => import("../pages/Connections/Main.vue")
     },
     {
         path: "/connections/myanimelist",
-        component: () => import("../pages/Connections/MyAnimeList/Profile.vue"),
+        component: () => import("../pages/Connections/MyAnimeList/Profile.vue")
     },
     {
         path: "/auth/myanimelist/callback",
         component: () =>
-            import("../pages/Connections/MyAnimeList/Authenticate.vue"),
+            import("../pages/Connections/MyAnimeList/Authenticate.vue")
     },
+    {
+        path: "/connections/anilist",
+        component: () => import("../pages/Connections/AniList/Profile.vue")
+    },
+    {
+        path: "/auth/anilist/callback",
+        component: () => import("../pages/Connections/AniList/Authenticate.vue")
+    }
 ];
 
 const router = createRouter({
     history: createWebHashHistory(),
-    routes,
+    routes
 });
 
 export default router;
@@ -79,42 +87,42 @@ export const BarRoutes: {
         name: "Home",
         url: "/",
         external: false,
-        icon: "home",
+        icon: "home"
     },
     {
         name: "Search",
         url: "/search",
         external: false,
-        icon: "search",
+        icon: "search"
     },
     {
         name: "Schedule",
         url: "/schedule",
         external: false,
-        icon: "calendar-alt",
+        icon: "calendar-alt"
     },
     {
         name: "Bookmarks",
         url: "/bookmark",
         external: false,
-        icon: "bookmark",
+        icon: "bookmark"
     },
     {
         name: "History",
         url: "/history",
         external: false,
-        icon: "history",
+        icon: "history"
     },
     {
         name: "Connections",
         url: "/connections",
         external: false,
-        icon: "link",
+        icon: "link"
     },
     {
         name: "Settings",
         url: "/settings",
         external: false,
-        icon: "cog",
-    },
+        icon: "cog"
+    }
 ];
