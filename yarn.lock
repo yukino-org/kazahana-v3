@@ -68,15 +68,15 @@
   resolved "https://registry.yarnpkg.com/@capacitor/app/-/app-1.0.1.tgz#6237dd48e692701428464075f82024bac8aedaf4"
   integrity sha512-JSFWGtM2B7gJBlhuC9R++cXIYMrqvHWyouN6tYoz9BwL+eXkzL+t2eJ8Pt+7ZV4n3VZj7xq4yNvnLj8IfRsjsg==
 
-"@capacitor/browser@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-1.0.1.tgz#7d4648359b9ef4b6ddd6d91a31025131ffe8f3c5"
-  integrity sha512-3QQxrFSRClPenN/3uAe4JG6dIEybXpzzveRPvYc6QKqkAX1jvZl2CwRFhj9WK8jxj7Tvb+PkenazGK7+F/KLQA==
+"@capacitor/browser@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-1.0.2.tgz#7defe6a66a234eb724450f302fc00cf591d1255f"
+  integrity sha512-XR2rVT5RndxD0392yeL/pnCZZ5/YcTCXVxhJ4f3MkXFjKJTx1esbeXs+xVX4t6K3OQOXtX9XKj0xusPRiOOsuA==
 
-"@capacitor/cli@^3.0.0":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.0.1.tgz#54f47962ca03662ffb874145a801900b8f72c9e5"
-  integrity sha512-OIzpWgtpg0wshdS60Fz6QgXfsYqnWSfQx/9/bmp0eiiKgvtOJa9QmdfFAaGI2BRVoOyiulTMLetSvOAkuTJBPA==
+"@capacitor/cli@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.0.2.tgz#46b9aa5fab4f6c61a2220f99b83c85bd906c063c"
+  integrity sha512-vKjfeNlX9h81DQJD9xXeAanLsgjXGgCP2oA25APKj4cuqX5i1naB5g2hJapGT4zpdy+p3FAaVZ62qxsRd0eoJw==
   dependencies:
     "@ionic/cli-framework-output" "^2.2.1"
     "@ionic/utils-fs" "^3.1.5"
@@ -102,10 +102,10 @@
   dependencies:
     tslib "^2.1.0"
 
-"@capacitor/dialog@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/dialog/-/dialog-1.0.1.tgz#8b0e6006bfad142288ce36f4ced3b1c71be53946"
-  integrity sha512-sBCMbg7gNU3wijWmBlnOcj1hAVS3ywIFerAmFZuvq8rC1LUfRMbS94+rKRseFpGPWvYkbmKLzsP522lj8AlQ5w==
+"@capacitor/dialog@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/dialog/-/dialog-1.0.2.tgz#f7eb7984f55d7d7fc6b28d4b6c54956940e3af30"
+  integrity sha512-EwSqdweYA0tGYWcs3pXNQSw/gX9cZ2AlmxItyU/M1/HoKdiRnm6CwBBv/vn5ENjKvbHknOwS+W+Fo+upVuA1og==
 
 "@capacitor/filesystem@^1.0.0", "@capacitor/filesystem@^1.0.1":
   version "1.0.1"
@@ -122,10 +122,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-1.0.2.tgz#5f44bde70b30570ca0b44c5ede59d8acca47b616"
   integrity sha512-5pf/K7SKfRfZ7p9AgRqULaL7+PQh+InWCvP7HAbzjgVGzvRhps7tMRCoY9do5GN3vvRl7jY1+yGYQG44s52AAA==
 
-"@capacitor/status-bar@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.1.tgz#08994946acfb31bb2e90136fd9d5fc302215e1d4"
-  integrity sha512-5JwaseLxyhT8P86WiL776+1UTxR3k7klH4hU+gBD5UdAHRP4/jyS1/FiEuUpkMAMy6yvCJcDwZl8b6P1zWbiMQ==
+"@capacitor/status-bar@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.2.tgz#b432403bab8ff5dc4b4f013c35aa1f85cc0651c8"
+  integrity sha512-NgAZIw8Uq2lm6Ln1lWipAqi/YxqIDd92boO4k81Z1WMOdZJt6oLxZB8LfJRDLXU7xNkpW97zHcNBf5pIXJIFqw==
 
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
@@ -2180,14 +2180,7 @@ debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
-debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
-  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
-  dependencies:
-    ms "2.1.2"
-
-debug@^4.3.2:
+debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1, debug@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
   integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
@@ -6014,12 +6007,7 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
-  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
-
-tslib@^2.2.0:
+tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
