@@ -2,7 +2,7 @@ const {
     name: productCode,
     productName,
     appId,
-    author,
+    author
 } = require("../../package.json");
 
 module.exports = {
@@ -14,36 +14,36 @@ module.exports = {
         "resources/**/*",
         "environments/electron/**/*",
         "node_modules/**/*",
-        "package.json",
+        "package.json"
     ],
     directories: {
-        buildResources: "resources",
-        output: "dist/electron",
+        buildResources: "resources/electron",
+        output: "dist/electron"
     },
     extraMetadata: {
-        main: "environments/electron/main.js",
+        main: "environments/electron/main.js"
     },
     protocols: [
         {
             name: "deep-link",
-            schemes: [productCode],
-        },
+            schemes: [productCode]
+        }
     ],
     publish: ["github"],
     win: {
-        target: "nsis",
+        target: "nsis"
     },
     nsis: {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
-        perMachine: true,
+        perMachine: true
     },
     linux: {
-        target: "AppImage",
+        target: "AppImage"
     },
     mac: {
         target: "dmg",
-        category: "public.app-category.entertainment",
+        category: "public.app-category.entertainment"
     },
-    generateUpdatesFilesForAllChannels: true,
+    generateUpdatesFilesForAllChannels: true
 };

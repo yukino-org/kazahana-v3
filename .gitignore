@@ -3,7 +3,7 @@ node_modules
 dist
 dist-ssr
 *.local
-resources/icons
+resources/electron/icons
 resources/android/icon
 resources/android/splash
 environments/electron/logs

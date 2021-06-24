@@ -20,7 +20,7 @@
     "vite:serve": "vite preview",
     "vite:build": "rimraf ./dist/vite && vue-tsc --noEmit && vite build",
     "vite:typecheck": "vue-tsc --noEmit",
-    "electron:icons": "electron-icon-builder --flatten --input=./resources/icon.png --output=./resources && node scripts/mac-icons",
+    "electron:icons": "node scripts/electron-icons",
     "electron:start": "cross-env YUKINO_PLATFORM=\"electron\" electron environments/electron/main.js",
     "electron:dev": "cross-env YUKINO_PLATFORM=\"electron\" node scripts/electron-dev",
     "electron:pack": "cross-env DEBUG=\"electron-builder\" yarn electron:build --dir",
