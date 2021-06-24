@@ -95,10 +95,10 @@
     tslib "^2.1.0"
     xml2js "^0.4.23"
 
-"@capacitor/core@^3.0.0":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.0.1.tgz#9e4498034b9e23ac7f3fcfd395fe79185c5d7779"
-  integrity sha512-17iFkpICdOdTqfbKh3oXFYbwXn9dSxLe85PWeptXSW5jkiHN/YhI+iedRpcukv1QXkR1P629B+7kDqBcrzKL9w==
+"@capacitor/core@^3.0.0", "@capacitor/core@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.0.2.tgz#57d20aab346804fdc0499185537c6cb0f8394a25"
+  integrity sha512-uvKvX++uj17pK2LYekPJlxsEprUTmqPk/SdDwczj5I/pmloAV8TkQ/zqwI+yOC9h6hEwRBZ689TGTS1GfPnYuA==
   dependencies:
     tslib "^2.1.0"
 
@@ -117,10 +117,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.0.1.tgz#189ec4f473424b6435528f7cd68b545b79f1acc0"
   integrity sha512-g0xQgiGu0MyHl/17tEiMJUAL6sTj76pu3gtqY5wWGLAfTDRodDz2WjmV6i8OQvfrR69IWfdqEvKaFz7MCeHajg==
 
-"@capacitor/splash-screen@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-1.0.1.tgz#8569252c193f6ec18ca7e71678de2432e8930e9d"
-  integrity sha512-QObgyrCarZrdIHuX5E8TC/lh52a/1hguKtygVMPZQFel20/T5bydl12y6wnJeWsCAlrXWqI7unLy89u+AH+Zqw==
+"@capacitor/splash-screen@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-1.0.2.tgz#5f44bde70b30570ca0b44c5ede59d8acca47b616"
+  integrity sha512-5pf/K7SKfRfZ7p9AgRqULaL7+PQh+InWCvP7HAbzjgVGzvRhps7tMRCoY9do5GN3vvRl7jY1+yGYQG44s52AAA==
 
 "@capacitor/status-bar@^1.0.1":
   version "1.0.1"
@@ -1772,7 +1772,7 @@ cheerio@^1.0.0-rc.9:
     parse5-htmlparser2-tree-adapter "^6.0.1"
     tslib "^2.2.0"
 
-chokidar@^3.5.1:
+chokidar@^3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.2.tgz#dba3976fcadb016f66fd365021d91600d01c1e75"
   integrity sha512-ekGhOnNVPgT77r4K/U3GDhu+FQ2S8TnK/s2KbIGXi0SZWuwkZ2QNyfWdZW+TVfn84DpEP7rLeCt2UI6bJ8GwbQ==
@@ -4745,7 +4745,7 @@ postcss-js@^3.0.3:
     camelcase-css "^2.0.1"
     postcss "^8.1.6"
 
-postcss-load-config@^3.0.1:
+postcss-load-config@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/postcss-load-config/-/postcss-load-config-3.1.0.tgz#d39c47091c4aec37f50272373a6a648ef5e97829"
   integrity sha512-ipM8Ds01ZUophjDTQYSVP70slFSYg3T0/zyfII5vzhN6V57YSxMgG5syXuwi5VtS8wSf3iL30v0uBdoIVx4Q0g==
@@ -5825,16 +5825,16 @@ swiper@^6.7.1:
     dom7 "^3.0.0"
     ssr-window "^3.0.0"
 
-tailwindcss@^2.1.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-2.2.2.tgz#28a99c87b5a6b2bf6298a77d88dc0590e84fa8ee"
-  integrity sha512-OzFWhlnfrO3JXZKHQiqZcb0Wwl3oJSmQ7PvT2jdIgCjV5iUoAyql9bb9ZLCSBI5TYXmawujXAoNxXVfP5Auy/Q==
+tailwindcss@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-2.2.4.tgz#6a2e259b1e26125aeaa7cdc479963fd217c308b0"
+  integrity sha512-OdBCPgazNNsknSP+JfrPzkay9aqKjhKtFhbhgxHgvEFdHy/GuRPo2SCJ4w1SFTN8H6FPI4m6qD/Jj20NWY1GkA==
   dependencies:
     "@fullhuman/postcss-purgecss" "^4.0.3"
     arg "^5.0.0"
     bytes "^3.0.0"
     chalk "^4.1.1"
-    chokidar "^3.5.1"
+    chokidar "^3.5.2"
     color "^3.1.3"
     cosmiconfig "^7.0.0"
     detective "^5.2.0"
@@ -5852,7 +5852,7 @@ tailwindcss@^2.1.2:
     normalize-path "^3.0.0"
     object-hash "^2.2.0"
     postcss-js "^3.0.3"
-    postcss-load-config "^3.0.1"
+    postcss-load-config "^3.1.0"
     postcss-nested "5.0.5"
     postcss-selector-parser "^6.0.6"
     postcss-value-parser "^4.1.0"
@@ -6014,12 +6014,7 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
-  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
-
-tslib@^2.2.0:
+tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
