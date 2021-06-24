@@ -82,6 +82,7 @@
                 Stream URL:
                 <span
                     class="
+                        ml-2
                         bg-gray-100
                         dark:bg-gray-800
                         rounded
@@ -90,14 +91,21 @@
                         select-all
                         cursor-pointer
                     "
-                    @click.stop.prevent="
-                        !!void (
-                            currentPlaying &&
-                            copyToClipboard(currentPlaying.url)
-                        )
-                    "
+                    @click.stop.prevent="!!void copyCurrentUrlToClipboard()"
                     >{{ shrinkText(currentPlaying.url) }}</span
                 >
+                <span
+                    :class="[
+                        'ml-2 cursor-pointer opacity-75 hover:opacity-100 transition duration-200',
+                        showCopied && 'opacity-100 text-green-500'
+                    ]"
+                    @click.stop.prevent="!!void copyCurrentUrlToClipboard()"
+                >
+                    <transition name="fade" mode="out-in">
+                        <Icon icon="check" v-if="showCopied" />
+                        <Icon icon="clipboard" v-else />
+                    </transition>
+                </span>
             </p>
         </div>
 
@@ -242,6 +250,7 @@ export default defineComponent({
             autoPlay: boolean;
             autoNext: boolean;
             fullScreenWatcher: ReturnType<typeof setInterval> | null;
+            showCopied: boolean;
         } = {
             info: util.createStateController(),
             currentPlaying: null,
@@ -250,7 +259,8 @@ export default defineComponent({
             lastWatchUpdated: 0,
             autoPlay: false,
             autoNext: false,
-            fullScreenWatcher: null
+            fullScreenWatcher: null,
+            showCopied: false
         };
 
         return data;
@@ -351,6 +361,7 @@ export default defineComponent({
                     video.currentTime = watched;
                 }
 
+                delete this.$route.query.watched;
                 this.updateStats();
                 this.autoPlay = video.play();
             }
@@ -481,9 +492,16 @@ export default defineComponent({
                 this.$emit("playNext");
             }
         },
+        copyCurrentUrlToClipboard() {
+            if (!this.currentPlaying?.url) return;
+            util.copyToClipboard(this.currentPlaying.url);
+            this.showCopied = true;
+            setTimeout(() => {
+                this.showCopied = false;
+            }, 5000);
+        },
         shrinkText: (txt: string) => util.shrinkedText(txt, 80),
-        getValidImageUrl: util.getValidImageUrl,
-        copyToClipboard: util.copyToClipboard
+        getValidImageUrl: util.getValidImageUrl
     }
 });
 </script>

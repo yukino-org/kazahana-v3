@@ -177,6 +177,40 @@
                             </button>
                         </div>
                     </div>
+
+                    <p class="mt-2" v-if="currentPageImage">
+                        Image URL:
+                        <span
+                            class="
+                        ml-2
+                        bg-gray-100
+                        dark:bg-gray-800
+                        rounded
+                        px-1
+                        break-all
+                        select-all
+                        cursor-pointer
+                    "
+                            @click.stop.prevent="
+                                !!void copyCurrentUrlToClipboard()
+                            "
+                            >{{ shrinkText(currentPageImage) }}</span
+                        >
+                        <span
+                            :class="[
+                                'ml-2 cursor-pointer opacity-75 hover:opacity-100 transition duration-200',
+                                showCopied && 'opacity-100 text-green-500'
+                            ]"
+                            @click.stop.prevent="
+                                !!void copyCurrentUrlToClipboard()
+                            "
+                        >
+                            <transition name="fade" mode="out-in">
+                                <Icon icon="check" v-if="showCopied" />
+                                <Icon icon="clipboard" v-else />
+                            </transition>
+                        </span>
+                    </p>
                 </div>
             </div>
 
@@ -288,6 +322,7 @@ export default defineComponent({
             pageWidth: number;
             hasTitleBar: boolean;
             fullscreen: boolean;
+            showCopied: boolean;
         } = {
             info: util.createStateController(),
             images: null,
@@ -295,7 +330,8 @@ export default defineComponent({
             currentPageImage: null,
             pageWidth: 100,
             hasTitleBar: ["electron"].includes(app_platform),
-            fullscreen: false
+            fullscreen: false,
+            showCopied: false
         };
 
         return data;
@@ -527,6 +563,15 @@ export default defineComponent({
         toggleFullscreen() {
             this.fullscreen = !this.fullscreen;
         },
+        copyCurrentUrlToClipboard() {
+            if (!this.currentPageImage) return;
+            util.copyToClipboard(this.currentPageImage);
+            this.showCopied = true;
+            setTimeout(() => {
+                this.showCopied = false;
+            }, 5000);
+        },
+        shrinkText: (txt: string) => util.shrinkedText(txt, 80),
         getValidImageUrl: util.getValidImageUrl
     }
 });

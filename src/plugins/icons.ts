@@ -41,18 +41,20 @@ import {
     faSun,
     faMoon,
     faBars,
+    faClipboard,
+    faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
     faWindowMinimize,
     faWindowMaximize,
     faHeart as faUnfilledHeart,
-    faBookmark as faUnfilledBookmark,
+    faBookmark as faUnfilledBookmark
 } from "@fortawesome/free-regular-svg-icons";
 import {
     faDiscord,
     faGithub,
-    faPatreon,
+    faPatreon
 } from "@fortawesome/free-brands-svg-icons";
 
 config.searchPseudoElements = true;
@@ -105,7 +107,9 @@ library.add(
     faSignOutAlt,
     faSun,
     faMoon,
-    faBars
+    faBars,
+    faClipboard,
+    faCheck
 );
 
 export default FontAwesomeIcon;
