@@ -61,7 +61,7 @@
     "vue-router": "4"
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.0.0",
+    "@capacitor/cli": "^3.0.2",
     "@types/lodash.merge": "^4.6.6",
     "@types/qs": "^6.9.6",
     "@vitejs/plugin-vue": "^1.2.2",
