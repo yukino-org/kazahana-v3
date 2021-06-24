@@ -37,7 +37,7 @@ const createWindow = async () => {
     app.removeAsDefaultProtocolClient(productCode);
     if (isDev && process.platform === "win32") {
         app.setAsDefaultProtocolClient(productCode, process.execPath, [
-            path.resolve(process.argv[1]),
+            path.resolve(process.argv[1])
         ]);
     } else {
         app.setAsDefaultProtocolClient(productCode);
@@ -55,11 +55,11 @@ const createWindow = async () => {
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preload.js")
         },
         show: false,
         frame: false,
-        icon: path.join(__dirname, "..", "..", "resources", "icon.png"),
+        icon: path.join(__dirname, "..", "..", "resources", "icon.png")
     });
 
     if (dimensions.isMaximized) win.maximize();
@@ -112,7 +112,7 @@ const createWindow = async () => {
         Store.setWindowSize({
             ...win.getBounds(),
             isMaximized: win.isMaximized(),
-            isFullScreen: process.platform === "darwin" && win.isFullScreen(),
+            isFullScreen: process.platform === "darwin" && win.isFullScreen()
         });
 
         if (!win.isDestroyed()) {
@@ -149,7 +149,7 @@ const createWindow = async () => {
             message: "Do you want to close the app?",
             type: "warning",
             buttons: ["Yes", "No"],
-            defaultId: 1,
+            defaultId: 1
         });
 
         if (resp.response === 0) {
@@ -175,7 +175,7 @@ app.on("ready", async () => {
 });
 
 app.on("activate", async () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
+    if (!win) {
         Logger.warn(
             "main",
             "No windows were open so opening new one (app activate)"
@@ -191,8 +191,8 @@ app.on("window-all-closed", () => {
     }
 });
 
-app.on("will-finish-launching", function () {
-    app.on("open-url", function (event, url) {
+app.on("will-finish-launching", function() {
+    app.on("open-url", function(event, url) {
         event.preventDefault();
 
         setDeepLinkURL(parseDeepLink(url));
@@ -244,7 +244,7 @@ function parseDeepLink(url) {
  * @param {string[]} args
  */
 function getDeepLinkedArg(args) {
-    const found = args.find((arg) => deepLinkMatcher.test(arg));
+    const found = args.find(arg => deepLinkMatcher.test(arg));
     return found && parseDeepLink(found);
 }
 
