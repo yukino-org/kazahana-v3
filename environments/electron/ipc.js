@@ -10,7 +10,7 @@ const http = {
             const res = await got.get(url, {
                 headers: options.headers,
                 timeout: options.timeout,
-                responseType: options.responseType,
+                responseType: options.responseType
             });
 
             return res.body;
@@ -24,7 +24,7 @@ const http = {
                 body,
                 headers: options.headers,
                 timeout: options.timeout,
-                responseType: options.responseType,
+                responseType: options.responseType
             });
 
             return res.body;
@@ -38,7 +38,7 @@ const http = {
                 body,
                 headers: options.headers,
                 timeout: options.timeout,
-                responseType: options.responseType,
+                responseType: options.responseType
             });
 
             return res.body;
@@ -52,20 +52,20 @@ const http = {
                 body,
                 headers: options.headers,
                 timeout: options.timeout,
-                responseType: options.responseType,
+                responseType: options.responseType
             });
 
             return res.body;
         } catch (err) {
             throw err;
         }
-    },
+    }
 };
 
 /**
  * @param {import("electron").ipcMain} ipc
  */
-module.exports = (ipc) => {
+module.exports = ipc => {
     ipc.handle("Store-Get", (e, key) => {
         return Store.store.get(key) || null;
     });
@@ -74,7 +74,7 @@ module.exports = (ipc) => {
         Store.store.set(key, data);
     });
 
-    ipc.handle("Store-Clear", (e) => {
+    ipc.handle("Store-Clear", e => {
         Store.store.clear();
         return true;
     });
@@ -97,7 +97,7 @@ module.exports = (ipc) => {
             message: `Do you want to visit ${url} in your browser?`,
             type: "warning",
             buttons: ["Yes", "No"],
-            defaultId: 1,
+            defaultId: 1
         });
 
         if (resp.response === 0) {

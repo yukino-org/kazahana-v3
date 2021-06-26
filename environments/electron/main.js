@@ -219,7 +219,7 @@ function initiateInstance() {
         app.on("second-instance", (event, args) => {
             event.preventDefault();
 
-            if (process.platform === "win32") {
+            if (process.platform === "win32" || process.platform === "linux") {
                 setDeepLinkURL(getDeepLinkedArg(args));
             }
 
