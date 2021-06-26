@@ -275,8 +275,8 @@ export default defineComponent({
         if (this.fullScreenWatcher !== null) {
             clearInterval(this.fullScreenWatcher);
         }
-        this.$bus.dispatch("set-MAL-episode", null);
-        this.$bus.dispatch("set-AniList-episode", null);
+        this.$bus.dispatch("set-MAL-anime-episode", null);
+        this.$bus.dispatch("set-AniList-anime-episode", null);
     },
     methods: {
         async updatePageSetting() {
@@ -321,8 +321,8 @@ export default defineComponent({
             }
         },
         async getInfo() {
-            this.$bus.dispatch("set-MAL-episode", null);
-            this.$bus.dispatch("set-AniList-episode", null);
+            this.$bus.dispatch("set-MAL-anime-episode", null);
+            this.$bus.dispatch("set-AniList-anime-episode", null);
 
             if (!this.plugin) {
                 this.info.state = "failed";
@@ -350,8 +350,8 @@ export default defineComponent({
                 if (this.episode) {
                     const ep = +this.episode;
                     if (!isNaN(ep)) {
-                        this.$bus.dispatch("set-MAL-episode", ep);
-                        this.$bus.dispatch("set-AniList-episode", ep);
+                        this.$bus.dispatch("set-MAL-anime-episode", ep);
+                        this.$bus.dispatch("set-AniList-anime-episode", ep);
                     }
                 }
             } catch (err) {
@@ -460,12 +460,12 @@ export default defineComponent({
             if (watchedDuration / totalDuration > 0.8) {
                 const ep = this.episode?.match(/\d+/)?.[0];
                 if (ep) {
-                    this.$bus.dispatch("update-MAL-status", {
+                    this.$bus.dispatch("update-MAL-anime-status", {
                         episode: +ep,
                         status: "watching"
                     });
 
-                    this.$bus.dispatch("update-AniList-status", {
+                    this.$bus.dispatch("update-AniList-anime-status", {
                         episode: +ep,
                         status: "CURRENT"
                     });

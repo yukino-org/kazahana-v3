@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageTitle title="AniList Profile" />
+        <PageTitle title="AniList Profile (Anime)" />
 
         <Loading
             class="mt-8"
@@ -200,12 +200,8 @@
 import { defineComponent } from "vue";
 import { Rpc } from "../../../plugins/api";
 import MyAnimeList from "../../../plugins/integrations/myanimelist";
-import AniList, {
-    UserInfoEntity,
-    AnimeListEntity,
-    AnimeStatus
-} from "../../../plugins/integrations/anilist";
-import { util, StateController } from "../../../plugins/util";
+import AniList, { Status } from "../../../plugins/integrations/anilist";
+import { Await, NotNull, StateController, util } from "../../../plugins/util";
 
 import PageTitle from "../../../components/PageTitle.vue";
 import Loading from "../../../components/Loading.vue";
@@ -222,22 +218,26 @@ export default defineComponent({
     },
     data() {
         const data: {
-            userinfo: StateController<UserInfoEntity>;
+            userinfo: StateController<
+                NotNull<Await<ReturnType<typeof AniList.userInfo>>>
+            >;
             tabs: TabEntity[];
             selectedTab: string;
-            items: StateController<AnimeListEntity[]>;
+            items: StateController<
+                NotNull<Await<ReturnType<typeof AniList.animelist>>>
+            >;
             page: number;
             malBaseURL: string;
         } = {
             userinfo: util.createStateController(),
-            tabs: AnimeStatus.map(x => ({
+            tabs: Status.map(x => ({
                 id: x,
                 text: `${x[0].toUpperCase()}${x.slice(1).toLowerCase()}`
             })),
             selectedTab:
                 typeof this.$route.query.selected === "string"
                     ? this.$route.query.selected
-                    : AnimeStatus[0],
+                    : Status[0],
             items: util.createStateController(),
             page: 0,
             malBaseURL: MyAnimeList.webURL
@@ -279,8 +279,7 @@ export default defineComponent({
             try {
                 this.items.state = "resolving";
                 this.items.data = null;
-                const items = await AniList.getList(
-                    "ANIME",
+                const items = await AniList.animelist(
                     <any>this.selectedTab,
                     this.page
                 );
@@ -308,7 +307,7 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their AniList profile"
+                details: "Viewing their AniList profile (Anime)"
             });
         },
         handleTabChange(tab: TabEntity) {

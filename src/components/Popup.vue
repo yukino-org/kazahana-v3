@@ -58,14 +58,14 @@ export default defineComponent({
     props: {
         show: {
             type: Boolean,
-            default: true,
-        },
+            default: true
+        }
     },
     methods: {
         close() {
             this.$emit("close");
-        },
-    },
+        }
+    }
 });
 </script>
 

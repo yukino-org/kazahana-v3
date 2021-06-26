@@ -2,13 +2,16 @@
     <div>
         <div class="flex flex-row justify-center items-center gap-4 flex-wrap">
             <div class="flex-grow flex items-center gap-3">
-                <img class="w-7 h-auto rounded" :src="logo" alt="MyAnimeList" />
+                <img
+                    class="w-7 h-auto rounded"
+                    :src="logo"
+                    alt="MyAnimeList (Anime)"
+                />
                 <div>
                     <p class="text-xl font-bold">
-                        MyAnimeList
+                        MyAnimeList (Anime)
                         <span class="text-xs mx-1 opacity-75" v-if="info.data"
-                            >(
-                            {{
+                            >({{
                                 info.data.my_list_status
                                     ?.num_episodes_watched || 0
                             }}/{{ info.data.num_episodes }})</span
@@ -80,7 +83,7 @@
             </div>
         </div>
 
-        <Popup :show="showSearch">
+        <Popup :show="showSearch" @close="!!void toggleSearch()">
             <div
                 class="
                     flex flex-row
@@ -116,7 +119,7 @@
 
             <div class="mt-6 grid gap-2">
                 <Loading
-                    class="mt-8"
+                    class="mt-4"
                     v-if="
                         ['waiting', 'resolving'].includes(
                             others.animeSearchResults.state
@@ -186,15 +189,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import MyAnimeList, {
-    AnimeListEntity,
-    AnimeEntity,
     AnimeStatus
 } from "../../plugins/integrations/myanimelist";
 import { Store } from "../../plugins/api";
-import { StateController, constants, util } from "../../plugins/util";
 import {
-    MyAnimeListCachedAnimeTitles,
-    MyAnimeListConnectionSubscriber
+    Await,
+    NotNull,
+    StateController,
+    constants,
+    util
+} from "../../plugins/util";
+import {
+    MyAnimeListConnectionCachedTitles,
+    MyAnimeListAnimeConnectionSubscriber
 } from "../../plugins/types";
 
 import Loading from "../Loading.vue";
@@ -216,14 +223,19 @@ export default defineComponent({
             computedAltTitle: string | null;
             loggedIn: boolean;
             logo: string;
-            info: StateController<AnimeEntity>;
+            info: StateController<
+                NotNull<Await<ReturnType<typeof MyAnimeList.getAnime>>>
+            >;
             allowedStatus: string[];
             others: {
-                animeSearchResults: StateController<AnimeListEntity["data"]>;
+                animeSearchResults: StateController<
+                    NotNull<
+                        Await<ReturnType<typeof MyAnimeList.searchAnime>>
+                    >["data"]
+                >;
             };
             showSearch: boolean;
             currentEpisode: number | null;
-            hasWatchedEpisode: boolean | null;
         } = {
             computedId: this.id || null,
             computedAltTitle: this.altTitle || null,
@@ -235,20 +247,19 @@ export default defineComponent({
                 animeSearchResults: util.createStateController()
             },
             showSearch: false,
-            currentEpisode: null,
-            hasWatchedEpisode: null
+            currentEpisode: null
         };
 
         return data;
     },
     mounted() {
         this.initiate();
-        this.$bus.subscribe("set-MAL-episode", this.setEpisode);
-        this.$bus.subscribe("update-MAL-status", this.setStatus);
+        this.$bus.subscribe("set-MAL-anime-episode", this.setEpisode);
+        this.$bus.subscribe("update-MAL-anime-status", this.setStatus);
     },
     beforeDestroy() {
-        this.$bus.subscribe("set-MAL-episode", this.setEpisode);
-        this.$bus.unsubscribe("update-MAL-status", this.setStatus);
+        this.$bus.subscribe("set-MAL-anime-episode", this.setEpisode);
+        this.$bus.unsubscribe("update-MAL-anime-status", this.setStatus);
     },
     methods: {
         async initiate() {
@@ -279,9 +290,10 @@ export default defineComponent({
             if (!this.altURL) return;
 
             const store = await Store.getClient();
-            const all: MyAnimeListCachedAnimeTitles[] =
-                (await store.get(constants.storeKeys.myAnimeListCacheTitles)) ||
-                [];
+            const all: MyAnimeListConnectionCachedTitles[] =
+                (await store.get(
+                    constants.storeKeys.myAnimeListAnimeCacheTitles
+                )) || [];
 
             const cached = all.find(x => x.altURLs.includes(this.altURL!));
             if (cached) {
@@ -292,9 +304,10 @@ export default defineComponent({
             if (!this.computedId || !this.altURL) return false;
 
             const store = await Store.getClient();
-            const all: MyAnimeListCachedAnimeTitles[] =
-                (await store.get(constants.storeKeys.myAnimeListCacheTitles)) ||
-                [];
+            const all: MyAnimeListConnectionCachedTitles[] =
+                (await store.get(
+                    constants.storeKeys.myAnimeListAnimeCacheTitles
+                )) || [];
 
             let added = false;
             all.map(item => {
@@ -317,20 +330,21 @@ export default defineComponent({
                 });
             }
 
-            await store.set(constants.storeKeys.myAnimeListCacheTitles, all);
+            await store.set(
+                constants.storeKeys.myAnimeListAnimeCacheTitles,
+                all
+            );
         },
         async searchMAL() {
-            if (!this.altTitle) return false;
+            if (!this.altTitle) return;
 
-            this.others.animeSearchResults.state = "resolved";
+            this.others.animeSearchResults.state = "resolving";
             const animes = await MyAnimeList.searchAnime(this.altTitle);
             if (animes) {
                 this.others.animeSearchResults.data = animes.data;
-                return true;
             }
 
             this.others.animeSearchResults.state = "resolved";
-            return false;
         },
         async changeItem(id: string) {
             this.computedId = id;
@@ -360,11 +374,12 @@ export default defineComponent({
                 });
             }
         },
-        async setStatus(data: MyAnimeListConnectionSubscriber) {
+        async setStatus(data: MyAnimeListAnimeConnectionSubscriber) {
             if (
                 !this.computedId ||
                 !this.info.data ||
-                data.episode > this.info.data.num_episodes
+                (this.info.data.num_episodes &&
+                    data.episode > this.info.data.num_episodes)
             )
                 return;
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageTitle title="MyAnimeList Profile" />
+        <PageTitle title="MyAnimeList Profile (Manga)" />
 
         <Loading
             class="mt-8"
@@ -68,8 +68,8 @@
                         :to="{
                             path: '/anime',
                             query: {
-                                url: `${malBaseURL}/anime/${item.node.id}`,
-                            },
+                                url: `${malBaseURL}/anime/${item.node.id}`
+                            }
                         }"
                         v-for="item in items.data.data"
                     >
@@ -106,10 +106,10 @@
                                             bg-blue-500
                                         "
                                         >Completed:
-                                        {{
-                                            item.list_status
-                                                .num_episodes_watched
-                                        }}</span
+                                        {{ item.list_status.num_volumes_read }}
+                                        Volumes &
+                                        {{ item.list_status.num_chapters_read }}
+                                        Chapters</span
                                     >
                                     <span
                                         class="
@@ -130,9 +130,9 @@
                                             rounded-sm
                                             bg-pink-500
                                         "
-                                        >Rewatching:
+                                        >Rereading:
                                         {{
-                                            item.list_status.is_rewatching
+                                            item.list_status.is_rereading
                                                 ? "Yes"
                                                 : "No"
                                         }}</span
@@ -203,11 +203,9 @@
 import { defineComponent } from "vue";
 import { Rpc } from "../../../plugins/api";
 import MyAnimeList, {
-    UserInfoEntity,
-    AnimeListEntity,
-    AnimeStatus,
+    MangaStatus
 } from "../../../plugins/integrations/myanimelist";
-import { util, StateController } from "../../../plugins/util";
+import { Await, NotNull, StateController, util } from "../../../plugins/util";
 
 import PageTitle from "../../../components/PageTitle.vue";
 import Loading from "../../../components/Loading.vue";
@@ -218,26 +216,30 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        TabBar,
+        TabBar
     },
     data() {
         const data: {
-            userinfo: StateController<UserInfoEntity>;
+            userinfo: StateController<
+                NotNull<Await<ReturnType<typeof MyAnimeList.userInfo>>>
+            >;
             tabs: TabEntity[];
             selectedTab: string;
-            items: StateController<AnimeListEntity>;
+            items: StateController<
+                NotNull<Await<ReturnType<typeof MyAnimeList.mangalist>>>
+            >;
             page: number;
             malBaseURL: string;
         } = {
             userinfo: util.createStateController(),
-            tabs: AnimeStatus.map((x) => ({
+            tabs: MangaStatus.map(x => ({
                 id: x,
-                text: x.replace(/_/g, " "),
+                text: x.replace(/_/g, " ")
             })),
-            selectedTab: AnimeStatus[0],
+            selectedTab: MangaStatus[0],
             items: util.createStateController(),
             page: 0,
-            malBaseURL: MyAnimeList.webURL,
+            malBaseURL: MyAnimeList.webURL
         };
 
         return data;
@@ -258,7 +260,7 @@ export default defineComponent({
 
                 const info = await MyAnimeList.userInfo();
                 if (!info) {
-                    this.userinfo.state = "failed"
+                    this.userinfo.state = "failed";
                     return;
                 }
 
@@ -277,7 +279,7 @@ export default defineComponent({
                 this.items.state = "resolving";
                 this.items.data = null;
 
-                const items = await MyAnimeList.animelist(
+                const items = await MyAnimeList.mangalist(
                     <any>this.selectedTab,
                     this.page
                 );
@@ -306,13 +308,13 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their MyAnimeList profile",
+                details: "Viewing their MyAnimeList profile (Manga)"
             });
         },
         handleTabChange(tab: TabEntity) {
             this.selectedTab = tab.id;
             this.getItems();
-        },
-    },
+        }
+    }
 });
 </script>

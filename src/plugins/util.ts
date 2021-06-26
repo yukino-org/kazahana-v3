@@ -3,6 +3,8 @@ import { Settings } from "./types";
 
 export type Await<T> = T extends Promise<infer U> ? U : T;
 
+export type NotNull<T> = Exclude<T, null>;
+
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]
         ? RecursivePartial<U>[]
@@ -49,7 +51,8 @@ export const constants = {
         bookmarked: "bookmarked",
         favorite: "favorites",
         myAnimeListToken: "my_anime_list_token",
-        myAnimeListCacheTitles: "my_anime_list_cache_titles",
+        myAnimeListAnimeCacheTitles: "my_anime_list_anime_cache_titles",
+        myAnimeListMangaCacheTitles: "my_anime_list_manga_cache_titles",
         aniListToken: "ani_list_token",
         aniListCacheTitles: "ani_list_cache_titles"
     },

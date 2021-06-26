@@ -151,14 +151,18 @@
 
                 <p class="text-sm opacity-75 mt-6">Connections</p>
                 <div class="mt-1 grid gap-4">
-                    <MyAnimeListConnection
+                    <MyAnimeListAnimeConnection
                         :id="MyAnimeListID"
                         v-if="MyAnimeListID"
                     />
 
-                    <AniListConnection
+                    <AniListAnimeConnection
                         :altTitle="info.data.title"
-                        :altURL="typeof $route.query.url === 'string' ? $route.query.url : undefined"
+                        :altURL="
+                            typeof $route.query.url === 'string'
+                                ? $route.query.url
+                                : undefined
+                        "
                         v-if="info.data.title"
                     />
                 </div>
@@ -345,8 +349,8 @@ import ExternalLink from "../components/ExternalLink.vue";
 import AnimeSourceViewer from "../components/AnimeSourceViewer.vue";
 import MangaSourceViewer from "../components/MangaSourceViewer.vue";
 import Loading from "../components/Loading.vue";
-import MyAnimeListConnection from "../components/Connections/MyAnimeList.vue";
-import AniListConnection from "../components/Connections/AniList.vue";
+import MyAnimeListAnimeConnection from "../components/Connections/MyAnimeList-Anime.vue";
+import AniListAnimeConnection from "../components/Connections/AniList-Anime.vue";
 
 export default defineComponent({
     name: "Anime",
@@ -356,8 +360,8 @@ export default defineComponent({
         AnimeSourceViewer,
         MangaSourceViewer,
         Loading,
-        MyAnimeListConnection,
-        AniListConnection
+        MyAnimeListAnimeConnection,
+        AniListAnimeConnection
     },
     data() {
         const data: {
@@ -408,7 +412,16 @@ export default defineComponent({
             window.scrollTo({
                 top: 0
             });
-            const url = (this.$route.query.url = _url || this.$route.query.url);
+
+            if (_url) {
+                this.$router.push({
+                    query: {
+                        url: _url
+                    }
+                });
+            }
+
+            const url = this.$route.query.url;
 
             if (typeof url !== "string") {
                 this.info.state = "failed";
@@ -457,7 +470,7 @@ export default defineComponent({
                     allRecentlyViewed.splice(0, 0, {
                         title: data.title,
                         image: data.image,
-                        plugin: "MyAnimeList",
+                        plugin: "MyAnimeList (Anime)",
                         viewedAt: Date.now(),
                         route: {
                             route: this.$route.path,
@@ -497,7 +510,7 @@ export default defineComponent({
                 allBookmarked.splice(0, 0, {
                     title: this.info.data.title,
                     image: this.info.data.image,
-                    plugin: "MyAnimeList",
+                    plugin: "MyAnimeList (Anime)",
                     bookmarkedAt: Date.now(),
                     route: {
                         route: this.$route.path,

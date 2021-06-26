@@ -74,9 +74,76 @@ export const AnimeStatus = [
     "completed",
     "on_hold",
     "dropped",
-    "plan_to_watch",
+    "plan_to_watch"
 ] as const;
 export type AnimeStatusType = typeof AnimeStatus[number];
+
+export interface MangaListEntity {
+    data: {
+        node: {
+            id: number;
+            title: string;
+            main_picture: {
+                medium: string;
+                large: string;
+            };
+        };
+        list_status: {
+            status: string;
+            is_rereading: boolean;
+            num_volumes_read: number;
+            num_chapters_read: number;
+            score: number;
+            updated_at: string;
+        };
+    }[];
+    paging: {
+        next: string;
+    };
+}
+
+export interface MangaEntity {
+    id: number;
+    title: string;
+    my_list_status: {
+        status: string;
+        score: number;
+        num_chapters_read: number;
+        num_volumes_read: number;
+        is_rereading: boolean;
+        updated_at: string;
+    };
+    num_volumes: number;
+    num_chapters: number;
+}
+
+export interface MangaUpdateBody {
+    status: MangaStatusType;
+    score: number;
+    num_volumes_read: number;
+    num_chapters_read: number;
+}
+
+export interface MangaUpdateResultEntity {
+    status: string;
+    score: number;
+    num_volumes_read: number;
+    num_chapters_read: number;
+    is_rereading: boolean;
+    updated_at: string;
+    priority: number;
+    num_times_reread: number;
+    reread_value: number;
+}
+
+export const MangaStatus = [
+    "reading",
+    "completed",
+    "on_hold",
+    "dropped",
+    "plan_to_read"
+] as const;
+export type MangaStatusType = typeof MangaStatus[number];
 
 export class MyAnimeListManager {
     webURL = "https://myanimelist.net";
@@ -87,7 +154,7 @@ export class MyAnimeListManager {
     constructor() {
         this.auth = new Auth({
             id: secrets.client_id,
-            redirect: secrets.callback,
+            redirect: secrets.callback
         });
     }
 
@@ -133,18 +200,17 @@ export class MyAnimeListManager {
 
     async userInfo() {
         const res = await this.request("get", "/users/@me");
-        return res && <UserInfoEntity>JSON.parse(res);
+        return <UserInfoEntity | null>((res && JSON.parse(res)) || null);
     }
 
     async animelist(status?: AnimeStatusType, page: number = 0) {
         const perpage = 100;
         const res = await this.request(
             "get",
-            `/users/@me/animelist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${
-                perpage * page
-            }${status ? `&status=${status}` : ""}`
+            `/users/@me/animelist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${perpage *
+                page}${status ? `&status=${status}` : ""}`
         );
-        return res && <AnimeListEntity>JSON.parse(res);
+        return <AnimeListEntity | null>((res && JSON.parse(res)) || null);
     }
 
     async getAnime(id: string) {
@@ -152,7 +218,7 @@ export class MyAnimeListManager {
             "get",
             `/anime/${id}?fields=id,title,my_list_status,num_episodes`
         );
-        return res && <AnimeEntity>JSON.parse(res);
+        return <AnimeEntity | null>(res && JSON.parse(res));
     }
 
     async updateAnime(id: string, body: Partial<AnimeUpdateBody>) {
@@ -161,12 +227,48 @@ export class MyAnimeListManager {
             `/anime/${id}/my_list_status`,
             body
         );
-        return res && <AnimeUpdateResultEntity>JSON.parse(res);
+        return <AnimeUpdateResultEntity | null>(
+            ((res && JSON.parse(res)) || null)
+        );
     }
 
     async searchAnime(title: string) {
         const res = await this.request("get", `/anime?q=${title}&limit=10`);
-        return res && <AnimeListEntity>JSON.parse(res);
+        return <AnimeListEntity | null>(res && JSON.parse(res));
+    }
+
+    async mangalist(status?: MangaStatusType, page: number = 0) {
+        const perpage = 100;
+        const res = await this.request(
+            "get",
+            `/users/@me/mangalist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${perpage *
+                page}${status ? `&status=${status}` : ""}`
+        );
+        return <MangaListEntity | null>((res && JSON.parse(res)) || null);
+    }
+
+    async getManga(id: string) {
+        const res = await this.request(
+            "get",
+            `/manga/${id}?fields=id,title,my_list_status,num_volumes,num_chapters`
+        );
+        return <MangaEntity | null>(res && JSON.parse(res));
+    }
+
+    async updateManga(id: string, body: Partial<MangaUpdateBody>) {
+        const res = await this.request(
+            "put",
+            `/manga/${id}/my_list_status`,
+            body
+        );
+        return <MangaUpdateResultEntity | null>(
+            ((res && JSON.parse(res)) || null)
+        );
+    }
+
+    async searchManga(title: string) {
+        const res = await this.request("get", `/manga?q=${title}&limit=10`);
+        return <MangaListEntity | null>(res && JSON.parse(res));
     }
 
     request(type: "get", url: string): Promise<false | string>;
@@ -185,9 +287,9 @@ export class MyAnimeListManager {
         url = encodeURI(`${this.baseURL}${url}`);
         const options: RequesterOptions = {
             headers: {
-                Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`,
+                Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`
             },
-            responseType: "text",
+            responseType: "text"
         };
         if (body) {
             options.headers["Content-Type"] =

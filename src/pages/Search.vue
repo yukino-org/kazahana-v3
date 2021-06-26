@@ -40,7 +40,7 @@
                         'px-2 py-0.5 rounded cursor-pointer',
                         selectedPlugin.includes(plugin.name)
                             ? 'bg-green-400 dark:bg-green-500 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300',
+                            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300'
                     ]"
                     :title="
                         selectedPlugin.includes(plugin.name)
@@ -103,7 +103,7 @@
                         <img
                             :class="[
                                 'rounded flex-none w-20',
-                                anime.description ? 'sm:w-32' : 'sm:w-20',
+                                anime.description ? 'sm:w-32' : 'sm:w-20'
                             ]"
                             :src="getValidImageUrl(anime.thumbnail)"
                             :alt="anime.title"
@@ -137,18 +137,32 @@
                                     v-if="anime.type"
                                     >Type: {{ anime.type }}</span
                                 >
-                                <span
-                                    class="
+                                <template v-if="anime.additional">
+                                    <span
+                                        class="
                                         text-white text-xs
                                         px-1
                                         py-0.5
                                         rounded-sm
                                         bg-blue-500
                                     "
-                                    v-if="anime.additional?.episodes"
-                                    >Episodes:
-                                    {{ anime.additional.episodes }}</span
-                                >
+                                        v-if="'episodes' in anime.additional"
+                                        >Episodes:
+                                        {{ anime.additional.episodes }}</span
+                                    >
+                                    <span
+                                        class="
+                                        text-white text-xs
+                                        px-1
+                                        py-0.5
+                                        rounded-sm
+                                        bg-blue-500
+                                    "
+                                        v-if="'volumes' in anime.additional"
+                                        >Volumes:
+                                        {{ anime.additional.volumes }}</span
+                                    >
+                                </template>
                                 <span
                                     class="
                                         text-white text-xs
@@ -218,8 +232,14 @@ interface ResultType {
     plugin: string;
     route: RouteLocationRaw;
     type: "anime" | "manga";
-    additional?: {
-        episodes: string;
+    additional?: (
+        | {
+              volumes: string;
+          }
+        | {
+              episodes: string;
+          }
+    ) & {
         score: string;
     };
 }
@@ -227,7 +247,7 @@ interface ResultType {
 interface PluginEntity {
     name: string;
     type: string;
-    category: "anime" | "manga" | "MyAnimeList";
+    category: "anime" | "manga" | "MyAnimeList-Anime" | "MyAnimeList-Manga";
 }
 
 export default defineComponent({
@@ -235,19 +255,24 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        ExternalLink,
+        ExternalLink
     },
     data() {
         const plugins: Record<string, PluginEntity[]> = {
-            common: [
+            anime: [
                 {
-                    name: "MyAnimeList",
+                    name: "MyAnimeList (Anime)",
                     type: "extended",
-                    category: "MyAnimeList",
-                },
+                    category: "MyAnimeList-Anime"
+                }
             ],
-            anime: [],
-            manga: [],
+            manga: [
+                {
+                    name: "MyAnimeList (Manga)",
+                    type: "extended",
+                    category: "MyAnimeList-Manga"
+                }
+            ]
         };
 
         const data: {
@@ -264,11 +289,11 @@ export default defineComponent({
             selectedPlugin: Array.isArray(this.$route.query.plugins)
                 ? <string[]>(
                       this.$route.query.plugins.filter(
-                          (x) => typeof x === "string"
+                          x => typeof x === "string"
                       )
                   )
-                : ["MyAnimeList"],
-            allPlugins: plugins,
+                : ["MyAnimeList (Anime)"],
+            allPlugins: plugins
         };
 
         return data;
@@ -293,7 +318,7 @@ export default defineComponent({
         },
         toggleSelected(plugin: string) {
             this.selectedPlugin = this.selectedPlugin.includes(plugin)
-                ? this.selectedPlugin.filter((x) => x !== plugin)
+                ? this.selectedPlugin.filter(x => x !== plugin)
                 : [...this.selectedPlugin, plugin];
         },
         async getAllPlugins() {
@@ -304,7 +329,7 @@ export default defineComponent({
                 this.allPlugins.anime.push({
                     name: x,
                     type: "short",
-                    category: "anime",
+                    category: "anime"
                 });
             });
 
@@ -313,7 +338,7 @@ export default defineComponent({
                 this.allPlugins.manga.push({
                     name: x,
                     type: "short",
-                    category: "manga",
+                    category: "manga"
                 });
             });
         },
@@ -347,22 +372,19 @@ export default defineComponent({
             const allPlugins = Object.values(this.allPlugins).flat(1);
             for (const pluginName of this.selectedPlugin) {
                 try {
-                    const config = allPlugins.find(
-                        (x) => x.name === pluginName
-                    );
+                    const config = allPlugins.find(x => x.name === pluginName);
                     if (!config) {
                         this.$logger.emit(
                             "error",
                             "Corresponding plugin was not found!"
                         );
-                    } else if (config.category === "MyAnimeList") {
-                        const data =
-                            await client.integrations.MyAnimeList.search(
-                                this.terms
-                            );
+                    } else if (config.category === "MyAnimeList-Anime") {
+                        const data = await client.integrations.MyAnimeList.searchAnime(
+                            this.terms
+                        );
 
                         results.push(
-                            ...data.map((x) => {
+                            ...data.map(x => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: x.description.replace(
@@ -378,14 +400,48 @@ export default defineComponent({
                                     route: {
                                         path: "/anime",
                                         query: {
-                                            url: x.url,
-                                        },
+                                            url: x.url
+                                        }
                                     },
                                     type: "anime",
                                     additional: {
                                         episodes: x.episodes,
-                                        score: x.score,
+                                        score: x.score
+                                    }
+                                };
+                                return res;
+                            })
+                        );
+                    } else if (config.category === "MyAnimeList-Manga") {
+                        const data = await client.integrations.MyAnimeList.searchManga(
+                            this.terms
+                        );
+
+                        results.push(
+                            ...data.map(x => {
+                                const res: ResultType = {
+                                    title: x.title,
+                                    description: x.description.replace(
+                                        /(read more\.)$/,
+                                        ""
+                                    ),
+                                    thumbnail: util.getHighResMALImage(
+                                        x.thumbnail
+                                    ),
+                                    url: x.url,
+                                    air: "",
+                                    plugin: config.name,
+                                    route: {
+                                        path: "/manga",
+                                        query: {
+                                            url: x.url
+                                        }
                                     },
+                                    type: "manga",
+                                    additional: {
+                                        volumes: x.volumes,
+                                        score: x.score
+                                    }
                                 };
                                 return res;
                             })
@@ -396,7 +452,7 @@ export default defineComponent({
                         );
 
                         results.push(
-                            ...data.map((x) => {
+                            ...data.map(x => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: "",
@@ -408,10 +464,10 @@ export default defineComponent({
                                         path: "/anime/source",
                                         query: {
                                             plugin: config.name,
-                                            url: x.url,
-                                        },
+                                            url: x.url
+                                        }
                                     },
-                                    type: "anime",
+                                    type: "anime"
                                 };
                                 return res;
                             })
@@ -422,7 +478,7 @@ export default defineComponent({
                         );
 
                         results.push(
-                            ...data.map((x) => {
+                            ...data.map(x => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: "",
@@ -434,10 +490,10 @@ export default defineComponent({
                                         path: "/manga/source",
                                         query: {
                                             plugin: config.name,
-                                            url: x.url,
-                                        },
+                                            url: x.url
+                                        }
                                     },
-                                    type: "manga",
+                                    type: "manga"
                                 };
                                 return res;
                             })
@@ -458,7 +514,7 @@ export default defineComponent({
             rpc?.({
                 details: this.result.data.length
                     ? `Searching for ${this.terms} (${this.selectedPlugin})`
-                    : "On Search Page",
+                    : "On Search Page"
             });
 
             const store = await Store.getClient();
@@ -475,9 +531,9 @@ export default defineComponent({
                         route: this.$route.path,
                         queries: {
                             terms: this.terms,
-                            plugins: [...this.selectedPlugin],
-                        },
-                    },
+                            plugins: [...this.selectedPlugin]
+                        }
+                    }
                 });
 
                 await store.set(
@@ -486,7 +542,7 @@ export default defineComponent({
                 );
             }
         },
-        getValidImageUrl: util.getValidImageUrl,
-    },
+        getValidImageUrl: util.getValidImageUrl
+    }
 });
 </script>

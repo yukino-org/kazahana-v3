@@ -343,6 +343,10 @@ export default defineComponent({
         this.watchPage();
         this.attachKeys();
     },
+    beforeDestroy() {
+        this.dispatchChapter(null);
+        this.dispatchVolume(null);
+    },
     methods: {
         attachKeys() {
             document.addEventListener("keydown", e => {
@@ -376,6 +380,9 @@ export default defineComponent({
                 [() => this.volume, () => this.chapter, () => this.link],
                 () => {
                     this.getInfo();
+
+                    this.dispatchChapter(this.chapter ? +this.chapter : null);
+                    this.dispatchVolume(this.volume ? +this.volume : null);
                 }
             );
         },
@@ -385,6 +392,16 @@ export default defineComponent({
                 cur => {
                     if (cur) {
                         this.updatePageImage();
+
+                        if (this.info.data && this.chapter) {
+                            const i = this.info.data.entities.findIndex(
+                                x => x.page === this.currentPage
+                            );
+
+                            if (i === this.info.data.entities.length - 1) {
+                                this.dispatchStatus();
+                            }
+                        }
                     }
                 }
             );
@@ -533,25 +550,29 @@ export default defineComponent({
                     if (this.volume) extra.push(`Vol. ${this.volume}`);
                     if (this.chapter) extra.push(`Chap. ${this.chapter}`);
 
-                    await store.set(constants.storeKeys.lastWatchedLeft, <
-                        LastLeftEntity
-                    >{
+                    const lastleft: LastLeftEntity = {
                         title: `${this.title}${
                             extra.length ? ` (${extra.join(" ")})` : ""
                         }`,
                         reading: {
-                            volume: this.volume,
-                            chapter: this.chapter,
-                            read: this.currentPage,
-                            total: this.info.data?.entities.length.toString()
+                            volume: this.volume || "-",
+                            chapter: this.chapter || "-",
+                            read: this.currentPage || "-",
+                            total:
+                                this.info.data?.entities.length.toString() ||
+                                "-"
                         },
                         updatedAt: Date.now(),
                         route: {
                             route: this.$route.path,
-                            queries: { ...this.$route.query }
+                            queries: <any>{ ...this.$route.query }
                         },
                         showPopup: true
-                    });
+                    };
+                    await store.set(
+                        constants.storeKeys.lastWatchedLeft,
+                        lastleft
+                    );
                 }
             } catch (err) {
                 this.$logger.emit(
@@ -570,6 +591,29 @@ export default defineComponent({
             setTimeout(() => {
                 this.showCopied = false;
             }, 5000);
+        },
+        dispatchChapter(chapter: number | null) {
+            this.$bus.dispatch("set-MAL-manga-chapter", chapter);
+            this.$bus.dispatch("set-AniList-manga-chapter", chapter);
+        },
+        dispatchVolume(volume: number | null) {
+            this.$bus.dispatch("set-MAL-manga-volume", volume);
+            this.$bus.dispatch("set-AniList-manga-volume", volume);
+        },
+        dispatchStatus() {
+            if (!this.chapter) return;
+
+            this.$bus.dispatch("update-MAL-manga-status", {
+                chapter: +this.chapter,
+                volume: this.volume ? +this.volume : undefined,
+                status: "reading"
+            });
+
+            this.$bus.dispatch("update-AniList-manga-status", {
+                chapter: +this.chapter,
+                volume: this.volume ? +this.volume : undefined,
+                status: "CURRENT"
+            });
         },
         shrinkText: (txt: string) => util.shrinkedText(txt, 80),
         getValidImageUrl: util.getValidImageUrl

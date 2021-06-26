@@ -161,7 +161,7 @@
 
             <p class="text-sm opacity-75 mt-10">Connections</p>
             <div class="mt-1 grid gap-4">
-                <MyAnimeListConnection
+                <MyAnimeListAnimeConnection
                     :altTitle="info.data.title"
                     :altURL="
                         typeof $route.query.url === 'string'
@@ -170,7 +170,7 @@
                     "
                 />
 
-                <AniListConnection
+                <AniListAnimeConnection
                     :altTitle="info.data.title"
                     :altURL="
                         typeof $route.query.url === 'string'
@@ -248,8 +248,8 @@ import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
 import AnimePlayer from "../components/AnimePlayer.vue";
-import MyAnimeListConnection from "../components/Connections/MyAnimeList.vue";
-import AniListConnection from "../components/Connections/AniList.vue";
+import MyAnimeListAnimeConnection from "../components/Connections/MyAnimeList-Anime.vue";
+import AniListAnimeConnection from "../components/Connections/AniList-Anime.vue";
 
 interface SelectedEntity {
     episode: string;
@@ -262,8 +262,8 @@ export default defineComponent({
         Loading,
         ExternalLink,
         AnimePlayer,
-        MyAnimeListConnection,
-        AniListConnection
+        MyAnimeListAnimeConnection,
+        AniListAnimeConnection
     },
     data() {
         const data: {

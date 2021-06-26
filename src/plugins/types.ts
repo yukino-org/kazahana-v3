@@ -1,7 +1,10 @@
 import { EmitterSkeleton } from "./api/emitter";
 import { StateUpdateState } from "./api/state";
-import { AnimeStatusType as MyAnimeListAnimeStatusType } from "./integrations/myanimelist";
-import { AnimeStatusType as AniListAnimeStatusType } from "./integrations/anilist";
+import {
+    AnimeStatusType as MyAnimeListAnimeStatusType,
+    MangaStatusType as MyAnimeListMangaStatusType
+} from "./integrations/myanimelist";
+import { StatusType as AniListStatusType } from "./integrations/anilist";
 
 export const EnabledDisabled = ["enabled", "disabled"] as const;
 export type EnabledDisabledType = typeof EnabledDisabled[number];
@@ -93,13 +96,13 @@ export interface BookmarkedEntity {
     };
 }
 
-export interface MyAnimeListCachedAnimeTitles {
-    id: string;
+export interface AniListConnectionCachedTitles {
+    id: number;
     altURLs: string[];
 }
 
-export interface AniListCachedAnimeTitles {
-    id: number;
+export interface MyAnimeListConnectionCachedTitles {
+    id: string;
     altURLs: string[];
 }
 
@@ -110,24 +113,54 @@ export interface GlobalStateProps {
     sideBar: SideBarPositionType;
 }
 
-export interface MyAnimeListConnectionSubscriber {
+export interface MyAnimeListAnimeConnectionSubscriber {
     episode: number;
     status?: MyAnimeListAnimeStatusType;
     autoComplete?: boolean;
 }
 
-export interface AniListConnectionSubscriber {
+export interface MyAnimeListMangaConnectionSubscriber {
+    chapter: number;
+    volume?: number;
+    status?: MyAnimeListMangaStatusType;
+    autoComplete?: boolean;
+}
+
+export interface AniListAnimeConnectionSubscriber {
     episode: number;
-    status?: AniListAnimeStatusType;
+    status?: AniListStatusType;
+    autoComplete?: boolean;
+}
+
+export interface AniListMangaConnectionSubscriber {
+    chapter: number;
+    volume?: number;
+    status?: AniListStatusType;
     autoComplete?: boolean;
 }
 
 export interface EventBus extends EmitterSkeleton {
-    "update-MAL-status": (status: MyAnimeListConnectionSubscriber) => void;
-    "set-MAL-episode": (episode: number | null) => void;
+    "update-MAL-anime-status": (
+        status: MyAnimeListAnimeConnectionSubscriber
+    ) => void;
+    "set-MAL-anime-episode": (episode: number | null) => void;
 
-    "update-AniList-status": (status: AniListConnectionSubscriber) => void;
-    "set-AniList-episode": (episode: number | null) => void;
+    "update-MAL-manga-status": (
+        status: MyAnimeListMangaConnectionSubscriber
+    ) => void;
+    "set-MAL-manga-volume": (volume: number | null) => void;
+    "set-MAL-manga-chapter": (chapter: number | null) => void;
+
+    "update-AniList-anime-status": (
+        status: AniListAnimeConnectionSubscriber
+    ) => void;
+    "set-AniList-anime-episode": (episode: number | null) => void;
+
+    "update-AniList-manga-status": (
+        status: AniListMangaConnectionSubscriber
+    ) => void;
+    "set-AniList-manga-volume": (volume: number | null) => void;
+    "set-AniList-manga-chapter": (chapter: number | null) => void;
 
     "state-update": (state: StateUpdateState<GlobalStateProps>) => void;
 }

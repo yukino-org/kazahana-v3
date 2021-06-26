@@ -2,19 +2,27 @@
     <div>
         <div class="flex flex-row justify-center items-center gap-4 flex-wrap">
             <div class="flex-grow flex items-center gap-3">
-                <img class="w-7 h-auto rounded" :src="logo" alt="AniList" />
+                <img
+                    class="w-7 h-auto rounded"
+                    :src="logo"
+                    alt="MyAnimeList (Manga)"
+                />
                 <div>
                     <p class="text-xl font-bold">
-                        AniList
+                        MyAnimeList (Manga)
                         <span class="text-xs mx-1 opacity-75" v-if="info.data"
-                            >( {{ info.data.progress }}/{{
-                                info.data.media.episodes
-                            }})</span
+                            >(Vol.
+                            {{
+                                info.data.my_list_status?.num_volumes_read || 0
+                            }}/{{ info.data.num_volumes }} Chap.
+                            {{
+                                info.data.my_list_status?.num_chapters_read ||
+                                    0
+                            }}/{{ info.data.num_chapters }})</span
                         >
                     </p>
                     <p class="opacity-75 text-xs" v-if="altTitle && info.data">
-                        Computed as
-                        <b>{{ info.data.media.title.userPreferred }}</b>
+                        Computed as <b>{{ info.data.title }}</b>
                         <span
                             class="ml-2 text-red-500 font-bold cursor-pointer"
                             @click.stop.prevent="!!void toggleSearch()"
@@ -43,20 +51,23 @@
                 class="flex flex-row justify-center items-center gap-2"
                 v-else-if="info.data"
             >
-                <div v-if="typeof currentEpisode === 'number'">
+                <div v-if="typeof currentChapter === 'number'">
                     <button
                         class="focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
-                        v-if="info.data.progress >= info.data.media.episodes"
-                        @click.stop.prevent="!!void setWatched(false)"
+                        v-if="
+                            (info.data.my_list_status.num_chapters_read || 0) >=
+                                currentChapter
+                        "
+                        @click.stop.prevent="!!void setRead(false)"
                     >
-                        <Icon class="mr-1" icon="times" /> Mark as unwatched
+                        <Icon class="mr-1" icon="times" /> Mark as unread
                     </button>
                     <button
                         class="focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300 px-3 py-2 rounded"
                         v-else
-                        @click.stop.prevent="!!void setWatched(true)"
+                        @click.stop.prevent="!!void setRead(true)"
                     >
-                        <Icon class="mr-1" icon="check" /> Mark as watched
+                        <Icon class="mr-1" icon="check" /> Mark as read
                     </button>
                 </div>
 
@@ -65,19 +76,18 @@
                         <option
                             v-for="status in allowedStatus"
                             :value="status"
-                            :selected="status === info.data.status"
+                            :selected="
+                                status === info.data.my_list_status?.status
+                            "
                         >
-                            {{
-                                status[0].toUpperCase() +
-                                    status.slice(1).toLowerCase()
-                            }}
+                            {{ status.replace(/_/g, " ") }}
                         </option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <Popup :show="showSearch">
+        <Popup :show="showSearch" @close="!!void toggleSearch()">
             <div
                 class="
                     flex flex-row
@@ -98,14 +108,14 @@
                     "
                     v-model="computedAltTitle"
                     type="text"
-                    placeholder="Type in anime's name..."
-                    @keypress.enter="!!void searchAniList()"
+                    placeholder="Type in manga's name..."
+                    @keypress.enter="!!void searchMAL()"
                 />
 
                 <button
                     type="submit"
                     class="btn"
-                    @click.stop.prevent="!!void searchAniList()"
+                    @click.stop.prevent="!!void searchMAL()"
                 >
                     Search
                 </button>
@@ -113,25 +123,25 @@
 
             <div class="mt-6 grid gap-2">
                 <Loading
-                    class="mt-8"
+                    class="mt-4"
                     v-if="
                         ['waiting', 'resolving'].includes(
-                            others.animeSearchResults.state
+                            others.mangaSearchResults.state
                         )
                     "
                     text="Loading results, please wait..."
                 />
                 <p
                     class="mt-6 opacity-75 text-center"
-                    v-else-if="others.animeSearchResults.state === 'failed'"
+                    v-else-if="others.mangaSearchResults.state === 'failed'"
                 >
                     Failed to fetch results!
                 </p>
                 <p
                     class="mt-6 opacity-75 text-center"
                     v-else-if="
-                        others.animeSearchResults.state === 'resolved' &&
-                            !others.animeSearchResults.data
+                        others.mangaSearchResults.state === 'resolved' &&
+                            !others.mangaSearchResults.data
                     "
                 >
                     No results were found.
@@ -139,8 +149,8 @@
                 <div
                     class="grid md:grid-cols-1 grid-cols-2 gap-2"
                     v-else="
-                        others.animeSearchResults.state === 'resolved' &&
-                            others.animeSearchResults.data
+                        others.mangaSearchResults.state === 'resolved' &&
+                            others.mangaSearchResults.data
                     "
                 >
                     <div
@@ -157,18 +167,20 @@
                             rounded
                             cursor-pointer
                         "
-                        v-for="item in others.animeSearchResults.data"
-                        @click.stop.prevent="!!void changeItem(item.id)"
+                        v-for="item in others.mangaSearchResults.data"
+                        @click.stop.prevent="
+                            !!void changeItem(item.node.id.toString())
+                        "
                     >
                         <img
                             class="flex-none w-12 rounded"
-                            :src="item.coverImage.medium"
-                            :alt="item.title.userPreferred"
+                            :src="item.node.main_picture.medium"
+                            :alt="item.node.title"
                         />
 
                         <div class="flex-grow">
                             <p class="text-lg font-bold">
-                                {{ item.title.userPreferred }}
+                                {{ item.node.title }}
                             </p>
                         </div>
                     </div>
@@ -180,28 +192,28 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import AniList, {
-    AnimeStatus,
-    GetAnimeEntity
-} from "../../plugins/integrations/anilist";
+import MyAnimeList, {
+    MangaStatus
+} from "../../plugins/integrations/myanimelist";
 import { Store } from "../../plugins/api";
-import { Await, StateController, constants, util } from "../../plugins/util";
 import {
-    AniListConnectionSubscriber,
-    AniListCachedAnimeTitles
+    Await,
+    NotNull,
+    StateController,
+    constants,
+    util
+} from "../../plugins/util";
+import {
+    MyAnimeListConnectionCachedTitles,
+    MyAnimeListMangaConnectionSubscriber
 } from "../../plugins/types";
 
 import Loading from "../Loading.vue";
 import Popup from "../Popup.vue";
 
-type ReducedGetAnimeEntity = Omit<
-    Exclude<Await<ReturnType<typeof AniList["getAnime"]>>, null>,
-    "id"
->;
-
 export default defineComponent({
     props: {
-        id: Number,
+        id: String,
         altTitle: String,
         altURL: String
     },
@@ -211,45 +223,51 @@ export default defineComponent({
     },
     data() {
         const data: {
-            computedId: number | null;
+            computedId: string | null;
             computedAltTitle: string | null;
             loggedIn: boolean;
             logo: string;
-            info: StateController<ReducedGetAnimeEntity>;
+            info: StateController<
+                NotNull<Await<ReturnType<typeof MyAnimeList.getManga>>>
+            >;
             allowedStatus: string[];
             others: {
-                animeSearchResults: StateController<
-                    Await<ReturnType<typeof AniList["search"]>>
+                mangaSearchResults: StateController<
+                    NotNull<
+                        Await<ReturnType<typeof MyAnimeList.searchManga>>
+                    >["data"]
                 >;
             };
             showSearch: boolean;
-            currentEpisode: number | null;
-            hasWatchedEpisode: boolean | null;
+            currentChapter: number | null;
+            currentVolume: number | null;
         } = {
             computedId: this.id || null,
             computedAltTitle: this.altTitle || null,
-            loggedIn: AniList.isLoggedIn(),
-            logo: constants.assets.images.aniListLogo,
+            loggedIn: MyAnimeList.isLoggedIn(),
+            logo: constants.assets.images.myAnimeListLogo,
             info: util.createStateController(),
-            allowedStatus: <any>AnimeStatus,
+            allowedStatus: <any>MangaStatus,
             others: {
-                animeSearchResults: util.createStateController()
+                mangaSearchResults: util.createStateController()
             },
             showSearch: false,
-            currentEpisode: null,
-            hasWatchedEpisode: null
+            currentChapter: null,
+            currentVolume: null
         };
 
         return data;
     },
     mounted() {
         this.initiate();
-        this.$bus.subscribe("set-AniList-episode", this.setEpisode);
-        this.$bus.subscribe("update-AniList-status", this.setStatus);
+        this.$bus.subscribe("set-MAL-manga-chapter", this.setChapter);
+        this.$bus.subscribe("set-MAL-manga-volume", this.setVolume);
+        this.$bus.subscribe("update-MAL-manga-status", this.setStatus);
     },
     beforeDestroy() {
-        this.$bus.subscribe("set-AniList-episode", this.setEpisode);
-        this.$bus.unsubscribe("update-AniList-status", this.setStatus);
+        this.$bus.unsubscribe("set-MAL-manga-chapter", this.setChapter);
+        this.$bus.unsubscribe("set-MAL-manga-volume", this.setVolume);
+        this.$bus.unsubscribe("update-MAL-manga-status", this.setStatus);
     },
     methods: {
         async initiate() {
@@ -266,11 +284,11 @@ export default defineComponent({
             }
 
             if (this.altTitle) {
-                await this.searchAniList();
+                await this.searchMAL();
 
-                const first = this.others.animeSearchResults.data?.[0];
+                const first = this.others.mangaSearchResults.data?.[0];
                 if (first) {
-                    this.computedId = first.id;
+                    this.computedId = first.node.id.toString();
                     this.saveCache();
                     this.getInfo();
                 }
@@ -280,11 +298,12 @@ export default defineComponent({
             if (!this.altURL) return;
 
             const store = await Store.getClient();
-            const all: AniListCachedAnimeTitles[] =
-                (await store.get(constants.storeKeys.aniListCacheTitles)) || [];
+            const all: MyAnimeListConnectionCachedTitles[] =
+                (await store.get(
+                    constants.storeKeys.myAnimeListMangaCacheTitles
+                )) || [];
 
             const cached = all.find(x => x.altURLs.includes(this.altURL!));
-
             if (cached) {
                 this.computedId = cached.id;
             }
@@ -293,8 +312,10 @@ export default defineComponent({
             if (!this.computedId || !this.altURL) return false;
 
             const store = await Store.getClient();
-            let all: AniListCachedAnimeTitles[] =
-                (await store.get(constants.storeKeys.aniListCacheTitles)) || [];
+            const all: MyAnimeListConnectionCachedTitles[] =
+                (await store.get(
+                    constants.storeKeys.myAnimeListMangaCacheTitles
+                )) || [];
 
             let added = false;
             all.map(item => {
@@ -317,53 +338,39 @@ export default defineComponent({
                 });
             }
 
-            await store.set(constants.storeKeys.aniListCacheTitles, all);
+            await store.set(
+                constants.storeKeys.myAnimeListMangaCacheTitles,
+                all
+            );
         },
-        async searchAniList() {
+        async searchMAL() {
             if (!this.altTitle) return;
 
-            this.others.animeSearchResults.state = "resolved";
-            const animes = await AniList.search("ANIME", this.altTitle);
-            if (animes) {
-                this.others.animeSearchResults.data = animes;
-                return;
+            this.others.mangaSearchResults.state = "resolving";
+            const mangas = await MyAnimeList.searchManga(this.altTitle);
+            if (mangas) {
+                this.others.mangaSearchResults.data = mangas.data;
             }
 
-            this.others.animeSearchResults.state = "resolved";
+            this.others.mangaSearchResults.state = "resolved";
             return;
         },
-        async changeItem(id: number) {
+        async changeItem(id: string) {
             this.computedId = id;
             await this.getInfo();
             this.saveCache();
             this.toggleSearch();
         },
         async getInfo() {
-            if (!this.computedId) return;
-
             this.info.state = "resolving";
-            let info: ReducedGetAnimeEntity | null = await AniList.getAnime(
-                this.computedId
-            ).catch(() => null);
-
-            if (!info) {
-                const gen = await AniList.getAnimeGeneric(
-                    this.computedId
-                ).catch(() => null);
-                if (gen) {
-                    info = {
-                        status: "WATCHING",
-                        progress: 0,
-                        media: gen
-                    };
+            if (this.computedId) {
+                const info = await MyAnimeList.getManga(this.computedId);
+                if (info) {
+                    this.info.state = "resolved";
+                    this.info.data = info;
+                } else {
+                    this.info.state = "failed";
                 }
-            }
-
-            if (info) {
-                this.info.state = "resolved";
-                this.info.data = info;
-            } else {
-                this.info.state = "failed";
             }
         },
         async updateStatus(event: any) {
@@ -371,33 +378,47 @@ export default defineComponent({
 
             const value = event.target.value;
             if (this.allowedStatus.includes(value)) {
-                await AniList.updateAnime(this.computedId, {
+                await MyAnimeList.updateManga(this.computedId, {
                     status: <any>value
                 });
             }
         },
-        async setStatus(data: AniListConnectionSubscriber) {
-            if (
-                !this.computedId ||
-                !this.info.data ||
-                data.episode > this.info.data.media.episodes
-            )
-                return;
+        async setStatus(data: MyAnimeListMangaConnectionSubscriber) {
+            if (!this.computedId || !this.info.data) return;
 
-            if (
-                data.autoComplete &&
-                this.info.data.media.episodes === data.episode
-            ) {
-                status = "completed";
+            if (this.info.data.num_chapters) {
+                if (data.chapter > this.info.data.num_chapters) return;
+
+                if (
+                    data.autoComplete &&
+                    this.info.data.num_chapters === data.chapter
+                ) {
+                    status = "completed";
+                }
             }
 
+            if (
+                data.volume &&
+                this.info.data.num_volumes &&
+                data.volume > this.info.data.num_volumes
+            )
+                delete data.volume;
+
             try {
-                const res = await AniList.updateAnime(this.computedId, {
-                    progress: data.episode,
-                    status: data.status || "CURRENT"
+                const res = await MyAnimeList.updateManga(this.computedId, {
+                    num_chapters_read: data.chapter,
+                    num_volumes_read: data.volume,
+                    status: data.status || "reading"
                 });
                 if (res) {
-                    this.info.data = res;
+                    this.info.data.my_list_status = {
+                        status: res.status,
+                        score: res.score,
+                        num_chapters_read: res.num_chapters_read,
+                        num_volumes_read: res.num_volumes_read,
+                        is_rereading: res.is_rereading,
+                        updated_at: res.updated_at
+                    };
                 }
             } catch (err) {
                 this.$logger.emit(
@@ -406,20 +427,23 @@ export default defineComponent({
                 );
             }
         },
-        setEpisode(episode: number | null) {
-            this.currentEpisode = episode;
+        setChapter(chapter: number | null) {
+            this.currentChapter = chapter;
+        },
+        setVolume(volume: number | null) {
+            this.currentVolume = volume;
         },
         toggleSearch() {
             this.showSearch = !this.showSearch;
-            if (!this.others.animeSearchResults.data) {
-                this.searchAniList();
+            if (!this.others.mangaSearchResults.data) {
+                this.searchMAL();
             }
         },
-        setWatched(watched: boolean) {
-            if (typeof this.currentEpisode !== "number") return;
+        setRead(read: boolean) {
+            if (typeof this.currentChapter !== "number") return;
 
             this.setStatus({
-                episode: watched ? this.currentEpisode : this.currentEpisode - 1
+                chapter: read ? this.currentChapter : this.currentChapter - 1
             });
         }
     }

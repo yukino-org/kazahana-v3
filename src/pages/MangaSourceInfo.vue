@@ -174,6 +174,27 @@
                 </div>
             </div>
 
+            <p class="text-sm opacity-75 mt-10">Connections</p>
+            <div class="mt-1 grid gap-4">
+                <MyAnimeListMangaConnection
+                    :altTitle="info.data.title"
+                    :altURL="
+                        typeof $route.query.url === 'string'
+                            ? $route.query.url
+                            : undefined
+                    "
+                />
+
+                <AniListMangaConnection
+                    :altTitle="info.data.title"
+                    :altURL="
+                        typeof $route.query.url === 'string'
+                            ? $route.query.url
+                            : undefined
+                    "
+                />
+            </div>
+
             <div
                 class="
                     flex flex-row
@@ -231,14 +252,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
-import { constants } from "../plugins/util";
+import { Await, StateController, constants, util } from "../plugins/util";
 import { BookmarkedEntity, RecentlyViewedEntity } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import ExternalLink from "../components/ExternalLink.vue";
 import MangaPager from "../components/MangaPager.vue";
-import { Await, StateController, util } from "../plugins/util";
+import MyAnimeListMangaConnection from "../components/Connections/MyAnimeList-Manga.vue";
+import AniListMangaConnection from "../components/Connections/AniList-Manga.vue";
 
 type SelectedEntity = Await<
     ReturnType<ExtractorsEntity["manga"][""]["getInfo"]>
@@ -249,7 +271,9 @@ export default defineComponent({
         PageTitle,
         Loading,
         ExternalLink,
-        MangaPager
+        MangaPager,
+        MyAnimeListMangaConnection,
+        AniListMangaConnection
     },
     data() {
         const data: {

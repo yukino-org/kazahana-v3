@@ -20,12 +20,13 @@ export interface AnimeListEntity {
     status: string;
     progress: number;
     media: {
+        id: number;
         idMal: number;
         title: {
             userPreferred: string;
         };
         type: string;
-        episodes: number;
+        episodes: number | null;
         coverImage: {
             medium: string;
         };
@@ -48,7 +49,7 @@ export interface AnimeSearchEntity {
 }
 
 export interface AnimeUpdateBody {
-    status: AnimeStatusType;
+    status: StatusType;
     progress: number;
 }
 
@@ -73,7 +74,7 @@ export interface GetAnimeEntity {
         title: {
             userPreferred: string;
         };
-        episodes: number;
+        episodes: number | null;
     };
 }
 
@@ -86,11 +87,93 @@ export interface GetAnimeGenericEntity {
     coverImage: {
         medium: string;
     };
-    episodes: number;
+    episodes: number | null;
     genres: string[];
 }
 
-export const AnimeStatus = [
+export interface MangaListEntity {
+    userId: number;
+    status: string;
+    progress: number | null;
+    progressVolumes: number | null;
+    media: {
+        id: number;
+        idMal: number;
+        title: {
+            userPreferred: string;
+        };
+        type: string;
+        chapters: number | null;
+        volumes: number | null;
+        coverImage: {
+            medium: string;
+        };
+        genres: string[];
+        meanScore: number;
+        updatedAt: number;
+        siteUrl: string;
+    };
+}
+
+export interface MangaSearchEntity {
+    id: number;
+    idMal: number;
+    title: {
+        userPreferred: string;
+    };
+    coverImage: {
+        medium: string;
+    };
+}
+
+export interface MangaUpdateBody {
+    status: StatusType;
+    progress: number;
+    progressVolumes: number;
+}
+
+export interface MangaUpdateResultEntity {
+    status: string;
+    score: number;
+    num_episodes_watched: number;
+    is_rewatching: boolean;
+    updated_at: string;
+    priority: number;
+    num_times_rewatched: number;
+    rewatch_value: number;
+}
+
+export interface GetMangaEntity {
+    id: number;
+    status: string;
+    progress: number | null;
+    progressVolumes: number | null;
+    media: {
+        id: number;
+        idMal: number;
+        title: {
+            userPreferred: string;
+        };
+        volumes: number | null;
+        chapters: number | null;
+    };
+}
+
+export interface GetMangaGenericEntity {
+    id: number;
+    idMal: number;
+    title: {
+        userPreferred: string;
+    };
+    coverImage: {
+        medium: string;
+    };
+    chapters: number | null;
+    volumes: number | null;
+    genres: string[];
+}
+
+export const Status = [
     "CURRENT",
     "PLANNING",
     "COMPLETED",
@@ -98,7 +181,7 @@ export const AnimeStatus = [
     "PAUSED",
     "REPEATING"
 ] as const;
-export type AnimeStatusType = typeof AnimeStatus[number];
+export type StatusType = typeof Status[number];
 
 export class MyAnimeListManager {
     webURL = "https://anilist.co";
@@ -160,17 +243,13 @@ export class MyAnimeListManager {
                 }
             `
         });
-        const user: UserInfoEntity | undefined =
-            res && JSON.parse(res)?.data?.Viewer;
+        const user: UserInfoEntity | null =
+            (res && JSON.parse(res)?.data?.Viewer) || null;
         if (user) this.cachedUser = user;
         return user;
     }
 
-    async getList(
-        type: "ANIME" | "MANGA",
-        status?: AnimeStatusType,
-        page: number = 0
-    ) {
+    async animelist(status?: StatusType, page: number = 0) {
         const perpage = 100;
         const res = await this.request({
             query: `
@@ -187,6 +266,7 @@ export class MyAnimeListManager {
                             status,
                             progress,
                             media {
+                                id,
                                 idMal,
                                 title {
                                     userPreferred
@@ -207,8 +287,8 @@ export class MyAnimeListManager {
                 `,
             variables: {
                 userId: this.cachedUser?.id || (await this.userInfo())?.id,
-                type,
-                status: status || (type === "ANIME" ? AnimeStatus : []),
+                type: "ANIME",
+                status: status || Status,
                 page,
                 perpage
             }
@@ -260,7 +340,7 @@ export class MyAnimeListManager {
                         coverImage {
                             medium
                         }
-                        episodes
+                        episodes,
                         genres
                     }
                 }
@@ -304,7 +384,7 @@ export class MyAnimeListManager {
         );
     }
 
-    async search(type: "ANIME" | "MANGA", title: string) {
+    async searchAnime(title: string) {
         const res = await this.request({
             query: `
                 query ($search: String, $type: MediaType, $page: Int, $perPage: Int) {
@@ -324,12 +404,182 @@ export class MyAnimeListManager {
             `,
             variables: {
                 search: title,
-                type: type,
+                type: "ANIME",
                 page: 0,
                 perPage: 20
             }
         });
         return <AnimeSearchEntity[]>(
+            ((res && JSON.parse(res)?.data?.Page?.media) || [])
+        );
+    }
+
+    async mangalist(status?: StatusType, page: number = 0) {
+        const perpage = 100;
+        const res = await this.request({
+            query: `
+                query (
+                    $userId: Int,
+                    $type: MediaType,
+                    $status: [MediaListStatus],
+                    $page: Int,
+                    $perpage: Int
+                ) {
+                    Page (page: $page, perPage: $perpage) {
+                        mediaList (userId: $userId, type: $type, status_in: $status) {
+                            userId,
+                            status,
+                            progress,
+                            progressVolumes,
+                            media {
+                                id,
+                                idMal,
+                                title {
+                                    userPreferred
+                                },
+                                type,
+                                chapters,
+                                volumes,
+                                coverImage {
+                                    medium
+                                },
+                                genres,
+                                meanScore,
+                                updatedAt,
+                                siteUrl
+                            }
+                        }
+                    }
+                }
+                `,
+            variables: {
+                userId: this.cachedUser?.id || (await this.userInfo())?.id,
+                type: "MANGA",
+                status: status || Status,
+                page,
+                perpage
+            }
+        });
+        return <MangaListEntity[]>(
+            ((res && JSON.parse(res)?.data?.Page?.mediaList) || [])
+        );
+    }
+
+    async getManga(id: number) {
+        const res = await this.request({
+            query: `
+                query ($mediaId: Int, $userId: Int) {
+                    MediaList (mediaId: $mediaId, userId: $userId) {
+                        id,
+                        status,
+                        progress,
+                        progressVolumes,
+                        media {
+                            id,
+                            idMal,
+                            title {
+                                userPreferred
+                            },
+                            chapters,
+                            volumes
+                        }
+                    }
+                }
+            `,
+            variables: {
+                userId: this.cachedUser?.id || (await this.userInfo())?.id,
+                mediaId: id
+            }
+        });
+        return <GetMangaEntity | null>(
+            ((res && JSON.parse(res)?.data?.MediaList) || null)
+        );
+    }
+
+    async getMangaGeneric(id: number) {
+        const res = await this.request({
+            query: `
+                query ($mediaId: Int) {
+                    Media (id: $mediaId) {
+                        id,
+                        idMal,
+                        title {
+                            userPreferred
+                        }
+                        coverImage {
+                            medium
+                        }
+                        chapters,
+                        volumes,
+                        genres
+                    }
+                }
+            `,
+            variables: {
+                mediaId: id
+            }
+        });
+        return <GetMangaGenericEntity | null>(
+            ((res && JSON.parse(res)?.data?.Media) || null)
+        );
+    }
+
+    async updateManga(id: number, body: Partial<MangaUpdateBody>) {
+        const res = await this.request({
+            query: `
+                mutation ($mediaId: Int, $progress: Int, $progressVolumes: Int) {
+                    SaveMediaListEntry (mediaId: $mediaId, progress: $progress, progressVolumes: $progressVolumes) {
+                        id,
+                        status,
+                        progress,
+                        progressVolumes,
+                        media {
+                            id,
+                            idMal,
+                            title {
+                                userPreferred
+                            },
+                            updatedAt
+                        }
+                    }
+                }
+            `,
+            variables: {
+                mediaId: id,
+                ...body
+            }
+        });
+        return <GetMangaEntity | null>(
+            ((res && JSON.parse(res)?.data?.SaveMediaListEntry) || null)
+        );
+    }
+
+    async searchManga(title: string) {
+        const res = await this.request({
+            query: `
+                query ($search: String, $type: MediaType, $page: Int, $perPage: Int) {
+                    Page (page: $page, perPage: $perPage) {
+                        media (search: $search, type: $type) {
+                            id,
+                            idMal,
+                            title {
+                                userPreferred
+                            }
+                            coverImage {
+                                medium
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: {
+                search: title,
+                type: "MANGA",
+                page: 0,
+                perPage: 20
+            }
+        });
+        return <MangaSearchEntity[]>(
             ((res && JSON.parse(res)?.data?.Page?.media) || [])
         );
     }
@@ -358,7 +608,6 @@ export class MyAnimeListManager {
 
             return res;
         } catch (err) {
-            console.log(err?.response);
             throw err;
         }
     }

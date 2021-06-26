@@ -2,9 +2,12 @@
     <div>
         <PageTitle title="Connections" />
 
-        <div class="mt-6 grid gap-8">
-            <div v-for="con in connections">
-                <div class="flex items-center gap-3">
+        <div class="mt-6 grid gap-4">
+            <div
+                class="bg-gray-800 rounded px-4 py-3 flex flex-row justify-center items-center flex-wrap gap-4"
+                v-for="con in connections"
+            >
+                <div class="flex-grow flex items-center gap-3">
                     <img
                         class="w-7 h-auto rounded"
                         :src="con.image"
@@ -17,9 +20,9 @@
 
                 <div
                     class="
-                        mt-4
+                        flex-none
                         flex flex-row
-                        justify-start
+                        justify-end
                         items-center
                         flex-wrap
                         gap-2
@@ -127,22 +130,42 @@ export default defineComponent({
         async getConnections() {
             this.connections = [];
 
-            this.connections.push({
-                name: "MyAnimeList",
+            const MyAnimeListConn: Omit<ConnectionEntity, "name" | "route"> = {
                 auth: await MyAnimeList.auth.getOauthURL(),
-                route: "/connections/myanimelist",
                 loggedIn: MyAnimeList.isLoggedIn(),
                 image: constants.assets.images.myAnimeListLogo,
                 logout: MyAnimeList.logout
+            };
+
+            this.connections.push({
+                name: "MyAnimeList (Anime)",
+                route: "/connections/myanimelist/anime",
+                ...MyAnimeListConn
             });
 
             this.connections.push({
-                name: "AniList",
+                name: "MyAnimeList (Manga)",
+                route: "/connections/myanimelist/manga",
+                ...MyAnimeListConn
+            });
+
+            const AniListConn: Omit<ConnectionEntity, "name" | "route"> = {
                 auth: await AniList.auth.getOauthURL(),
-                route: "/connections/anilist",
                 loggedIn: AniList.isLoggedIn(),
                 image: constants.assets.images.aniListLogo,
                 logout: AniList.logout
+            };
+
+            this.connections.push({
+                name: "AniList (Anime)",
+                route: "/connections/anilist/anime",
+                ...AniListConn
+            });
+
+            this.connections.push({
+                name: "AniList (Manga)",
+                route: "/connections/anilist/manga",
+                ...AniListConn
             });
         },
         async setRpc() {

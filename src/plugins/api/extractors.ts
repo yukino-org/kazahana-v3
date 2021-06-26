@@ -2,12 +2,18 @@ import { http, RequesterOptions } from "./requester";
 import { util } from "../util";
 import { Requester } from "anime-ext/dist/types";
 
-import MALSearchAnime, {
+import MALAnimeSearch, {
     SearchResult as MALSearchAnimeSearchResult
-} from "anime-ext/dist/integrations/myanimelist/search-anime";
+} from "anime-ext/dist/integrations/myanimelist/anime-search";
+import MALMangaSearch, {
+    SearchResult as MALSearchMangaSearchResult
+} from "anime-ext/dist/integrations/myanimelist/manga-search";
 import MALAnimeInfo, {
     InfoResult as MALAnimeInfoInfoResult
 } from "anime-ext/dist/integrations/myanimelist/anime-info";
+import MALMangaInfo, {
+    InfoResult as MALMangaInfoInfoResult
+} from "anime-ext/dist/integrations/myanimelist/manga-info";
 import * as MALTopAnimes from "anime-ext/dist/integrations/myanimelist/top";
 import * as MALSchedule from "anime-ext/dist/integrations/myanimelist/schedule";
 import * as MALSeason from "anime-ext/dist/integrations/myanimelist/season";
@@ -36,8 +42,10 @@ import ManhwaTop from "anime-ext/dist/extractors/manga/manhwatop";
 export interface ExtractorsEntity {
     integrations: {
         MyAnimeList: {
-            search(term: string): Promise<MALSearchAnimeSearchResult[]>;
+            searchAnime(term: string): Promise<MALSearchAnimeSearchResult[]>;
+            searchManga(term: string): Promise<MALSearchMangaSearchResult[]>;
             getAnimeInfo(url: string): Promise<MALAnimeInfoInfoResult>;
+            getMangaInfo(url: string): Promise<MALMangaInfoInfoResult>;
             getTopAnime(type: string): Promise<MALTopAnimes.TopResult[]>;
             getTopAnimeTypes(): Promise<string[]>;
             schedule(): Promise<MALSchedule.ScheduleResult[]>;
@@ -71,11 +79,17 @@ export const Extractors = {
             this.__extractor = {
                 integrations: {
                     MyAnimeList: {
-                        async search(terms) {
-                            return MALSearchAnime(terms, options);
+                        async searchAnime(terms) {
+                            return MALAnimeSearch(terms, options);
+                        },
+                        async searchManga(terms) {
+                            return MALMangaSearch(terms, options);
                         },
                         async getAnimeInfo(url) {
                             return MALAnimeInfo(url, options);
+                        },
+                        async getMangaInfo(url) {
+                            return MALMangaInfo(url, options);
                         },
                         async getTopAnime(type) {
                             return MALTopAnimes.default(<any>type, options);

@@ -14,6 +14,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import("../pages/Anime.vue")
     },
     {
+        path: "/manga",
+        component: () => import("../pages/Manga.vue")
+    },
+    {
         path: "/anime/source",
         component: () => import("../pages/AnimeSourceInfo.vue")
     },
@@ -52,8 +56,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import("../pages/Connections/Main.vue")
     },
     {
-        path: "/connections/myanimelist",
-        component: () => import("../pages/Connections/MyAnimeList/Profile.vue")
+        path: "/connections/myanimelist/anime",
+        component: () =>
+            import("../pages/Connections/MyAnimeList/Profile-Anime.vue")
+    },
+    {
+        path: "/connections/myanimelist/manga",
+        component: () =>
+            import("../pages/Connections/MyAnimeList/Profile-Manga.vue")
     },
     {
         path: "/auth/myanimelist/callback",
@@ -61,8 +71,14 @@ const routes: RouteRecordRaw[] = [
             import("../pages/Connections/MyAnimeList/Authenticate.vue")
     },
     {
-        path: "/connections/anilist",
-        component: () => import("../pages/Connections/AniList/Profile.vue")
+        path: "/connections/anilist/anime",
+        component: () =>
+            import("../pages/Connections/AniList/Profile-Anime.vue")
+    },
+    {
+        path: "/connections/anilist/manga",
+        component: () =>
+            import("../pages/Connections/AniList/Profile-Manga.vue")
     },
     {
         path: "/auth/anilist/callback",
