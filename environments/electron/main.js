@@ -4,15 +4,11 @@ const Store = require("./store");
 const Rpc = require("./rpc");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
+const util = require("./util");
 const { name: productCode, productName } = require("../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
 Logger.debug("main", "Starting app");
-
-/**
- * @type {string | undefined}
- */
-let launchArgs;
 
 /**
  * @type {BrowserWindow | undefined}
@@ -47,6 +43,14 @@ const createWindow = async () => {
         ]);
     } else {
         app.setAsDefaultProtocolClient(productCode);
+    }
+
+    if (process.platform === "linux") {
+        await util.registerLinuxProtocol(
+            productName,
+            productCode,
+            app.getPath("exe")
+        );
     }
 
     const dimensions = Store.getWindowSize();
@@ -97,7 +101,7 @@ const createWindow = async () => {
         )}`;
     }
 
-    setLaunchURLIfWindows();
+    setLaunchURLIfWindowsOrLinux();
     win.loadURL(loadURL);
     Logger.debug("main", `Opened URL: ${loadURL}`);
     Logger.setBridgeDebug((...args) =>
@@ -207,8 +211,8 @@ app.on("will-finish-launching", function() {
     });
 });
 
-function setLaunchURLIfWindows() {
-    if (process.platform === "win32") {
+function setLaunchURLIfWindowsOrLinux() {
+    if (process.platform === "win32" || process.platform === "linux") {
         setDeepLinkURL(getDeepLinkedArg(process.argv));
     }
 }
@@ -257,7 +261,6 @@ function getDeepLinkedArg(args) {
 }
 
 function setDeepLinkURL(url) {
-    launchArgs = url;
     if (!win || !url) return;
     win.webContents.send("deeplink", url);
 }
