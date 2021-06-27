@@ -215,7 +215,11 @@
             </div>
 
             <div class="mt-1 grid gap-2">
-                <div v-for="chap in info.data.chapters">
+                <div
+                    v-for="chap in reversed
+                        ? info.data.chapters.slice().reverse()
+                        : info.data.chapters"
+                >
                     <div
                         class="
                             hover-pop
@@ -285,6 +289,7 @@ export default defineComponent({
             selected: SelectedEntity | null;
             favorite: boolean;
             bookmarked: boolean;
+            reversed: boolean;
         } = {
             info: util.createStateController(),
             plugin:
@@ -297,7 +302,8 @@ export default defineComponent({
                     : null,
             selected: null,
             favorite: false,
-            bookmarked: false
+            bookmarked: false,
+            reversed: false
         };
 
         return data;
@@ -445,8 +451,7 @@ export default defineComponent({
             this.selectChapter(this.info.data.chapters[0]);
         },
         reverseChapters() {
-            if (!this.info.data?.chapters) return;
-            this.info.data.chapters = this.info.data.chapters.reverse();
+            this.reversed = !this.reversed;
         },
         async refreshRpc() {
             const rpc = await Rpc.getClient();

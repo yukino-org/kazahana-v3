@@ -171,7 +171,17 @@ export const util = {
             .join("");
     },
     tryArrange<T extends Record<any, any>>(arr: T[], key: keyof T) {
-        return arr.length > 1 && +arr[0][key] - +arr[1][key]
+        if (arr.length < 2) return arr;
+
+        const [v, i] = arr.reduce(
+            (pv, cv, ci) => {
+                const n = +cv[key];
+                return n < pv[0] ? [n, ci] : pv;
+            },
+            [Infinity, -1]
+        );
+
+        return i < arr.length && i > Math.floor(arr.length / 2)
             ? arr.reverse()
             : arr;
     },

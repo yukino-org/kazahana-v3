@@ -209,7 +209,12 @@
                         items-center
                     "
                 >
-                    <div class="col-span-1" v-for="ep in info.data.episodes">
+                    <div
+                        class="col-span-1"
+                        v-for="ep in reversed
+                            ? info.data.episodes.slice().reverse()
+                            : info.data.episodes"
+                    >
                         <div
                             class="
                                 hover-pop
@@ -275,6 +280,7 @@ export default defineComponent({
             selected: SelectedEntity | null;
             favorite: boolean;
             bookmarked: boolean;
+            reversed: boolean;
         } = {
             info: util.createStateController(),
             plugin:
@@ -287,7 +293,8 @@ export default defineComponent({
                     : null,
             selected: null,
             favorite: false,
-            bookmarked: false
+            bookmarked: false,
+            reversed: false
         };
 
         return data;
@@ -382,8 +389,7 @@ export default defineComponent({
             }
         },
         reverseEpisodes() {
-            if (!this.info.data?.episodes) return;
-            this.info.data.episodes = this.info.data.episodes.reverse();
+            this.reversed = !this.reversed;
         },
         async selectEpisode(ep: SelectedEntity) {
             this.selected = ep;
