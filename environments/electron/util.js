@@ -14,7 +14,7 @@ async function registerLinuxProtocol(name, code, execPath) {
             `Exec=${execPath} %u`,
             "Type=Application",
             "Terminal=false",
-            "MimeType=application/yukino-app"
+            `MimeType=application/${code};`
         ].join("\n");
 
         const desktopFileDir = "/usr/share/applications",
