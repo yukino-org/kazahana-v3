@@ -1,0 +1,42 @@
+name: Preview (Capacitor - Android)
+
+on:
+    workflow_dispatch:
+
+jobs:
+    android:
+        runs-on: windows-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14.x
+
+            - uses: actions/setup-java@v2
+              with:
+                  java-version: 11
+                  distribution: adopt
+
+            - name: Install dependencies
+              run: yarn --dev
+
+            - name: Build APK
+              run: yarn capacitor:android:release
+
+            - name: Sign APK
+              uses: r0adkll/sign-android-release@v1
+              id: signed_app
+              with:
+                  releaseDirectory: ${{ github.workspace }}/environments/capacitor/android/app/build/outputs/apk/release
+                  signingKeyBase64: ${{ secrets.ANDROID_SIGN_KEY }}
+                  alias: ${{ secrets.ANDROID_SIGN_ALIAS }}
+                  keyStorePassword: ${{ secrets.ANDROID_SIGN_STORE_PASSWORD }}
+                  keyPassword: ${{ secrets.ANDROID_SIGN_KEY_PASSWORD }}
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                  name: Signed APK
+                  path: ${{ steps.signed_app.outputs.signedReleaseFile }}

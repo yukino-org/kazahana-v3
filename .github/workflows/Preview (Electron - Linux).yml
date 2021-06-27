@@ -1,0 +1,29 @@
+name: Preview (Electron - Linux)
+
+on:
+    workflow_dispatch:
+
+jobs:
+    preview:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: "14.16.0"
+
+            - name: Install dependencies
+              run: yarn --dev
+
+            - name: Build
+              run: yarn electron:build -l
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                  name: Linux Setup - Preview
+                  path: dist/electron/*.AppImage

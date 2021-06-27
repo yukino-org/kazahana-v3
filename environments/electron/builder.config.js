@@ -39,15 +39,10 @@ module.exports = {
         perMachine: true
     },
     linux: {
-        target: "AppImage",
-        category: "AudioVideo",
-        mimeTypes: ["x-scheme-handler/yukino-app"],
-        desktop: {
-            exec: "yukino-app %u"
-        }
+        target: "AppImage"
     },
     mac: {
-        target: "dmg",
+        target: ["dmg", "zip"],
         category: "public.app-category.entertainment"
     },
     generateUpdatesFilesForAllChannels: true
