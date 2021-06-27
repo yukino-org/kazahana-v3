@@ -1123,10 +1123,10 @@ ajv@^8.0.0, ajv@^8.1.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-anime-ext@1.1.14:
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.14.tgz#ab19e1179186b858dd8b5431d0c3bd996b9db484"
-  integrity sha512-rjyZRZGuwZQQkbSiPjOALhNEgBzkXkQB63kD79vz9f6PY4CuuntY7mDoTeeCYfnOyuQUpBxjUrxtjlEDn88ZbQ==
+anime-ext@1.1.16:
+  version "1.1.16"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.16.tgz#75717244eb891e0cf6c18c02fc2b25e665deba9c"
+  integrity sha512-o0d28QBI58qtnY1DslCKBlTHz5fhyc6rZzXuq32yO0pLBTh8Q6aMLJewy8xUs8d8FnpNJS/PN5apLZa0/++pCw==
   dependencies:
     cheerio "^1.0.0-rc.9"
     crypto-js "^4.0.0"
