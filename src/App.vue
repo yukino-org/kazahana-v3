@@ -49,8 +49,8 @@
                 bottom-2
                 h-10
                 w-10
-                md:h-14
-                md:w-14
+                md:h-12
+                md:w-12
                 shadow-lg
             "
             id="scroll-btn"
