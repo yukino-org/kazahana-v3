@@ -339,6 +339,10 @@ export default defineComponent({
     mounted() {
         this.updateWidth();
         this.getInfo();
+
+        this.dispatchChapter(this.chapter ? +this.chapter : null);
+        this.dispatchVolume(this.volume ? +this.volume : null);
+
         this.watchChapter();
         this.watchPage();
         this.attachKeys();
