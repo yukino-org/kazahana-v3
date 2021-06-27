@@ -46,11 +46,18 @@ const createWindow = async () => {
     }
 
     if (process.platform === "linux") {
-        await util.registerLinuxProtocol(
-            productName,
-            productCode,
-            app.getPath("exe")
-        );
+        try {
+            await util.registerLinuxProtocol(
+                productName,
+                productCode,
+                app.getPath("exe")
+            );
+        } catch (err) {
+            Logger.error(
+                "main",
+                `Failed to register deeplink protocol: ${err}`
+            );
+        }
     }
 
     const dimensions = Store.getWindowSize();
