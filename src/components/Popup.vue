@@ -33,7 +33,7 @@
             "
             style="
                 min-height: calc(100vh - 6rem);
-                max-width: calc(100% - 1rem);
+                max-width: calc(100% - 2rem);
                 max-height: calc(100vh - 4rem);
                 margin: 3rem 1rem;
                 z-index: 499;
