@@ -4,6 +4,9 @@ const Store = require("./store");
 const Logger = require("./logger");
 const Rpc = require("./rpc");
 
+/**
+ * @type {import("../../src/plugins/api/requester/").Requester}
+ */
 const http = {
     async get(url, options) {
         const res = await got.get(url, {

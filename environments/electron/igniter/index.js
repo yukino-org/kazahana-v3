@@ -12,11 +12,15 @@ if (isDev) {
 }
 
 class Igniter {
-    /**
-     * @param {import("electron-updater").AppUpdater} updater
-     */
     constructor() {
+        /**
+         * @type {BrowserWindow | null}
+         */
         this.win = null;
+
+        /**
+         * @type {import("electron-updater").AppUpdater}
+         */
         this.autoUpdater = require("electron-updater").autoUpdater;
         this.autoUpdater.autoDownload = false;
         this.autoUpdater.logger = null;
@@ -36,6 +40,9 @@ class Igniter {
         }
     }
 
+    /**
+     * @returns {void}
+     */
     start() {
         this.win = new BrowserWindow({
             title: productName,
@@ -129,6 +136,9 @@ class Igniter {
         });
     }
 
+    /**
+     * @returns {void}
+     */
     close() {
         try {
             this.win.destroy();

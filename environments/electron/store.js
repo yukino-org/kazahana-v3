@@ -1,5 +1,15 @@
 const ElectronStore = require("electron-store");
 
+/**
+ * @typedef WindowSizeExtended
+ * @property {boolean} isMaximized
+ * @property {boolean} fullscreen
+ */
+
+/**
+ * @typedef {import("electron").Rectangle & WindowSizeExtended} WindowSize
+ */
+
 class Store extends ElectronStore {
     all() {
         return this.store;
@@ -12,7 +22,7 @@ class DataStore {
     }
 
     /**
-     * @returns {ReturnType<import("electron").BrowserWindow["getBounds"]> & { isMaximized: boolean; fullscreen: boolean; }}
+     * @returns {WindowSize}
      */
     getWindowSize() {
         const data = this.store.get("window_size");
@@ -24,13 +34,14 @@ class DataStore {
                 width: 800,
                 height: 600,
                 isMaximized: false,
-                fullscreen: false,
+                fullscreen: false
             }
         );
     }
 
     /**
-     * @param {ReturnType<import("electron").BrowserWindow["getBounds"]> & { isMaximized: boolean; }} size
+     * @param {WindowSize} size
+     * @returns {void}
      */
     setWindowSize(size) {
         this.store.set("window_size", size);

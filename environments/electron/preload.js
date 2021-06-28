@@ -59,6 +59,7 @@ const PlatformBridge = {
 
     /**
      * @param {string} url
+     * @returns {void}
      */
     openExternalLink(url) {
         return ipcRenderer.invoke("Open-Externally", url);
@@ -81,6 +82,7 @@ const PlatformBridge = {
 
     /**
      * @param {DeepLinkListener | undefined} fn
+     * @returns {void}
      */
     setDeepLinkListener(fn) {
         deepLinkListener = fn;
@@ -88,6 +90,7 @@ const PlatformBridge = {
 
     /**
      * @param {import("../../src/plugins/api/debugger").DebuggerEntity | undefined} dbug
+     * @returns {void}
      */
     setDebuggerListener(dbug) {
         debuggerReceiver = dbug;
@@ -131,6 +134,10 @@ contextBridge.exposeInMainWorld("PlatformBridge", PlatformBridge);
 
 ipcRenderer.on("deeplink", (e, url) => {
     let emitted = false;
+
+    /**
+     * @returns {boolean}
+     */
     const emit = () => {
         if (emitted) return true;
         if (!deepLinkListener) return false;
@@ -138,6 +145,7 @@ ipcRenderer.on("deeplink", (e, url) => {
         const success = deepLinkListener(url);
         return success;
     };
+
     emitted = emit();
     if (!emitted) {
         const retrier = setInterval(() => {

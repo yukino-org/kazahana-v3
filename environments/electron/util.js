@@ -6,6 +6,12 @@ const mergeObj = require("lodash.merge");
 
 const exec = util.promisify(cp.exec);
 
+/**
+ * @param {string} name
+ * @param {string} code
+ * @param {string} execPath
+ * @returns {Promise<void>}
+ */
 async function registerLinuxProtocol(name, code, execPath) {
     const desktopContent = [
         "[Desktop Entry]",

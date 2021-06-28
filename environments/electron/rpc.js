@@ -19,18 +19,42 @@ const Util = require("./util");
 
 class RPC {
     constructor() {
+        /**
+         * @type {string}
+         */
         this.id = "845615853479133194";
+
+        /**
+         * @type {DiscordRPC["prototype"]}
+         */
         this.rpc = new DiscordRPC({
             transport: "ipc"
         });
+
+        /**
+         * @type {number}
+         */
         this.started = Date.now();
+
+        /**
+         * @type {boolean}
+         */
         this.disabled = Store.store.get("settings.discordRpc") === "disabled";
+
+        /**
+         * @type {boolean}
+         */
         this.ready = false;
+
+        /**
+         * @type {boolean}
+         */
         this.alreadySetInPrivacyMode = false;
     }
 
     /**
      * @param {Partial<Activity>} activity
+     * @returns {void}
      */
     setActivity(activity) {
         try {
@@ -58,7 +82,7 @@ class RPC {
     }
 
     /**
-     * @returns {Promise<boolean}
+     * @returns {Promise<boolean>}
      */
     connect() {
         if (this.disabled) {
@@ -93,6 +117,9 @@ class RPC {
         });
     }
 
+    /**
+     * @type {Activity}
+     */
     get defaultActivity() {
         return {
             startTimestamp: this.started,

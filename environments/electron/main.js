@@ -74,6 +74,7 @@ const createWindow = async () => {
         y: dimensions.y,
         width: dimensions.width,
         height: dimensions.height,
+        fullscreen: false,
         minWidth: 400,
         minHeight: 300,
         webPreferences: {
@@ -89,7 +90,9 @@ const createWindow = async () => {
     if (dimensions.isMaximized) win.maximize();
     else win.minimize();
 
-    if (dimensions.fullscreen) win.setFullScreen(true);
+    if (process.platform === "darwin" && dimensions.fullscreen) {
+        win.setFullScreen(true);
+    }
 
     Logger.debug("main", "Created window");
 
@@ -139,7 +142,7 @@ const createWindow = async () => {
         Store.setWindowSize({
             ...win.getBounds(),
             isMaximized: win.isMaximized(),
-            isFullScreen: process.platform === "darwin" && win.isFullScreen()
+            fullscreen: process.platform === "darwin" && win.isFullScreen()
         });
 
         if (!win.isDestroyed()) {
