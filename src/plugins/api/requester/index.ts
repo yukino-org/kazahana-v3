@@ -2,14 +2,39 @@ export interface RequesterOptions {
     headers: Record<string, any>;
     timeout?: number;
     credentials?: boolean;
-    responseType: "buffer" | "text";
 }
 
 export interface Requester {
-    get(url: string, options: RequesterOptions): Promise<any>;
-    post(url: string, body: any, options: RequesterOptions): Promise<any>;
-    patch(url: string, body: any, options: RequesterOptions): Promise<any>;
-    put(url: string, body: any, options: RequesterOptions): Promise<any>;
+    get(
+        url: string,
+        options: RequesterOptions & {
+            responseType: "text";
+        }
+    ): Promise<string>;
+    get(
+        url: string,
+        options: RequesterOptions & {
+            responseType: "buffer";
+        }
+    ): Promise<ArrayBuffer>;
+
+    post(
+        url: string,
+        body: any,
+        options: RequesterOptions & {
+            responseType: "text";
+        }
+    ): Promise<string>;
+    post(
+        url: string,
+        body: any,
+        options: RequesterOptions & {
+            responseType: "buffer";
+        }
+    ): Promise<ArrayBuffer>;
+
+    patch: Requester["post"];
+    put: Requester["post"];
 }
 
 export const http = {
@@ -31,5 +56,5 @@ export const http = {
         }
 
         return <Requester>this.__http;
-    },
+    }
 };

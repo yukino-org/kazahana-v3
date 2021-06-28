@@ -2,68 +2,53 @@ const { shell, dialog } = require("electron");
 const got = require("got").default;
 const Store = require("./store");
 const Logger = require("./logger");
-const RPC = require("./rpc");
+const Rpc = require("./rpc");
 
 const http = {
     async get(url, options) {
-        try {
-            const res = await got.get(url, {
-                headers: options.headers,
-                timeout: options.timeout,
-                responseType: options.responseType
-            });
+        const res = await got.get(url, {
+            headers: options.headers,
+            timeout: options.timeout,
+            responseType: options.responseType
+        });
 
-            return res.body;
-        } catch (err) {
-            throw err;
-        }
+        return res.body;
     },
     async post(url, body, options) {
-        try {
-            const res = await got.post(url, {
-                body,
-                headers: options.headers,
-                timeout: options.timeout,
-                responseType: options.responseType
-            });
+        const res = await got.post(url, {
+            body,
+            headers: options.headers,
+            timeout: options.timeout,
+            responseType: options.responseType
+        });
 
-            return res.body;
-        } catch (err) {
-            throw err;
-        }
+        return res.body;
     },
     async patch(url, body, options) {
-        try {
-            const res = await got.patch(url, {
-                body,
-                headers: options.headers,
-                timeout: options.timeout,
-                responseType: options.responseType
-            });
+        const res = await got.patch(url, {
+            body,
+            headers: options.headers,
+            timeout: options.timeout,
+            responseType: options.responseType
+        });
 
-            return res.body;
-        } catch (err) {
-            throw err;
-        }
+        return res.body;
     },
     async put(url, body, options) {
-        try {
-            const res = await got.put(url, {
-                body,
-                headers: options.headers,
-                timeout: options.timeout,
-                responseType: options.responseType
-            });
+        const res = await got.put(url, {
+            body,
+            headers: options.headers,
+            timeout: options.timeout,
+            responseType: options.responseType
+        });
 
-            return res.body;
-        } catch (err) {
-            throw err;
-        }
+        return res.body;
     }
 };
 
 /**
  * @param {import("electron").ipcMain} ipc
+ * @return {void}
  */
 module.exports = ipc => {
     ipc.handle("Store-Get", (e, key) => {
@@ -74,13 +59,13 @@ module.exports = ipc => {
         Store.store.set(key, data);
     });
 
-    ipc.handle("Store-Clear", e => {
+    ipc.handle("Store-Clear", () => {
         Store.store.clear();
         return true;
     });
 
     ipc.handle("Rpc-Set", (e, act) => {
-        RPC.setActivity(act);
+        Rpc.setActivity(act);
     });
 
     Object.entries(http).forEach(([method, fn]) => {

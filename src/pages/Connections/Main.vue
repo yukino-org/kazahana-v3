@@ -4,7 +4,7 @@
 
         <div class="mt-6 grid gap-4">
             <div
-                class="bg-gray-800 rounded px-4 py-3 flex flex-row justify-center items-center flex-wrap gap-4"
+                class="bg-gray-800 rounded px-4 py-3 flex flex-col md:flex-row justify-center items-center gap-4"
                 v-for="con in connections"
             >
                 <div class="flex-grow flex items-center gap-3">
@@ -15,12 +15,18 @@
                     />
                     <p class="text-xl font-bold">
                         {{ con.name }}
+                        <span
+                            class="ml-0.5 text-xs opacity-75"
+                            v-if="con.small"
+                            >{{ con.small }}</span
+                        >
                     </p>
                 </div>
 
                 <div
                     class="
-                        flex-none
+                        flex-grow
+                        md:flex-none
                         flex flex-row
                         justify-end
                         items-center
@@ -101,6 +107,7 @@ import PageTitle from "../../components/PageTitle.vue";
 
 interface ConnectionEntity {
     name: string;
+    small: string;
     auth: string;
     route: string;
     loggedIn: boolean;
@@ -130,7 +137,8 @@ export default defineComponent({
         async getConnections() {
             this.connections = [];
 
-            const MyAnimeListConn: Omit<ConnectionEntity, "name" | "route"> = {
+            const MyAnimeListConn: Omit<ConnectionEntity, "small" | "route"> = {
+                name: "MyAnimeList",
                 auth: await MyAnimeList.auth.getOauthURL(),
                 loggedIn: MyAnimeList.isLoggedIn(),
                 image: constants.assets.images.myAnimeListLogo,
@@ -138,18 +146,19 @@ export default defineComponent({
             };
 
             this.connections.push({
-                name: "MyAnimeList (Anime)",
+                small: "(Anime)",
                 route: "/connections/myanimelist/anime",
                 ...MyAnimeListConn
             });
 
             this.connections.push({
-                name: "MyAnimeList (Manga)",
+                small: "(Manga)",
                 route: "/connections/myanimelist/manga",
                 ...MyAnimeListConn
             });
 
-            const AniListConn: Omit<ConnectionEntity, "name" | "route"> = {
+            const AniListConn: Omit<ConnectionEntity, "small" | "route"> = {
+                name: "AniList",
                 auth: await AniList.auth.getOauthURL(),
                 loggedIn: AniList.isLoggedIn(),
                 image: constants.assets.images.aniListLogo,
@@ -157,13 +166,13 @@ export default defineComponent({
             };
 
             this.connections.push({
-                name: "AniList (Anime)",
+                small: "(Anime)",
                 route: "/connections/anilist/anime",
                 ...AniListConn
             });
 
             this.connections.push({
-                name: "AniList (Manga)",
+                small: "(Manga)",
                 route: "/connections/anilist/manga",
                 ...AniListConn
             });

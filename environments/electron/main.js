@@ -5,6 +5,7 @@ const Rpc = require("./rpc");
 const Igniter = require("./igniter");
 const Logger = require("./logger");
 const util = require("./util");
+const IpcHandler = require("./ipc");
 const { name: productCode, productName } = require("../../package.json");
 
 const isDev = process.env.NODE_ENV === "development";
@@ -14,8 +15,14 @@ Logger.debug("main", "Starting app");
  * @type {BrowserWindow | undefined}
  */
 let win,
+    /**
+     * @type {boolean}
+     */
     isBooting = false;
 
+/**
+ * @returns {Promise<void>}
+ */
 const createWindow = async () => {
     if (!initiateInstance()) return;
 
@@ -86,6 +93,9 @@ const createWindow = async () => {
 
     Logger.debug("main", "Created window");
 
+    /**
+     * @type {string}
+     */
     let loadURL;
     if (isDev) {
         if (!process.env.VITE_SERVE_URL) {
@@ -186,7 +196,7 @@ const createWindow = async () => {
     isBooting = false;
 };
 
-require("./ipc")(ipcMain);
+IpcHandler(ipcMain);
 
 app.on("ready", async () => {
     Logger.warn("main", "Creating window (app ready)");
@@ -210,20 +220,26 @@ app.on("window-all-closed", () => {
     }
 });
 
-app.on("will-finish-launching", function() {
-    app.on("open-url", function(event, url) {
+app.on("will-finish-launching", () => {
+    app.on("open-url", (event, url) => {
         event.preventDefault();
 
         setDeepLinkURL(parseDeepLink(url));
     });
 });
 
+/**
+ * @return {void}
+ */
 function setLaunchURLIfWindowsOrLinux() {
     if (process.platform === "win32" || process.platform === "linux") {
         setDeepLinkURL(getDeepLinkedArg(process.argv));
     }
 }
 
+/**
+ * @returns {boolean}
+ */
 function initiateInstance() {
     const isPrimaryInstance = app.requestSingleInstanceLock();
     if (isPrimaryInstance) {
@@ -249,10 +265,11 @@ function initiateInstance() {
     }
 }
 
-const deepLinkMatcher = new RegExp(`^${productCode}:\/\/(.*)`);
+const deepLinkMatcher = new RegExp(`^${productCode}://(.*)`);
 
 /**
  * @param {string} url
+ * @returns {string | undefined}
  */
 function parseDeepLink(url) {
     const matched = url.match(deepLinkMatcher);
@@ -261,12 +278,17 @@ function parseDeepLink(url) {
 
 /**
  * @param {string[]} args
+ * @returns {string | undefined}
  */
 function getDeepLinkedArg(args) {
     const found = args.find(arg => deepLinkMatcher.test(arg));
     return found && parseDeepLink(found);
 }
 
+/**
+ * @param {string | undefined} url
+ * @returns void
+ */
 function setDeepLinkURL(url) {
     if (!win || !url) return;
     win.webContents.send("deeplink", url);

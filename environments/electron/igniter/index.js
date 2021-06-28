@@ -45,7 +45,7 @@ class Igniter {
             webPreferences: {
                 contextIsolation: true,
                 nodeIntegration: false,
-                preload: path.join(__dirname, "preload.js"),
+                preload: path.join(__dirname, "preload.js")
             },
             frame: false,
             transparent: true,
@@ -56,7 +56,7 @@ class Igniter {
                 "..",
                 "resources",
                 "icon.png"
-            ),
+            )
         });
         Logger.debug("igniter", "Created window");
 
@@ -70,10 +70,10 @@ class Igniter {
     }
 
     /**
-     * @returns {Promise<boolean}
+     * @returns {Promise<boolean>}
      */
-    async update() {
-        return new Promise(async (resolve) => {
+    update() {
+        return new Promise(resolve => {
             this.autoUpdater.checkForUpdates();
 
             this.autoUpdater.on("update-not-available", () => {
@@ -93,7 +93,7 @@ class Igniter {
                 this.win.webContents.send("checking-for-update");
             });
 
-            this.autoUpdater.on("update-available", (info) => {
+            this.autoUpdater.on("update-available", info => {
                 Logger.debug(
                     "igniter",
                     `New update is available: ${info.version}`
@@ -102,20 +102,20 @@ class Igniter {
                 this.autoUpdater.downloadUpdate();
             });
 
-            this.autoUpdater.on("download-progress", (progress) => {
+            this.autoUpdater.on("download-progress", progress => {
                 Logger.debug(
                     "igniter",
                     `Update progress: ${progress.percent.toFixed(2)}%/100%`
                 );
-                const toMb = (n) => (n / 1000000).toFixed(2);
+                const toMb = n => (n / 1000000).toFixed(2);
                 this.win.webContents.send("download-progress", {
                     percent: progress.percent,
                     transferred: toMb(progress.transferred),
-                    total: toMb(progress.total),
+                    total: toMb(progress.total)
                 });
             });
 
-            this.autoUpdater.on("error", (err) => {
+            this.autoUpdater.on("error", err => {
                 Logger.error("igniter", `Updated error: ${err}`);
                 this.win.webContents.send(
                     "error",
@@ -132,7 +132,12 @@ class Igniter {
     close() {
         try {
             this.win.destroy();
-        } catch (err) {}
+        } catch (err) {
+            Logger.error(
+                "igniter",
+                `Failed to destroy window: ${err?.message}`
+            );
+        }
     }
 }
 

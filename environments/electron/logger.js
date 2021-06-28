@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === "development";
 class Logger {
     constructor() {
         fs.mkdirSync(logDir, {
-            recursive: true,
+            recursive: true
         });
 
         this.bridgeDbug = null;
@@ -44,7 +44,9 @@ class Logger {
         if (this.bridgeDbug && !dontEmitBridge) {
             try {
                 this.bridgeDbug(type, proc, txt);
-            } catch (err) {}
+            } catch (err) {
+                // Ignore these as window events could be not available
+            }
         }
     }
 

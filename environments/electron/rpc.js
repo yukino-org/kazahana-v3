@@ -2,32 +2,32 @@ const {
     productName,
     description,
     version,
-    homepage,
+    homepage
 } = require("../../package.json");
 const { Client: DiscordRPC } = require("discord-rpc");
 const Logger = require("./logger");
 const Store = require("./store");
 const Util = require("./util");
 
+/**
+ * @typedef Activity
+ * @property {number} startTimestamp
+ * @property {string} details
+ * @property {string} state
+ * @property {{ label: string; url: string; }[]} buttons
+ */
+
 class RPC {
     constructor() {
         this.id = "845615853479133194";
         this.rpc = new DiscordRPC({
-            transport: "ipc",
+            transport: "ipc"
         });
         this.started = Date.now();
         this.disabled = Store.store.get("settings.discordRpc") === "disabled";
         this.ready = false;
         this.alreadySetInPrivacyMode = false;
     }
-
-    /**
-     * @typedef Activity
-     * @property {number} startTimestamp
-     * @property {string} details
-     * @property {string} state
-     * @property {{ label: string; url: string; }[]} buttons
-     */
 
     /**
      * @param {Partial<Activity>} activity
@@ -66,7 +66,7 @@ class RPC {
             return false;
         }
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.rpc.on("ready", () => {
                 this.ready = true;
                 if (this.rpc.user) {
@@ -81,9 +81,9 @@ class RPC {
 
             this.rpc
                 .login({
-                    clientId: this.id,
+                    clientId: this.id
                 })
-                .catch((err) => {
+                .catch(err => {
                     Logger.error(
                         "discord-rpc",
                         `Failed to connect to Rpc: ${err}`
@@ -103,9 +103,9 @@ class RPC {
             buttons: [
                 {
                     label: "Download App",
-                    url: homepage,
-                },
-            ],
+                    url: homepage
+                }
+            ]
         };
     }
 }

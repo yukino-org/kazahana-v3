@@ -3,17 +3,19 @@ const { ipcRenderer } = require("electron");
 document.addEventListener("DOMContentLoaded", () => {
     const queries = new URLSearchParams(location.search);
 
-    document.title = document.getElementById("hero-title").innerText =
-        queries.get("title");
+    document.title = document.getElementById(
+        "hero-title"
+    ).innerText = queries.get("title");
 
-    document.getElementById("currentVersion").innerText =
-        queries.get("version");
+    document.getElementById("currentVersion").innerText = queries.get(
+        "version"
+    );
 
     const state = document.getElementById("status");
     const progressParent = document.getElementById("progress");
     const progressBar = document.getElementById("progress-bar");
 
-    ipcRenderer.on("checking-for-update", (e) => {
+    ipcRenderer.on("checking-for-update", () => {
         state.innerHTML = `Checking for update...`;
     });
 
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         progressBar.style.width = `${progress.percent}%`;
     });
 
-    ipcRenderer.on("update-downloaded", (e) => {
+    ipcRenderer.on("update-downloaded", () => {
         state.innerHTML = "Updated has been downloaded!";
         progressParent.style.display = "none";
     });
