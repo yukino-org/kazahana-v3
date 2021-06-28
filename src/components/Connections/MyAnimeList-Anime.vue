@@ -379,7 +379,7 @@ export default defineComponent({
                 !this.computedId ||
                 !this.info.data ||
                 (this.info.data.num_episodes &&
-                    data.episode > this.info.data.num_episodes)
+                    data.episode >= this.info.data.num_episodes)
             )
                 return;
 
