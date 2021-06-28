@@ -64,7 +64,7 @@
     "@capacitor/cli": "^3.0.2",
     "@types/lodash.merge": "^4.6.6",
     "@types/qs": "^6.9.6",
-    "@vitejs/plugin-vue": "^1.2.2",
+    "@vitejs/plugin-vue": "^1.2.4",
     "@vue/compiler-sfc": "^3.1.2",
     "@zyrouge/git-compare": "^1.0.0",
     "autoprefixer": "^10.2.5",
