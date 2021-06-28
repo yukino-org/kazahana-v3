@@ -25,8 +25,9 @@
 
                 <div
                     class="
-                        flex-grow
-                        md:flex-none
+                        mt-1
+                        md:mt-0
+                        flex-none
                         flex flex-row
                         justify-end
                         items-center
