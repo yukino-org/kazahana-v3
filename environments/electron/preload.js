@@ -36,6 +36,9 @@ const PlatformBridge = {
         },
         clear() {
             return ipcRenderer.invoke("Store-Clear");
+        },
+        all() {
+            return ipcRenderer.invoke("Store-All");
         }
     },
 
@@ -122,12 +125,7 @@ const PlatformBridge = {
      */
     reloadWindow() {
         return ipcRenderer.invoke("Reload-Window");
-    },
-
-    /**
-     * @type {typeof process.platform}
-     */
-    platform: process.platform
+    }
 };
 
 contextBridge.exposeInMainWorld("PlatformBridge", PlatformBridge);

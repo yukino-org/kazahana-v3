@@ -67,6 +67,10 @@ module.exports = ipc => {
         return true;
     });
 
+    ipc.handle("Store-All", () => {
+        return Store.store.all();
+    });
+
     ipc.handle("Rpc-Set", (e, act) => {
         Rpc.setActivity(act);
     });
