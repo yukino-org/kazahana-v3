@@ -39,21 +39,12 @@
                 class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
             >
                 <router-link
-                    class="
-                    text-white
-                    px-3
-                    py-2
-                    focus:outline-none
-                    bg-blue-500
-                    hover:bg-blue-600
-                    transition
-                    duration-200
-                    rounded
-                "
+                    class="text-white px-3 py-2 focus:outline-none bg-blue-500 hover:bg-blue-600 transition duration-200 rounded"
                     to="/connections"
                     v-if="!loggedIn"
-                    >Login</router-link
                 >
+                    <Icon icon="sign-in-alt" /> Connect
+                </router-link>
 
                 <template
                     v-if="info.data && typeof currentChapter === 'number'"
