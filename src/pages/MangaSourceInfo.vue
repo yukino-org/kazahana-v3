@@ -68,7 +68,7 @@
                                 <Icon
                                     class="text-red-500"
                                     icon="heart"
-                                    v-if="favorite"
+                                    v-if="favorites"
                                 />
                                 <Icon
                                     class="opacity-75"
@@ -175,7 +175,7 @@
             </div>
 
             <p class="text-sm opacity-75 mt-10">Connections</p>
-            <div class="mt-1 grid gap-4">
+            <div class="mt-1 grid gap-3">
                 <MyAnimeListMangaConnection
                     :altTitle="info.data.title"
                     :altURL="
@@ -184,6 +184,8 @@
                             : undefined
                     "
                 />
+
+                <hr class="lg:hidden opacity-40" />
 
                 <AniListMangaConnection
                     :altTitle="info.data.title"
@@ -256,8 +258,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
-import { Await, StateController, constants, util } from "../plugins/util";
-import { BookmarkedEntity, RecentlyViewedEntity } from "../plugins/types";
+import { Await, StateController, util } from "../plugins/util";
+import { StoreKeys } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -287,8 +289,8 @@ export default defineComponent({
             plugin: string | null;
             link: string | null;
             selected: SelectedEntity | null;
-            favorite: boolean;
-            bookmarked: boolean;
+            [StoreKeys.bookmarked]: boolean;
+            [StoreKeys.favorite]: boolean;
             reversed: boolean;
         } = {
             info: util.createStateController(),
@@ -301,8 +303,8 @@ export default defineComponent({
                     ? this.$route.query.url
                     : null,
             selected: null,
-            favorite: false,
-            bookmarked: false,
+            [StoreKeys.bookmarked]: false,
+            [StoreKeys.favorite]: false,
             reversed: false
         };
 
@@ -346,20 +348,23 @@ export default defineComponent({
 
                 const store = await Store.getClient();
 
-                (["bookmarked", "favorite"] as const).forEach(async type => {
-                    const allBookmarked: BookmarkedEntity[] =
-                        (await store.get(constants.storeKeys[type])) || [];
+                ([StoreKeys.bookmarked, StoreKeys.favorite] as const).forEach(
+                    async key => {
+                        const allBookmarked = (await store.get(key)) || [];
 
-                    this[type] =
-                        allBookmarked.findIndex(
-                            x => x.route.queries.url === this.$route.query.url
-                        ) >= 0;
-                });
+                        this[key] =
+                            allBookmarked.findIndex(
+                                x =>
+                                    x.route.queries.url ===
+                                    this.$route.query.url
+                            ) >= 0;
+                    }
+                );
 
                 if (!this.$state.props.incognito) {
-                    const allRecentlyViewed: RecentlyViewedEntity[] =
-                        (await store.get(constants.storeKeys.recentlyViewed)) ||
-                        [];
+                    const allRecentlyViewed =
+                        (await store.get(StoreKeys.recentlyViewed)) || [];
+
                     allRecentlyViewed.splice(0, 0, {
                         title: `${data.title}${
                             this.selected
@@ -376,8 +381,9 @@ export default defineComponent({
                             }
                         }
                     });
+
                     await store.set(
-                        constants.storeKeys.recentlyViewed,
+                        StoreKeys.recentlyViewed,
                         allRecentlyViewed.slice(0, 100)
                     );
                 }
@@ -470,12 +476,11 @@ export default defineComponent({
                 });
             }
         },
-        async toggleAnime(type: "bookmarked" | "favorite") {
+        async toggleAnime(type: "favorite" | "bookmarked") {
             if (!this.info.data) return;
 
             const store = await Store.getClient();
-            const allBookmarked: BookmarkedEntity[] =
-                (await store.get(constants.storeKeys[type])) || [];
+            const allBookmarked = (await store.get(StoreKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
                 x => x.route.queries.url === this.$route.query.url
@@ -483,7 +488,7 @@ export default defineComponent({
 
             if (index >= 0) {
                 allBookmarked.splice(index, 1);
-                this[type] = false;
+                this[StoreKeys[type]] = false;
             } else {
                 allBookmarked.splice(0, 0, {
                     title: this.info.data.title,
@@ -497,10 +502,10 @@ export default defineComponent({
                         }
                     }
                 });
-                this[type] = true;
+                this[StoreKeys[type]] = true;
             }
 
-            await store.set(constants.storeKeys[type], allBookmarked);
+            await store.set(StoreKeys[type], allBookmarked);
         }
     }
 });
