@@ -26,9 +26,13 @@ const start = async () => {
     }
 
     console.log(`Icons path: ${base}`);
-    exec(
-        `electron-icon-builder --flatten --input="${base}/icon.png" --output="${OUTPUT}"`
-    );
+    exec("electron-icon-builder", [
+        "--flatten",
+        "--input",
+        `${base}/icon.png`,
+        "--output",
+        `${OUTPUT}`
+    ]);
 };
 
 start();
