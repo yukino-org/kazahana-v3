@@ -1,22 +1,10 @@
 <template>
     <div>
         <div
-            class="
-                fixed
-                bottom-0
-                left-0
-                right-0
-                h-16
-                text-indigo-200
-                dark:text-white
-                z-50
-                bg-indigo-500
-                dark:bg-gray-800
-                flex flex-row
-                justify-evenly
-                items-center
-                border-t border-gray-200 border-opacity-20
-            "
+            :class="[
+                'fixed bottom-0 left-0 right-0 h-16 text-indigo-200 dark:text-white z-50 bg-indigo-500 dark:bg-gray-800 flex flex-row justify-evenly items-center border-t border-gray-200 border-opacity-20',
+                compactBottomBar ? 'h-14' : 'h-16'
+            ]"
         >
             <button
                 :class="[
@@ -30,7 +18,7 @@
             >
                 <Icon class="text-xl" :icon="item.icon" />
 
-                <p class="opacity-50 mt-0.5 text-xs">
+                <p class="opacity-50 mt-0.5 text-xs" v-if="!hideBottomBarText">
                     {{ item.name }}
                 </p>
             </button>
@@ -44,7 +32,9 @@
             >
                 <Icon class="text-lg" icon="bars" />
 
-                <p class="opacity-50 text-xs">Options</p>
+                <p class="opacity-50 text-xs" v-if="!hideBottomBarText">
+                    Options
+                </p>
             </button>
         </div>
 
@@ -75,25 +65,51 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed, ref, Ref } from "vue";
 import { ExternalLink } from "../plugins/api";
 import { BarRoutes } from "../plugins/router";
+import { GlobalStateProps } from "../plugins/types";
 
 export default defineComponent({
     data() {
         const data: {
-            links: typeof BarRoutes;
-            others: typeof BarRoutes;
             isOpen: boolean;
+            hideBottomBarText: boolean;
+            compactBottomBar: boolean;
+            bottomBarItemsCount: Ref<GlobalStateProps["bottomBarItemsCount"]>;
         } = {
-            links: BarRoutes.slice(0, 2),
-            others: BarRoutes.slice(2),
-            isOpen: false
+            isOpen: false,
+            hideBottomBarText: this.$state.props.hideBottomBarText,
+            compactBottomBar: this.$state.props.compactBottomBar,
+            bottomBarItemsCount: ref(this.$state.props.bottomBarItemsCount)
         };
 
-        return data;
+        return Object.assign(data, {
+            links: computed(() =>
+                BarRoutes.slice(0, data.bottomBarItemsCount.value - 1)
+            ),
+            others: computed(() =>
+                BarRoutes.slice(data.bottomBarItemsCount.value - 1)
+            )
+        });
+    },
+    mounted() {
+        this.$bus.subscribe("state-update", this.stateListener);
+    },
+    beforeDestroy() {
+        this.$bus.unsubscribe("state-update", this.stateListener);
     },
     methods: {
+        stateListener({
+            current
+        }: {
+            previous: GlobalStateProps;
+            current: GlobalStateProps;
+        }) {
+            this.hideBottomBarText = current.hideBottomBarText;
+            this.compactBottomBar = current.compactBottomBar;
+            this.bottomBarItemsCount = current.bottomBarItemsCount;
+        },
         toggleMenu() {
             this.isOpen = !this.isOpen;
         },

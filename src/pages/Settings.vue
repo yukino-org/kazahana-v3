@@ -14,40 +14,34 @@
                         v-if="supportedSettings.updateChannel"
                     >
                         <p class="text-sm opacity-75">Update Channel</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'updateChannel')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'updateChannel')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.updateChannel"
+                                :value="chs"
+                                :selected="chs === settings.updateChannel"
                             >
-                                <option
-                                    v-for="chs in allowedValues.updateChannel"
-                                    :value="chs"
-                                    :selected="chs === settings.updateChannel"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1">
                         <p class="text-sm opacity-75">Incognito Mode</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="handleSettings($event, 'incognito')"
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'incognito')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.incognito"
+                                :value="chs"
+                                :selected="chs === settings.incognito"
                             >
-                                <option
-                                    v-for="chs in allowedValues.incognito"
-                                    :value="chs"
-                                    :selected="chs === settings.incognito"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div
@@ -55,22 +49,18 @@
                         v-if="supportedSettings.sidebarPostion"
                     >
                         <p class="text-sm opacity-75">Sidebar Position</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'sideBarPosition')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'sideBarPosition')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.sideBarPosition"
+                                :value="chs"
+                                :selected="chs === settings.sideBarPosition"
                             >
-                                <option
-                                    v-for="chs in allowedValues.sideBarPosition"
-                                    :value="chs"
-                                    :selected="chs === settings.sideBarPosition"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div
@@ -78,106 +68,88 @@
                         v-if="supportedSettings.playerWidth"
                     >
                         <p class="text-sm opacity-75">Default Player Width</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'defaultPlayerWidth')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="
+                                handleSettings($event, 'defaultPlayerWidth')
+                            "
+                        >
+                            <option
+                                v-for="chs in allowedValues.defaultPlayerWidth"
+                                :value="chs"
+                                :selected="chs === settings.defaultPlayerWidth"
                             >
-                                <option
-                                    v-for="chs in allowedValues.defaultPlayerWidth"
-                                    :value="chs"
-                                    :selected="
-                                        chs === settings.defaultPlayerWidth
-                                    "
-                                >
-                                    {{ chs }}%
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}%
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1">
                         <p class="text-sm opacity-75">
                             Default Manga Page Width
                         </p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'defaultPageWidth')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'defaultPageWidth')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.defaultPageWidth"
+                                :value="chs"
+                                :selected="chs === settings.defaultPageWidth"
                             >
-                                <option
-                                    v-for="chs in allowedValues.defaultPageWidth"
-                                    :value="chs"
-                                    :selected="
-                                        chs === settings.defaultPageWidth
-                                    "
-                                >
-                                    {{ chs }}%
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}%
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1">
                         <p class="text-sm opacity-75">Autoplay</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="handleSettings($event, 'autoPlay')"
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'autoPlay')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.autoPlay"
+                                :value="chs"
+                                :selected="chs === settings.autoPlay"
                             >
-                                <option
-                                    v-for="chs in allowedValues.autoPlay"
-                                    :value="chs"
-                                    :selected="chs === settings.autoPlay"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1">
                         <p class="text-sm opacity-75">Auto next</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="handleSettings($event, 'autoNext')"
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'autoNext')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.autoNext"
+                                :value="chs"
+                                :selected="chs === settings.autoNext"
                             >
-                                <option
-                                    v-for="chs in allowedValues.autoNext"
-                                    :value="chs"
-                                    :selected="chs === settings.autoNext"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1">
                         <p class="text-sm opacity-75">
                             Use system preferred theme
                         </p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'autoDetectTheme')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'autoDetectTheme')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.autoDetectTheme"
+                                :value="chs"
+                                :selected="chs === settings.autoDetectTheme"
                             >
-                                <option
-                                    v-for="chs in allowedValues.autoDetectTheme"
-                                    :value="chs"
-                                    :selected="chs === settings.autoDetectTheme"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div
@@ -185,62 +157,112 @@
                         v-if="settings.autoDetectTheme === 'disabled'"
                     >
                         <p class="text-sm opacity-75">Dark Mode</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="handleSettings($event, 'darkMode')"
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'darkMode')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.darkMode"
+                                :value="chs"
+                                :selected="chs === settings.darkMode"
                             >
-                                <option
-                                    v-for="chs in allowedValues.darkMode"
-                                    :value="chs"
-                                    :selected="chs === settings.darkMode"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1" v-if="supportedSettings.rpc">
                         <p class="text-sm opacity-75">Discord RPC</p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="handleSettings($event, 'discordRpc')"
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'discordRpc')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.discordRpc"
+                                :value="chs"
+                                :selected="chs === settings.discordRpc"
                             >
-                                <option
-                                    v-for="chs in allowedValues.discordRpc"
-                                    :value="chs"
-                                    :selected="chs === settings.discordRpc"
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-span-1" v-if="supportedSettings.rpc">
                         <p class="text-sm opacity-75">
                             Discord RPC (Privacy mode)
                         </p>
-                        <div class="select mt-1 w-full">
-                            <select
-                                class="capitalize"
-                                @change="
-                                    handleSettings($event, 'discordRpcPrivacy')
-                                "
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="
+                                handleSettings($event, 'discordRpcPrivacy')
+                            "
+                        >
+                            <option
+                                v-for="chs in allowedValues.discordRpcPrivacy"
+                                :value="chs"
+                                :selected="chs === settings.discordRpcPrivacy"
                             >
-                                <option
-                                    v-for="chs in allowedValues.discordRpcPrivacy"
-                                    :value="chs"
-                                    :selected="
-                                        chs === settings.discordRpcPrivacy
-                                    "
-                                >
-                                    {{ chs }}
-                                </option>
-                            </select>
-                        </div>
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
+                        <p class="text-sm opacity-75">
+                            Compact Bottom Bar
+                        </p>
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="handleSettings($event, 'compactBottomBar')"
+                        >
+                            <option
+                                v-for="chs in allowedValues.compactBottomBar"
+                                :value="chs"
+                                :selected="chs === settings.compactBottomBar"
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
+                        <p class="text-sm opacity-75">
+                            Hide Bottom Bar Text
+                        </p>
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="
+                                handleSettings($event, 'hideBottomBarText')
+                            "
+                        >
+                            <option
+                                v-for="chs in allowedValues.hideBottomBarText"
+                                :value="chs"
+                                :selected="chs === settings.hideBottomBarText"
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
+                        <p class="text-sm opacity-75">
+                            Bottom Bar Items Count
+                        </p>
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                            @change="
+                                handleSettings($event, 'bottomBarItemsCount')
+                            "
+                        >
+                            <option
+                                v-for="chs in allowedValues.bottomBarItemsCount"
+                                :value="chs"
+                                :selected="chs === settings.bottomBarItemsCount"
+                            >
+                                {{ chs }}
+                            </option>
+                        </select>
                     </div>
                 </div>
 
@@ -265,12 +287,13 @@
                 </div>
 
                 <p class="opacity-75 mt-6">
-                    <Icon class="mr-1" icon="info-circle" /> Click the
-                    <Icon icon="redo" /> at the top right of the screen or
-                    restart app for the settings to take effect.
+                    <Icon class="mr-1" icon="info-circle" /> Restart the app for
+                    the some settings to take effect.
                 </p>
             </div>
         </div>
+
+        <hr class="mt-6" />
 
         <p class="mt-6 opacity-75 text-sm underline">App Information</p>
         <p>
@@ -279,7 +302,7 @@
         </p>
         <p>
             <span class="opacity-75 mr-1">Platform:</span>
-            <b class="capitalize">{{ appInfo.platform }}</b>
+            <b class="capitalize">{{ appInfo.os }} ({{ appInfo.platform }})</b>
         </p>
         <p>
             <span class="opacity-75 mr-1">Version:</span>
@@ -514,7 +537,8 @@ import { defineComponent } from "vue";
 import { http, ExternalLink, Rpc, Store } from "../plugins/api";
 import { constants, util } from "../plugins/util";
 import {
-    Settings,
+    BottomBarItemsCount,
+    BottomBarItemsCountType,
     EnabledDisabled,
     EnabledDisabledType,
     TenToHundredPercent,
@@ -522,7 +546,9 @@ import {
     UpdateChannels,
     UpdateChannelsType,
     SideBarPosition,
-    SideBarPositionType
+    SideBarPositionType,
+    StoreKeys,
+    StoreStructure
 } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
@@ -532,9 +558,12 @@ import Popup from "../components/Popup.vue";
 const AppInfo = {
     name: app_name,
     platform: app_platform,
+    os: app_os,
     version: app_version,
     builtAt: util.prettyDate(new Date(app_builtAt))
 };
+
+type Settings = StoreStructure[StoreKeys.settings];
 
 export default defineComponent({
     name: "Search",
@@ -556,15 +585,18 @@ export default defineComponent({
             autoPlay: (EnabledDisabled as any) as EnabledDisabledType[],
             autoNext: (EnabledDisabled as any) as EnabledDisabledType[],
             defaultPlayerWidth: (TenToHundredPercent as any) as TenToHundredPercentType[],
-            defaultPageWidth: (TenToHundredPercent as any) as TenToHundredPercentType[]
+            defaultPageWidth: (TenToHundredPercent as any) as TenToHundredPercentType[],
+            hideBottomBarText: (EnabledDisabled as any) as EnabledDisabledType[],
+            compactBottomBar: (EnabledDisabled as any) as EnabledDisabledType[],
+            bottomBarItemsCount: (BottomBarItemsCount as any) as BottomBarItemsCountType[]
         };
 
-        const isElectron = app_platform === "electron";
         const supportedSettings = {
-            updateChannel: isElectron,
-            sidebarPostion: isElectron,
-            playerWidth: isElectron,
-            rpc: isElectron
+            updateChannel: this.$state.props.runtime.isElectron,
+            sidebarPostion: this.$state.props.runtime.isElectron,
+            playerWidth: this.$state.props.runtime.isElectron,
+            rpc: this.$state.props.runtime.isElectron,
+            bottomBar: this.$state.props.runtime.isCapacitor
         };
 
         const data: {
@@ -602,8 +634,8 @@ export default defineComponent({
     methods: {
         async getSettings() {
             const store = await Store.getClient();
-            const settings: Partial<Settings> =
-                (await store.get(constants.storeKeys.settings)) || {};
+            const settings = await store.get(StoreKeys.settings);
+
             this.settings = util.mergeObject(
                 constants.defaults.settings,
                 settings
@@ -618,7 +650,7 @@ export default defineComponent({
             const store = await Store.getClient();
             const settings = { ...this.settings };
             settings[key] = value;
-            await store.set(constants.storeKeys.settings, settings);
+            await store.set(StoreKeys.settings, settings);
             this.settings = settings;
         },
         validateSettings<T extends keyof Settings>(
@@ -628,7 +660,7 @@ export default defineComponent({
             return (this.allowedValues[key] as any[]).includes(value);
         },
         async handleSettings<T extends keyof Settings>(event: any, key: T) {
-            const value = event.target.value;
+            const value = +event.target.value || event.target.value;
             if (this.validateSettings(key, value)) {
                 await this.updateSettings(key, value);
 
@@ -638,7 +670,10 @@ export default defineComponent({
                         "autoDetectTheme",
                         "darkMode",
                         "incognito",
-                        "sideBarPosition"
+                        "sideBarPosition",
+                        "hideBottomBarText",
+                        "compactBottomBar",
+                        "bottomBarItemsCount"
                     ].includes(key)
                 ) {
                     this.$state.update({
@@ -646,7 +681,12 @@ export default defineComponent({
                             this.settings.autoDetectTheme === "enabled",
                         isDarkTheme: this.settings.darkMode === "enabled",
                         incognito: this.settings.incognito === "enabled",
-                        sideBar: this.settings.sideBarPosition
+                        sideBar: this.settings.sideBarPosition,
+                        hideBottomBarText:
+                            this.settings.hideBottomBarText === "enabled",
+                        compactBottomBar:
+                            this.settings.compactBottomBar === "enabled",
+                        bottomBarItemsCount: this.settings.bottomBarItemsCount
                     });
                 }
             }
