@@ -259,6 +259,7 @@ export default defineComponent({
             autoPlay: boolean;
             autoNext: boolean;
             fullScreenWatcher: ReturnType<typeof setInterval> | null;
+            fullScreenWatcherProc: ReturnType<typeof setInterval> | null;
             showCopied: boolean;
         } = {
             info: util.createStateController(),
@@ -269,6 +270,7 @@ export default defineComponent({
             autoPlay: false,
             autoNext: false,
             fullScreenWatcher: null,
+            fullScreenWatcherProc: null,
             showCopied: false
         };
 
@@ -279,11 +281,19 @@ export default defineComponent({
         this.watchEpisode();
         this.getInfo();
         this.attachFullScreenEvents();
+
+        if (this.$state.props.runtime.isCapacitor) {
+            this.fullScreenWatcher = setInterval(
+                this.watchMobileFullScreen,
+                5000
+            );
+        }
     },
     beforeDestroy() {
         if (this.fullScreenWatcher !== null) {
             clearInterval(this.fullScreenWatcher);
         }
+
         this.$bus.dispatch("set-MAL-anime-episode", null);
         this.$bus.dispatch("set-AniList-anime-episode", null);
     },
@@ -432,9 +442,17 @@ export default defineComponent({
                     this.setFullScreen
                 );
             }
+        },
+        async watchMobileFullScreen() {
+            const fullscreen = await FullScreen.getClient();
 
-            if (this.$state.props.runtime.isCapacitor) {
-                this.fullScreenWatcher = setInterval(this.setFullScreen, 5000);
+            const videoFullscreened = !!document.fullscreenElement,
+                mobileFullscreened = await fullscreen?.isFullscreened();
+
+            if (videoFullscreened && mobileFullscreened === false) {
+                setTimeout(async () => {
+                    await fullscreen?.set(true);
+                }, 5000);
             }
         },
         async setFullScreen() {
@@ -442,9 +460,9 @@ export default defineComponent({
             const fullscreen = await FullScreen.getClient();
 
             if (fullscreened) {
-                await fullscreen?.(true);
+                await fullscreen?.set(true);
             } else {
-                await fullscreen?.(false);
+                await fullscreen?.set(false);
             }
         },
         async updateStats(fromPlayer: boolean = false) {

@@ -22,6 +22,14 @@ You can download the latest version of app from the [releases](https://github.co
 
 > All previews available at [https://zyrouge.github.io/yukino-app/](https://zyrouge.github.io/yukino-app/)
 
+## Links
+
+-   [Website](https://zyrouge.github.io/yukino-app/)
+-   [User guide](https://zyrouge.github.io/yukino-app/guides)
+-   [Discord](https://zyrouge.github.io/yukino-app/discord)
+-   [GitHub](https://github.com/zyrouge/yukino-app)
+-   [Patreon](https://patreon.com/zyrouge)
+
 ## Branding
 
 ### Colors

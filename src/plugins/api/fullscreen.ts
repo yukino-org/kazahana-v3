@@ -1,4 +1,7 @@
-export type FullScreenEntity = (setFullScreen: boolean) => Promise<void>;
+export interface FullScreenEntity {
+    set(setFullScreen: boolean): Promise<void>;
+    isFullscreened(): Promise<boolean>;
+}
 
 export const FullScreen = {
     __fullscreen: <FullScreenEntity | null>null,
@@ -8,11 +11,17 @@ export const FullScreen = {
                 case "capacitor": {
                     const { StatusBar } = await import("@capacitor/status-bar");
 
-                    this.__fullscreen = async setFullScreen => {
-                        if (setFullScreen) {
-                            await StatusBar.hide();
-                        } else {
-                            await StatusBar.show();
+                    this.__fullscreen = {
+                        async set(setFullScreen) {
+                            if (setFullScreen) {
+                                await StatusBar.hide();
+                            } else {
+                                await StatusBar.show();
+                            }
+                        },
+                        async isFullscreened() {
+                            const stat = await StatusBar.getInfo();
+                            return !stat.visible;
                         }
                     };
                 }
