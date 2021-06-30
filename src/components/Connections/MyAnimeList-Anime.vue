@@ -31,8 +31,12 @@
                 </div>
             </div>
 
-            <router-link
-                class="
+            <div
+                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
+            >
+                <router-link
+                    class="
+                    text-white
                     px-3
                     py-2
                     focus:outline-none
@@ -42,15 +46,14 @@
                     duration-200
                     rounded
                 "
-                to="/connections"
-                v-if="!loggedIn"
-                >Login</router-link
-            >
-            <div
-                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
-                v-else-if="info.data"
-            >
-                <div v-if="typeof currentEpisode === 'number'">
+                    to="/connections"
+                    v-if="!loggedIn"
+                    >Login</router-link
+                >
+
+                <template
+                    v-if="info.data && typeof currentEpisode === 'number'"
+                >
                     <button
                         class="text-white focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
                         v-if="
@@ -68,12 +71,13 @@
                     >
                         <Icon class="mr-1" icon="eye" /> Mark as watched
                     </button>
-                </div>
+                </template>
 
                 <select
                     class="bg-gray-100 dark:bg-gray-800 rounded py-1.5 border-transparent focus:outline-none focus:ring-0 capitalize"
                     style="font-size: inherit"
                     @change="updateStatus($event)"
+                    v-if="info.data"
                 >
                     <option
                         v-for="status in allowedStatus"

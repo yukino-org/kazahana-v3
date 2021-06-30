@@ -35,8 +35,12 @@
                 </div>
             </div>
 
-            <router-link
-                class="
+            <div
+                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
+            >
+                <router-link
+                    class="
+                    text-white
                     px-3
                     py-2
                     focus:outline-none
@@ -46,15 +50,14 @@
                     duration-200
                     rounded
                 "
-                to="/connections"
-                v-if="!loggedIn"
-                >Login</router-link
-            >
-            <div
-                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
-                v-else-if="info.data"
-            >
-                <template v-if="typeof currentChapter === 'number'">
+                    to="/connections"
+                    v-if="!loggedIn"
+                    >Login</router-link
+                >
+
+                <template
+                    v-if="info.data && typeof currentChapter === 'number'"
+                >
                     <button
                         class="text-white focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
                         v-if="
@@ -78,6 +81,7 @@
                     class="bg-gray-100 dark:bg-gray-800 rounded py-1.5 border-transparent focus:ring-0 focus:outline-none capitalize"
                     style="font-size: inherit"
                     @change="updateStatus($event)"
+                    v-if="info.data"
                 >
                     <option
                         v-for="status in allowedStatus"
