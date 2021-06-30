@@ -163,7 +163,7 @@ export const util = {
     tryArrange<T extends Record<any, any>>(arr: T[], key: keyof T) {
         if (arr.length < 2) return arr;
 
-        const [v, i] = arr.reduce(
+        const [, i] = arr.reduce(
             (pv, cv, ci) => {
                 const n = +cv[key];
                 return n < pv[0] ? [n, ci] : pv;

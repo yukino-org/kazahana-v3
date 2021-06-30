@@ -295,7 +295,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Extractors, ExtractorsEntity, Rpc, Store } from "../plugins/api";
-import { Await, StateController, constants, util } from "../plugins/util";
+import { Await, StateController, util } from "../plugins/util";
 import { StoreKeys } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";

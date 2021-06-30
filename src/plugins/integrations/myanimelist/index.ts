@@ -1,6 +1,5 @@
 import qs from "qs";
 import secrets from "../../../secrets/myanimelist";
-import { constants } from "../../util";
 import { http, RequesterOptions, Store } from "../../api";
 import { Auth, AuthClient, TokenInfo } from "./auth";
 import Logger from "../../logger";

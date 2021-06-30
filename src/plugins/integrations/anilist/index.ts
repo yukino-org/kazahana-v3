@@ -1,5 +1,4 @@
 import secrets from "../../../secrets/anilist";
-import { constants } from "../../util";
 import { http, Store } from "../../api";
 import { Auth, AuthClient, TokenInfo } from "./auth";
 import { StoreKeys } from "../../types";

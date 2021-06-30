@@ -213,7 +213,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, computed } from "vue";
+import { defineComponent, watch } from "vue";
 import { RouteLocationRaw } from "vue-router";
 import { Extractors, Rpc, Store } from "../plugins/api";
 import { StateController, util } from "../plugins/util";

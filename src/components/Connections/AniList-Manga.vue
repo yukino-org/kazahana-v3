@@ -192,7 +192,6 @@ import {
 } from "../../plugins/util";
 import {
     AniListMangaConnectionSubscriber,
-    AniListConnectionCachedTitles,
     StoreKeys
 } from "../../plugins/types";
 

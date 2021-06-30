@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { execSync: exec } = require("child_process");
+const spawn = require("cross-spawn");
 
 const RESOURCES = path.resolve(__dirname, "..", "resources"),
     OUTPUT = path.join(RESOURCES, "electron");
@@ -26,12 +26,10 @@ const start = async () => {
     }
 
     console.log(`Icons path: ${base}`);
-    exec("electron-icon-builder", [
+    spawn("electron-icon-builder", [
         "--flatten",
-        "--input",
-        `${base}/icon.png`,
-        "--output",
-        `${OUTPUT}`
+        `--input=${base}/icon.png`,
+        `--output=${OUTPUT}`
     ]);
 };
 
