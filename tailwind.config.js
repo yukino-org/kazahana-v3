@@ -6,17 +6,17 @@ module.exports = {
     darkMode: "class",
     theme: {
         fontFamily: {
-            sans: ["Poppins", "sans-serif"],
+            sans: ["Poppins", "sans-serif"]
         },
         extend: {
             colors: {
                 gray: colors.gray,
-                indigo: colors.indigo,
-            },
-        },
+                indigo: colors.indigo
+            }
+        }
     },
     variants: {
-        extend: {},
+        extend: {}
     },
-    plugins: [],
+    plugins: [require("@tailwindcss/forms")]
 };

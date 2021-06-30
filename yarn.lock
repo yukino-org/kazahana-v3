@@ -801,6 +801,13 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@tailwindcss/forms@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.3.3.tgz#a29d22668804f3dae293dcadbef1aa6315c45b64"
+  integrity sha512-U8Fi/gq4mSuaLyLtFISwuDYzPB73YzgozjxOIHsK6NXgg/IWD1FLaHbFlWmurAMyy98O+ao74ksdQefsquBV1Q==
+  dependencies:
+    mini-svg-data-uri "^1.2.3"
+
 "@types/cacheable-request@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@types/cacheable-request/-/cacheable-request-6.0.1.tgz#5d22f3dded1fd3a84c0bbeb5039a7419c2c91976"
@@ -1150,10 +1157,10 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.1.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-anime-ext@1.1.16:
-  version "1.1.16"
-  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.16.tgz#75717244eb891e0cf6c18c02fc2b25e665deba9c"
-  integrity sha512-o0d28QBI58qtnY1DslCKBlTHz5fhyc6rZzXuq32yO0pLBTh8Q6aMLJewy8xUs8d8FnpNJS/PN5apLZa0/++pCw==
+anime-ext@1.1.17:
+  version "1.1.17"
+  resolved "https://registry.yarnpkg.com/anime-ext/-/anime-ext-1.1.17.tgz#2397dd8a8dbd86f90ab6115c729dad4cdc720d3b"
+  integrity sha512-RwefMaBSiiXFOPz6ifObezgL/Bfsy9up1Bk5eqgNV/hxN9ssXEHqBv1TzDvJB9Hd4o3jeepr6+QBZcmgORSriw==
   dependencies:
     cheerio "^1.0.0-rc.9"
     crypto-js "^4.0.0"
@@ -4376,6 +4383,11 @@ min-document@^2.19.0:
   dependencies:
     dom-walk "^0.1.0"
 
+mini-svg-data-uri@^1.2.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/mini-svg-data-uri/-/mini-svg-data-uri-1.3.3.tgz#91d2c09f45e056e5e1043340b8b37ba7b50f4fac"
+  integrity sha512-+fA2oRcR1dJI/7ITmeQJDrYWks0wodlOz0pAEhKYJ2IVc1z0AnwJUsKY2fzFmPAM3Jo9J0rBx8JAA9QQSJ5PuA==
+
 minimatch@3.0.4, minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -5050,7 +5062,7 @@ postcss-value-parser@^4.1.0:
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.1.0.tgz#443f6a20ced6481a2bda4fa8532a6e55d789a2cb"
   integrity sha512-97DXOFbQJhk71ne5/Mt6cOu6yxsSfM0QGQyl0L25Gca4yGWEGJaig7l7gbCX623VqTBNGLRLaVUCnNkcedlRSQ==
 
-postcss@^8.1.10, postcss@^8.1.6, postcss@^8.2.1, postcss@^8.3.4, postcss@^8.3.5:
+postcss@^8.1.10, postcss@^8.1.6, postcss@^8.2.1, postcss@^8.3.5:
   version "8.3.5"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.3.5.tgz#982216b113412bc20a86289e91eb994952a5b709"
   integrity sha512-NxTuJocUhYGsMiMFHDUkmjSKT3EdH4/WbGF6GCi1NDGk+vbcUTun4fpbOqaPtD8IIsztA2ilZm2DhYCuyN58gA==
@@ -6669,13 +6681,13 @@ vfile@^4.0.0, vfile@^4.0.1:
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
 
-vite@2.3.8:
-  version "2.3.8"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-2.3.8.tgz#42e3e03953859fd410e4e6ab3d1cca0aab2adc3c"
-  integrity sha512-QiEx+iqNnJntSgSF2fWRQvRey9pORIrtNJzNyBJXwc+BdzWs83FQolX84cTBo393cfhObrtWa6180dAa4NLDiQ==
+vite@2.4.0-beta.1:
+  version "2.4.0-beta.1"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-2.4.0-beta.1.tgz#a66708a40faf7d4198cbee3e86623681953e3214"
+  integrity sha512-RKqbcaZ+WIVpe3eYkUMjI/s5CVVqez+3GCERi1VXRykXuEe+MLa3EYFhIbfeVMmV5rw/32UN/4akaby6S8UMng==
   dependencies:
     esbuild "^0.12.8"
-    postcss "^8.3.4"
+    postcss "^8.3.5"
     resolve "^1.20.0"
     rollup "^2.38.5"
   optionalDependencies:
