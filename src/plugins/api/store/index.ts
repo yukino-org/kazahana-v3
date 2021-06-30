@@ -1,11 +1,22 @@
-export interface StoreEntity {
-    set(key: string, value: any): Promise<void>;
-    get(key: string): Promise<any>;
+import { StoreStructure } from "../../types";
+
+export interface StoreSkeleton {
+    [s: string]: any;
+}
+
+export type StoreAllType<T> = {
+    [P in keyof T]: T[P] | null;
+};
+
+export interface StoreEntity<T extends StoreSkeleton> {
+    set<K extends keyof T>(key: K, value: T[K] | null): Promise<void>;
+    get<K extends keyof T>(key: K): Promise<T[K] | null>;
     clear(): Promise<boolean>;
+    all(): Promise<StoreAllType<T>>;
 }
 
 export const Store = {
-    __store: <StoreEntity | null>null,
+    __store: <StoreEntity<StoreStructure> | null>null,
     async getClient() {
         if (!this.__store) {
             switch (app_platform) {
@@ -22,6 +33,6 @@ export const Store = {
             }
         }
 
-        return <StoreEntity>this.__store;
-    },
+        return <StoreEntity<StoreStructure>>this.__store;
+    }
 };

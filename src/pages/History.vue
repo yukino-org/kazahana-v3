@@ -307,7 +307,7 @@ import SwiperCore, { Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Rpc, Store } from "../plugins/api";
 import { constants, util } from "../plugins/util";
-import { RecentlyBrowsedEntity, RecentlyViewedEntity } from "../plugins/types";
+import { StoreKeys, StoreStructure } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -325,9 +325,9 @@ export default defineComponent({
     data() {
         const data: {
             placeHolderImage: string;
-            recentlyBrowsed: RecentlyBrowsedEntity[];
+            recentlyBrowsed: StoreStructure[StoreKeys.recentlyBrowsed];
             filterRecentlyBrowsed: boolean;
-            recentlyViewed: RecentlyViewedEntity[];
+            recentlyViewed: StoreStructure[StoreKeys.recentlyViewed];
             filterRecentlyViewed: boolean;
         } = {
             placeHolderImage:
@@ -351,11 +351,11 @@ export default defineComponent({
         async getRecentlyBrowsed() {
             const store = await Store.getClient();
             this.recentlyBrowsed =
-                (await store.get(constants.storeKeys.recentlyBrowsed)) || [];
+                (await store.get(StoreKeys.recentlyBrowsed)) || [];
         },
         async clearRecentlyBrowsed() {
             const store = await Store.getClient();
-            await store.set(constants.storeKeys.recentlyBrowsed, []);
+            await store.set(StoreKeys.recentlyBrowsed, []);
             this.recentlyBrowsed = [];
         },
         toggleFilterRecentlyBrowsed() {
@@ -364,11 +364,11 @@ export default defineComponent({
         async getRecentlyViewed() {
             const store = await Store.getClient();
             this.recentlyViewed =
-                (await store.get(constants.storeKeys.recentlyViewed)) || [];
+                (await store.get(StoreKeys.recentlyViewed)) || [];
         },
         async clearRecentlyViewed() {
             const store = await Store.getClient();
-            await store.set(constants.storeKeys.recentlyViewed, []);
+            await store.set(StoreKeys.recentlyViewed, []);
             this.recentlyViewed = [];
         },
         toggleFilterRecentlyViewed() {

@@ -53,33 +53,35 @@
                             "
                         >
                             <span class="mr-2 opacity-75">Page width:</span>
-                            <div class="select w-40">
-                                <select class="capitalize" v-model="pageWidth">
-                                    <option
-                                        v-for="wid in Array(10)
-                                            .fill(null)
-                                            .map((x, i) => i * 10 + 10)"
-                                        :value="wid"
-                                    >
-                                        {{ wid }}%
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="ml-3 select">
-                            <select v-model="currentPage">
-                                <option disabled :value="undefined">
-                                    Please select a page
-                                </option>
+                            <select
+                                class="bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                                v-model="pageWidth"
+                            >
                                 <option
-                                    v-for="page in info.data.entities"
-                                    :value="page.page"
+                                    v-for="wid in Array(10)
+                                        .fill(null)
+                                        .map((x, i) => i * 10 + 10)"
+                                    :value="wid"
                                 >
-                                    Page {{ page.page }}
+                                    {{ wid }}%
                                 </option>
                             </select>
                         </div>
+
+                        <select
+                            class="ml-3 bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                            v-model="currentPage"
+                        >
+                            <option disabled :value="undefined">
+                                Please select a page
+                            </option>
+                            <option
+                                v-for="page in info.data.entities"
+                                :value="page.page"
+                            >
+                                Page {{ page.page }}
+                            </option>
+                        </select>
                     </div>
                 </div>
 
@@ -264,19 +266,20 @@
                     <Icon class="ml-1 opacity-75" icon="caret-right" />
                 </button>
 
-                <div class="select">
-                    <select v-model="currentPage">
-                        <option disabled :value="undefined">
-                            Please select a page
-                        </option>
-                        <option
-                            v-for="page in info.data.entities"
-                            :value="page.page"
-                        >
-                            Page {{ page.page }}
-                        </option>
-                    </select>
-                </div>
+                <select
+                    class="bg-gray-100 dark:bg-gray-800 rounded py-2 border-transparent focus:ring-0 focus:outline-none capitalize"
+                    v-model="currentPage"
+                >
+                    <option disabled :value="undefined">
+                        Please select a page
+                    </option>
+                    <option
+                        v-for="page in info.data.entities"
+                        :value="page.page"
+                    >
+                        Page {{ page.page }}
+                    </option>
+                </select>
             </div>
         </div>
     </div>
@@ -285,8 +288,8 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 import { Store, Extractors, ExtractorsEntity } from "../plugins/api";
-import { Await, StateController, constants, util } from "../plugins/util";
-import { LastLeftEntity } from "../plugins/types";
+import { Await, StateController, util } from "../plugins/util";
+import { StoreKeys } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -329,7 +332,7 @@ export default defineComponent({
             currentPage: null,
             currentPageImage: null,
             pageWidth: 100,
-            hasTitleBar: ["electron"].includes(app_platform),
+            hasTitleBar: this.$state.props.runtime.isElectron,
             fullscreen: false,
             showCopied: false
         };
@@ -370,13 +373,9 @@ export default defineComponent({
         },
         async updateWidth() {
             const store = await Store.getClient();
-            let wid = (await store.get(constants.storeKeys.settings))
-                ?.defaultPageWidth;
-            if (wid && !isNaN(wid)) {
-                wid = +wid;
-                if (wid > 0 && wid <= 100) {
-                    this.pageWidth = wid;
-                }
+            let wid = (await store.get(StoreKeys.settings))?.defaultPageWidth;
+            if (wid && wid > 0 && wid <= 100) {
+                this.pageWidth = wid;
             }
         },
         watchChapter() {
@@ -554,7 +553,7 @@ export default defineComponent({
                     if (this.volume) extra.push(`Vol. ${this.volume}`);
                     if (this.chapter) extra.push(`Chap. ${this.chapter}`);
 
-                    const lastleft: LastLeftEntity = {
+                    await store.set(StoreKeys.lastWatchedLeft, {
                         title: `${this.title}${
                             extra.length ? ` (${extra.join(" ")})` : ""
                         }`,
@@ -572,11 +571,7 @@ export default defineComponent({
                             queries: <any>{ ...this.$route.query }
                         },
                         showPopup: true
-                    };
-                    await store.set(
-                        constants.storeKeys.lastWatchedLeft,
-                        lastleft
-                    );
+                    });
                 }
             } catch (err) {
                 this.$logger.emit(

@@ -112,6 +112,12 @@ export const BarRoutes: {
         icon: "search"
     },
     {
+        name: "Connections",
+        url: "/connections",
+        external: false,
+        icon: "link"
+    },
+    {
         name: "Schedule",
         url: "/schedule",
         external: false,
@@ -128,12 +134,6 @@ export const BarRoutes: {
         url: "/history",
         external: false,
         icon: "history"
-    },
-    {
-        name: "Connections",
-        url: "/connections",
-        external: false,
-        icon: "link"
     },
     {
         name: "Settings",

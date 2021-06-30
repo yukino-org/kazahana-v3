@@ -1,12 +1,15 @@
 <template>
     <div>
-        <div class="flex flex-row justify-center items-center gap-4 flex-wrap">
-            <div class="flex-grow flex items-center gap-3">
+        <div
+            class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4"
+        >
+            <div class="w-full md:w-auto flex-grow flex items-center gap-3">
                 <img class="w-7 h-auto rounded" :src="logo" alt="AniList" />
                 <div>
                     <p class="text-xl font-bold">
                         AniList
-                        <span class="text-xs mx-1 opacity-75" v-if="info.data"
+                        <span class="text-xs ml-0.5 opacity-75">(Anime)</span>
+                        <span class="text-xs ml-1 opacity-75" v-if="info.data"
                             >({{ info.data.progress }}/{{
                                 info.data.media.episodes
                             }})</span
@@ -26,8 +29,7 @@
 
             <router-link
                 class="
-                    px-3
-                    py-1.5
+                    px-3 py-2
                     focus:outline-none
                     bg-blue-500
                     hover:bg-blue-600
@@ -40,40 +42,42 @@
                 >Login</router-link
             >
             <div
-                class="flex flex-row justify-center items-center gap-2"
+                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
                 v-else-if="info.data"
             >
-                <div v-if="typeof currentEpisode === 'number'">
+                <template v-if="typeof currentEpisode === 'number'">
                     <button
-                        class="focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
+                        class="text-white focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
                         v-if="info.data.progress >= currentEpisode"
                         @click.stop.prevent="!!void setWatched(false)"
                     >
-                        <Icon class="mr-1" icon="times" /> Mark as unwatched
+                        <Icon class="mr-1" icon="eye-slash" /> Mark as unwatched
                     </button>
                     <button
-                        class="focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300 px-3 py-2 rounded"
+                        class="text-white focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300 px-3 py-2 rounded"
                         v-else
                         @click.stop.prevent="!!void setWatched(true)"
                     >
-                        <Icon class="mr-1" icon="check" /> Mark as watched
+                        <Icon class="mr-1" icon="eye" /> Mark as watched
                     </button>
-                </div>
+                </template>
 
-                <div class="select">
-                    <select class="capitalize" @change="updateStatus($event)">
-                        <option
-                            v-for="status in allowedStatus"
-                            :value="status"
-                            :selected="status === info.data.status"
-                        >
-                            {{
-                                status[0].toUpperCase() +
-                                    status.slice(1).toLowerCase()
-                            }}
-                        </option>
-                    </select>
-                </div>
+                <select
+                    class="bg-gray-100 dark:bg-gray-800 rounded py-1.5 border-transparent focus:ring-0 focus:outline-none capitalize"
+                    style="font-size: inherit"
+                    @change="updateStatus($event)"
+                >
+                    <option
+                        v-for="status in allowedStatus"
+                        :value="status"
+                        :selected="status === info.data.status"
+                    >
+                        {{
+                            status[0].toUpperCase() +
+                                status.slice(1).toLowerCase()
+                        }}
+                    </option>
+                </select>
             </div>
         </div>
 
@@ -88,14 +92,7 @@
                 "
             >
                 <input
-                    class="
-                        flex-grow
-                        text-box
-                        bg-gray-200
-                        dark:bg-gray-700
-                        ring-gray-200
-                        dark:gray-700
-                    "
+                    class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
                     v-model="computedAltTitle"
                     type="text"
                     placeholder="Type in anime's name..."
@@ -104,7 +101,7 @@
 
                 <button
                     type="submit"
-                    class="btn"
+                    class="text-white px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600 transition duration-200"
                     @click.stop.prevent="!!void searchAniList()"
                 >
                     Search
@@ -137,7 +134,7 @@
                     No results were found.
                 </p>
                 <div
-                    class="grid md:grid-cols-1 grid-cols-2 gap-2"
+                    class="grid gap-2"
                     v-else="
                         others.animeSearchResults.state === 'resolved' &&
                             others.animeSearchResults.data
@@ -151,7 +148,7 @@
                             items-center
                             gap-4
                             bg-gray-200
-                            dark:bg-gray-700
+                            dark:bg-gray-800
                             hover-pop
                             p-3
                             rounded
@@ -191,7 +188,8 @@ import {
 } from "../../plugins/util";
 import {
     AniListAnimeConnectionSubscriber,
-    AniListConnectionCachedTitles
+    AniListConnectionCachedTitles,
+    StoreKeys
 } from "../../plugins/types";
 
 import Loading from "../Loading.vue";
@@ -281,8 +279,8 @@ export default defineComponent({
             if (!this.altURL) return;
 
             const store = await Store.getClient();
-            const all: AniListConnectionCachedTitles[] =
-                (await store.get(constants.storeKeys.aniListCacheTitles)) || [];
+            const all =
+                (await store.get(StoreKeys.aniListAnimeCacheTitles)) || [];
 
             const cached = all.find(x => x.altURLs.includes(this.altURL!));
 
@@ -294,8 +292,8 @@ export default defineComponent({
             if (!this.computedId || !this.altURL) return false;
 
             const store = await Store.getClient();
-            let all: AniListConnectionCachedTitles[] =
-                (await store.get(constants.storeKeys.aniListCacheTitles)) || [];
+            let all =
+                (await store.get(StoreKeys.aniListAnimeCacheTitles)) || [];
 
             let added = false;
             all.map(item => {
@@ -318,7 +316,7 @@ export default defineComponent({
                 });
             }
 
-            await store.set(constants.storeKeys.aniListCacheTitles, all);
+            await store.set(StoreKeys.aniListAnimeCacheTitles, all);
         },
         async searchAniList() {
             if (!this.altTitle) return;
@@ -381,7 +379,8 @@ export default defineComponent({
                 !this.computedId ||
                 !this.info.data ||
                 (this.info.data.media.episodes &&
-                    data.episode >= this.info.data.media.episodes)
+                    data.episode > this.info.data.media.episodes) ||
+                this.info.data.progress === data.episode
             )
                 return;
 
@@ -389,7 +388,7 @@ export default defineComponent({
                 data.autoComplete &&
                 this.info.data.media.episodes === data.episode
             ) {
-                status = "completed";
+                data.status = "COMPLETED";
             }
 
             try {

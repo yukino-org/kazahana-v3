@@ -12,7 +12,7 @@
             "
         >
             <input
-                class="flex-grow text-box"
+                class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
                 v-model="terms"
                 type="text"
                 placeholder="Type in anime's name..."
@@ -20,8 +20,8 @@
             />
 
             <button
+                class="text-white bg-indigo-500 hover:bg-indigo-600 transition duration-300 px-4 py-2 rounded"
                 type="submit"
-                class="btn"
                 @click.stop.prevent="!!void search()"
             >
                 Search
@@ -216,8 +216,8 @@
 import { defineComponent, watch, computed } from "vue";
 import { RouteLocationRaw } from "vue-router";
 import { Extractors, Rpc, Store } from "../plugins/api";
-import { StateController, constants, util } from "../plugins/util";
-import { RecentlyBrowsedEntity } from "../plugins/types";
+import { StateController, util } from "../plugins/util";
+import { StoreKeys } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
@@ -519,9 +519,8 @@ export default defineComponent({
 
             const store = await Store.getClient();
             if (!this.$state.props.incognito) {
-                const allSearchedEntities: RecentlyBrowsedEntity[] =
-                    (await store.get(constants.storeKeys.recentlyBrowsed)) ||
-                    [];
+                const allSearchedEntities =
+                    (await store.get(StoreKeys.recentlyBrowsed)) || [];
 
                 allSearchedEntities.splice(0, 0, {
                     terms: this.terms,
@@ -537,7 +536,7 @@ export default defineComponent({
                 });
 
                 await store.set(
-                    constants.storeKeys.recentlyBrowsed,
+                    StoreKeys.recentlyBrowsed,
                     allSearchedEntities.slice(0, 50)
                 );
             }

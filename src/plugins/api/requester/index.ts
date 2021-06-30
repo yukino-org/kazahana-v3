@@ -1,7 +1,11 @@
+export const RequesterResponseTypes = ["text", "buffer"] as const;
+export type RequesterResponseTypesType = typeof RequesterResponseTypes[number];
+
 export interface RequesterOptions {
     headers: Record<string, any>;
     timeout?: number;
     credentials?: boolean;
+    responseType: RequesterResponseTypesType;
 }
 
 export interface Requester {

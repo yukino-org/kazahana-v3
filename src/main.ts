@@ -16,7 +16,7 @@ import {
     StateUpdateState
 } from "./plugins/api";
 import { constants, util } from "./plugins/util";
-import { GlobalStateProps, EventBus } from "./plugins/types";
+import { GlobalStateProps, EventBus, StoreKeys } from "./plugins/types";
 
 const app = createApp(App);
 
@@ -57,6 +57,7 @@ declare global {
     const app_name: string;
     const app_code: string;
     const app_platform: string;
+    const app_os: string;
     const app_version: string;
     const app_builtAt: number;
 
@@ -77,9 +78,7 @@ declare module "@vue/runtime-core" {
 async function createGlobalState() {
     const store = await Store.getClient();
 
-    const settings: Record<string, any> | undefined = await store.get(
-        constants.storeKeys.settings
-    );
+    const settings = await store.get(StoreKeys.settings);
 
     const state = new State<GlobalStateProps>({
         autoDetectTheme:
@@ -93,7 +92,24 @@ async function createGlobalState() {
             "enabled",
         sideBar:
             settings?.sideBarPosition ||
-            constants.defaults.settings.sideBarPosition
+            constants.defaults.settings.sideBarPosition,
+        hideBottomBarText:
+            (settings?.hideBottomBarText ||
+                constants.defaults.settings.hideBottomBarText) === "enabled",
+        compactBottomBar:
+            (settings?.compactBottomBar ||
+                constants.defaults.settings.compactBottomBar) === "enabled",
+        bottomBarItemsCount:
+            settings?.bottomBarItemsCount ||
+            constants.defaults.settings.bottomBarItemsCount,
+        runtime: Object.freeze({
+            isAndroid: app_os === "android",
+            isMac: app_os === "darwin",
+            isWindows: app_os === "win32",
+            isLinux: app_os === "linux",
+            isElectron: app_platform === "electron",
+            isCapacitor: app_platform === "capacitor"
+        })
     });
 
     return state;

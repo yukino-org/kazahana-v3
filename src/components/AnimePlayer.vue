@@ -21,7 +21,11 @@
                         "
                     >
                         <span class="mr-2 opacity-75">Autoplay:</span>
-                        <input type="checkbox" v-model="autoPlay" />
+                        <input
+                            class="text-indigo-500 rounded"
+                            type="checkbox"
+                            v-model="autoPlay"
+                        />
                     </div>
 
                     <div
@@ -33,7 +37,11 @@
                         "
                     >
                         <span class="mr-2 opacity-75">Auto next:</span>
-                        <input type="checkbox" v-model="autoNext" />
+                        <input
+                            class="text-indigo-500 rounded"
+                            type="checkbox"
+                            v-model="autoNext"
+                        />
                     </div>
 
                     <div
@@ -46,18 +54,19 @@
                         v-if="supportsPlayerWidth"
                     >
                         <span class="mr-2 opacity-75">Player width:</span>
-                        <div class="select w-40">
-                            <select class="capitalize" v-model="playerWidth">
-                                <option
-                                    v-for="wid in Array(10)
-                                        .fill(null)
-                                        .map((x, i) => i * 10 + 10)"
-                                    :value="wid"
-                                >
-                                    {{ wid }}%
-                                </option>
-                            </select>
-                        </div>
+                        <select
+                            class="bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                            v-model="playerWidth"
+                        >
+                            <option
+                                v-for="wid in Array(10)
+                                    .fill(null)
+                                    .map((x, i) => i * 10 + 10)"
+                                :value="wid"
+                            >
+                                {{ wid }}%
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -213,7 +222,7 @@ import {
     Store
 } from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
-import { LastLeftEntity, Settings } from "../plugins/types";
+import { StoreKeys } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
@@ -255,7 +264,7 @@ export default defineComponent({
             info: util.createStateController(),
             currentPlaying: null,
             playerWidth: 100,
-            supportsPlayerWidth: ["electron"].includes(app_platform),
+            supportsPlayerWidth: this.$state.props.runtime.isElectron,
             lastWatchUpdated: 0,
             autoPlay: false,
             autoNext: false,
@@ -281,10 +290,9 @@ export default defineComponent({
     methods: {
         async updatePageSetting() {
             const store = await Store.getClient();
-            const settings: Partial<Settings> =
-                (await store.get(constants.storeKeys.settings)) || {};
+            const settings = await store.get(StoreKeys.settings);
 
-            let width: number | undefined = settings.defaultPlayerWidth;
+            let width: number | undefined = settings?.defaultPlayerWidth;
             if (width && !isNaN(width)) {
                 width = +width;
                 if (width > 0 && width <= 100) {
@@ -425,7 +433,7 @@ export default defineComponent({
                 );
             }
 
-            if (["capacitor"].includes(app_platform)) {
+            if (this.$state.props.runtime.isCapacitor) {
                 this.fullScreenWatcher = setInterval(this.setFullScreen, 5000);
             }
         },
@@ -462,12 +470,14 @@ export default defineComponent({
                 if (ep) {
                     this.$bus.dispatch("update-MAL-anime-status", {
                         episode: +ep,
-                        status: "watching"
+                        status: "watching",
+                        autoComplete: true
                     });
 
                     this.$bus.dispatch("update-AniList-anime-status", {
                         episode: +ep,
-                        status: "CURRENT"
+                        status: "CURRENT",
+                        autoComplete: true
                     });
                 }
             }
@@ -475,7 +485,7 @@ export default defineComponent({
             const store = await Store.getClient();
             try {
                 if (!this.$state.props.incognito) {
-                    const lastLeft: LastLeftEntity = {
+                    await store.set(StoreKeys.lastWatchedLeft, {
                         title: `${this.title} (Episode ${this.episode})`,
                         episode: {
                             episode: this.episode!,
@@ -490,12 +500,7 @@ export default defineComponent({
                             }
                         },
                         showPopup: true
-                    };
-
-                    await store.set(
-                        constants.storeKeys.lastWatchedLeft,
-                        lastLeft
-                    );
+                    });
                     this.lastWatchUpdated = Date.now();
                 }
             } catch (err) {

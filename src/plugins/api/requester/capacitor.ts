@@ -8,7 +8,7 @@ const getParams = (url: URL) => Object.fromEntries(url.searchParams);
 
 const getContentType = (headers: Record<string, any>) => {
     const contentTypeKey = Object.keys(headers).find(
-        (x) => x.toLowerCase() === "content-type"
+        x => x.toLowerCase() === "content-type"
     );
     return <string | null>(contentTypeKey ? headers[contentTypeKey] : null);
 };
@@ -23,14 +23,16 @@ const getBody = (body: any, contentType: ReturnType<typeof getContentType>) => {
     return body;
 };
 
-const getData = (data: any) => {
-    if (typeof data === "object") {
+const getData = (responseType: RequesterOptions["responseType"], data: any) => {
+    if (responseType === "text" && typeof data === "object") {
         try {
             data = JSON.stringify(data);
         } catch (err) {}
     }
 
-    return <string>data;
+    console.log(data, typeof data, responseType);
+
+    return data;
 };
 
 export const requester: Requester = {
@@ -42,9 +44,9 @@ export const requester: Requester = {
             params: getParams(parsed),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout,
+            connectTimeout: options.timeout
         });
-        return getData(res.data);
+        return getData(options.responseType, res.data);
     },
     async post(url, body, options) {
         const parsed = new URL(url);
@@ -55,9 +57,9 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout,
+            connectTimeout: options.timeout
         });
-        return getData(res.data);
+        return getData(options.responseType, res.data);
     },
     async patch(url, body, options) {
         const parsed = new URL(url);
@@ -68,9 +70,9 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout,
+            connectTimeout: options.timeout
         });
-        return getData(res.data);
+        return getData(options.responseType, res.data);
     },
     async put(url, body, options) {
         const parsed = new URL(url);
@@ -81,10 +83,10 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout,
+            connectTimeout: options.timeout
         });
-        return getData(res.data);
-    },
+        return getData(options.responseType, res.data);
+    }
 };
 
 function getValidResponseType(

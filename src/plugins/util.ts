@@ -40,21 +40,11 @@ export const constants = {
             autoPlay: "disabled",
             autoNext: "disabled",
             defaultPlayerWidth: 100,
-            defaultPageWidth: 100
+            defaultPageWidth: 100,
+            hideBottomBarText: "disabled",
+            compactBottomBar: "disabled",
+            bottomBarItemsCount: 3
         }
-    },
-    storeKeys: {
-        recentlyBrowsed: "recently_browsed",
-        recentlyViewed: "recently_viewed",
-        settings: "settings",
-        lastWatchedLeft: "last_watched_left",
-        bookmarked: "bookmarked",
-        favorite: "favorites",
-        myAnimeListToken: "my_anime_list_token",
-        myAnimeListAnimeCacheTitles: "my_anime_list_anime_cache_titles",
-        myAnimeListMangaCacheTitles: "my_anime_list_manga_cache_titles",
-        aniListToken: "ani_list_token",
-        aniListCacheTitles: "ani_list_cache_titles"
     },
     assets: {
         images: {

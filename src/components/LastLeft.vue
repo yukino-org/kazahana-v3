@@ -113,15 +113,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Store } from "../plugins/api";
-import { constants, util } from "../plugins/util";
-import { LastLeftEntity } from "../plugins/types";
+import { util } from "../plugins/util";
+import { LastLeftEntity, StoreKeys, StoreStructure } from "../plugins/types";
 
 export default defineComponent({
     data() {
         const data: {
-            info: LastLeftEntity | null;
+            info: StoreStructure[StoreKeys.lastWatchedLeft] | null;
         } = {
-            info: null,
+            info: null
         };
 
         return data;
@@ -134,7 +134,7 @@ export default defineComponent({
             try {
                 const store = await Store.getClient();
                 const lastWatched: LastLeftEntity | null = await store.get(
-                    constants.storeKeys.lastWatchedLeft
+                    StoreKeys.lastWatchedLeft
                 );
                 if (lastWatched) {
                     this.info = lastWatched;
@@ -144,7 +144,7 @@ export default defineComponent({
         async deleteLastWatched() {
             try {
                 const store = await Store.getClient();
-                await store.set(constants.storeKeys.lastWatchedLeft, null);
+                await store.set(StoreKeys.lastWatchedLeft, null);
                 this.info = null;
             } catch (err) {}
         },
@@ -154,7 +154,7 @@ export default defineComponent({
                     this.info.showPopup = !this.info.showPopup;
                     const store = await Store.getClient();
                     await store.set(
-                        constants.storeKeys.lastWatchedLeft,
+                        StoreKeys.lastWatchedLeft,
                         util.mergeObject({}, this.info)
                     );
                 } catch (err) {}
@@ -177,13 +177,13 @@ export default defineComponent({
             if (this.info.episode) {
                 Object.assign(query, {
                     episode: this.info.episode.episode,
-                    watched: this.info.episode.watched,
+                    watched: this.info.episode.watched
                 });
             } else if (this.info.reading) {
                 Object.assign(query, {
                     page: this.info.reading.read,
                     volume: this.info.reading.volume,
-                    chapter: this.info.reading.chapter,
+                    chapter: this.info.reading.chapter
                 });
             }
 
@@ -191,11 +191,11 @@ export default defineComponent({
                 path: this.info.route.route,
                 query: {
                     ...this.info.route.queries,
-                    ...query,
-                },
+                    ...query
+                }
             });
-        },
-    },
+        }
+    }
 });
 </script>
 

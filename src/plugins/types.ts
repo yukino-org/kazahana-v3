@@ -4,7 +4,9 @@ import {
     AnimeStatusType as MyAnimeListAnimeStatusType,
     MangaStatusType as MyAnimeListMangaStatusType
 } from "./integrations/myanimelist";
+import { TokenInfo as MyAnimeListTokenInfo } from "./integrations/myanimelist/auth";
 import { StatusType as AniListStatusType } from "./integrations/anilist";
+import { TokenInfo as AniListTokenInfo } from "./integrations/anilist/auth";
 
 export const EnabledDisabled = ["enabled", "disabled"] as const;
 export type EnabledDisabledType = typeof EnabledDisabled[number];
@@ -29,6 +31,9 @@ export const TenToHundredPercent = [
 ] as const;
 export type TenToHundredPercentType = typeof TenToHundredPercent[number];
 
+export const BottomBarItemsCount = [3, 4, 5] as const;
+export type BottomBarItemsCountType = typeof BottomBarItemsCount[number];
+
 export interface Settings {
     updateChannel: UpdateChannelsType;
     incognito: EnabledDisabledType;
@@ -41,6 +46,9 @@ export interface Settings {
     autoNext: EnabledDisabledType;
     defaultPlayerWidth: TenToHundredPercentType;
     defaultPageWidth: TenToHundredPercentType;
+    hideBottomBarText: EnabledDisabledType;
+    compactBottomBar: EnabledDisabledType;
+    bottomBarItemsCount: BottomBarItemsCountType;
 }
 
 export interface LastLeftEntity {
@@ -111,6 +119,17 @@ export interface GlobalStateProps {
     isDarkTheme: boolean;
     incognito: boolean;
     sideBar: SideBarPositionType;
+    hideBottomBarText: boolean;
+    compactBottomBar: boolean;
+    bottomBarItemsCount: BottomBarItemsCountType;
+    runtime: {
+        isAndroid: boolean;
+        isMac: boolean;
+        isWindows: boolean;
+        isLinux: boolean;
+        isElectron: boolean;
+        isCapacitor: boolean;
+    };
 }
 
 export interface MyAnimeListAnimeConnectionSubscriber {
@@ -163,4 +182,34 @@ export interface EventBus extends EmitterSkeleton {
     "set-AniList-manga-chapter": (chapter: number | null) => void;
 
     "state-update": (state: StateUpdateState<GlobalStateProps>) => void;
+}
+
+export enum StoreKeys {
+    aniListAnimeCacheTitles = "ani_list_anime_cache_titles",
+    aniListMangaCacheTitles = "ani_list_manga_cache_titles",
+    aniListToken = "ani_list_token",
+    bookmarked = "bookmarked",
+    favorite = "favorites",
+    lastWatchedLeft = "last_watched_left",
+    myAnimeListAnimeCacheTitles = "my_anime_list_anime_cache_titles",
+    myAnimeListMangaCacheTitles = "my_anime_list_manga_cache_titles",
+    myAnimeListToken = "my_anime_list_token",
+    settings = "settings",
+    recentlyBrowsed = "recently_browsed",
+    recentlyViewed = "recently_viewed"
+}
+
+export interface StoreStructure extends Record<StoreKeys, any> {
+    [StoreKeys.aniListAnimeCacheTitles]: AniListConnectionCachedTitles[];
+    [StoreKeys.aniListMangaCacheTitles]: AniListConnectionCachedTitles[];
+    [StoreKeys.aniListToken]: AniListTokenInfo;
+    [StoreKeys.bookmarked]: BookmarkedEntity[];
+    [StoreKeys.favorite]: BookmarkedEntity[];
+    [StoreKeys.lastWatchedLeft]: LastLeftEntity;
+    [StoreKeys.myAnimeListAnimeCacheTitles]: MyAnimeListConnectionCachedTitles[];
+    [StoreKeys.myAnimeListMangaCacheTitles]: MyAnimeListConnectionCachedTitles[];
+    [StoreKeys.myAnimeListToken]: MyAnimeListTokenInfo;
+    [StoreKeys.settings]: Settings;
+    [StoreKeys.recentlyBrowsed]: RecentlyBrowsedEntity[];
+    [StoreKeys.recentlyViewed]: RecentlyViewedEntity[];
 }

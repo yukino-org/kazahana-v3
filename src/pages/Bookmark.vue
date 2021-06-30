@@ -5,9 +5,9 @@
         <div class="mt-8">
             <TabBar
                 :items="
-                    pages.map((x) => ({
+                    pages.map(x => ({
                         id: x,
-                        text: x,
+                        text: x
                     }))
                 "
                 :selected="selected"
@@ -27,8 +27,8 @@
                         :to="{
                             path: item.route.route,
                             query: {
-                                ...item.route.queries,
-                            },
+                                ...item.route.queries
+                            }
                         }"
                     >
                         <div
@@ -110,25 +110,25 @@
 import { defineComponent } from "vue";
 import { Rpc, Store } from "../plugins/api";
 import { constants, util } from "../plugins/util";
-import { BookmarkedEntity } from "../plugins/types";
+import { StoreKeys, StoreStructure } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
 import Loading from "../components/Loading.vue";
 import TabBar, { TabEntity } from "../components/TabBar.vue";
 
-const tabs = ["bookmarked", "favorite"] as const;
+const tabs = [StoreKeys.bookmarked, StoreKeys.favorite] as const;
 
 export default defineComponent({
     name: "Bookmark",
     components: {
         PageTitle,
         Loading,
-        TabBar,
+        TabBar
     },
     data() {
         const data: {
             placeHolderImage: string;
-            items: BookmarkedEntity[];
+            items: StoreStructure[StoreKeys.bookmarked];
             pages: typeof tabs;
             selected: typeof tabs[number];
         } = {
@@ -140,7 +140,7 @@ export default defineComponent({
             pages: tabs,
             selected: tabs.includes(<any>this.$route.query.selected)
                 ? <typeof tabs[number]>this.$route.query.selected
-                : "bookmarked",
+                : tabs[0]
         };
 
         return data;
@@ -153,8 +153,7 @@ export default defineComponent({
         async getSelected() {
             const store = await Store.getClient();
 
-            const allBookmarked: BookmarkedEntity[] =
-                (await store.get(constants.storeKeys[this.selected])) || [];
+            const allBookmarked = (await store.get(this.selected)) || [];
 
             this.items = allBookmarked;
         },
@@ -163,14 +162,14 @@ export default defineComponent({
             if (rmed.length) {
                 const store = await Store.getClient();
                 const unproxied = util.mergeObject({}, this.items);
-                await store.set(constants.storeKeys[this.selected], unproxied);
+                await store.set(this.selected, unproxied);
             }
         },
         changeSelected({ id: type }: TabEntity) {
             this.$router.push({
                 query: {
-                    selected: type,
-                },
+                    selected: type
+                }
             });
             this.selected = <any>type;
             this.items = [];
@@ -179,9 +178,9 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their bookmarks",
+                details: "Viewing their bookmarks"
             });
-        },
-    },
+        }
+    }
 });
 </script>

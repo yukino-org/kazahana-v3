@@ -2,6 +2,7 @@ import secrets from "../../../secrets/anilist";
 import { constants } from "../../util";
 import { http, Store } from "../../api";
 import { Auth, AuthClient, TokenInfo } from "./auth";
+import { StoreKeys } from "../../types";
 
 export interface MyAnimeListOptions {
     client: AuthClient;
@@ -198,9 +199,7 @@ export class MyAnimeListManager {
 
     async initialize() {
         const store = await Store.getClient();
-        const token: TokenInfo | null = await store.get(
-            constants.storeKeys.aniListToken
-        );
+        const token: TokenInfo | null = await store.get(StoreKeys.aniListToken);
 
         if (token) {
             this.auth.setToken(token);
@@ -221,12 +220,12 @@ export class MyAnimeListManager {
         if (!this.auth.token) return false;
 
         const store = await Store.getClient();
-        await store.set(constants.storeKeys.aniListToken, this.auth.token);
+        await store.set(StoreKeys.aniListToken, this.auth.token);
     }
 
     async removeToken() {
         const store = await Store.getClient();
-        await store.set(constants.storeKeys.aniListToken, null);
+        await store.set(StoreKeys.aniListToken, null);
     }
 
     async userInfo() {

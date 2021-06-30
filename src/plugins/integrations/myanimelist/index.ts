@@ -4,6 +4,7 @@ import { constants } from "../../util";
 import { http, RequesterOptions, Store } from "../../api";
 import { Auth, AuthClient, TokenInfo } from "./auth";
 import Logger from "../../logger";
+import { StoreKeys } from "../../types";
 
 export interface MyAnimeListOptions {
     client: AuthClient;
@@ -105,7 +106,7 @@ export interface MangaListEntity {
 export interface MangaEntity {
     id: number;
     title: string;
-    my_list_status: {
+    my_list_status?: {
         status: string;
         score: number;
         num_chapters_read: number;
@@ -161,7 +162,7 @@ export class MyAnimeListManager {
     async initialize() {
         const store = await Store.getClient();
         const token: TokenInfo | null = await store.get(
-            constants.storeKeys.myAnimeListToken
+            StoreKeys.myAnimeListToken
         );
 
         if (token) {
@@ -190,12 +191,12 @@ export class MyAnimeListManager {
         if (!this.auth.token) return false;
 
         const store = await Store.getClient();
-        await store.set(constants.storeKeys.myAnimeListToken, this.auth.token);
+        await store.set(StoreKeys.myAnimeListToken, this.auth.token);
     }
 
     async removeToken() {
         const store = await Store.getClient();
-        await store.set(constants.storeKeys.myAnimeListToken, null);
+        await store.set(StoreKeys.myAnimeListToken, null);
     }
 
     async userInfo() {
@@ -285,7 +286,9 @@ export class MyAnimeListManager {
         if (!this.auth.token) return false;
 
         url = encodeURI(`${this.baseURL}${url}`);
-        const options: RequesterOptions = {
+        const options: RequesterOptions & {
+            responseType: "text";
+        } = {
             headers: {
                 Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`
             },

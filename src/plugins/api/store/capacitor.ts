@@ -1,11 +1,12 @@
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
-import { StoreEntity } from "./";
+import { StoreEntity, StoreAllType } from "./";
+import { StoreKeys, StoreStructure } from "../../types";
 
-export const Store: StoreEntity = {
+export const Store: StoreEntity<StoreStructure> = {
     async get(key) {
         try {
             const { value } = await SecureStoragePlugin.get({
-                key,
+                key
             });
             return value ? JSON.parse(value) : null;
         } catch (err) {
@@ -16,7 +17,7 @@ export const Store: StoreEntity = {
         try {
             await SecureStoragePlugin.set({
                 key,
-                value: JSON.stringify(value),
+                value: JSON.stringify(value)
             });
         } catch (err) {}
     },
@@ -29,11 +30,14 @@ export const Store: StoreEntity = {
         }
     },
     async all() {
-        const { value: keys } = await SecureStoragePlugin.keys();
-        const all: Record<string, any> = {};
+        const keys: (keyof StoreStructure)[] = Object.keys(StoreKeys) as any;
+
+        const all: Partial<StoreAllType<StoreStructure>> = {};
         for (const key of keys) {
+            // @ts-ignore
             all[key] = await this.get(key);
         }
-        return all;
-    },
+
+        return <StoreAllType<StoreStructure>>all;
+    }
 };

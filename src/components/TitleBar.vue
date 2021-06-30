@@ -61,14 +61,43 @@
 
             <div
                 :class="[
-                    'py-1 dark:text-indigo-500 font-bold flex justify-center items-center gap-1 draggable',
-                    isMac ? 'flex-row-reverse' : 'flex-row',
+                    'py-1 font-bold flex justify-center items-center gap-1',
+                    isMac ? 'flex-row-reverse' : 'flex-row'
                 ]"
             >
-                <p>
+                <p class="draggable dark:text-indigo-500">
                     {{ title }}
                 </p>
-                <p class="opacity-50 text-xs" v-if="version">({{ version }})</p>
+
+                <p
+                    class="draggable dark:text-indigo-500 opacity-50 text-xs"
+                    v-if="version"
+                >
+                    ({{ version }})
+                </p>
+
+                <div
+                    :class="[
+                        'flex flex-row justify-center items-center',
+                        isMac ? 'mr-4' : 'ml-4'
+                    ]"
+                >
+                    <button
+                        class="cursor-pointer focus:outline-none rounded opacity-50 hover:opacity-100 px-2 transition duration-200"
+                        @click.stop.prevent="!!void $router.go(-1)"
+                        title="Go back"
+                    >
+                        <Icon icon="arrow-left" />
+                    </button>
+
+                    <button
+                        class="cursor-pointer focus:outline-none rounded opacity-50 hover:opacity-100 px-2 transition duration-200"
+                        @click.stop.prevent="!!void $router.go(1)"
+                        title="Go forward"
+                    >
+                        <Icon icon="arrow-right" />
+                    </button>
+                </div>
             </div>
 
             <div class="flex-grow draggable pb-8" v-if="!isMac"></div>
@@ -144,7 +173,7 @@ export default defineComponent({
             title: document.title,
             version: app_version,
             view_reload: !import.meta.env.PROD,
-            isMac: window.PlatformBridge.platform === "darwin",
+            isMac: this.$state.props.runtime.isMac
         };
 
         return data;
@@ -161,8 +190,8 @@ export default defineComponent({
         },
         closeWindow() {
             window.PlatformBridge?.closeWindow();
-        },
-    },
+        }
+    }
 });
 </script>
 
