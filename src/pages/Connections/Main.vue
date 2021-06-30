@@ -4,7 +4,7 @@
 
         <div class="mt-6 grid gap-4">
             <div
-                class="bg-gray-800 rounded px-4 py-3 flex flex-col md:flex-row justify-center items-center gap-4"
+                class="bg-gray-100 dark:bg-gray-800 rounded px-4 py-3 flex flex-col md:flex-row justify-center items-center gap-4"
                 v-for="con in connections"
             >
                 <div class="flex-grow flex items-center gap-3">

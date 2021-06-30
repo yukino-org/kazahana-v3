@@ -167,7 +167,8 @@
                             px-3
                             py-1.5
                             focus:outline-none
-                            hover:bg-gray-800
+                            hover:bg-gray-200
+                            dark:hover:bg-gray-800
                             transition
                             duration-200
                             rounded
@@ -184,7 +185,8 @@
                             px-3
                             py-1.5
                             focus:outline-none
-                            hover:bg-gray-800
+                            hover:bg-gray-200
+                            dark:hover:bg-gray-800
                             transition
                             duration-200
                             rounded
