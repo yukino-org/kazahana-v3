@@ -13,24 +13,25 @@ const start = async () => {
         root: path.resolve(__dirname, ".."),
         server: {
             port: PORT,
-        },
+            watch: true
+        }
     });
 
     await server.listen();
 
     const electronStart = "electron:start";
-    if (!electronStart in pkgJson.scripts)
+    if (!pkgJson.scripts[electronStart])
         throw new Error("Missing 'scripts.electron:start' in package.json");
 
     const electronProcess = spawn(`yarn ${electronStart}`, {
-        stdio: "inherit",
+        stdio: "inherit"
     });
 
-    electronProcess.on("error", (err) => {
+    electronProcess.on("error", err => {
         console.error(err);
     });
 
-    electronProcess.on("exit", (code) => {
+    electronProcess.on("exit", code => {
         console.warn(`Electron process exited with code ${code}! Exiting...`);
         process.exit(code);
     });
