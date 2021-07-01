@@ -13,10 +13,10 @@
         >
             <input
                 class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
-                v-model="terms"
                 type="text"
                 placeholder="Type in anime's name..."
                 @keypress.enter="!!void search()"
+                @input="!!void setTerms($event)"
             />
 
             <button
@@ -306,6 +306,12 @@ export default defineComponent({
         }
     },
     methods: {
+        setTerms(e: Event) {
+            const target = e.target as HTMLInputElement | null;
+            if (target?.value) {
+                this.terms = target.value;
+            }
+        },
         watchPluginChange() {
             watch(
                 () => this.selectedPlugin,
