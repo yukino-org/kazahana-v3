@@ -81,7 +81,7 @@
         "postcss": "^8.3.5",
         "rimraf": "^3.0.2",
         "tailwindcss": "^2.2.4",
-        "typescript": "^4.3.4",
+        "typescript": "^4.3.5",
         "vite": "2.3.8",
         "vue-tsc": "^0.2.0"
     }
