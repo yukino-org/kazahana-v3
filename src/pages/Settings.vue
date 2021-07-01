@@ -659,8 +659,11 @@ export default defineComponent({
         ): value is Settings[T] {
             return (this.allowedValues[key] as any[]).includes(value);
         },
-        async handleSettings<T extends keyof Settings>(event: any, key: T) {
-            const value = +event.target.value || event.target.value;
+        async handleSettings<T extends keyof Settings>(event: Event, key: T) {
+            const target = event.target as HTMLInputElement | null;
+            if (!target?.value) return;
+
+            const value = +target.value || target.value;
             if (this.validateSettings(key, value)) {
                 await this.updateSettings(key, value);
 

@@ -359,11 +359,11 @@ export default defineComponent({
                 this.info.state = "failed";
             }
         },
-        async updateStatus(event: any) {
+        async updateStatus(event: Event) {
             if (!this.computedId) return;
 
-            const value = event.target.value;
-            if (this.allowedStatus.includes(value)) {
+            const value = (event.target as HTMLInputElement | null)?.value;
+            if (value && this.allowedStatus.includes(value)) {
                 await AniList.updateAnime(this.computedId, {
                     status: <any>value
                 });

@@ -351,8 +351,8 @@ export default defineComponent({
         async updateStatus(event: any) {
             if (!this.computedId) return;
 
-            const value = event.target.value;
-            if (this.allowedStatus.includes(value)) {
+            const value = (event.target as HTMLInputElement | null)?.value;
+            if (value && this.allowedStatus.includes(value)) {
                 await MyAnimeList.updateAnime(this.computedId, {
                     status: <any>value
                 });
