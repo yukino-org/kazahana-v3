@@ -19,7 +19,7 @@ async function registerLinuxProtocol(name, code, execPath) {
         `Exec=${execPath} %u`,
         "Type=Application",
         "Terminal=false",
-        `MimeType=application/${code};`
+        `MimeType=x-scheme-handler/${code};`
     ].join("\n");
 
     const desktopFileDir = "/usr/share/applications",
