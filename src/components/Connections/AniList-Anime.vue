@@ -345,7 +345,7 @@ export default defineComponent({
                 ).catch(() => null);
                 if (gen) {
                     info = {
-                        status: "WATCHING",
+                        status: "CURRENT",
                         progress: 0,
                         media: gen
                     };

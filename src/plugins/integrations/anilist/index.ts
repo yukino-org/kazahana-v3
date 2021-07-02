@@ -66,7 +66,7 @@ export interface AnimeUpdateResultEntity {
 
 export interface GetAnimeEntity {
     id: number;
-    status: string;
+    status: StatusType;
     progress: number;
     media: {
         id: number;
@@ -145,7 +145,7 @@ export interface MangaUpdateResultEntity {
 
 export interface GetMangaEntity {
     id: number;
-    status: string;
+    status: StatusType;
     progress: number | null;
     progressVolumes: number | null;
     media: {
@@ -355,8 +355,8 @@ export class MyAnimeListManager {
     async updateAnime(id: number, body: Partial<AnimeUpdateBody>) {
         const res = await this.request({
             query: `
-                mutation ($mediaId: Int, $progress: Int) {
-                    SaveMediaListEntry (mediaId: $mediaId, progress: $progress) {
+                mutation ($mediaId: Int, $progress: Int, $status: MediaListStatus) {
+                    SaveMediaListEntry (mediaId: $mediaId, progress: $progress, status: $status) {
                         id,
                         status,
                         progress,
@@ -525,8 +525,8 @@ export class MyAnimeListManager {
     async updateManga(id: number, body: Partial<MangaUpdateBody>) {
         const res = await this.request({
             query: `
-                mutation ($mediaId: Int, $progress: Int, $progressVolumes: Int) {
-                    SaveMediaListEntry (mediaId: $mediaId, progress: $progress, progressVolumes: $progressVolumes) {
+                mutation ($mediaId: Int, $progress: Int, $progressVolumes: Int, $status: MediaListStatus) {
+                    SaveMediaListEntry (mediaId: $mediaId, progress: $progress, progressVolumes: $progressVolumes, status: $status) {
                         id,
                         status,
                         progress,
