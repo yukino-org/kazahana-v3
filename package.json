@@ -59,7 +59,7 @@
         "lodash.merge": "^4.6.2",
         "qs": "^6.10.1",
         "swiper": "^6.7.1",
-        "vue": "^3.1.2",
+        "vue": "^3.1.3",
         "vue-router": "4"
     },
     "devDependencies": {
@@ -68,7 +68,7 @@
         "@types/lodash.merge": "^4.6.6",
         "@types/qs": "^6.9.6",
         "@vitejs/plugin-vue": "^1.2.4",
-        "@vue/compiler-sfc": "^3.1.2",
+        "@vue/compiler-sfc": "^3.1.3",
         "@zyrouge/git-compare": "^1.0.0",
         "autoprefixer": "^10.2.5",
         "cordova-res": "^0.15.3",
