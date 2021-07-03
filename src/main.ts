@@ -129,7 +129,8 @@ function stateSubscriber({
 
 function configureTheme(autoDetect: boolean, isDark: boolean) {
     const addDark = autoDetect
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches ||
+          window.navigator.userAgent.includes("ExclusiveDarkUI")
         : isDark;
 
     if (addDark) {

@@ -283,17 +283,17 @@ const modes = ["contain", "cover", "fill"] as const;
 type ModesType = typeof modes[number];
 
 export default defineComponent({
-    emits: {
-        ready: () => true,
-        playing: () => true,
-        paused: () => true,
-        fullscreened: () => true,
-        fullscreenexit: () => true,
-        pipexit: () => true,
-        pipenter: () => true,
-        finish: () => true,
-        timechange: (current: number, total: number) => true
-    },
+    emits: [
+        "ready",
+        "playing",
+        "paused",
+        "fullscreened",
+        "fullscreenexit",
+        "pipexit",
+        "pipenter",
+        "finish",
+        "timechange"
+    ],
     props: {
         autoplay: {
             type: Boolean,

@@ -79,8 +79,8 @@
                     :style="{ width: `${playerWidth}%` }"
                     v-if="currentPlaying.type === 'streamable'"
                     @ready="initializePlayer()"
-                    @timeupdate="updateStats(true)"
-                    @ended="handleEnded()"
+                    @timechange="updateStats(true)"
+                    @finish="handleEnded()"
                     :key="currentPlaying.url"
                 >
                     <template v-slot:sources>
@@ -231,9 +231,7 @@ import ExternalLink from "./ExternalLink.vue";
 import VideoPlayer from "./VideoPlayer.vue";
 
 export default defineComponent({
-    emits: {
-        playNext: () => true
-    },
+    emits: ["playNext"],
     components: {
         Loading,
         ExternalLink,
