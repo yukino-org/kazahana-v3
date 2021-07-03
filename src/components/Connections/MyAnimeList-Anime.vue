@@ -48,7 +48,7 @@
                     <button
                         class="text-white focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
                         v-if="
-                            (info.data.my_list_status.num_episodes_watched ||
+                            (info.data.my_list_status?.num_episodes_watched ||
                                 0) >= currentEpisode
                         "
                         @click.stop.prevent="!!void setWatched(false)"
@@ -364,8 +364,9 @@ export default defineComponent({
                 !this.info.data ||
                 (this.info.data.num_episodes &&
                     data.episode > this.info.data.num_episodes) ||
-                this.info.data.my_list_status.num_episodes_watched ===
-                    data.episode
+                (this.info.data.my_list_status &&
+                    this.info.data.my_list_status.num_episodes_watched ===
+                        data.episode)
             )
                 return;
 

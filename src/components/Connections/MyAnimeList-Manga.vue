@@ -368,17 +368,19 @@ export default defineComponent({
             }
         },
         async setStatus(data: MyAnimeListMangaConnectionSubscriber) {
-            if (!this.computedId || !this.info.data) return;
+            if (
+                !this.computedId ||
+                !this.info.data ||
+                (this.info.data.num_chapters &&
+                    data.chapter > this.info.data.num_chapters)
+            )
+                return;
 
-            if (this.info.data.num_chapters) {
-                if (data.chapter > this.info.data.num_chapters) return;
-
-                if (
-                    data.autoComplete &&
-                    this.info.data.num_chapters === data.chapter
-                ) {
-                    status = "completed";
-                }
+            if (
+                data.autoComplete &&
+                this.info.data.num_chapters === data.chapter
+            ) {
+                status = "completed";
             }
 
             if (
