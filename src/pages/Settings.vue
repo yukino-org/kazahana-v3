@@ -9,261 +9,32 @@
             />
             <div v-else>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div
-                        class="col-span-1"
-                        v-if="supportedSettings.updateChannel"
-                    >
-                        <p class="text-sm opacity-75">Update Channel</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'updateChannel')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.updateChannel"
-                                :value="chs"
-                                :selected="chs === settings.updateChannel"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
+                    <template v-for="(setting, name) in config">
+                        <div class="col-span-1" v-if="setting.supported">
+                            <p class="text-sm opacity-75">{{ setting.name }}</p>
 
-                    <div class="col-span-1">
-                        <p class="text-sm opacity-75">Incognito Mode</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'incognito')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.incognito"
-                                :value="chs"
-                                :selected="chs === settings.incognito"
+                            <select
+                                class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                                @change="handleSettings($event, name)"
+                                v-if="setting.values"
                             >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div
-                        class="col-span-1"
-                        v-if="supportedSettings.sidebarPostion"
-                    >
-                        <p class="text-sm opacity-75">Sidebar Position</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'sideBarPosition')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.sideBarPosition"
-                                :value="chs"
-                                :selected="chs === settings.sideBarPosition"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div
-                        class="col-span-1"
-                        v-if="supportedSettings.playerWidth"
-                    >
-                        <p class="text-sm opacity-75">Default Player Width</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="
-                                handleSettings($event, 'defaultPlayerWidth')
-                            "
-                        >
-                            <option
-                                v-for="chs in allowedValues.defaultPlayerWidth"
-                                :value="chs"
-                                :selected="chs === settings.defaultPlayerWidth"
-                            >
-                                {{ chs }}%
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1">
-                        <p class="text-sm opacity-75">
-                            Default Manga Page Width
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'defaultPageWidth')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.defaultPageWidth"
-                                :value="chs"
-                                :selected="chs === settings.defaultPageWidth"
-                            >
-                                {{ chs }}%
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1">
-                        <p class="text-sm opacity-75">Autoplay</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'autoPlay')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.autoPlay"
-                                :value="chs"
-                                :selected="chs === settings.autoPlay"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1">
-                        <p class="text-sm opacity-75">Auto next</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'autoNext')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.autoNext"
-                                :value="chs"
-                                :selected="chs === settings.autoNext"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1">
-                        <p class="text-sm opacity-75">
-                            Use system preferred theme
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'autoDetectTheme')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.autoDetectTheme"
-                                :value="chs"
-                                :selected="chs === settings.autoDetectTheme"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div
-                        class="col-span-1"
-                        v-if="settings.autoDetectTheme === 'disabled'"
-                    >
-                        <p class="text-sm opacity-75">Dark Mode</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'darkMode')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.darkMode"
-                                :value="chs"
-                                :selected="chs === settings.darkMode"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1" v-if="supportedSettings.rpc">
-                        <p class="text-sm opacity-75">Discord RPC</p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'discordRpc')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.discordRpc"
-                                :value="chs"
-                                :selected="chs === settings.discordRpc"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1" v-if="supportedSettings.rpc">
-                        <p class="text-sm opacity-75">
-                            Discord RPC (Privacy mode)
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="
-                                handleSettings($event, 'discordRpcPrivacy')
-                            "
-                        >
-                            <option
-                                v-for="chs in allowedValues.discordRpcPrivacy"
-                                :value="chs"
-                                :selected="chs === settings.discordRpcPrivacy"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
-                        <p class="text-sm opacity-75">
-                            Compact Bottom Bar
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="handleSettings($event, 'compactBottomBar')"
-                        >
-                            <option
-                                v-for="chs in allowedValues.compactBottomBar"
-                                :value="chs"
-                                :selected="chs === settings.compactBottomBar"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
-                        <p class="text-sm opacity-75">
-                            Hide Bottom Bar Text
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="
-                                handleSettings($event, 'hideBottomBarText')
-                            "
-                        >
-                            <option
-                                v-for="chs in allowedValues.hideBottomBarText"
-                                :value="chs"
-                                :selected="chs === settings.hideBottomBarText"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-1" v-if="supportedSettings.bottomBar">
-                        <p class="text-sm opacity-75">
-                            Bottom Bar Items Count
-                        </p>
-                        <select
-                            class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
-                            @change="
-                                handleSettings($event, 'bottomBarItemsCount')
-                            "
-                        >
-                            <option
-                                v-for="chs in allowedValues.bottomBarItemsCount"
-                                :value="chs"
-                                :selected="chs === settings.bottomBarItemsCount"
-                            >
-                                {{ chs }}
-                            </option>
-                        </select>
-                    </div>
+                                <option
+                                    v-for="chs in setting.values"
+                                    :value="chs"
+                                    :selected="chs === settings[name]"
+                                >
+                                    {{ setting.pretty?.(chs) || chs }}
+                                </option>
+                            </select>
+                            <input
+                                class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                                :type="setting.type"
+                                v-else-if="setting.type"
+                                @input="handleSettings($event, name)"
+                                :value="settings[name]"
+                            />
+                        </div>
+                    </template>
                 </div>
 
                 <div>
@@ -538,15 +309,10 @@ import { http, ExternalLink, Rpc, Store } from "../plugins/api";
 import { constants, util } from "../plugins/util";
 import {
     BottomBarItemsCount,
-    BottomBarItemsCountType,
     EnabledDisabled,
-    EnabledDisabledType,
     TenToHundredPercent,
-    TenToHundredPercentType,
     UpdateChannels,
-    UpdateChannelsType,
     SideBarPosition,
-    SideBarPositionType,
     StoreKeys,
     StoreStructure
 } from "../plugins/types";
@@ -565,6 +331,20 @@ const AppInfo = {
 
 type Settings = StoreStructure[StoreKeys.settings];
 
+interface SettingsConfig<T extends keyof Settings> {
+    name: string;
+    validate(value: any): value is Settings[T];
+    values?: Settings[T][] | Readonly<Settings[T][]>;
+    type?: "number";
+    supported: boolean;
+    pretty?(value: any): any;
+    transform?(value: string): any;
+}
+
+const ArrayCheck = <T>(arr: T[] | Readonly<T[]>) => {
+    return (value: any): value is T => arr.includes(value);
+};
+
 export default defineComponent({
     name: "Search",
     components: {
@@ -573,36 +353,133 @@ export default defineComponent({
         Popup
     },
     data() {
-        type SettingValueOfArray<T> = { [P in keyof T]: T[P][] };
-        const allowedSettingsValues: SettingValueOfArray<Settings> = {
-            updateChannel: (UpdateChannels as any) as UpdateChannelsType[],
-            incognito: (EnabledDisabled as any) as EnabledDisabledType[],
-            sideBarPosition: (SideBarPosition as any) as SideBarPositionType[],
-            discordRpc: (EnabledDisabled as any) as EnabledDisabledType[],
-            discordRpcPrivacy: (EnabledDisabled as any) as EnabledDisabledType[],
-            autoDetectTheme: (EnabledDisabled as any) as EnabledDisabledType[],
-            darkMode: (EnabledDisabled as any) as EnabledDisabledType[],
-            autoPlay: (EnabledDisabled as any) as EnabledDisabledType[],
-            autoNext: (EnabledDisabled as any) as EnabledDisabledType[],
-            defaultPlayerWidth: (TenToHundredPercent as any) as TenToHundredPercentType[],
-            defaultPageWidth: (TenToHundredPercent as any) as TenToHundredPercentType[],
-            hideBottomBarText: (EnabledDisabled as any) as EnabledDisabledType[],
-            compactBottomBar: (EnabledDisabled as any) as EnabledDisabledType[],
-            bottomBarItemsCount: (BottomBarItemsCount as any) as BottomBarItemsCountType[]
-        };
-
-        const supportedSettings = {
-            updateChannel: this.$state.props.runtime.isElectron,
-            sidebarPostion: this.$state.props.runtime.isElectron,
-            playerWidth: this.$state.props.runtime.isElectron,
-            rpc: this.$state.props.runtime.isElectron,
-            bottomBar: this.$state.props.runtime.isCapacitor
+        const config: {
+            [P in keyof Settings]: SettingsConfig<P>;
+        } = {
+            updateChannel: {
+                name: "Update Channel",
+                validate: ArrayCheck(UpdateChannels),
+                values: UpdateChannels,
+                supported: this.$state.props.runtime.isElectron
+            },
+            incognito: {
+                name: "Incognito",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            sideBarPosition: {
+                name: "Sidebar Position",
+                validate: ArrayCheck(SideBarPosition),
+                values: SideBarPosition,
+                supported: this.$state.props.runtime.isElectron
+            },
+            discordRpc: {
+                name: "Discord RPC",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: this.$state.props.runtime.isElectron
+            },
+            discordRpcPrivacy: {
+                name: "Discord RPC (Privacy Mode)",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            autoDetectTheme: {
+                name: "Use system preferred theme",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            darkMode: {
+                name: "Dark Mode",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            autoPlay: {
+                name: "Autoplay",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            autoNext: {
+                name: "Autoplay Next",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            defaultPlayerWidth: {
+                name: "Video Player Width",
+                validate: ArrayCheck(TenToHundredPercent),
+                values: TenToHundredPercent,
+                type: "number",
+                supported: this.$state.props.runtime.isElectron,
+                pretty: value => `${value}%`,
+                transform: value => Math.trunc(+value || 0)
+            },
+            defaultPageWidth: {
+                name: "Manga Page Width",
+                validate: ArrayCheck(TenToHundredPercent),
+                values: TenToHundredPercent,
+                type: "number",
+                supported: true,
+                pretty: value => `${value}%`,
+                transform: value => Math.trunc(+value || 0)
+            },
+            hideBottomBarText: {
+                name: "Hide Bottom Bar Text",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: this.$state.props.runtime.isCapacitor
+            },
+            compactBottomBar: {
+                name: "Compact Bottom Bar",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
+                supported: true
+            },
+            bottomBarItemsCount: {
+                name: "Bottom Bar Items Count",
+                validate: ArrayCheck(BottomBarItemsCount),
+                values: BottomBarItemsCount,
+                supported: true
+            },
+            defaultSeekLength: {
+                name: "Seek Duration (in seconds)",
+                validate: (value): value is number =>
+                    typeof value === "number" && util.isFiniteNumber(value),
+                type: "number",
+                supported: true,
+                transform: value => Math.trunc(+value || 0)
+            },
+            skipIntroLength: {
+                name: "Skip Intro Length (in seconds)",
+                validate: (value): value is number =>
+                    typeof value === "number" && util.isFiniteNumber(value),
+                type: "number",
+                supported: true,
+                transform: value => Math.trunc(+value || 0)
+            },
+            defaultVolume: {
+                name: "Player Volume (1 - 100)",
+                validate: (value): value is number =>
+                    typeof value === "number" &&
+                    util.isFiniteNumber(value) &&
+                    value <= 100,
+                type: "number",
+                transform: value =>
+                    Math.trunc(
+                        +(value.match(/[0-9]?[0-9]?[0-9]/)?.[0] || "0") || 0
+                    ),
+                supported: true
+            }
         };
 
         const data: {
             settings: Settings | null;
-            allowedValues: typeof allowedSettingsValues;
-            supportedSettings: typeof supportedSettings;
+            config: typeof config;
             appInfo: typeof AppInfo;
             links: typeof constants.links;
             changelogs: {
@@ -615,8 +492,7 @@ export default defineComponent({
             };
         } = {
             settings: null,
-            allowedValues: allowedSettingsValues,
-            supportedSettings: supportedSettings,
+            config,
             appInfo: AppInfo,
             links: constants.links,
             changelogs: {
@@ -641,57 +517,48 @@ export default defineComponent({
                 settings
             );
         },
-        async updateSettings<T extends keyof Settings>(
-            key: T,
-            value: Settings[T]
-        ) {
+        async handleSettings<T extends keyof Settings>(event: Event, key: T) {
             if (!this.settings) return;
 
-            const store = await Store.getClient();
-            const settings = { ...this.settings };
-            settings[key] = value;
-            await store.set(StoreKeys.settings, settings);
-            this.settings = settings;
-        },
-        validateSettings<T extends keyof Settings>(
-            key: T,
-            value: any
-        ): value is Settings[T] {
-            return (this.allowedValues[key] as any[]).includes(value);
-        },
-        async handleSettings<T extends keyof Settings>(event: Event, key: T) {
             const target = event.target as HTMLInputElement | null;
             if (!target?.value) return;
 
-            const value = +target.value || target.value;
-            if (this.validateSettings(key, value)) {
-                await this.updateSettings(key, value);
+            const config: SettingsConfig<T> = this.config[key] as any;
+            const value = config.transform?.(target.value) || target.value;
 
-                if (
-                    this.settings &&
-                    [
-                        "autoDetectTheme",
-                        "darkMode",
-                        "incognito",
-                        "sideBarPosition",
-                        "hideBottomBarText",
-                        "compactBottomBar",
-                        "bottomBarItemsCount"
-                    ].includes(key)
-                ) {
-                    this.$state.update({
-                        autoDetectTheme:
-                            this.settings.autoDetectTheme === "enabled",
-                        isDarkTheme: this.settings.darkMode === "enabled",
-                        incognito: this.settings.incognito === "enabled",
-                        sideBar: this.settings.sideBarPosition,
-                        hideBottomBarText:
-                            this.settings.hideBottomBarText === "enabled",
-                        compactBottomBar:
-                            this.settings.compactBottomBar === "enabled",
-                        bottomBarItemsCount: this.settings.bottomBarItemsCount
-                    });
-                }
+            if (!config.validate(value))
+                return (target.value = this.settings[key] as any);
+
+            const store = await Store.getClient();
+            const settings = util.mergeObject({}, this.settings);
+            settings[key] = value;
+            await store.set(StoreKeys.settings, settings);
+            this.settings = settings;
+            target.value = this.settings[key] as any;
+
+            if (
+                [
+                    "autoDetectTheme",
+                    "darkMode",
+                    "incognito",
+                    "sideBarPosition",
+                    "hideBottomBarText",
+                    "compactBottomBar",
+                    "bottomBarItemsCount"
+                ].includes(key)
+            ) {
+                this.$state.update({
+                    autoDetectTheme:
+                        this.settings.autoDetectTheme === "enabled",
+                    isDarkTheme: this.settings.darkMode === "enabled",
+                    incognito: this.settings.incognito === "enabled",
+                    sideBar: this.settings.sideBarPosition,
+                    hideBottomBarText:
+                        this.settings.hideBottomBarText === "enabled",
+                    compactBottomBar:
+                        this.settings.compactBottomBar === "enabled",
+                    bottomBarItemsCount: this.settings.bottomBarItemsCount
+                });
             }
         },
         async setRpc() {
@@ -759,3 +626,10 @@ export default defineComponent({
     }
 });
 </script>
+
+<style scoped>
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+</style>
