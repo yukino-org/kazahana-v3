@@ -161,7 +161,9 @@ export default defineComponent({
             const rmed = this.items.splice(index, 1);
             if (rmed.length) {
                 const store = await Store.getClient();
-                const unproxied = util.mergeObject({}, this.items);
+                const unproxied = this.items.map(item =>
+                    util.mergeObject({}, item)
+                );
                 await store.set(this.selected, unproxied);
             }
         },
