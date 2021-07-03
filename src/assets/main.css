@@ -95,6 +95,7 @@ textarea {
 }
 
 input[type="checkbox"]:focus {
-    border: none;
     box-shadow: none;
+
+    @apply focus:border focus:border-gray-500;
 }
