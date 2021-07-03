@@ -10,7 +10,14 @@
             <div v-else>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <template v-for="(setting, name) in config">
-                        <div class="col-span-1" v-if="setting.supported">
+                        <div
+                            class="col-span-1"
+                            v-if="
+                                typeof setting.supported === 'function'
+                                    ? setting.supported(settings)
+                                    : setting.supported
+                            "
+                        >
                             <p class="text-sm opacity-75">{{ setting.name }}</p>
 
                             <select
@@ -336,7 +343,7 @@ interface SettingsConfig<T extends keyof Settings> {
     validate(value: any): value is Settings[T];
     values?: Settings[T][] | Readonly<Settings[T][]>;
     type?: "number";
-    supported: boolean;
+    supported: boolean | ((settings: Settings) => boolean);
     pretty?(value: any): any;
     transform?(value: string): any;
 }
@@ -396,7 +403,7 @@ export default defineComponent({
                 name: "Dark Mode",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: settings => settings.autoDetectTheme === "disabled"
             },
             autoPlay: {
                 name: "Autoplay",
@@ -438,13 +445,13 @@ export default defineComponent({
                 name: "Compact Bottom Bar",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: this.$state.props.runtime.isCapacitor
             },
             bottomBarItemsCount: {
                 name: "Bottom Bar Items Count",
                 validate: ArrayCheck(BottomBarItemsCount),
                 values: BottomBarItemsCount,
-                supported: true
+                supported: this.$state.props.runtime.isCapacitor
             },
             defaultSeekLength: {
                 name: "Seek Duration (in seconds)",

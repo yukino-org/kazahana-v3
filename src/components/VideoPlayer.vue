@@ -23,6 +23,16 @@
         </video>
 
         <transition name="fade">
+            <button
+                class="absolute focus:outline-none text-center text-4xl opacity-0 hover:opacity-100 transition duration-200 p-10"
+                @click.stop.prevent="!!void (isPlaying ? pause() : play())"
+            >
+                <Icon icon="pause" v-if="isPlaying" />
+                <Icon icon="play" v-else />
+            </button>
+        </transition>
+
+        <transition name="fade">
             <div class="absolute top-4 right-4" v-if="isLoading">
                 <svg
                     class="animate-spin h-5 w-5 text-white"
@@ -93,7 +103,7 @@
                 v-if="isOptionOpened"
             >
                 <button
-                    class="hover:opacity-80 transition duration-200"
+                    class="focus:outline-none hover:opacity-80 transition duration-200"
                     @click.stop.prevent="
                         seekFromCurrent(85);
                         isOptionOpened = false;
@@ -103,7 +113,7 @@
                 </button>
 
                 <button
-                    class="hover:opacity-80 transition duration-200"
+                    class="focus:outline-none hover:opacity-80 transition duration-200"
                     @click.stop.prevent="togglePlayback()"
                 >
                     <Icon class="mr-1" icon="forward" /> Speed
@@ -113,7 +123,7 @@
                 </button>
 
                 <button
-                    class="hover:opacity-80 transition duration-200"
+                    class="focus:outline-none hover:opacity-80 transition duration-200"
                     @click.stop.prevent="toggleMode()"
                 >
                     <Icon class="mr-1" icon="video" /> Mode
@@ -123,7 +133,7 @@
                 </button>
 
                 <button
-                    class="hover:opacity-80 transition duration-200"
+                    class="focus:outline-none hover:opacity-80 transition duration-200"
                     @click.stop.prevent="
                         togglePIP();
                         isOptionOpened = false;
@@ -168,16 +178,16 @@
                 v-if="!isPlaying || isInFocus || isPipEnabled"
             >
                 <div class="flex flex-row justify-between items-center gap-0.5">
-                    <div
+                    <button
                         class="video-control"
                         @click.stop.prevent="
                             !!void seekFromCurrent(-defaultSeekLength)
                         "
                     >
                         <Icon icon="backward" />
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                         class="video-control text-sm"
                         @click.stop.prevent="
                             !!void (isPlaying ? pause() : play())
@@ -185,16 +195,16 @@
                     >
                         <Icon icon="pause" v-if="isPlaying" />
                         <Icon icon="play" v-else />
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                         class="video-control"
                         @click.stop.prevent="
                             !!void seekFromCurrent(defaultSeekLength)
                         "
                     >
                         <Icon icon="forward" />
-                    </div>
+                    </button>
 
                     <div
                         class="mx-2 flex-grow flex justify-center items-center relative h-3 cursor-pointer"
@@ -234,7 +244,7 @@
                         }}</span>
                     </div>
 
-                    <div
+                    <button
                         class="video-control"
                         @click.stop.prevent="
                             !!void (isVolumeOpened = !isVolumeOpened)
@@ -243,24 +253,24 @@
                         <Icon icon="volume-mute" v-if="volume === 0" />
                         <Icon icon="volume-down" v-else-if="volume < 0.5" />
                         <Icon icon="volume-up" v-else />
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                         class="video-control"
                         @click.stop.prevent="
                             !!void (isOptionOpened = !isOptionOpened)
                         "
                     >
                         <Icon icon="cog" />
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                         class="video-control"
                         @click.stop.prevent="!!void toggleFullscreen()"
                     >
                         <Icon icon="compress-alt" v-if="isFullscreened" />
                         <Icon icon="expand-alt" v-else />
-                    </div>
+                    </button>
                 </div>
             </div>
         </transition>
@@ -523,6 +533,8 @@ export default defineComponent({
                 (event.offsetX / target.offsetWidth) * player.duration;
         },
         handleKeypress(event: KeyboardEvent) {
+            event.preventDefault();
+
             if (event.key === " ") {
                 this.isPlaying ? this.pause() : this.play();
             }
@@ -677,7 +689,7 @@ export default defineComponent({
 
 <style scoped>
 .video-control {
-    @apply hover:bg-white/20 px-1.5 py-0.5 rounded cursor-pointer transition duration-200;
+    @apply focus:outline-none hover:bg-white/20 px-1.5 py-0.5 rounded transition duration-200;
 }
 
 .fade-pop-enter-from,
