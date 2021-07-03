@@ -43,7 +43,10 @@ export const constants = {
             defaultPageWidth: 100,
             hideBottomBarText: "disabled",
             compactBottomBar: "disabled",
-            bottomBarItemsCount: 3
+            bottomBarItemsCount: 3,
+            skipIntroLength: 85,
+            defaultSeekLength: 10,
+            defaultVolume: 100
         }
     },
     assets: {
@@ -185,6 +188,13 @@ export const util = {
             .writeText(text)
             .then(() => true)
             .catch(() => false);
+    },
+    padNumber(num: number | string, len: number) {
+        const str = typeof num === "number" ? num.toString() : num;
+        return str.padStart(len, "0");
+    },
+    isFiniteNumber(num: number) {
+        return num >= 0 && num < Infinity;
     },
     mergeObject: MergeObject
 };
