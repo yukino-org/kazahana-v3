@@ -1,6 +1,7 @@
 <template>
     <div>
         <PageTitle title="Home" />
+
         <div>
             <p class="-mt-1 text-xl text-indigo-500 font-bold">
                 Top Animes

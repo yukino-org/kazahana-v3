@@ -18,7 +18,7 @@
                         'relative focus:outline-none hover:text-indigo-100 dark:hover:text-gray-300 transition duration-200',
                         !item.external &&
                             $route.path === item.url &&
-                            'text-white dark:text-indigo-500'
+                            'text-white dark:text-indigo-500 dark:hover:text-indigo-500'
                     ]"
                     @click.stop.prevent="!!void goto(item.url, item.external)"
                     v-for="item in links"

@@ -42,7 +42,16 @@ import {
     faMoon,
     faBars,
     faClipboard,
-    faCheck
+    faCheck,
+    faPause,
+    faVolumeUp,
+    faVolumeMute,
+    faVolumeDown,
+    faCompressAlt,
+    faForward,
+    faBackward,
+    faFastForward,
+    faVideo
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSnowflake,
@@ -109,7 +118,16 @@ library.add(
     faMoon,
     faBars,
     faClipboard,
-    faCheck
+    faCheck,
+    faPause,
+    faVolumeUp,
+    faVolumeMute,
+    faVolumeDown,
+    faCompressAlt,
+    faForward,
+    faBackward,
+    faFastForward,
+    faVideo
 );
 
 export default FontAwesomeIcon;

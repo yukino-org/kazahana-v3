@@ -71,20 +71,22 @@
                 </div>
             </div>
 
-            <div class="mt-2">
-                <video
+            <div class="mt-2 flex justify-center items-center">
+                <VideoPlayer
                     class="outline-none"
-                    id="video-player"
-                    controls
+                    ref="player"
+                    :controls="true"
                     :style="{ width: `${playerWidth}%` }"
                     v-if="currentPlaying.type === 'streamable'"
-                    @loadedmetadata="initializePlayer()"
+                    @ready="initializePlayer()"
                     @timeupdate="updateStats(true)"
                     @ended="handleEnded()"
                     :key="currentPlaying.url"
                 >
-                    <source :src="getValidImageUrl(currentPlaying.url)" />
-                </video>
+                    <template v-slot:sources>
+                        <source :src="getValidImageUrl(currentPlaying.url)" />
+                    </template>
+                </VideoPlayer>
             </div>
 
             <p class="mt-2" v-if="currentPlaying.url">
@@ -214,7 +216,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent, watch, ref } from "vue";
 import {
     Extractors,
     ExtractorsEntity,
@@ -226,12 +228,16 @@ import { StoreKeys } from "../plugins/types";
 
 import Loading from "./Loading.vue";
 import ExternalLink from "./ExternalLink.vue";
+import VideoPlayer from "./VideoPlayer.vue";
 
 export default defineComponent({
-    emits: ["playNext"],
+    emits: {
+        playNext: () => true
+    },
     components: {
         Loading,
-        ExternalLink
+        ExternalLink,
+        VideoPlayer
     },
     props: {
         title: String,
@@ -239,6 +245,11 @@ export default defineComponent({
         plugin: String,
         link: String,
         autoPlayHandler: Function
+    },
+    setup() {
+        const player = ref<InstanceType<typeof VideoPlayer> | null>(null);
+
+        return { player };
     },
     data() {
         const data: {
@@ -381,20 +392,22 @@ export default defineComponent({
             }
         },
         initializePlayer() {
-            const video = <any>document.getElementById("video-player");
-            if (video && this.$route.query.watched) {
+            if (this.player && this.$route.query.watched) {
                 const watched =
                     typeof this.$route.query.watched === "string"
                         ? +this.$route.query.watched
                         : null;
 
                 if (watched !== null && !isNaN(watched)) {
-                    video.currentTime = watched;
+                    this.player.seekTo(watched);
                 }
 
                 delete this.$route.query.watched;
                 this.updateStats();
-                this.autoPlay = video.play();
+
+                if (this.autoPlay) {
+                    this.player.play();
+                }
             }
         },
         getHostFromUrl(url: string) {
@@ -472,60 +485,55 @@ export default defineComponent({
                 if (diff < timeout) return;
             }
 
-            let watchedDuration = 0,
-                totalDuration = 0;
+            if (this.player) {
+                if (
+                    this.player.duration.playedSecs /
+                        this.player.duration.totalSecs >
+                    0.8
+                ) {
+                    const ep = this.episode?.match(/\d+/)?.[0];
+                    if (ep) {
+                        this.$bus.dispatch("update-MAL-anime-status", {
+                            episode: +ep,
+                            status: "watching",
+                            autoComplete: true
+                        });
 
-            const video = <any>document.getElementById("video-player");
-            if (video) {
-                if (typeof video.currentTime === "number")
-                    watchedDuration = video.currentTime;
-                if (typeof video.duration === "number")
-                    totalDuration = video.duration;
-            }
-
-            if (watchedDuration / totalDuration > 0.8) {
-                const ep = this.episode?.match(/\d+/)?.[0];
-                if (ep) {
-                    this.$bus.dispatch("update-MAL-anime-status", {
-                        episode: +ep,
-                        status: "watching",
-                        autoComplete: true
-                    });
-
-                    this.$bus.dispatch("update-AniList-anime-status", {
-                        episode: +ep,
-                        status: "CURRENT",
-                        autoComplete: true
-                    });
+                        this.$bus.dispatch("update-AniList-anime-status", {
+                            episode: +ep,
+                            status: "CURRENT",
+                            autoComplete: true
+                        });
+                    }
                 }
-            }
 
-            const store = await Store.getClient();
-            try {
-                if (!this.$state.props.incognito) {
-                    await store.set(StoreKeys.lastWatchedLeft, {
-                        title: `${this.title} (Episode ${this.episode})`,
-                        episode: {
-                            episode: this.episode!,
-                            watched: watchedDuration,
-                            total: totalDuration
-                        },
-                        updatedAt: Date.now(),
-                        route: {
-                            route: this.$route.path,
-                            queries: <Record<string, string>>{
-                                ...this.$route.query
-                            }
-                        },
-                        showPopup: true
-                    });
-                    this.lastWatchUpdated = Date.now();
+                const store = await Store.getClient();
+                try {
+                    if (!this.$state.props.incognito) {
+                        await store.set(StoreKeys.lastWatchedLeft, {
+                            title: `${this.title} (Episode ${this.episode})`,
+                            episode: {
+                                episode: this.episode!,
+                                watched: this.player.duration.playedSecs,
+                                total: this.player.duration.totalSecs
+                            },
+                            updatedAt: Date.now(),
+                            route: {
+                                route: this.$route.path,
+                                queries: <Record<string, string>>{
+                                    ...this.$route.query
+                                }
+                            },
+                            showPopup: true
+                        });
+                        this.lastWatchUpdated = Date.now();
+                    }
+                } catch (err) {
+                    this.$logger.emit(
+                        "error",
+                        `Failed to updated last watched: ${err?.message}`
+                    );
                 }
-            } catch (err) {
-                this.$logger.emit(
-                    "error",
-                    `Failed to updated last watched: ${err?.message}`
-                );
             }
         },
         async handleEnded() {

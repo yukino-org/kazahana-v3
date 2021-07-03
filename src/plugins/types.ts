@@ -49,6 +49,9 @@ export interface Settings {
     hideBottomBarText: EnabledDisabledType;
     compactBottomBar: EnabledDisabledType;
     bottomBarItemsCount: BottomBarItemsCountType;
+    skipIntroLength: number;
+    defaultSeekLength: number;
+    defaultVolume: number;
 }
 
 export interface LastLeftEntity {
