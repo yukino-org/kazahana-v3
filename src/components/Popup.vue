@@ -54,7 +54,9 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-    emits: ["close"],
+    emits: {
+        close: () => true
+    },
     props: {
         show: {
             type: Boolean,

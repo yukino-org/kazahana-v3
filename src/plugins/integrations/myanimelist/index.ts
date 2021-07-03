@@ -42,7 +42,7 @@ export interface AnimeListEntity {
 export interface AnimeEntity {
     id: number;
     title: string;
-    my_list_status: {
+    my_list_status?: {
         status: string;
         score: number;
         num_episodes_watched: number;

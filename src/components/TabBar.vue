@@ -15,7 +15,7 @@
                 item.id === selected
                     ? 'border-indigo-500 text-indigo-500 dark:text-indigo-400'
                     : 'border-gray-200 dark:border-gray-800',
-                tabClassNames,
+                tabClassNames
             ]"
             v-for="item in items"
             @click.stop.prevent="!!void changeValue(item)"
@@ -35,17 +35,19 @@ export interface TabEntity {
 }
 
 export default defineComponent({
-    emits: ["tabClick"],
+    emits: {
+        tabClick: (item: TabEntity) => true
+    },
     props: {
         items: Array as PropType<TabEntity[]>,
         selected: String,
-        tabClassNames: String as PropType<string | string[]>,
+        tabClassNames: String as PropType<string | string[]>
     },
     methods: {
         changeValue(item: TabEntity) {
             if (item.id === this.selected) return;
             this.$emit("tabClick", item);
-        },
-    },
+        }
+    }
 });
 </script>
