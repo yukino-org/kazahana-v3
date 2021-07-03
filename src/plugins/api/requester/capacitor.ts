@@ -2,7 +2,7 @@ import qs from "qs";
 import { Http, HttpOptions } from "@capacitor-community/http";
 import { Requester, RequesterOptions } from "./";
 
-const getUrl = (url: URL) => url.origin + url.pathname;
+const getUrl = (url: URL) => `https://${url.host}${url.pathname}`;
 
 const getParams = (url: URL) => Object.fromEntries(url.searchParams);
 
@@ -29,8 +29,6 @@ const getData = (responseType: RequesterOptions["responseType"], data: any) => {
             data = JSON.stringify(data);
         } catch (err) {}
     }
-
-    console.log(data, typeof data, responseType);
 
     return data;
 };
