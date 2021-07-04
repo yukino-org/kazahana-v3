@@ -7,17 +7,7 @@ const platform = process.env.YUKINO_PLATFORM || "unknown",
 
 export default defineConfig({
     base: getBase(platform),
-    plugins: [
-        vue(),
-        {
-            name: "transform-html",
-            enforce: "pre",
-            transformIndexHtml(html) {
-                html = html.replace("{{ head }}", getHead(platform));
-                return html;
-            }
-        }
-    ],
+    plugins: [vue()],
     build: {
         outDir: "dist/vite"
     },
@@ -39,10 +29,4 @@ function getBase(platform: string) {
         default:
             return "/";
     }
-}
-
-function getHead(platform: string) {
-    const head: string[] = [];
-
-    return head.join("\n");
 }
