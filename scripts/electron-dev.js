@@ -1,13 +1,13 @@
 const path = require("path");
 const spawn = require("cross-spawn");
 const { createServer } = require("vite");
+const addressToString = require("./utils/address-to-string");
 const pkgJson = require("../package.json");
 
 const PORT = process.env.PORT ? +process.env.PORT : 3000;
 
 const start = async () => {
     process.env.NODE_ENV = "development";
-    process.env.VITE_SERVE_URL = `http://localhost:${PORT}`;
 
     const server = await createServer({
         root: path.resolve(__dirname, ".."),
@@ -18,6 +18,11 @@ const start = async () => {
     });
 
     await server.listen();
+
+    process.env.VITE_SERVE_URL = addressToString(
+        server.httpServer.address(),
+        server.config.server.https
+    );
 
     const electronStart = "electron:start";
     if (!pkgJson.scripts[electronStart])
