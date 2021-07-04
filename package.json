@@ -29,9 +29,10 @@
         "electron:lint": "eslint environments/electron",
         "capacitor:sync": "cap sync",
         "capacitor:android:icons": "cordova-res android --skip-config --copy --android-project environments/capacitor/android",
+        "capacitor:android:dev": "cross-env NODE_ENV=\"development\" YUKINO_PLATFORM=\"capacitor\" YUKINO_OS=\"android\" node scripts/capacitor-dev",
         "capacitor:android:build": "cross-env YUKINO_PLATFORM=\"capacitor\" YUKINO_OS=\"android\" yarn vite:build && yarn capacitor:android:icons && yarn capacitor:sync",
         "capacitor:android:open": "cap open android",
-        "capacitor:android:run": "yarn capacitor:android:build && cap run android",
+        "capacitor:android:run": "cap run android",
         "capacitor:android:pack": "yarn capacitor:android:build && node scripts/capacitor-android-debug",
         "capacitor:android:release": "yarn capacitor:android:build && node scripts/capacitor-android-release"
     },
@@ -82,7 +83,7 @@
         "rimraf": "^3.0.2",
         "tailwindcss": "^2.2.4",
         "typescript": "^4.3.5",
-        "vite": "2.3.8",
+        "vite": "2.4.0-beta.3",
         "vue-tsc": "^0.2.0"
     }
 }
