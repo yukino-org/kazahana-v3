@@ -210,7 +210,7 @@ export default defineComponent({
                 this.animes.state = "failed";
                 this.$logger.emit(
                     "error",
-                    `Could not fetch anime's information: ${err?.message}`
+                    `Could not fetch top animes: ${err?.message}`
                 );
             }
         },

@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
     appName: productName,
     webDir: "dist/vite",
     android: {
-        path: "environments/capacitor/android",
+        path: "environments/capacitor/android"
     },
     plugins: {
         SplashScreen: {
@@ -17,9 +17,16 @@ const config: CapacitorConfig = {
             splashImmersive: false,
             splashFullScreen: false,
             backgroundColor: "#18181b",
-            showSpinner: false,
-        },
-    },
+            showSpinner: false
+        }
+    }
 };
+
+if (process.env.NODE_ENV === "development" && process.env.VITE_SERVE_URL) {
+    config.server = {
+        url: process.env.VITE_SERVE_URL,
+        cleartext: true
+    };
+}
 
 export default config;

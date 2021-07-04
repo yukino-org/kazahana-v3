@@ -196,5 +196,16 @@ export const util = {
     isFiniteNumber(num: number) {
         return num >= 0 && num < Infinity;
     },
+    getTouchOffset(event: TouchEvent) {
+        const target = event.target as HTMLElement;
+        const { x, y, width, height } = target.getBoundingClientRect();
+
+        return {
+            offsetX:
+                ((event.touches[0].clientX - x) / width) * target.offsetWidth,
+            offsetY:
+                ((event.touches[0].clientY - y) / height) * target.offsetHeight
+        };
+    },
     mergeObject: MergeObject
 };

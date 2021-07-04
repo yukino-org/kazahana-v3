@@ -141,11 +141,13 @@ function Mangab64Search(cls: MangaModelClass) {
         async search(url: string) {
             const res = await super.search(url);
             for (const key in res) {
-                const img = res[key].thumbnail;
-                if (img && img.startsWith("http")) {
-                    res[key].thumbnail = await getBase64Image(img, {
-                        headers: {}
-                    });
+                if (res.hasOwnProperty(key)) {
+                    const img = res[key].thumbnail;
+                    if (img && img.startsWith("http")) {
+                        res[key].thumbnail = await getBase64Image(img, {
+                            headers: {}
+                        });
+                    }
                 }
             }
             return res;

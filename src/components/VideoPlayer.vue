@@ -1,18 +1,19 @@
 <template>
     <div
         class="relative w-full h-auto flex justify-center items-center bg-black"
-        @mouseleave="!!void handleOutOfFocus()"
-        @mousemove="!!void handleInFocus($event)"
+        @touchstart.passive="lastTouchedTime = Date.now()"
+        @touchend="lastTouchedTime = 0"
+        @touchmove.capture="handleInFocus($event, 'touch')"
+        @mousemove="handleInFocus($event, 'mouse')"
+        @mouseleave="handleOutOfFocus()"
+        style="touch-action: none;"
     >
         <video
-            class="w-full h-full"
+            class="w-full h-full pointer-events-none"
             :id="identifier"
             @loadedmetadata="initialize()"
             @canplay="isLoading = false"
             @waiting="isLoading = true"
-            @click.stop.prevent="
-                isInFocus ? handleOutOfFocus() : handleInFocus($event)
-            "
             @ended="$emit('finish')"
             :style="{
                 objectFit: videoMode,
@@ -22,15 +23,14 @@
             <slot name="sources"></slot>
         </video>
 
-        <transition name="fade">
-            <button
-                class="absolute focus:outline-none text-center text-4xl opacity-0 hover:opacity-100 transition duration-200 p-10"
-                @click.stop.prevent="!!void (isPlaying ? pause() : play())"
-            >
-                <Icon icon="pause" v-if="isPlaying" />
-                <Icon icon="play" v-else />
-            </button>
-        </transition>
+        <button
+            class="absolute focus:outline-none text-center text-4xl opacity-0 hover:opacity-100 transition duration-200 p-10"
+            @click.stop.prevent="!!void (isPlaying ? pause() : play())"
+            v-if="$state.props.runtime.isElectron"
+        >
+            <Icon icon="pause" v-if="isPlaying" />
+            <Icon icon="play" v-else />
+        </button>
 
         <transition name="fade">
             <div class="absolute top-4 right-4" v-if="isLoading">
@@ -152,10 +152,9 @@
             >
                 <div
                     class="w-4 h-20 relative mt-1 mb-2"
-                    @click.stop.prevent="
-                        !!void handleVolumeSlider($event, true)
-                    "
-                    @mousemove="handleVolumeSlider($event)"
+                    @click.stop.prevent="handleVolumeSlider($event, 'click')"
+                    @mousemove="handleVolumeSlider($event, 'mouse')"
+                    @touchmove.capture="handleVolumeSlider($event, 'touch')"
                 >
                     <div
                         class="absolute bg-gray-200 dark:bg-gray-700 bottom-0 w-2 h-full mx-1 pointer-events-none rounded"
@@ -207,11 +206,17 @@
                     </button>
 
                     <div
-                        class="mx-2 flex-grow flex justify-center items-center relative h-3 cursor-pointer"
-                        @click.stop.prevent="!!void handleProgressBar($event)"
+                        class="mx-2 flex-grow flex justify-center items-center relative h-3 cursor-pointer rounded"
+                        @click.stop.prevent="
+                            !!void handleProgressBar($event, 'click')
+                        "
                         @mouseout="progressDot = null"
-                        @mousemove="handleProgressDot($event)"
-                        @mouseup="handleProgressBar($event)"
+                        @mousemove="handleProgressDot($event, 'mouse')"
+                        @mouseup="handleProgressBar($event, 'mouse')"
+                        @touchmove.capture="
+                            handleProgressDot($event, 'touch');
+                            handleProgressBar($event, 'touch');
+                        "
                     >
                         <div
                             class="absolute left-0 h-1 rounded bg-white pointer-events-none"
@@ -246,9 +251,7 @@
 
                     <button
                         class="video-control"
-                        @click.stop.prevent="
-                            !!void (isVolumeOpened = !isVolumeOpened)
-                        "
+                        @click.stop.prevent="isVolumeOpened = !isVolumeOpened"
                     >
                         <Icon icon="volume-mute" v-if="volume === 0" />
                         <Icon icon="volume-down" v-else-if="volume < 0.5" />
@@ -257,16 +260,14 @@
 
                     <button
                         class="video-control"
-                        @click.stop.prevent="
-                            !!void (isOptionOpened = !isOptionOpened)
-                        "
+                        @click.stop.prevent="isOptionOpened = !isOptionOpened"
                     >
                         <Icon icon="cog" />
                     </button>
 
                     <button
                         class="video-control"
-                        @click.stop.prevent="!!void toggleFullscreen()"
+                        @click.stop.prevent="toggleFullscreen()"
                     >
                         <Icon icon="compress-alt" v-if="isFullscreened" />
                         <Icon icon="expand-alt" v-else />
@@ -279,7 +280,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Store } from "../plugins/api/store/capacitor";
+import { Store, FullScreen } from "../plugins/api";
 import { constants, util } from "../plugins/util";
 import { StoreKeys } from "../plugins/types";
 
@@ -336,6 +337,7 @@ export default defineComponent({
             showSideBrightness: boolean;
             defaultSeekLength: number;
             isLoading: boolean;
+            lastTouchedTime: number;
         } = {
             ready: false,
             identifier: `player-${util.randomText(10)}`,
@@ -361,7 +363,8 @@ export default defineComponent({
             showSideVolume: false,
             showSideBrightness: false,
             defaultSeekLength: 0,
-            isLoading: true
+            isLoading: true,
+            lastTouchedTime: 0
         };
 
         return data;
@@ -374,7 +377,8 @@ export default defineComponent({
     },
     methods: {
         async handleMount() {
-            const settings = await Store.get(StoreKeys.settings);
+            const store = await Store.getClient();
+            const settings = await store.get(StoreKeys.settings);
 
             this.skipIntroInterval =
                 settings?.skipIntroLength ||
@@ -501,8 +505,11 @@ export default defineComponent({
                 this.duration.totalSecs
             );
         },
-        updateFullscreen() {
+        async updateFullscreen() {
             this.isFullscreened = !!document.fullscreenElement;
+
+            const fullscreen = await FullScreen.getClient();
+            fullscreen?.set(this.isFullscreened);
 
             if (this.isFullscreened) this.$emit("fullscreened");
             else this.$emit("fullscreenexit");
@@ -522,15 +529,24 @@ export default defineComponent({
                 this.identifier
             ) as HTMLVideoElement | null;
         },
-        handleProgressBar(event: MouseEvent) {
+        handleProgressBar(
+            event: MouseEvent | TouchEvent,
+            source: "click" | "mouse" | "touch"
+        ) {
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
             const player = this.getPlayer();
             if (!player) return;
 
-            this.duration.playedSecs = player.currentTime =
-                (event.offsetX / target.offsetWidth) * player.duration;
+            const { offsetX } =
+                source === "touch"
+                    ? util.getTouchOffset(event as TouchEvent)
+                    : (event as MouseEvent);
+
+            const time = (offsetX / target.offsetWidth) * player.duration;
+            this.duration.playedSecs = time;
+            player.currentTime = time;
         },
         handleKeypress(event: KeyboardEvent) {
             event.preventDefault();
@@ -547,17 +563,24 @@ export default defineComponent({
                 util.padNumber(secs, 2)
             ].join(":");
         },
-        async handleProgressDot(event: MouseEvent) {
+        async handleProgressDot(
+            event: MouseEvent | TouchEvent,
+            source: "mouse" | "touch"
+        ) {
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
-            if (target.matches(":active")) {
+            if (source === "mouse" && target.matches(":active")) {
                 this.pause();
-                this.handleProgressBar(event);
+                this.handleProgressBar(event, "mouse");
             }
 
-            this.progressDot =
-                (event.offsetX / (target.offsetWidth || 0)) * 100;
+            const { offsetX } =
+                source === "touch"
+                    ? util.getTouchOffset(event as TouchEvent)
+                    : (event as MouseEvent);
+
+            this.progressDot = (offsetX / (target.offsetWidth || 0)) * 100;
         },
         togglePlayback() {
             const player = this.getPlayer();
@@ -578,73 +601,100 @@ export default defineComponent({
             this.videoMode = modes[n + 1] || modes[0];
         },
         handleOutOfFocus() {
-            this.isOptionOpened = false;
-            this.isVolumeOpened = false;
             this.showSideVolume = false;
             this.showSideBrightness = false;
             this.isInFocus = false;
         },
-        handleInFocus($event: MouseEvent) {
+        handleInFocus(
+            event: MouseEvent | TouchEvent,
+            source: "touch" | "mouse"
+        ) {
+            if (event.defaultPrevented) return;
+            if (event.cancelable) event.preventDefault();
+
             this.isInFocus = true;
 
             const player = this.getPlayer();
             if (!player) return;
 
-            if (player.parentElement) {
-                const clicked = player.parentElement.matches(":active");
+            const target = player.parentElement;
+            if (!target) return;
 
-                const hadjust = 50;
-                if (
-                    clicked &&
-                    $event.offsetY > hadjust &&
-                    $event.offsetY < player.offsetHeight
-                ) {
-                    const wpcnt =
-                            ($event.offsetX /
-                                player.parentElement.offsetWidth) *
-                            100,
-                        hpcnt =
-                            (1 -
-                                ($event.offsetY - hadjust) /
-                                    (player.parentElement.offsetHeight -
-                                        hadjust * 2)) *
-                            1.1;
+            const active =
+                source === "touch"
+                    ? this.lastTouchedTime > 0 &&
+                      Date.now() - this.lastTouchedTime > 300
+                    : target.matches(":active");
 
-                    if (util.isFiniteNumber(hpcnt) && hpcnt <= 1) {
-                        if (wpcnt < 40) {
-                            this.showSideBrightness = true;
-                            this.brightness = hpcnt + 0.5;
-                        } else if (wpcnt > 60) {
-                            this.showSideVolume = true;
-                            this.volume = player.volume = hpcnt;
-                        }
+            const { offsetX, offsetY } =
+                source === "touch"
+                    ? util.getTouchOffset(event as TouchEvent)
+                    : (event as MouseEvent);
+
+            const hadjust = 50;
+            if (active && offsetY > hadjust && offsetY < target.offsetHeight) {
+                const wpcnt = (offsetX / target.offsetWidth) * 100,
+                    hpcnt =
+                        (1 -
+                            (offsetY - hadjust) /
+                                (target.offsetHeight - hadjust * 2)) *
+                        1.1;
+
+                if (util.isFiniteNumber(hpcnt) && hpcnt <= 1) {
+                    if (wpcnt < 40) {
+                        this.showSideBrightness = true;
+                        this.brightness = hpcnt + 0.5;
+                    } else if (wpcnt > 60) {
+                        this.showSideVolume = true;
+                        this.volume = player.volume = hpcnt;
                     }
-                } else {
-                    const tmout = setTimeout(() => {
-                        this.isInFocus = false;
-                    }, 3000);
-
-                    player.parentElement.addEventListener(
-                        "mousemove",
-                        () => {
-                            clearTimeout(tmout);
-                        },
-                        {
-                            once: true
-                        }
-                    );
                 }
             }
+
+            let tmout: number | null = setTimeout(() => {
+                this.handleOutOfFocus();
+            }, 3000);
+
+            target.addEventListener(
+                source === "touch" ? "touchmove" : "mousemove",
+                () => {
+                    if (tmout !== null) {
+                        clearTimeout(tmout);
+                        tmout = null;
+                    }
+                },
+                {
+                    once: true,
+                    passive: true
+                }
+            );
         },
-        handleVolumeSlider(event: MouseEvent, ignoreActive = false) {
+        handleVolumeSlider(
+            event: MouseEvent | TouchEvent,
+            source: "click" | "mouse" | "touch"
+        ) {
+            console.log("called");
+
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
             const player = this.getPlayer();
             if (!player) return;
 
-            if (ignoreActive || target.matches(":active")) {
-                const vol = 1 - event.offsetY / target.offsetHeight;
+            const active =
+                source === "click" ||
+                (source === "mouse" && target.matches(":active")) ||
+                (source === "touch" &&
+                    this.lastTouchedTime > 0 &&
+                    Date.now() - this.lastTouchedTime > 300);
+
+            if (active) {
+                const { offsetY } =
+                    source === "touch"
+                        ? util.getTouchOffset(event as TouchEvent)
+                        : (event as MouseEvent);
+
+                const vol = 1 - offsetY / target.offsetHeight;
                 if (util.isFiniteNumber(vol) && vol <= 1) {
                     this.volume = player.volume = vol;
                 }
@@ -654,9 +704,15 @@ export default defineComponent({
             const player = this.getPlayer();
             if (!player) return;
 
-            const seek = player.currentTime + secs;
-            this.duration.playedSecs = player.currentTime =
-                seek < 0 ? 0 : seek > player.duration ? player.duration : seek;
+            const seek = player.currentTime + secs,
+                time =
+                    seek < 0
+                        ? 0
+                        : seek > player.duration
+                        ? player.duration
+                        : seek;
+            this.duration.playedSecs = time;
+            player.currentTime = time;
         },
         async togglePIP() {
             const player = this.getPlayer();
@@ -681,7 +737,8 @@ export default defineComponent({
             const player = this.getPlayer();
             if (!player) return;
 
-            this.duration.playedSecs = player.currentTime = duration;
+            this.duration.playedSecs = duration;
+            player.currentTime = duration;
         }
     }
 });
@@ -689,7 +746,7 @@ export default defineComponent({
 
 <style scoped>
 .video-control {
-    @apply focus:outline-none hover:bg-white/20 px-1.5 py-0.5 rounded transition duration-200;
+    @apply focus:outline-none hover:bg-white/20 px-2 py-1 rounded transition duration-200;
 }
 
 .fade-pop-enter-from,
