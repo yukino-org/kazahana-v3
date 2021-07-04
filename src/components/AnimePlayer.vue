@@ -82,6 +82,8 @@
                     @timechange="updateStats(true)"
                     @finish="handleEnded()"
                     :key="currentPlaying.url"
+                    @fullscreened="setFullScreen()"
+                    @fullscreenexit="setFullScreen()"
                 >
                     <template v-slot:sources>
                         <source :src="getValidImageUrl(currentPlaying.url)" />
@@ -289,7 +291,6 @@ export default defineComponent({
         this.updatePageSetting();
         this.watchEpisode();
         this.getInfo();
-        this.attachFullScreenEvents();
 
         if (this.$state.props.runtime.isCapacitor) {
             this.fullScreenWatcher = setInterval(
@@ -429,30 +430,6 @@ export default defineComponent({
         isPlayable(types: string[]) {
             if (types.includes("streamable")) return true;
             return false;
-        },
-        attachFullScreenEvents() {
-            if ("onfullscreenchange" in document) {
-                document.addEventListener(
-                    "fullscreenchange",
-                    this.setFullScreen
-                );
-            }
-
-            if ("onmozfullscreenchange" in document) {
-                // @ts-ignore
-                document.addEventListener(
-                    "mozfullscreenchange",
-                    this.setFullScreen
-                );
-            }
-
-            if ("onwebkitfullscreenchange" in document) {
-                // @ts-ignore
-                document.addEventListener(
-                    "webkitfullscreenchange",
-                    this.setFullScreen
-                );
-            }
         },
         async watchMobileFullScreen() {
             const fullscreen = await FullScreen.getClient();
