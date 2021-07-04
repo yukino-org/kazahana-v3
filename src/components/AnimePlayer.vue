@@ -82,8 +82,6 @@
                     @timechange="updateStats(true)"
                     @finish="handleEnded()"
                     :key="currentPlaying.url"
-                    @fullscreened="setFullScreen()"
-                    @fullscreenexit="setFullScreen()"
                 >
                     <template v-slot:sources>
                         <source :src="getValidImageUrl(currentPlaying.url)" />
@@ -269,8 +267,6 @@ export default defineComponent({
             lastWatchUpdated: number;
             autoPlay: boolean;
             autoNext: boolean;
-            fullScreenWatcher: ReturnType<typeof setInterval> | null;
-            fullScreenWatcherProc: ReturnType<typeof setInterval> | null;
             showCopied: boolean;
         } = {
             info: util.createStateController(),
@@ -280,8 +276,6 @@ export default defineComponent({
             lastWatchUpdated: 0,
             autoPlay: false,
             autoNext: false,
-            fullScreenWatcher: null,
-            fullScreenWatcherProc: null,
             showCopied: false
         };
 
@@ -291,19 +285,8 @@ export default defineComponent({
         this.updatePageSetting();
         this.watchEpisode();
         this.getInfo();
-
-        if (this.$state.props.runtime.isCapacitor) {
-            this.fullScreenWatcher = setInterval(
-                this.watchMobileFullScreen,
-                5000
-            );
-        }
     },
     beforeDestroy() {
-        if (this.fullScreenWatcher !== null) {
-            clearInterval(this.fullScreenWatcher);
-        }
-
         this.$bus.dispatch("set-MAL-anime-episode", null);
         this.$bus.dispatch("set-AniList-anime-episode", null);
     },
@@ -441,16 +424,6 @@ export default defineComponent({
                 setTimeout(async () => {
                     await fullscreen?.set(true);
                 }, 5000);
-            }
-        },
-        async setFullScreen() {
-            const fullscreened = !!document.fullscreenElement;
-            const fullscreen = await FullScreen.getClient();
-
-            if (fullscreened) {
-                await fullscreen?.set(true);
-            } else {
-                await fullscreen?.set(false);
             }
         },
         async updateStats(fromPlayer: boolean = false) {
