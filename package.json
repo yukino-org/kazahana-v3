@@ -78,7 +78,7 @@
         "electron": "^13.1.5",
         "electron-builder": "^22.10.5",
         "electron-icon-builder": "^2.0.1",
-        "eslint": "^7.29.0",
+        "eslint": "^7.30.0",
         "postcss": "^8.3.5",
         "rimraf": "^3.0.2",
         "tailwindcss": "^2.2.4",
