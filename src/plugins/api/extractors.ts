@@ -22,7 +22,6 @@ import { AnimeExtractorModel } from "anime-ext/dist/extractors/anime/model";
 import FourAnime from "anime-ext/dist/extractors/anime/4anime";
 import GogoAnime from "anime-ext/dist/extractors/anime/gogoanime";
 import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
-import TwistDotMoeAnime from "anime-ext/dist/extractors/anime/twistdotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
 import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
 import TenshiMoe from "anime-ext/dist/extractors/anime/tenshidotmoe";
@@ -109,7 +108,6 @@ export const Extractors = {
                     "4Anime": new FourAnime(options),
                     GogoAnime: new GogoAnime(options),
                     SimplyMoe: new SimplyMoeAnime(options),
-                    TwistMoe: new TwistDotMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
                     AnimeParadise: new AnimeParadise(options),
                     TenshiMoe: new TenshiMoe(options)
