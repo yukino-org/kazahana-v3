@@ -37,6 +37,7 @@ import MangaInnManga from "anime-ext/dist/extractors/manga/mangainn";
 import ReadM from "anime-ext/dist/extractors/manga/readm";
 import MangaNato from "anime-ext/dist/extractors/manga/manganato";
 import ManhwaTop from "anime-ext/dist/extractors/manga/manhwatop";
+import ComicK from "anime-ext/dist/extractors/manga/comick";
 
 export interface ExtractorsEntity {
     integrations: {
@@ -122,7 +123,8 @@ export const Extractors = {
                     MangaNato: new (Mangab64Chapters(MangaNato))(options),
                     ManhwaTop: new (Mangab64Chapters(
                         Mangab64Search(ManhwaTop)
-                    ))(options)
+                    ))(options),
+                    ComicK: new ComicK(options)
                 }
             };
         }
