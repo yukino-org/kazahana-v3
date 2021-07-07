@@ -15,10 +15,18 @@ export interface UserInfoEntity {
     };
 }
 
+export interface FuzzyDate {
+    day: number;
+    month: number;
+    year: number;
+}
+
 export interface AnimeListEntity {
     userId: number;
     status: string;
     progress: number;
+    startedAt: FuzzyDate;
+    completedAt: FuzzyDate;
     media: {
         id: number;
         idMal: number;
@@ -32,7 +40,6 @@ export interface AnimeListEntity {
         };
         genres: string[];
         meanScore: number;
-        updatedAt: number;
         siteUrl: string;
     };
 }
@@ -96,6 +103,8 @@ export interface MangaListEntity {
     status: string;
     progress: number | null;
     progressVolumes: number | null;
+    startedAt: FuzzyDate;
+    completedAt: FuzzyDate;
     media: {
         id: number;
         idMal: number;
@@ -110,7 +119,6 @@ export interface MangaListEntity {
         };
         genres: string[];
         meanScore: number;
-        updatedAt: number;
         siteUrl: string;
     };
 }
@@ -263,6 +271,16 @@ export class MyAnimeListManager {
                             userId,
                             status,
                             progress,
+                            startedAt {
+                                day,
+                                month,
+                                year
+                            },
+                            completedAt {
+                                day,
+                                month,
+                                year
+                            },
                             media {
                                 id,
                                 idMal,
@@ -276,7 +294,6 @@ export class MyAnimeListManager {
                                 },
                                 genres,
                                 meanScore,
-                                updatedAt,
                                 siteUrl
                             }
                         }
@@ -366,8 +383,7 @@ export class MyAnimeListManager {
                             title {
                                 userPreferred
                             },
-                            episodes,
-                            updatedAt
+                            episodes
                         }
                     }
                 }
@@ -429,6 +445,16 @@ export class MyAnimeListManager {
                             status,
                             progress,
                             progressVolumes,
+                            startedAt {
+                                day,
+                                month,
+                                year
+                            },
+                            completedAt {
+                                day,
+                                month,
+                                year
+                            },
                             media {
                                 id,
                                 idMal,
@@ -443,7 +469,6 @@ export class MyAnimeListManager {
                                 },
                                 genres,
                                 meanScore,
-                                updatedAt,
                                 siteUrl
                             }
                         }
@@ -536,8 +561,7 @@ export class MyAnimeListManager {
                             idMal,
                             title {
                                 userPreferred
-                            },
-                            updatedAt
+                            }
                         }
                     }
                 }

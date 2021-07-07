@@ -143,7 +143,7 @@ export default defineComponent({
                 auth: await MyAnimeList.auth.getOauthURL(),
                 loggedIn: MyAnimeList.isLoggedIn(),
                 image: constants.assets.images.myAnimeListLogo,
-                logout: MyAnimeList.logout
+                logout: MyAnimeList.logout.bind(MyAnimeList)
             };
 
             this.connections.push({
@@ -163,7 +163,7 @@ export default defineComponent({
                 auth: await AniList.auth.getOauthURL(),
                 loggedIn: AniList.isLoggedIn(),
                 image: constants.assets.images.aniListLogo,
-                logout: AniList.logout
+                logout: AniList.logout.bind(AniList)
             };
 
             this.connections.push({

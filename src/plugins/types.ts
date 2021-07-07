@@ -52,6 +52,7 @@ export interface Settings {
     skipIntroLength: number;
     defaultSeekLength: number;
     defaultVolume: number;
+    videoPlayerGestures: EnabledDisabledType;
 }
 
 export interface LastLeftEntity {

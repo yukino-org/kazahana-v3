@@ -18,7 +18,7 @@ export default defineComponent({
     name: "Authentication",
     components: {
         PageTitle,
-        Loading,
+        Loading
     },
     data() {
         const data: {
@@ -26,7 +26,7 @@ export default defineComponent({
             msg: string;
         } = {
             state: "waiting",
-            msg: "Processing...",
+            msg: "Processing..."
         };
 
         return data;
@@ -59,7 +59,7 @@ export default defineComponent({
 
                 this.$logger.emit("success", "Authentication success!");
                 this.state = "resolved";
-                this.$router.push("/connections/myanimelist");
+                this.$router.push("/connections");
             } catch (err) {
                 this.$logger.emit(
                     "error",
@@ -68,7 +68,7 @@ export default defineComponent({
                 this.state = "failed";
                 this.msg = "Authentication failed";
             }
-        },
-    },
+        }
+    }
 });
 </script>

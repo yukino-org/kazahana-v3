@@ -46,7 +46,8 @@ export const constants = {
             bottomBarItemsCount: 3,
             skipIntroLength: 85,
             defaultSeekLength: 10,
-            defaultVolume: 100
+            defaultVolume: 100,
+            videoPlayerGestures: "enabled"
         }
     },
     assets: {

@@ -61,7 +61,7 @@ export default defineComponent({
 
                 this.$logger.emit("success", "Authentication success!");
                 this.state = "resolved";
-                this.$router.push("/connections/anilist");
+                this.$router.push("/connections");
             } catch (err) {
                 this.$logger.emit(
                     "error",
