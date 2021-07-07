@@ -3,8 +3,6 @@
         class="relative w-full h-auto flex justify-center items-center bg-black"
         @touchstart.passive="lastTouchedTime = Date.now()"
         @touchend="lastTouchedTime = 0"
-        @touchmove.capture="handleInFocus($event, 'touch')"
-        @mousemove="handleInFocus($event, 'mouse')"
         @mouseleave="handleOutOfFocus()"
         style="touch-action: none;"
     >
@@ -105,7 +103,7 @@
                 <button
                     class="focus:outline-none hover:opacity-80 transition duration-200"
                     @click.stop.prevent="
-                        seekFromCurrent(85);
+                        seekFromCurrent(skipIntroInterval);
                         isOptionOpened = false;
                     "
                 >
@@ -226,6 +224,25 @@
                         ></div>
 
                         <div
+                            class="absolute px-1 py-0.5 text-sm left-0 bottom-8 rounded bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white shadow pointer-events-none z-10 transition-opacity duration-200"
+                            :style="{
+                                left: progressDot
+                                    ? `${progressDot}%`
+                                    : undefined,
+                                transform: 'translateX(-50%)',
+                                visibility: progressDot ? 'visible' : 'hidden',
+                                opacity: progressDot ? '1' : '0'
+                            }"
+                        >
+                            {{
+                                prettySecs(
+                                    (progressDot ? progressDot / 100 : 0) *
+                                        duration.totalSecs
+                                )
+                            }}
+                        </div>
+
+                        <div
                             class="absolute w-2.5 h-2.5 left-0 rounded-full bg-white shadow pointer-events-none z-10 transition-opacity duration-200"
                             :style="{
                                 left: progressDot
@@ -338,6 +355,8 @@ export default defineComponent({
             defaultSeekLength: number;
             isLoading: boolean;
             lastTouchedTime: number;
+            gesturesEnabled: boolean;
+            pressedKeys: string[];
         } = {
             ready: false,
             identifier: `player-${util.randomText(10)}`,
@@ -364,7 +383,9 @@ export default defineComponent({
             showSideBrightness: false,
             defaultSeekLength: 0,
             isLoading: true,
-            lastTouchedTime: 0
+            lastTouchedTime: 0,
+            gesturesEnabled: false,
+            pressedKeys: []
         };
 
         return data;
@@ -391,6 +412,11 @@ export default defineComponent({
             this.volume =
                 (settings?.defaultVolume ||
                     constants.defaults.settings.defaultVolume) / 100;
+
+            this.gesturesEnabled =
+                (settings?.videoPlayerGestures ||
+                    constants.defaults.settings.videoPlayerGestures) ===
+                "enabled";
         },
         initialize() {
             const player = this.getPlayer();
@@ -424,18 +450,31 @@ export default defineComponent({
                 player.addEventListener("timeupdate", this.updateDuration);
                 player.addEventListener("durationchange", this.updateDuration);
 
+                player.parentElement?.addEventListener("mousemove", this.mouseMoveHandler);
+                if (this.gesturesEnabled) {
+                    player.parentElement?.addEventListener(
+                        "touchmove",
+                        this.touchMoveHandler,
+                        {
+                            capture: true,
+                            passive: false
+                        }
+                    );
+                }
+
                 if (this.isPipSupported) {
-                    player.addEventListener(
+                    player.parentElement?.addEventListener(
                         "enterpictureinpicture",
                         this.updatePip
                     );
-                    player.addEventListener(
+                    player.parentElement?.addEventListener(
                         "leavepictureinpicture",
                         this.updatePip
                     );
                 }
 
-                document.addEventListener("keypress", this.handleKeypress);
+                document.addEventListener("keydown", this.handleKeyDown);
+                document.addEventListener("keyup", this.handleKeyUp);
             }
         },
         detachHandlers() {
@@ -456,18 +495,27 @@ export default defineComponent({
                     this.updateDuration
                 );
 
+                player.parentElement?.removeEventListener("mousemove", this.mouseMoveHandler);
+                if (this.gesturesEnabled) {
+                    player.parentElement?.removeEventListener(
+                        "touchmove",
+                        this.touchMoveHandler
+                    );
+                }
+
                 if (this.isPipSupported) {
-                    player.removeEventListener(
+                    player.parentElement?.removeEventListener(
                         "enterpictureinpicture",
                         this.updatePip
                     );
-                    player.removeEventListener(
+                    player.parentElement?.removeEventListener(
                         "leavepictureinpicture",
                         this.updatePip
                     );
                 }
 
-                document.removeEventListener("keypress", this.handleKeypress);
+                document.removeEventListener("keydown", this.handleKeyDown);
+                document.removeEventListener("keyup", this.handleKeyUp);
             }
         },
         play() {
@@ -548,13 +596,6 @@ export default defineComponent({
             this.duration.playedSecs = time;
             player.currentTime = time;
         },
-        handleKeypress(event: KeyboardEvent) {
-            event.preventDefault();
-
-            if (event.key === " ") {
-                this.isPlaying ? this.pause() : this.play();
-            }
-        },
         prettySecs(duration: number) {
             const { days, hours, mins, secs } = util.parseMs(duration * 1000);
             return [
@@ -632,7 +673,12 @@ export default defineComponent({
                     : (event as MouseEvent);
 
             const hadjust = 50;
-            if (active && offsetY > hadjust && offsetY < target.offsetHeight) {
+            if (
+                this.gesturesEnabled &&
+                active &&
+                offsetY > hadjust &&
+                offsetY < target.offsetHeight
+            ) {
                 const wpcnt = (offsetX / target.offsetWidth) * 100,
                     hpcnt =
                         (1 -
@@ -739,6 +785,50 @@ export default defineComponent({
 
             this.duration.playedSecs = duration;
             player.currentTime = duration;
+        },
+        mouseMoveHandler(event: MouseEvent) {
+            this.handleInFocus(event, "mouse");
+        },
+        touchMoveHandler(event: TouchEvent) {
+            this.handleInFocus(event, "touch");
+        },
+        handleKeyDown(event: KeyboardEvent) {
+            this.pressedKeys.push(event.key);
+
+            if (!event.defaultPrevented) {
+                event.preventDefault();
+                this.handleKeyboard();
+            }
+        },
+        handleKeyUp(event: KeyboardEvent) {
+            this.pressedKeys = this.pressedKeys.filter(x => x !== event.key);
+        },
+        handleKeyboard() {
+            if (
+                this.pressedKeys.length === 1 &&
+                this.pressedKeys.includes(" ")
+            ) {
+                this.isPlaying ? this.pause() : this.play();
+                return;
+            }
+
+            if (
+                this.pressedKeys.length === 2 &&
+                this.pressedKeys.includes("Shift") &&
+                this.pressedKeys.includes("ArrowRight")
+            ) {
+                this.seekFromCurrent(this.defaultSeekLength);
+                return;
+            }
+
+            if (
+                this.pressedKeys.length === 2 &&
+                this.pressedKeys.includes("Shift") &&
+                this.pressedKeys.includes("ArrowLeft")
+            ) {
+                this.seekFromCurrent(-this.defaultSeekLength);
+                return;
+            }
         }
     }
 });
