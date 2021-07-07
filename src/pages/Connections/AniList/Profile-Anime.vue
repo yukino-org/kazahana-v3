@@ -130,12 +130,26 @@
                                         {{ item.media.meanScore / 10 }}</span
                                     >
                                 </div>
-                                <p class="mt-1.5 text-xs opacity-75">
-                                    Last updated:
+                                <p
+                                    class="mt-1.5 text-xs opacity-75"
+                                    v-if="
+                                        selectedTab === 'COMPLETED' &&
+                                            item.completedAt
+                                    "
+                                >
+                                    Completed at:
                                     {{
                                         new Date(
-                                            item.media.updatedAt
-                                        ).toLocaleString()
+                                            `${item.completedAt.month}-${item.completedAt.day}-${item.completedAt.year}`
+                                        ).toLocaleDateString()
+                                    }}
+                                </p>
+                                <p class="mt-1.5 text-xs opacity-75" v-else>
+                                    Started at:
+                                    {{
+                                        new Date(
+                                            `${item.startedAt.month}-${item.startedAt.day}-${item.startedAt.year}`
+                                        ).toLocaleDateString()
                                     }}
                                 </p>
                                 <ExternalLink
