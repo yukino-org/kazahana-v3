@@ -391,7 +391,7 @@ export default defineComponent({
                 name: "Discord RPC (Privacy Mode)",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: this.$state.props.runtime.isElectron
             },
             autoDetectTheme: {
                 name: "Use system preferred theme",
@@ -480,6 +480,12 @@ export default defineComponent({
                     Math.trunc(
                         +(value.match(/[0-9]?[0-9]?[0-9]/)?.[0] || "0") || 0
                     ),
+                supported: true
+            },
+            videoPlayerGestures: {
+                name: "Video Player Gestures",
+                validate: ArrayCheck(EnabledDisabled),
+                values: EnabledDisabled,
                 supported: true
             }
         };
