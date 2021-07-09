@@ -68,8 +68,7 @@ class PageState extends State<Page> {
                 TextField(
                   autofocus: true,
                   decoration: const InputDecoration(
-                    labelText: 'Search',
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    labelText: 'Terms',
                   ),
                   onSubmitted: (terms) async {
                     setState(() {
@@ -118,7 +117,12 @@ class PageState extends State<Page> {
                           state == utils.LoadState.failed,
                 ),
                 Visibility(
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: utils.remToPx(1.5),
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
                   visible: state == utils.LoadState.resolving,
                 ),
                 Visibility(
@@ -127,6 +131,7 @@ class PageState extends State<Page> {
                         .map(
                           (x) => Card(
                             child: InkWell(
+                              borderRadius: BorderRadius.circular(4),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: utils.remToPx(0.5),
