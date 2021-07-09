@@ -3,14 +3,14 @@ class SearchInfo {
   String url;
   String? thumbnail;
 
-  SearchInfo(this.url, this.title, {this.thumbnail});
+  SearchInfo({required this.url, required this.title, this.thumbnail});
 }
 
 class EpisodeInfo {
   String episode;
   String url;
 
-  EpisodeInfo(this.episode, this.url);
+  EpisodeInfo({required this.episode, required this.url});
 }
 
 class AnimeInfo {
@@ -19,7 +19,11 @@ class AnimeInfo {
   List<EpisodeInfo> episodes;
   String? thumbnail;
 
-  AnimeInfo(this.url, this.title, this.episodes, {this.thumbnail});
+  AnimeInfo(
+      {required this.url,
+      required this.title,
+      required this.episodes,
+      this.thumbnail});
 }
 
 class EpisodeSource {
@@ -27,11 +31,12 @@ class EpisodeSource {
   String quality;
   Map<String, String>? headers;
 
-  EpisodeSource(this.url, this.quality, {this.headers = const {}});
+  EpisodeSource(
+      {required this.url, required this.quality, this.headers = const {}});
 }
 
 abstract class AnimeExtractor {
   Future<List<SearchInfo>> search(String terms);
-  Future<AnimeInfo> getInfo(Uri url);
-  Future<List<EpisodeSource>> getSources(Uri url);
+  Future<AnimeInfo> getInfo(String url);
+  Future<List<EpisodeSource>> getSources(String url);
 }

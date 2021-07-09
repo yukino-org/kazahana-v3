@@ -3,6 +3,7 @@ import '../plugins/state.dart';
 import '../pages/home/home.dart' as home_page;
 import '../pages/search/search.dart' as search_page;
 import '../pages/settings/settings.dart' as settings_page;
+import '../pages/anime_page/anime_page.dart' as anime_page;
 
 abstract class RouteNames {
   static const initialRoute = '/';
@@ -10,6 +11,7 @@ abstract class RouteNames {
   static const home = '/';
   static const search = '/search';
   static const settings = '/settings';
+  static const animePage = '/anime_page';
 }
 
 class RouteInfo {
@@ -71,6 +73,13 @@ abstract class RouteManager {
       icon: Icons.settings,
       builder: (BuildContext context) => const settings_page.Page(),
       isPublic: true,
+    ),
+    RouteNames.animePage: RouteInfo(
+      name: 'Anime Page',
+      route: RouteNames.animePage,
+      icon: Icons.circle,
+      builder: (BuildContext context) => const anime_page.Page(),
+      isPublic: false,
     ),
   };
 

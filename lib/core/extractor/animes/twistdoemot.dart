@@ -10,7 +10,7 @@ class TwistSearchInfo extends SearchInfo {
   final String? altTitle;
 
   TwistSearchInfo(String url, String title, {String? thumbnail, this.altTitle})
-      : super(url, title, thumbnail: thumbnail);
+      : super(url: url, title: title, thumbnail: thumbnail);
 }
 
 class TwistEpisodeSource {
@@ -26,7 +26,7 @@ class TwistEpisodeSource {
       final algorithm =
           crypto.Encrypter(crypto.AES(key, mode: crypto.AESMode.cbc));
       final decrypted = algorithm.decrypt(crypto.Encrypted.fromBase64(source));
-      cachedSource = EpisodeSource(decrypted, "unknown");
+      cachedSource = EpisodeSource(url: decrypted, quality: "unknown");
     }
 
     return cachedSource!;
@@ -34,10 +34,15 @@ class TwistEpisodeSource {
 }
 
 class TwistMoe implements AnimeExtractor {
-  final baseURL = "https://twist.moe";
-  final apiURL = "https://api.twist.moe/api";
+  final baseURL = 'https://twist.moe';
+  final apiURL = 'https://api.twist.moe/api';
   Fuzzy<TwistSearchInfo>? searcher;
   final Map<String, List<TwistEpisodeSource>> animeSourceCache = {};
+  final Map<String, String> defaultHeaders = {
+    'User-Agent': 'Mozilla',
+    'Referer': 'https://twist.moe',
+    'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
+  };
 
   String searchApiURL() => "$apiURL/anime";
   String animeURL(String slug) => '$baseURL/a/$slug';
@@ -45,76 +50,95 @@ class TwistMoe implements AnimeExtractor {
   String animeSourcesURL(String slug) => '${animeApiURL(slug)}/sources';
 
   String? extractSlugFromURL(String url) =>
-      RegExp(r"https:\/\/twist\.moe\/a\/([\d\w-_]+)\/?").stringMatch(url);
+      RegExp(r"https:\/\/twist\.moe\/a\/([\d\w-_]+)\/?").firstMatch(url)?[1];
 
   @override
   Future<List<SearchInfo>> search(final String terms) async {
     if (searcher == null) {
       try {
-        final res = await http.get(Uri.parse(Uri.encodeFull(searchApiURL())));
-        final animes = (json.decode(res.body) as List<dynamic>)
-            .map((x) => TwistSearchInfo(animeURL(x.slug.slug), x.title))
-            .toList();
-        searcher = Fuzzy<TwistSearchInfo>(animes,
-            options: FuzzyOptions(shouldSort: true, keys: [
-              WeightedKey(name: "title", getter: (x) => x.title, weight: 2),
+        final res = await http.get(
+          Uri.parse(Uri.encodeFull(searchApiURL())),
+          headers: defaultHeaders,
+        );
+        final animes = json
+            .decode(res.body)
+            .cast<dynamic>()
+            .map(
+                (x) => TwistSearchInfo(animeURL(x['slug']['slug']), x['title']))
+            .toList()
+            .cast<TwistSearchInfo>();
+        searcher = Fuzzy<TwistSearchInfo>(
+          animes,
+          options: FuzzyOptions(
+            shouldSort: true,
+            keys: [
+              WeightedKey(name: 'title', getter: (x) => x.title, weight: 2),
               WeightedKey(
-                  name: "altTitle", getter: (x) => x.altTitle ?? "", weight: 1),
-            ]));
+                  name: 'altTitle', getter: (x) => x.altTitle ?? "", weight: 1),
+            ],
+          ),
+        );
       } catch (e) {
-        return [];
+        rethrow;
       }
     }
 
-    return searcher!.search(terms).map((x) => x.item).toList();
+    return searcher!.search(terms, 10).map((x) => x.item).toList();
   }
 
   @override
-  Future<AnimeInfo> getInfo(Uri url) async {
-    final slug = extractSlugFromURL(url.toString());
+  Future<AnimeInfo> getInfo(String url) async {
+    final slug = extractSlugFromURL(url);
     if (slug == null) throw ("Failed to parse slug from URL");
 
     try {
-      final res = await http.get(Uri.parse(Uri.encodeFull(animeApiURL(slug))));
+      final res = await http.get(Uri.parse(Uri.encodeFull(animeApiURL(slug))),
+          headers: defaultHeaders);
 
       final parsed = json.decode(res.body);
 
       final animeURLP = animeURL(slug);
-      final episodes = (parsed.episodes as List<dynamic>)
-          .map(
-              (x) => EpisodeInfo(x.number.toString(), '$animeURLP/${x.number}'))
-          .toList();
-      return AnimeInfo(animeURLP, parsed.title, episodes);
+      final episodes = (parsed['episodes'])
+          .cast<dynamic>()
+          .map((x) => EpisodeInfo(
+              episode: (x['number'] as int).toString(),
+              url: '$animeURLP/${x['number']}'))
+          .toList()
+          .cast<EpisodeInfo>();
+      return AnimeInfo(
+          url: animeURLP,
+          title: (parsed['title'] as String),
+          episodes: episodes);
     } catch (e) {
-      throw ("Failed to fetch anime information: ${e.toString()}");
+      rethrow;
     }
   }
 
   @override
-  Future<List<EpisodeSource>> getSources(Uri url) async {
-    final slug = extractSlugFromURL(url.toString());
+  Future<List<EpisodeSource>> getSources(String url) async {
+    final slug = extractSlugFromURL(url);
     if (slug == null) throw ("Failed to parse slug from URL");
 
-    final episode =
-        int.tryParse(RegExp(r"/(\d+)$/").stringMatch(url.toString()) ?? "1");
+    final episode = int.tryParse(RegExp(r"/(\d+)$/").stringMatch(url) ?? "1");
     if (episode == null) throw ("Failed to parse episode from URL");
 
     if (animeSourceCache[slug] == null) {
       try {
-        final res =
-            await http.get(Uri.parse(Uri.encodeFull(animeSourcesURL(slug))));
+        final res = await http.get(
+            Uri.parse(Uri.encodeFull(animeSourcesURL(slug))),
+            headers: defaultHeaders);
 
         animeSourceCache[slug] = json
             .decode(res.body)
             .map((x) => TwistEpisodeSource(x.number, x.source));
       } catch (e) {
-        throw ("Failed to fetch episode sources: ${e.toString()}");
+        rethrow;
       }
     }
 
     final source =
         animeSourceCache[slug]?.firstWhere((x) => x.episode == episode);
-    if (source == null) throw ("Failed to find source for the episode");
+    if (source == null) throw ('Failed to find source for the episode');
 
     return [source.getSource()];
   }

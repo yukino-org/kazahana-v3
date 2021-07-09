@@ -53,7 +53,7 @@ class BottomBarState extends State<BottomBar> {
                 final i = RouteManager.labeledRoutes.indexOf(x);
                 final isActive = routeIndex == i;
                 final color = isActive
-                    ? utils.Palette.indigo[500]
+                    ? Theme.of(context).primaryColor
                     : Theme.of(context)
                         .textTheme
                         .bodyText1
@@ -90,6 +90,3 @@ class BottomBarState extends State<BottomBar> {
     );
   }
 }
-
-// RouteManager.navigationKey.currentState
-            // ?.pushNamed(RouteManager.labeledRoutes[routeIndex].route);

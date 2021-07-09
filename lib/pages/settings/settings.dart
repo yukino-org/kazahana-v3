@@ -23,8 +23,8 @@ class PageState extends State<Page> {
               Text(
                 "Settings",
                 style: TextStyle(
-                  color: utils.Palette.indigo[500],
-                  fontSize: utils.remToPx(1),
+                  color: Theme.of(context).primaryColor,
+                  fontSize: Theme.of(context).textTheme.headline6?.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
