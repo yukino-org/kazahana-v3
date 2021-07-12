@@ -12,6 +12,11 @@ class PageState extends State<Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Settings',
+        ),
+      ),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(
@@ -21,7 +26,7 @@ class PageState extends State<Page> {
           child: Column(
             children: [
               Text(
-                "Settings",
+                'Settings',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: Theme.of(context).textTheme.headline6?.fontSize,

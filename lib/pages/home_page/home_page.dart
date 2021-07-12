@@ -21,7 +21,7 @@ class PageState extends State<Page> {
           child: Column(
             children: [
               Text(
-                "Home",
+                'Home',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: Theme.of(context).textTheme.headline6?.fontSize,
