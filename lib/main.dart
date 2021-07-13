@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import './core/utils.dart' as utils;
 import './plugins/state.dart' as state;
 import './plugins/router.dart';
+import './plugins/database/database.dart' show DataStore;
 
-void main() => runApp(const App());
+void main() async {
+  await DataStore.initialize();
+
+  runApp(const App());
+}
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);

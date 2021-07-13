@@ -59,6 +59,11 @@ abstract class Palette {
     backgroundColor: Palette.gray[800],
     scaffoldBackgroundColor: Palette.gray[900],
     cardColor: Palette.gray[800],
+    dialogBackgroundColor: Palette.gray[800]!,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      foregroundColor: Colors.white,
+      backgroundColor: Palette.indigo[500],
+    ),
     colorScheme: ColorScheme.dark(
       primary: Palette.indigo[500]!,
       secondary: Palette.indigo[400]!,

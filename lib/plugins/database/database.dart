@@ -1,20 +1,31 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:yukino_app/plugins/database/schemas/settings/settings.dart'
+    as settings_schema;
+
+abstract class DataStoreBoxNames {
+  static const main = 'main_box';
+}
 
 abstract class DataStoreKeys {
   static const settings = 'settings';
 }
 
-class DataStore {
-  DataStore();
+abstract class DataBox {
+  static Box get main => Hive.box(DataStoreBoxNames.main);
+}
 
-  Future<void> initialize() async {
-    await Hive.initFlutter('yukino-app');
+abstract class DataStore {
+  static Future<void> initialize() async {
+    await Hive.initFlutter();
 
-    await Hive.openBox(DataStoreKeys.settings);
+    Hive.registerAdapter(settings_schema.SettingsSchemaAdapter());
+
+    await Hive.openBox(DataStoreBoxNames.main);
   }
 
-  settingsBox() {
-    return Hive.box(DataStoreKeys.settings);
-  }
+  static settings_schema.SettingsSchema getSettings() => DataBox.main.get(
+        DataStoreKeys.settings,
+        defaultValue: settings_schema.defaultSettings,
+      );
 }

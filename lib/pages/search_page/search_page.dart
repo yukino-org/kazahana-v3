@@ -25,33 +25,97 @@ class SearchInfo extends anime_model.SearchInfo {
 
 class PageState extends State<Page> {
   utils.LoadState state = utils.LoadState.waiting;
-  List<String> plugins = ['TwistMoe'];
+  List<String> allPlugins = extractor.Extractors.anime.keys.toList();
+  String currentPlugin = extractor.Extractors.anime.keys.first;
   List<SearchInfo> results = [];
 
-  Future<List<SearchInfo>> search(String terms, List<String> plugins) async {
+  Future<List<SearchInfo>> search(String terms) async {
     List<SearchInfo> results = [];
-    for (final plugin in plugins) {
-      final inst = extractor.Extractors.anime[plugin];
-      if (inst != null) {
-        final infos = await inst.search(terms);
-        results.addAll(
-          infos.map(
-            (x) => SearchInfo(
-              title: x.title,
-              url: x.url,
-              thumbnail: x.thumbnail,
-              plugin: plugin,
-            ),
+    final inst = extractor.Extractors.anime[currentPlugin];
+    if (inst != null) {
+      final infos = await inst.search(terms);
+      results.addAll(
+        infos.map(
+          (x) => SearchInfo(
+            title: x.title,
+            url: x.url,
+            thumbnail: x.thumbnail,
+            plugin: currentPlugin,
           ),
-        );
-      }
+        ),
+      );
     }
     return results;
+  }
+
+  void selectPlugins(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: SizedBox(
+              height: utils.remToPx(20),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  vertical: utils.remToPx(0.8),
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: utils.remToPx(1),
+                        ),
+                        child: Text(
+                          'Select plugin',
+                          style: TextStyle(
+                            fontSize:
+                                Theme.of(context).textTheme.headline6?.fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: utils.remToPx(0.3),
+                      ),
+                      ...allPlugins
+                          .map(
+                            (x) => Material(
+                              type: MaterialType.transparency,
+                              child: RadioListTile(
+                                  title: Text(x),
+                                  value: x,
+                                  groupValue: currentPlugin,
+                                  activeColor: Theme.of(context).primaryColor,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      if (val != null) {
+                                        currentPlugin = x;
+                                      }
+                                    });
+                                  }),
+                            ),
+                          )
+                          .toList(),
+                    ]),
+              ),
+            ),
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.list),
+        onPressed: () {
+          selectPlugins(context);
+        },
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -71,8 +135,8 @@ class PageState extends State<Page> {
                   ),
                 ),
                 TextField(
-                  decoration: const InputDecoration(
-                    labelText: 'Terms',
+                  decoration: InputDecoration(
+                    labelText: 'Search in $currentPlugin',
                   ),
                   onSubmitted: (terms) async {
                     setState(() {
@@ -80,7 +144,7 @@ class PageState extends State<Page> {
                     });
 
                     try {
-                      final res = await search(terms, plugins);
+                      final res = await search(terms);
                       setState(() {
                         results = res;
                         state = utils.LoadState.resolved;
@@ -137,27 +201,42 @@ class PageState extends State<Page> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(4),
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: utils.remToPx(0.5),
-                                  vertical: utils.remToPx(0.25),
-                                ),
+                                padding: EdgeInsets.all(utils.remToPx(0.5)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Visibility(
-                                      child: Expanded(
-                                        flex: 1,
+                                    SizedBox(
+                                      width: utils.remToPx(4),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          utils.remToPx(0.25),
+                                        ),
                                         child: x.thumbnail != null
                                             ? Image.network(x.thumbnail!)
-                                            : const Text(''),
+                                            : Image.asset(
+                                                utils.Assets.placeholderImage(
+                                                    utils.Fns.isDarkContext(
+                                                        context)),
+                                              ),
                                       ),
-                                      visible: x.thumbnail != null,
                                     ),
+                                    SizedBox(width: utils.remToPx(0.75)),
                                     Expanded(
+                                      flex: 3,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          Text(
+                                            x.title,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6
+                                                  ?.fontSize,
+                                            ),
+                                          ),
                                           Text(
                                             x.plugin,
                                             style: TextStyle(
@@ -167,16 +246,6 @@ class PageState extends State<Page> {
                                               fontSize: Theme.of(context)
                                                   .textTheme
                                                   .bodyText1
-                                                  ?.fontSize,
-                                            ),
-                                          ),
-                                          Text(
-                                            x.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6
                                                   ?.fontSize,
                                             ),
                                           ),

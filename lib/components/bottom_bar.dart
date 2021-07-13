@@ -5,11 +5,13 @@ class BottomBarItem {
   final String name;
   final IconData icon;
   final void Function() onPressed;
+  bool isActive;
 
   BottomBarItem({
     required this.name,
     required this.icon,
     required this.onPressed,
+    required this.isActive,
   });
 }
 
@@ -46,46 +48,33 @@ class BottomBarState extends State<BottomBar> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: widget.items
-                    .asMap()
-                    .map((i, x) {
-                      final isActive = currentIndex == i;
+                children: widget.items.map((x) {
+                  final color = x.isActive
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          ?.color
+                          ?.withOpacity(0.7);
 
-                      final color = isActive
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              ?.color
-                              ?.withOpacity(0.7);
-
-                      return MapEntry(
-                        i,
-                        MaterialButton(
-                          padding: EdgeInsets.all(utils.remToPx(0.2)),
-                          shape: const CircleBorder(),
-                          child: Column(
-                            children: [
-                              Icon(x.icon,
-                                  size: utils.remToPx(1.25), color: color),
-                              SizedBox(height: utils.remToPx(0.1)),
-                              Text(
-                                x.name,
-                                style: TextStyle(
-                                  color: color,
-                                ),
-                              )
-                            ],
+                  return MaterialButton(
+                    padding: EdgeInsets.all(utils.remToPx(0.2)),
+                    shape: const CircleBorder(),
+                    child: Column(
+                      children: [
+                        Icon(x.icon, size: utils.remToPx(1.25), color: color),
+                        SizedBox(height: utils.remToPx(0.1)),
+                        Text(
+                          x.name,
+                          style: TextStyle(
+                            color: color,
                           ),
-                          onPressed: () {
-                            currentIndex = i;
-                            x.onPressed();
-                          },
-                        ),
-                      );
-                    })
-                    .values
-                    .toList(),
+                        )
+                      ],
+                    ),
+                    onPressed: x.onPressed,
+                  );
+                }).toList(),
               ),
             ],
           ),
