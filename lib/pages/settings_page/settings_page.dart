@@ -42,7 +42,10 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    controller = PageController(initialPage: 0);
+    controller = PageController(
+      initialPage: 0,
+      keepPage: true,
+    );
   }
 
   Widget getSettingsWidget(SettingsLabel label) {
@@ -83,7 +86,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
   }
 
-  goToPage(int page) => controller.animateToPage(
+  void goToPage(int page) => controller.animateToPage(
         page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,

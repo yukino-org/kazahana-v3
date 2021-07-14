@@ -6,7 +6,6 @@ import '../pages/home_page/home_page.dart' as home_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
 import '../pages/anime_page/anime_page.dart' as anime_page;
-import '../pages/watch_page/watch_page.dart' as watch_page;
 
 abstract class RouteNames {
   static const initialRoute = '/';
@@ -17,7 +16,6 @@ abstract class RouteNames {
   static const search = '/home/search';
   static const settings = '/settings';
   static const animePage = '/anime_page';
-  static const watchPage = '/watch_page';
 }
 
 class RouteInfo {
@@ -116,10 +114,6 @@ abstract class RouteManager {
     RouteNames.animePage: RouteInfo(
       route: RouteNames.animePage,
       builder: (BuildContext context) => const anime_page.Page(),
-    ),
-    RouteNames.watchPage: RouteInfo(
-      route: RouteNames.watchPage,
-      builder: (BuildContext context) => const watch_page.Page(),
     ),
   };
 

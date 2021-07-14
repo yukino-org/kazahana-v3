@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:yukino_app/plugins/router.dart';
 import '../../core/utils.dart' as utils;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
-import '../../core/models/watch_page.dart' as watch_page;
+import '../../core/models/player.dart' as player_model;
+import '../../components/player/player.dart';
+import '../../components/full_screen.dart';
 
 class Page extends StatefulWidget {
   const Page({Key? key}) : super(key: key);
@@ -14,11 +15,34 @@ class Page extends StatefulWidget {
 }
 
 class PageState extends State<Page> {
-  utils.LoadState state = utils.LoadState.waiting;
+  late PageController controller;
+  anime_model.EpisodeInfo? episode;
+  player_model.Player? player;
+  late int currentIndex;
 
-  Future<anime_model.AnimeInfo> getInfo(anime_page.PageArguments args) async {
-    return extractor.Extractors.anime[args.plugin]!.getInfo(args.src);
+  @override
+  void initState() {
+    super.initState();
+
+    currentIndex = 0;
+    controller = PageController(
+      initialPage: currentIndex,
+      keepPage: true,
+    );
   }
+
+  void goToPage(int page) => controller.animateToPage(
+        page,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+
+  Future<anime_model.AnimeInfo> getInfo(anime_page.PageArguments args) =>
+      extractor.Extractors.anime[args.plugin]!.getInfo(args.src);
+
+  Future<List<anime_model.EpisodeSource>> getSources(
+          String plugin, String src) =>
+      extractor.Extractors.anime[plugin]!.getSources(src);
 
   Widget heroBuilder(
       anime_page.PageArguments args, anime_model.AnimeInfo info) {
@@ -87,86 +111,158 @@ class PageState extends State<Page> {
     final arguments =
         ModalRoute.of(context)!.settings.arguments as anime_page.PageArguments;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      body: SafeArea(
-        child: FutureBuilder(
-            future: getInfo(arguments),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data is anime_model.AnimeInfo) {
-                final info = snapshot.data as anime_model.AnimeInfo;
+    const loader = Center(
+      child: CircularProgressIndicator(),
+    );
 
-                return Container(
-                  padding: EdgeInsets.only(
-                    left: utils.remToPx(1.25),
-                    right: utils.remToPx(1.25),
-                    bottom: utils.remToPx(1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      heroBuilder(arguments, info),
-                      SizedBox(
-                        height: utils.remToPx(1.5),
-                      ),
-                      Text(
-                        'Episodes',
-                        style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.bodyText2?.fontSize,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText2
-                              ?.color
-                              ?.withOpacity(0.7),
+    return WillPopScope(
+        child: PageView(
+          onPageChanged: (page) {
+            setState(() {
+              currentIndex = page;
+            });
+          },
+          controller: controller,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              body: FutureBuilder(
+                  future: getInfo(arguments),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData &&
+                        snapshot.data is anime_model.AnimeInfo) {
+                      final info = snapshot.data as anime_model.AnimeInfo;
+
+                      return Container(
+                        padding: EdgeInsets.only(
+                          left: utils.remToPx(1.25),
+                          right: utils.remToPx(1.25),
+                          bottom: utils.remToPx(1),
                         ),
-                      ),
-                      Wrap(
-                        children: info.episodes
-                            .map(
-                              (x) => Card(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: utils.remToPx(0.9),
-                                      vertical: utils.remToPx(0.1),
-                                    ),
-                                    child: Text(
-                                      x.episode,
-                                      style: TextStyle(
-                                        fontSize: Theme.of(context)
-                                            .textTheme
-                                            .headline6
-                                            ?.fontSize,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            heroBuilder(arguments, info),
+                            SizedBox(
+                              height: utils.remToPx(1.5),
+                            ),
+                            Text(
+                              'Episodes',
+                              style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    ?.fontSize,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    ?.color
+                                    ?.withOpacity(0.7),
+                              ),
+                            ),
+                            Wrap(
+                              children: info.episodes
+                                  .map(
+                                    (x) => Card(
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: utils.remToPx(0.9),
+                                            vertical: utils.remToPx(0.1),
+                                          ),
+                                          child: Text(
+                                            x.episode,
+                                            style: TextStyle(
+                                              fontSize: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6
+                                                  ?.fontSize,
+                                            ),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            player = null;
+                                            episode = x;
+                                          });
+
+                                          goToPage(1);
+                                        },
                                       ),
                                     ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .pushNamed(RouteNames.watchPage,
-                                            arguments: watch_page.PageArguments(
-                                              src: x.url,
-                                              plugin: arguments.plugin,
-                                            ));
-                                  },
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                );
-              }
+                                  )
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }),
-      ),
-    );
+                    return loader;
+                  }),
+            ),
+            episode != null
+                ? FutureBuilder(
+                    future: getSources(arguments.plugin, episode!.url),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData &&
+                          snapshot.data is List<anime_model.EpisodeSource>) {
+                        final sources =
+                            snapshot.data as List<anime_model.EpisodeSource>;
+
+                        if (sources.isEmpty) {
+                          return const Center(
+                            child: Text('No valid sources were found.'),
+                          );
+                        }
+
+                        player = createPlayer(player_model.PlayerSource(
+                          url: sources[0].url,
+                          headers: sources[0].headers,
+                        ));
+
+                        return FutureBuilder(
+                          future: player!.initialize(),
+                          builder: (conext, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return FullScreenWidget(
+                                child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: player!.getWidget(),
+                                ),
+                              );
+                            }
+
+                            return loader;
+                          },
+                        );
+                      }
+
+                      return loader;
+                    },
+                  )
+                : const Center(
+                    child: Text('You shouldn\'t be here.'),
+                  ),
+          ],
+        ),
+        onWillPop: () async {
+          if (currentIndex != 0) {
+            player = null;
+            episode = null;
+            goToPage(0);
+            return false;
+          }
+
+          Navigator.of(context).pop();
+          return true;
+        });
   }
 }

@@ -36,7 +36,7 @@ class PageState extends State<Page> {
     controller = PageController(initialPage: currentIndex, keepPage: true);
   }
 
-  goToPage(int page) => controller.animateToPage(
+  void goToPage(int page) => controller.animateToPage(
         page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
@@ -48,6 +48,11 @@ class PageState extends State<Page> {
         child: Scaffold(
           body: SafeArea(
             child: PageView(
+              onPageChanged: (page) {
+                setState(() {
+                  currentIndex = page;
+                });
+              },
               physics: const NeverScrollableScrollPhysics(),
               controller: controller,
               children: stack.map((x) => x.builder(context)).toList(),
@@ -66,11 +71,7 @@ class PageState extends State<Page> {
                           icon: x.icon!,
                           isActive: currentIndex == i,
                           onPressed: () {
-                            setState(() {
-                              currentIndex = i;
-                            });
-
-                            goToPage(currentIndex);
+                            goToPage(i);
                           },
                         ));
                   })
@@ -96,21 +97,17 @@ class PageState extends State<Page> {
           ),
         ),
         onWillPop: () async {
+          if (currentIndex != 0) {
+            goToPage(0);
+            return false;
+          }
+
           if (currentIndex == 0 && (ModalRoute.of(context)?.isFirst ?? false)) {
             await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
             return true;
           }
 
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-            return false;
-          }
-
-          setState(() {
-            currentIndex = 0;
-          });
-          goToPage(currentIndex);
-          return false;
+          return !await Navigator.of(context).maybePop();
         });
   }
 }
