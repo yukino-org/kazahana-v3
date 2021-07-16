@@ -64,18 +64,18 @@
         "vue-router": "4"
     },
     "devDependencies": {
-        "@capacitor/cli": "^3.0.2",
+        "@capacitor/cli": "^3.1.1",
         "@tailwindcss/forms": "^0.3.3",
         "@types/lodash.merge": "^4.6.6",
-        "@types/qs": "^6.9.6",
+        "@types/qs": "^6.9.7",
         "@vitejs/plugin-vue": "^1.2.4",
         "@vue/compiler-sfc": "^3.1.4",
         "@zyrouge/git-compare": "^1.0.0",
-        "autoprefixer": "^10.2.5",
+        "autoprefixer": "^10.3.1",
         "cordova-res": "^0.15.3",
         "cross-env": "^7.0.3",
         "cross-spawn": "^7.0.3",
-        "electron": "^13.1.6",
+        "electron": "^13.1.7",
         "electron-builder": "^22.10.5",
         "electron-icon-builder": "^2.0.1",
         "eslint": "^7.30.0",
@@ -83,7 +83,7 @@
         "rimraf": "^3.0.2",
         "tailwindcss": "^2.2.4",
         "typescript": "^4.3.5",
-        "vite": "2.4.1",
+        "vite": "2.4.2",
         "vue-tsc": "^0.2.0"
     }
 }
