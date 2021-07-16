@@ -55,10 +55,10 @@
     "@babel/helper-validator-identifier" "^7.14.5"
     to-fast-properties "^2.0.0"
 
-"@capacitor-community/http@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@capacitor-community/http/-/http-1.0.0.tgz#e1607917f242db7ac918a7de9a91a4a5c9d336a1"
-  integrity sha512-0uG8UEG2nnuE5ltazv/Yi3uR+jpGsyj6VkORSg0F9xdoFaeFBAG+kFDQwnkOV1cKQDGO5KRHOucafdAXH0zOOA==
+"@capacitor-community/http@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/http/-/http-1.1.0.tgz#adaea2877aa84cf955575da957861aaeb302798e"
+  integrity sha512-w9PBBS/fY0PXI8YD6ZLJyeOIMzFHTq6BvpTt6MmzeaT57RYKzR1OkjBYQQfYChNYB469stqSjN7244oQss59rA==
   dependencies:
     "@capacitor/android" "^3.0.0"
     "@capacitor/core" "^3.0.0"

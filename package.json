@@ -37,7 +37,7 @@
         "capacitor:android:release": "yarn capacitor:android:build && node scripts/capacitor-android-release"
     },
     "dependencies": {
-        "@capacitor-community/http": "^1.0.0",
+        "@capacitor-community/http": "^1.1.0",
         "@capacitor/android": "^3.1.1",
         "@capacitor/app": "^1.0.0",
         "@capacitor/browser": "^1.0.2",
