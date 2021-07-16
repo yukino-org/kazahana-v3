@@ -67,7 +67,7 @@
         "@capacitor/cli": "^3.1.1",
         "@tailwindcss/forms": "^0.3.3",
         "@types/lodash.merge": "^4.6.6",
-        "@types/qs": "^6.9.6",
+        "@types/qs": "^6.9.7",
         "@vitejs/plugin-vue": "^1.2.4",
         "@vue/compiler-sfc": "^3.1.4",
         "@zyrouge/git-compare": "^1.0.0",
