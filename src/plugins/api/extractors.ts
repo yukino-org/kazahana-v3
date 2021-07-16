@@ -19,9 +19,7 @@ import * as MALSchedule from "anime-ext/dist/integrations/myanimelist/schedule";
 import * as MALSeason from "anime-ext/dist/integrations/myanimelist/season";
 
 import { AnimeExtractorModel } from "anime-ext/dist/extractors/anime/model";
-import FourAnime from "anime-ext/dist/extractors/anime/4anime";
 import GogoAnime from "anime-ext/dist/extractors/anime/gogoanime";
-import SimplyMoeAnime from "anime-ext/dist/extractors/anime/simplydotmoe";
 import KawaiifuAnime from "anime-ext/dist/extractors/anime/kawaiifu";
 import AnimeParadise from "anime-ext/dist/extractors/anime/animeparadise";
 import TenshiMoe from "anime-ext/dist/extractors/anime/tenshidotmoe";
@@ -106,9 +104,7 @@ export const Extractors = {
                     }
                 },
                 anime: {
-                    "4Anime": new FourAnime(options),
                     GogoAnime: new GogoAnime(options),
-                    SimplyMoe: new SimplyMoeAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
                     AnimeParadise: new AnimeParadise(options),
                     TenshiMoe: new TenshiMoe(options)
