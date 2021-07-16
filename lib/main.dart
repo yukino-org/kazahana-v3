@@ -1,12 +1,15 @@
+import 'dart:io' show Platform;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import './core/utils.dart' as utils;
 import './plugins/state.dart' as state;
 import './plugins/router.dart';
 import './plugins/database/database.dart' show DataStore;
+import './plugins/translator/translator.dart';
 
 void main() async {
   await DataStore.initialize();
+  Translator.trySetLanguage(Platform.localeName.split('_')[0]);
 
   runApp(const App());
 }
