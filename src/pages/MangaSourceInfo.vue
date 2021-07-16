@@ -335,6 +335,9 @@ export default defineComponent({
 
                 const chapter = this.$route.query.chapter,
                     volume = this.$route.query.volume;
+                delete this.$route.query.chapter;
+                delete this.$route.query.volume;
+
                 if (typeof chapter === "string" && typeof volume === "string") {
                     const foundChap = this.info.data.chapters.find(
                         x => x.chapter === chapter && x.volume === volume
