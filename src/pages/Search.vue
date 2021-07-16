@@ -15,8 +15,7 @@
                 class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
                 type="text"
                 placeholder="Type in anime's name..."
-                @keypress.enter="!!void search()"
-                @input="!!void setTerms($event)"
+                @keypress="!!void handleKeypress($event)"
             />
 
             <button
@@ -347,6 +346,13 @@ export default defineComponent({
                     category: "manga"
                 });
             });
+        },
+        handleKeypress(event: KeyboardEvent) {
+            this.setTerms(event);
+
+            if (event.key === "Enter") {
+                this.search();
+            }
         },
         async search() {
             if (!this.terms) {
