@@ -26,7 +26,7 @@ class Sentences extends LanguageSentences {
   prohibitedPage() => 'You shouldn\'t be here.';
 
   @override
-  selectPlugin() => 'Select plugin';
+  selectPlugin() => 'Select Plugin';
 
   @override
   searchInPlugin(plugin) => 'Search in $plugin';
@@ -48,4 +48,22 @@ class Sentences extends LanguageSentences {
 
   @override
   landscapeVideoPlayerDetail() => 'Force auto-landscape when playing video';
+
+  @override
+  theme() => 'Theme';
+
+  @override
+  systemPreferredTheme() => 'System Preferred Theme';
+
+  @override
+  defaultTheme() => 'Default Theme';
+
+  @override
+  darkMode() => 'Dark Theme';
+
+  @override
+  close() => 'Close';
+
+  @override
+  chooseTheme() => 'Choose Theme';
 }

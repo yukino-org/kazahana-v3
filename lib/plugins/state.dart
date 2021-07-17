@@ -1,7 +1,18 @@
-typedef StateSubscriber<T> = dynamic Function(T current, T previous);
+import './database/database.dart' as database;
+import './database/schemas/settings/settings.dart' as settings_schema;
+
+typedef StateSubscriber<T> = void Function(T current, T previous);
 
 class SubscriberManager<T> {
+  late T current;
   final List<StateSubscriber<T>> subscribers = [];
+
+  void initialize(T initial) => current = initial;
+
+  void modify(T modified) {
+    dispatch(modified, current);
+    current = modified;
+  }
 
   void Function() subscribe(StateSubscriber<T> sub) {
     subscribers.add(sub);
@@ -21,13 +32,11 @@ class SubscriberManager<T> {
   }
 }
 
-class AppTheme {
-  bool systemPreferred;
-  bool darkMode;
-
-  AppTheme(this.systemPreferred, this.darkMode);
-}
-
 abstract class AppState {
-  static final darkMode = SubscriberManager<AppTheme>();
+  static final settings = SubscriberManager<settings_schema.SettingsSchema>();
+
+  static Future<void> initialize() async {
+    final settings = database.DataStore.getSettings();
+    AppState.settings.initialize(settings);
+  }
 }

@@ -5,10 +5,12 @@ import './core/utils.dart' as utils;
 import './plugins/state.dart' as state;
 import './plugins/router.dart';
 import './plugins/database/database.dart' show DataStore;
+import './plugins/database/schemas/settings/settings.dart' as settings_schema;
 import './plugins/translator/translator.dart';
 
 void main() async {
   await DataStore.initialize();
+  await state.AppState.initialize();
   Translator.trySetLanguage(Platform.localeName.split('_')[0]);
 
   runApp(const App());
@@ -22,26 +24,28 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-  state.AppTheme currentTheme = state.AppTheme(true, true);
+  bool useSystemPreferredTheme = true;
+  bool useDarkMode = true;
 
   @override
   void initState() {
     super.initState();
 
-    state.AppState.darkMode.subscribe(handleThemeChange);
+    state.AppState.settings.subscribe(handleThemeChange);
   }
 
   @override
   void dispose() {
-    state.AppState.darkMode.unsubscribe(handleThemeChange);
+    state.AppState.settings.unsubscribe(handleThemeChange);
 
     super.dispose();
   }
 
-  void handleThemeChange(
-      state.AppTheme current, state.AppTheme previous) async {
+  void handleThemeChange(settings_schema.SettingsSchema current,
+      settings_schema.SettingsSchema previous) async {
     setState(() {
-      currentTheme = current;
+      useSystemPreferredTheme = current.useSystemPreferredTheme;
+      useDarkMode = current.useDarkMode;
     });
   }
 
@@ -53,9 +57,9 @@ class AppState extends State<App> {
       navigatorObservers: [RouteManager.keeper],
       theme: utils.Palette.lightTheme,
       darkTheme: utils.Palette.darkTheme,
-      themeMode: currentTheme.systemPreferred
+      themeMode: useSystemPreferredTheme
           ? ThemeMode.system
-          : (currentTheme.darkMode ? ThemeMode.dark : ThemeMode.light),
+          : (useDarkMode ? ThemeMode.dark : ThemeMode.light),
       initialRoute: RouteNames.initialRoute,
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == null) throw ('No route name was received');

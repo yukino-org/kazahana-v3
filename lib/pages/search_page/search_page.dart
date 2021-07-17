@@ -57,51 +57,71 @@ class PageState extends State<Page> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
             ),
-            child: SizedBox(
-              height: utils.remToPx(20),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  vertical: utils.remToPx(0.8),
-                ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: utils.remToPx(1),
-                        ),
-                        child: Text(
-                          Translator.t.selectPlugin(),
-                          style: TextStyle(
-                            fontSize:
-                                Theme.of(context).textTheme.headline6?.fontSize,
-                            fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: utils.remToPx(1),
+                    ),
+                    child: Text(
+                      Translator.t.selectPlugin(),
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  ...allPlugins
+                      .map(
+                        (x) => Material(
+                          type: MaterialType.transparency,
+                          child: RadioListTile(
+                            title: Text(x),
+                            value: x,
+                            groupValue: currentPlugin,
+                            activeColor: Theme.of(context).primaryColor,
+                            onChanged: (val) {
+                              setState(() {
+                                if (val != null) {
+                                  currentPlugin = x;
+                                }
+                              });
+                            },
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: utils.remToPx(0.3),
-                      ),
-                      ...allPlugins
-                          .map(
-                            (x) => Material(
-                              type: MaterialType.transparency,
-                              child: RadioListTile(
-                                  title: Text(x),
-                                  value: x,
-                                  groupValue: currentPlugin,
-                                  activeColor: Theme.of(context).primaryColor,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      if (val != null) {
-                                        currentPlugin = x;
-                                      }
-                                    });
-                                  }),
+                      )
+                      .toList(),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: utils.remToPx(0.6),
+                            vertical: utils.remToPx(0.3),
+                          ),
+                          child: Text(
+                            Translator.t.close(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
                             ),
-                          )
-                          .toList(),
-                    ]),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

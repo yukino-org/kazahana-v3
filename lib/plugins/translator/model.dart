@@ -16,4 +16,10 @@ abstract class LanguageSentences {
   String preferences();
   String landscapeVideoPlayer();
   String landscapeVideoPlayerDetail();
+  String theme();
+  String systemPreferredTheme();
+  String defaultTheme();
+  String darkMode();
+  String close();
+  String chooseTheme();
 }

@@ -26,6 +26,6 @@ abstract class DataStore {
 
   static settings_schema.SettingsSchema getSettings() => DataBox.main.get(
         DataStoreKeys.settings,
-        defaultValue: settings_schema.defaultSettings,
+        defaultValue: settings_schema.SettingsSchema(),
       );
 }

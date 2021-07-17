@@ -4,12 +4,12 @@ part 'settings.g.dart';
 
 @HiveType(typeId: 1)
 class SettingsSchema extends HiveObject {
-  @HiveField(0)
-  bool fullscreenVideoPlayer;
+  @HiveField(1, defaultValue: true)
+  late bool useSystemPreferredTheme;
 
-  SettingsSchema({required this.fullscreenVideoPlayer});
+  @HiveField(2, defaultValue: false)
+  late bool useDarkMode;
+
+  @HiveField(3, defaultValue: false)
+  late bool fullscreenVideoPlayer;
 }
-
-final defaultSettings = SettingsSchema(
-  fullscreenVideoPlayer: true,
-);

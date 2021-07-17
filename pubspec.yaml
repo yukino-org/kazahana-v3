@@ -36,3 +36,5 @@ flutter:
           style: italic
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 800
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
