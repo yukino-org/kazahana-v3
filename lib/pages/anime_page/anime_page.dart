@@ -4,6 +4,7 @@ import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/player.dart' as player_model;
+import '../../plugins/translator/translator.dart';
 import '../../components/player/player.dart';
 import '../../components/full_screen.dart';
 
@@ -151,7 +152,7 @@ class PageState extends State<Page> {
                               height: utils.remToPx(1.5),
                             ),
                             Text(
-                              'Episodes',
+                              Translator.t.episodes(),
                               style: TextStyle(
                                 fontSize: Theme.of(context)
                                     .textTheme
@@ -217,8 +218,8 @@ class PageState extends State<Page> {
                             snapshot.data as List<anime_model.EpisodeSource>;
 
                         if (sources.isEmpty) {
-                          return const Center(
-                            child: Text('No valid sources were found.'),
+                          return Center(
+                            child: Text(Translator.t.noValidSources()),
                           );
                         }
 
@@ -248,8 +249,8 @@ class PageState extends State<Page> {
                       return loader;
                     },
                   )
-                : const Center(
-                    child: Text('You shouldn\'t be here.'),
+                : Center(
+                    child: Text(Translator.t.prohibitedPage()),
                   ),
           ],
         ),

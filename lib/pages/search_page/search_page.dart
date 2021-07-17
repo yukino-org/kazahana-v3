@@ -4,6 +4,7 @@ import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../plugins/router.dart';
+import '../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
   const Page({Key? key}) : super(key: key);
@@ -70,7 +71,7 @@ class PageState extends State<Page> {
                           horizontal: utils.remToPx(1),
                         ),
                         child: Text(
-                          'Select plugin',
+                          Translator.t.selectPlugin(),
                           style: TextStyle(
                             fontSize:
                                 Theme.of(context).textTheme.headline6?.fontSize,
@@ -127,7 +128,7 @@ class PageState extends State<Page> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Search',
+                  Translator.t.search(),
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontSize: Theme.of(context).textTheme.headline6?.fontSize,
@@ -136,7 +137,7 @@ class PageState extends State<Page> {
                 ),
                 TextField(
                   decoration: InputDecoration(
-                    labelText: 'Search in $currentPlugin',
+                    labelText: Translator.t.searchInPlugin(currentPlugin),
                   ),
                   onSubmitted: (terms) async {
                     setState(() {
@@ -164,11 +165,11 @@ class PageState extends State<Page> {
                     alignment: Alignment.center,
                     child: Text(
                       state == utils.LoadState.waiting
-                          ? 'Enter something to search!'
+                          ? Translator.t.enterToSearch()
                           : state == utils.LoadState.resolved
-                              ? 'No results were found.'
+                              ? Translator.t.noResultsFound()
                               : state == utils.LoadState.failed
-                                  ? 'Failed to fetch results.'
+                                  ? Translator.t.failedToGetResults()
                                   : '',
                       style: TextStyle(
                         color: Theme.of(context)

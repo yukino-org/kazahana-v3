@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart' as utils;
+import '../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
   const Page({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class PageState extends State<Page> {
           child: Column(
             children: [
               Text(
-                'Home',
+                Translator.t.home(),
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: Theme.of(context).textTheme.headline6?.fontSize,

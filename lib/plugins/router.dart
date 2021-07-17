@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../plugins/state.dart';
+import '../plugins/translator/translator.dart';
 import '../pages/splash_screen/splash_screen.dart' as splash_screen;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
 import '../pages/home_page/home_page.dart' as home_page;
@@ -20,7 +21,7 @@ abstract class RouteNames {
 
 class RouteInfo {
   final String route;
-  final String? name;
+  final String Function()? name;
   final IconData? icon;
   final WidgetBuilder builder;
   final bool isPublic;
@@ -89,7 +90,7 @@ abstract class RouteManager {
           settings.name?.startsWith(RouteNames.homeHandler) ?? false,
     ),
     RouteNames.home: RouteInfo(
-      name: 'Home',
+      name: Translator.t.home,
       route: RouteNames.home,
       icon: Icons.home,
       builder: (BuildContext context) => const home_page.Page(),
@@ -97,7 +98,7 @@ abstract class RouteManager {
       alreadyHandled: true,
     ),
     RouteNames.search: RouteInfo(
-      name: 'Search',
+      name: Translator.t.search,
       route: RouteNames.search,
       icon: Icons.search,
       builder: (BuildContext context) => const search_page.Page(),
@@ -105,7 +106,7 @@ abstract class RouteManager {
       alreadyHandled: true,
     ),
     RouteNames.settings: RouteInfo(
-      name: 'Settings',
+      name: Translator.t.settings,
       route: RouteNames.settings,
       icon: Icons.settings,
       builder: (BuildContext context) => const settings_page.Page(),

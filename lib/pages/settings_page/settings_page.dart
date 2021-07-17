@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart' as utils;
 import '../../plugins/database/database.dart';
+import '../../plugins/translator/translator.dart';
 
 enum SettingsLabelWidgets { toggle }
 
@@ -97,11 +98,12 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     final settings = DataStore.getSettings();
 
     final Map<SettingsCategory, List<SettingsLabel>> labels = {
-      SettingsCategory(title: 'Preferences', icon: Icons.invert_colors): [
+      SettingsCategory(
+          title: Translator.t.preferences(), icon: Icons.invert_colors): [
         SettingsLabel(
-            title: 'Landscape Video Player',
+            title: Translator.t.landscapeVideoPlayer(),
             icon: Icons.switch_video,
-            desc: 'Force auto-landscape when playing video',
+            desc: Translator.t.landscapeVideoPlayerDetail(),
             type: SettingsLabelWidgets.toggle,
             value: settings.fullscreenVideoPlayer,
             onChanged: (val) async {
@@ -118,8 +120,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     return WillPopScope(
         child: Scaffold(
           appBar: AppBar(
-            title: const Text(
-              'Settings',
+            title: Text(
+              Translator.t.settings(),
             ),
           ),
           body: SafeArea(

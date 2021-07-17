@@ -67,7 +67,7 @@ class PageState extends State<Page> {
                     return MapEntry(
                         i,
                         bottom_bar.BottomBarItem(
-                          name: x.name!,
+                          name: x.name!(),
                           icon: x.icon!,
                           isActive: currentIndex == i,
                           onPressed: () {
@@ -83,7 +83,7 @@ class PageState extends State<Page> {
                     return MapEntry(
                         i,
                         bottom_bar.BottomBarItem(
-                          name: x.name!,
+                          name: x.name!(),
                           icon: x.icon!,
                           isActive: false,
                           onPressed: () {
