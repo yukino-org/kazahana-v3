@@ -1,9 +1,11 @@
 const path = require("path");
+const spawn = require("cross-spawn");
 const cp = require("child_process");
 const util = require("util");
 const os = require("os");
 const { createServer } = require("vite");
 const addressToString = require("./utils/address-to-string");
+const pkgJson = require("../package.json");
 
 const exec = util.promisify(cp.exec);
 
@@ -17,7 +19,7 @@ const start = async () => {
         Object.values(os.networkInterfaces())
             .flat(1)
             .find(
-                x =>
+                (x) =>
                     !x.internal &&
                     x.family === "IPv4" &&
                     x.address.startsWith("192")
@@ -32,10 +34,10 @@ const start = async () => {
         server: {
             port: PORT,
             watch: {
-                ignored: ["environments"]
+                ignored: ["environments"],
             },
-            host
-        }
+            host,
+        },
     });
 
     await server.listen();
@@ -43,13 +45,32 @@ const start = async () => {
     process.env.VITE_SERVE_URL = addressToString(
         {
             ...server.httpServer.address(),
-            address: host
+            address: host,
         },
         server.config.server.https
     );
 
     await exec("npx cap copy");
     console.log("Synced capacitor config");
+
+    const capacitorAndroidRun = "capacitor:android:run";
+    if (!pkgJson.scripts[capacitorAndroidRun])
+        throw new Error(
+            "Missing 'scripts.capacitor:android:run' in package.json"
+        );
+
+    const electronProcess = spawn(`yarn ${capacitorAndroidRun}`, {
+        stdio: "inherit",
+    });
+
+    electronProcess.on("error", (err) => {
+        console.error(err);
+    });
+
+    electronProcess.on("exit", (code) => {
+        console.warn(`Electron process exited with code ${code}! Exiting...`);
+        process.exit(code);
+    });
 };
 
 start();
