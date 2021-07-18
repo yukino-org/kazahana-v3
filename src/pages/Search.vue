@@ -12,14 +12,31 @@
             "
         >
             <input
-                class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
+                class="
+                    flex-grow
+                    bg-gray-100
+                    dark:bg-gray-800
+                    rounded
+                    border-transparent
+                    transition
+                    duration-300
+                "
                 type="text"
                 placeholder="Type in anime's name..."
-                @keypress="!!void handleKeypress($event)"
+                @keyup="!!void handleKey($event)"
             />
 
             <button
-                class="text-white bg-indigo-500 hover:bg-indigo-600 transition duration-300 px-4 py-2 rounded"
+                class="
+                    text-white
+                    bg-indigo-500
+                    hover:bg-indigo-600
+                    transition
+                    duration-300
+                    px-4
+                    py-2
+                    rounded
+                "
                 type="submit"
                 @click.stop.prevent="!!void search()"
             >
@@ -39,7 +56,7 @@
                         'px-2 py-0.5 rounded cursor-pointer',
                         selectedPlugin.includes(plugin.name)
                             ? 'bg-green-400 dark:bg-green-500 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300'
+                            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition duration-300',
                     ]"
                     :title="
                         selectedPlugin.includes(plugin.name)
@@ -102,7 +119,7 @@
                         <img
                             :class="[
                                 'rounded flex-none w-20',
-                                anime.description ? 'sm:w-32' : 'sm:w-20'
+                                anime.description ? 'sm:w-32' : 'sm:w-20',
                             ]"
                             :src="getValidImageUrl(anime.thumbnail)"
                             :alt="anime.title"
@@ -139,24 +156,24 @@
                                 <template v-if="anime.additional">
                                     <span
                                         class="
-                                        text-white text-xs
-                                        px-1
-                                        py-0.5
-                                        rounded-sm
-                                        bg-blue-500
-                                    "
+                                            text-white text-xs
+                                            px-1
+                                            py-0.5
+                                            rounded-sm
+                                            bg-blue-500
+                                        "
                                         v-if="'episodes' in anime.additional"
                                         >Episodes:
                                         {{ anime.additional.episodes }}</span
                                     >
                                     <span
                                         class="
-                                        text-white text-xs
-                                        px-1
-                                        py-0.5
-                                        rounded-sm
-                                        bg-blue-500
-                                    "
+                                            text-white text-xs
+                                            px-1
+                                            py-0.5
+                                            rounded-sm
+                                            bg-blue-500
+                                        "
                                         v-if="'volumes' in anime.additional"
                                         >Volumes:
                                         {{ anime.additional.volumes }}</span
@@ -254,7 +271,7 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        ExternalLink
+        ExternalLink,
     },
     data() {
         const plugins: Record<string, PluginEntity[]> = {
@@ -262,16 +279,16 @@ export default defineComponent({
                 {
                     name: "MyAnimeList (Anime)",
                     type: "extended",
-                    category: "MyAnimeList-Anime"
-                }
+                    category: "MyAnimeList-Anime",
+                },
             ],
             manga: [
                 {
                     name: "MyAnimeList (Manga)",
                     type: "extended",
-                    category: "MyAnimeList-Manga"
-                }
-            ]
+                    category: "MyAnimeList-Manga",
+                },
+            ],
         };
 
         const data: {
@@ -288,11 +305,11 @@ export default defineComponent({
             selectedPlugin: Array.isArray(this.$route.query.plugins)
                 ? <string[]>(
                       this.$route.query.plugins.filter(
-                          x => typeof x === "string"
+                          (x) => typeof x === "string"
                       )
                   )
                 : ["MyAnimeList (Anime)"],
-            allPlugins: plugins
+            allPlugins: plugins,
         };
 
         return data;
@@ -323,7 +340,7 @@ export default defineComponent({
         },
         toggleSelected(plugin: string) {
             this.selectedPlugin = this.selectedPlugin.includes(plugin)
-                ? this.selectedPlugin.filter(x => x !== plugin)
+                ? this.selectedPlugin.filter((x) => x !== plugin)
                 : [...this.selectedPlugin, plugin];
         },
         async getAllPlugins() {
@@ -334,7 +351,7 @@ export default defineComponent({
                 this.allPlugins.anime.push({
                     name: x,
                     type: "short",
-                    category: "anime"
+                    category: "anime",
                 });
             });
 
@@ -343,11 +360,11 @@ export default defineComponent({
                 this.allPlugins.manga.push({
                     name: x,
                     type: "short",
-                    category: "manga"
+                    category: "manga",
                 });
             });
         },
-        handleKeypress(event: KeyboardEvent) {
+        handleKey(event: KeyboardEvent) {
             this.setTerms(event);
 
             if (event.key === "Enter") {
@@ -384,19 +401,22 @@ export default defineComponent({
             const allPlugins = Object.values(this.allPlugins).flat(1);
             for (const pluginName of this.selectedPlugin) {
                 try {
-                    const config = allPlugins.find(x => x.name === pluginName);
+                    const config = allPlugins.find(
+                        (x) => x.name === pluginName
+                    );
                     if (!config) {
                         this.$logger.emit(
                             "error",
                             "Corresponding plugin was not found!"
                         );
                     } else if (config.category === "MyAnimeList-Anime") {
-                        const data = await client.integrations.MyAnimeList.searchAnime(
-                            this.terms
-                        );
+                        const data =
+                            await client.integrations.MyAnimeList.searchAnime(
+                                this.terms
+                            );
 
                         results.push(
-                            ...data.map(x => {
+                            ...data.map((x) => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: x.description.replace(
@@ -412,25 +432,26 @@ export default defineComponent({
                                     route: {
                                         path: "/anime",
                                         query: {
-                                            url: x.url
-                                        }
+                                            url: x.url,
+                                        },
                                     },
                                     type: "anime",
                                     additional: {
                                         episodes: x.episodes,
-                                        score: x.score
-                                    }
+                                        score: x.score,
+                                    },
                                 };
                                 return res;
                             })
                         );
                     } else if (config.category === "MyAnimeList-Manga") {
-                        const data = await client.integrations.MyAnimeList.searchManga(
-                            this.terms
-                        );
+                        const data =
+                            await client.integrations.MyAnimeList.searchManga(
+                                this.terms
+                            );
 
                         results.push(
-                            ...data.map(x => {
+                            ...data.map((x) => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: x.description.replace(
@@ -446,14 +467,14 @@ export default defineComponent({
                                     route: {
                                         path: "/manga",
                                         query: {
-                                            url: x.url
-                                        }
+                                            url: x.url,
+                                        },
                                     },
                                     type: "manga",
                                     additional: {
                                         volumes: x.volumes,
-                                        score: x.score
-                                    }
+                                        score: x.score,
+                                    },
                                 };
                                 return res;
                             })
@@ -464,7 +485,7 @@ export default defineComponent({
                         );
 
                         results.push(
-                            ...data.map(x => {
+                            ...data.map((x) => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: "",
@@ -476,10 +497,10 @@ export default defineComponent({
                                         path: "/anime/source",
                                         query: {
                                             plugin: config.name,
-                                            url: x.url
-                                        }
+                                            url: x.url,
+                                        },
                                     },
-                                    type: "anime"
+                                    type: "anime",
                                 };
                                 return res;
                             })
@@ -490,7 +511,7 @@ export default defineComponent({
                         );
 
                         results.push(
-                            ...data.map(x => {
+                            ...data.map((x) => {
                                 const res: ResultType = {
                                     title: x.title,
                                     description: "",
@@ -502,10 +523,10 @@ export default defineComponent({
                                         path: "/manga/source",
                                         query: {
                                             plugin: config.name,
-                                            url: x.url
-                                        }
+                                            url: x.url,
+                                        },
                                     },
-                                    type: "manga"
+                                    type: "manga",
                                 };
                                 return res;
                             })
@@ -526,7 +547,7 @@ export default defineComponent({
             rpc?.({
                 details: this.result.data.length
                     ? `Searching for ${this.terms} (${this.selectedPlugin})`
-                    : "On Search Page"
+                    : "On Search Page",
             });
 
             const store = await Store.getClient();
@@ -542,9 +563,9 @@ export default defineComponent({
                         route: this.$route.path,
                         queries: {
                             terms: this.terms,
-                            plugins: [...this.selectedPlugin]
-                        }
-                    }
+                            plugins: [...this.selectedPlugin],
+                        },
+                    },
                 });
 
                 await store.set(
@@ -553,7 +574,7 @@ export default defineComponent({
                 );
             }
         },
-        getValidImageUrl: util.getValidImageUrl
-    }
+        getValidImageUrl: util.getValidImageUrl,
+    },
 });
 </script>
