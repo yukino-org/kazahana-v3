@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import './core/utils.dart' as utils;
@@ -7,11 +6,19 @@ import './plugins/router.dart';
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
 import './plugins/translator/translator.dart';
+import './plugins/translator/model.dart' show LanguageName;
 
 void main() async {
   await DataStore.initialize();
   await state.AppState.initialize();
-  Translator.trySetLanguage(Platform.localeName.split('_')[0]);
+  Translator.setLanguage(
+    state.AppState.settings.current.locale != null &&
+            Translator.isSupportedLocale(
+              state.AppState.settings.current.locale!,
+            )
+        ? state.AppState.settings.current.locale!
+        : Translator.getSupportedLocale(),
+  );
 
   runApp(const App());
 }
@@ -31,22 +38,28 @@ class AppState extends State<App> {
   void initState() {
     super.initState();
 
-    state.AppState.settings.subscribe(handleThemeChange);
+    state.AppState.settings.subscribe(handleSettingsChange);
   }
 
   @override
   void dispose() {
-    state.AppState.settings.unsubscribe(handleThemeChange);
+    state.AppState.settings.unsubscribe(handleSettingsChange);
 
     super.dispose();
   }
 
-  void handleThemeChange(settings_schema.SettingsSchema current,
-      settings_schema.SettingsSchema previous) async {
+  void handleSettingsChange(
+    final settings_schema.SettingsSchema current,
+    final settings_schema.SettingsSchema previous,
+  ) async {
     setState(() {
       useSystemPreferredTheme = current.useSystemPreferredTheme;
       useDarkMode = current.useDarkMode;
     });
+
+    if (current.locale != Translator.t.code.code) {
+      Translator.setLanguage(current.locale!);
+    }
   }
 
   @override

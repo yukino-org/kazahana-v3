@@ -5,9 +5,14 @@ import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
+import '../../plugins/translator/model.dart' show LanguageCodes;
 
 class Page extends StatefulWidget {
-  const Page({Key? key}) : super(key: key);
+  const Page({
+    Key? key,
+  }) : super(
+          key: key,
+        );
 
   @override
   State<Page> createState() => PageState();
@@ -21,7 +26,13 @@ class SearchInfo extends anime_model.SearchInfo {
     required String url,
     String? thumbnail,
     required this.plugin,
-  }) : super(title: title, url: url, thumbnail: thumbnail);
+    required LanguageCodes locale,
+  }) : super(
+          title: title,
+          url: url,
+          thumbnail: thumbnail,
+          locale: locale,
+        );
 }
 
 class PageState extends State<Page> {
@@ -30,11 +41,14 @@ class PageState extends State<Page> {
   String currentPlugin = extractor.Extractors.anime.keys.first;
   List<SearchInfo> results = [];
 
-  Future<List<SearchInfo>> search(String terms) async {
+  Future<List<SearchInfo>> search(final String terms) async {
     List<SearchInfo> results = [];
     final inst = extractor.Extractors.anime[currentPlugin];
     if (inst != null) {
-      final infos = await inst.search(terms);
+      final infos = await inst.search(
+        terms,
+        locale: Translator.t.code,
+      );
       results.addAll(
         infos.map(
           (x) => SearchInfo(
@@ -42,6 +56,7 @@ class PageState extends State<Page> {
             url: x.url,
             thumbnail: x.thumbnail,
             plugin: currentPlugin,
+            locale: Translator.t.code,
           ),
         ),
       );

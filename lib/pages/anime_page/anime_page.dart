@@ -8,8 +8,10 @@ import '../../plugins/translator/translator.dart';
 import '../../components/player/player.dart';
 import '../../components/full_screen.dart';
 
+enum Pages { home, player }
+
 class Page extends StatefulWidget {
-  const Page({Key? key}) : super(key: key);
+  const Page({final Key? key}) : super(key: key);
 
   @override
   State<Page> createState() => PageState();
@@ -25,25 +27,33 @@ class PageState extends State<Page> {
   void initState() {
     super.initState();
 
-    currentIndex = 0;
+    currentIndex = Pages.home.index;
     controller = PageController(
       initialPage: currentIndex,
       keepPage: true,
     );
   }
 
-  void goToPage(int page) => controller.animateToPage(
-        page,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-      );
+  void goToPage(final Pages page) {
+    controller.animateToPage(
+      page.index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+  }
 
-  Future<anime_model.AnimeInfo> getInfo(anime_page.PageArguments args) =>
-      extractor.Extractors.anime[args.plugin]!.getInfo(args.src);
+  Future<anime_model.AnimeInfo> getInfo(final anime_page.PageArguments args) =>
+      extractor.Extractors.anime[args.plugin]!.getInfo(
+        args.src,
+        locale: Translator.t.code,
+      );
 
   Future<List<anime_model.EpisodeSource>> getSources(
           String plugin, String src) =>
-      extractor.Extractors.anime[plugin]!.getSources(src);
+      extractor.Extractors.anime[plugin]!.getSources(
+        src,
+        locale: Translator.t.code,
+      );
 
   Widget heroBuilder(
       anime_page.PageArguments args, anime_model.AnimeInfo info) {
@@ -192,7 +202,7 @@ class PageState extends State<Page> {
                                             episode = x;
                                           });
 
-                                          goToPage(1);
+                                          goToPage(Pages.player);
                                         },
                                       ),
                                     ),
@@ -255,10 +265,10 @@ class PageState extends State<Page> {
           ],
         ),
         onWillPop: () async {
-          if (currentIndex != 0) {
+          if (currentIndex != Pages.home.index) {
             player = null;
             episode = null;
-            goToPage(0);
+            goToPage(Pages.home);
             return false;
           }
 

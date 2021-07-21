@@ -3,45 +3,25 @@ import '../../core/utils.dart' as utils;
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/database/database.dart';
 import '../../plugins/translator/translator.dart';
+import '../../plugins/translator/model.dart' show LanguageCodes, LanguageName;
+import './settings.dart';
 
-enum SettingsLabelWidgets { toggle, radio }
-
-class SettingsCategory {
-  final String title;
-  final IconData icon;
-
-  SettingsCategory({required this.title, required this.icon});
-}
-
-class SettingsLabel {
-  final String title;
-  final String? desc;
-  final IconData icon;
-  final SettingsLabelWidgets type;
-  final dynamic value;
-  final Map<Object, String>? values;
-  final void Function(dynamic) onChanged;
-
-  SettingsLabel(
-      {required this.title,
-      this.desc,
-      required this.icon,
-      required this.type,
-      required this.value,
-      this.values,
-      required this.onChanged});
-}
+enum Pages { home }
 
 class Page extends StatefulWidget {
-  const Page({Key? key}) : super(key: key);
+  const Page({
+    Key? key,
+  }) : super(
+          key: key,
+        );
 
   @override
   State<Page> createState() => PageState();
 }
 
-class PageState extends State<Page> with SingleTickerProviderStateMixin {
+class PageState extends State<Page> {
   final controller = PageController(
-    initialPage: 0,
+    initialPage: Pages.home.index,
     keepPage: true,
   );
   final settings = DataStore.getSettings();
@@ -127,7 +107,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                               horizontal: 22,
                             ),
                             child: Text(
-                              Translator.t.chooseTheme(),
+                              label.headline ?? label.title,
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ),
@@ -229,7 +209,40 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
         icon: Icons.invert_colors,
       ): [
         SettingsLabel(
+          title: Translator.t.language(),
+          headline: Translator.t.chooseLanguage(),
+          icon: Icons.language,
+          type: SettingsLabelWidgets.radio,
+          value: settings.locale ?? Translator.t.code.code,
+          values: {
+            for (final lang in LanguageCodes.values) lang.code: lang.language,
+          },
+          onChanged: (val) async {
+            if (val is int) {
+              setState(() {
+                switch (val) {
+                  case 0:
+                    settings.useSystemPreferredTheme = true;
+                    break;
+
+                  case 1:
+                    settings.useSystemPreferredTheme = false;
+                    settings.useDarkMode = false;
+                    break;
+
+                  case 2:
+                    settings.useSystemPreferredTheme = false;
+                    settings.useDarkMode = true;
+                    break;
+                }
+              });
+              await saveSettings();
+            }
+          },
+        ),
+        SettingsLabel(
           title: Translator.t.theme(),
+          headline: Translator.t.chooseTheme(),
           icon: Icons.palette,
           type: SettingsLabelWidgets.radio,
           value: settings.useSystemPreferredTheme
@@ -314,7 +327,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                 ),
                                 title: Text(x.title),
                                 onTap: () {
-                                  goToPage(i + 1);
+                                  goToPage(i + Pages.values.length);
                                 },
                               )))
                           .values
@@ -330,7 +343,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
           ),
         ),
         onWillPop: () async {
-          if (controller.page == 0) {
+          if (controller.page == Pages.home.index) {
             Navigator.of(context).pop();
             return true;
           }
