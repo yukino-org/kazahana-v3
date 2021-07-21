@@ -1,6 +1,16 @@
+enum LanguageCodes { en }
+
+const Map<LanguageCodes, String> languages = {
+  LanguageCodes.en: 'English',
+};
+
+extension LanguageName on LanguageCodes {
+  String get code => toString().split('.').last;
+  String get language => languages[this]!;
+}
+
 abstract class LanguageSentences {
-  String get code;
-  String get language;
+  LanguageCodes get code;
 
   String home();
   String search();
@@ -22,4 +32,6 @@ abstract class LanguageSentences {
   String darkMode();
   String close();
   String chooseTheme();
+  String language();
+  String chooseLanguage();
 }

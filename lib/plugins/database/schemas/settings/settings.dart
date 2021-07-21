@@ -12,4 +12,7 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(3, defaultValue: false)
   late bool fullscreenVideoPlayer;
+
+  @HiveField(4)
+  late String? locale;
 }

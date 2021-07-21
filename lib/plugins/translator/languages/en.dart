@@ -2,10 +2,7 @@ import '../model.dart';
 
 class Sentences extends LanguageSentences {
   @override
-  get code => 'en';
-
-  @override
-  get language => 'English';
+  get code => LanguageCodes.en;
 
   @override
   home() => 'Home';
@@ -66,4 +63,10 @@ class Sentences extends LanguageSentences {
 
   @override
   chooseTheme() => 'Choose Theme';
+
+  @override
+  language() => 'Language';
+
+  @override
+  chooseLanguage() => 'Choose language';
 }

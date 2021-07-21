@@ -19,19 +19,22 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
     return SettingsSchema()
       ..useSystemPreferredTheme = fields[1] == null ? true : fields[1] as bool
       ..useDarkMode = fields[2] == null ? false : fields[2] as bool
-      ..fullscreenVideoPlayer = fields[3] == null ? false : fields[3] as bool;
+      ..fullscreenVideoPlayer = fields[3] == null ? false : fields[3] as bool
+      ..locale = fields[4] as String?;
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
       ..write(obj.useDarkMode)
       ..writeByte(3)
-      ..write(obj.fullscreenVideoPlayer);
+      ..write(obj.fullscreenVideoPlayer)
+      ..writeByte(4)
+      ..write(obj.locale);
   }
 
   @override
