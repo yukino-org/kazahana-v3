@@ -65,10 +65,10 @@
     "@capacitor/filesystem" "^1.0.0"
     "@capacitor/ios" "^3.0.0"
 
-"@capacitor/android@^3.0.0", "@capacitor/android@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-3.1.1.tgz#7bfca661a7aacd162694d7e7a81747da79ed20ae"
-  integrity sha512-f4QA0wlhr3uRFzHArSQRfgSGXiAFUlCXYOt/TyYwhKIweyrpfzXtHkgqCC4ATqN9Rp7yrrLRnz8JDXBUjff3iw==
+"@capacitor/android@^3.0.0", "@capacitor/android@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-3.1.2.tgz#b9f42fcbfb31639575cd90b63754e9ec526d434d"
+  integrity sha512-WF2E2jWxO3EBl8Y3aTAa8PHwMZGiAl9pdqvJaEUUhbbovXe0UxAuG4n0mfci4ZI6dD8gannQ2peoZ74vJ0Gr3Q==
 
 "@capacitor/app@^1.0.0":
   version "1.0.2"
