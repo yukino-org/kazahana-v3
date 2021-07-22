@@ -1,4 +1,28 @@
-import '../../../plugins/translator/model.dart' show LanguageCodes;
+import '../../../plugins/translator/model.dart'
+    show LanguageCodes, LanguageName;
+
+enum Qualities { q_144p, q_360p, q_480p, q_720p, q_1080p, unknown }
+
+class Quality {
+  final Qualities quality;
+  final String code;
+  final String short;
+
+  Quality(
+    this.quality,
+    this.code,
+    this.short,
+  );
+}
+
+final Map<Qualities, Quality> quality = {
+  Qualities.q_144p: Quality(Qualities.q_144p, '144p', 'sd'),
+  Qualities.q_360p: Quality(Qualities.q_360p, '360p', 'sd'),
+  Qualities.q_480p: Quality(Qualities.q_480p, '480p', 'sd'),
+  Qualities.q_720p: Quality(Qualities.q_720p, '720p', 'hd'),
+  Qualities.q_1080p: Quality(Qualities.q_1080p, '1080p', 'fhd'),
+  Qualities.unknown: Quality(Qualities.unknown, 'unknown', '?'),
+};
 
 class SearchInfo {
   String title;
@@ -7,16 +31,17 @@ class SearchInfo {
   LanguageCodes locale;
 
   SearchInfo({
-    required this.url,
-    required this.title,
-    this.thumbnail,
-    required this.locale,
+    required final this.url,
+    required final this.title,
+    final this.thumbnail,
+    required final this.locale,
   });
 
   Map<String, dynamic> toJson() => {
         'title': title,
         'url': url,
         'thumbnail': thumbnail,
+        'locale': locale.code,
       };
 }
 
@@ -26,14 +51,15 @@ class EpisodeInfo {
   LanguageCodes locale;
 
   EpisodeInfo({
-    required this.episode,
-    required this.url,
-    required this.locale,
+    required final this.episode,
+    required final this.url,
+    required final this.locale,
   });
 
   Map<String, dynamic> toJson() => {
         'episode': episode,
         'url': url,
+        'locale': locale.code,
       };
 }
 
@@ -45,11 +71,11 @@ class AnimeInfo {
   LanguageCodes locale;
 
   AnimeInfo({
-    required this.url,
-    required this.title,
-    required this.episodes,
-    this.thumbnail,
-    required this.locale,
+    required final this.url,
+    required final this.title,
+    required final this.episodes,
+    final this.thumbnail,
+    required final this.locale,
   });
 
   Map<String, dynamic> toJson() => {
@@ -57,42 +83,41 @@ class AnimeInfo {
         'url': url,
         'thumbnail': thumbnail,
         'episodes': episodes.map((x) => x.toJson()).toList(),
+        'locale': locale.code,
       };
 }
 
 class EpisodeSource {
   String url;
-  String quality;
+  Quality quality;
   Map<String, String> headers;
   LanguageCodes locale;
 
   EpisodeSource({
-    required this.url,
-    required this.quality,
-    this.headers = const {},
-    required this.locale,
+    required final this.url,
+    required final this.quality,
+    final this.headers = const {},
+    required final this.locale,
   });
 
   Map<String, dynamic> toJson() => {
         'quality': quality,
         'url': url,
         'headers': headers,
+        'locale': locale.code,
       };
 }
 
 abstract class AnimeExtractor {
   Future<List<SearchInfo>> search(
-    String terms, {
-    required LanguageCodes locale,
+    final String terms, {
+    required final LanguageCodes locale,
   });
 
   Future<AnimeInfo> getInfo(
-    String url, {
-    required LanguageCodes locale,
+    final String url, {
+    required final LanguageCodes locale,
   });
 
-  Future<List<EpisodeSource>> getSources(
-    String url, {
-    required LanguageCodes locale,
-  });
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode);
 }

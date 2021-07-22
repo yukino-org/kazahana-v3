@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:test/test.dart';
-import 'package:yukino_app/core/extractor/animes/model.dart';
+import 'package:yukino_app/core/extractor/manga/model.dart';
 import 'package:yukino_app/plugins/translator/model.dart';
 
-void search(AnimeExtractor client, String terms) {
+void search(MangaExtractor client, String terms) {
   test('Search', () async {
     final res = await client.search(
       terms,
@@ -18,7 +18,7 @@ void search(AnimeExtractor client, String terms) {
   });
 }
 
-void getInfo(AnimeExtractor client, String url) {
+void getInfo(MangaExtractor client, String url) {
   test('Information', () async {
     final res = await client.getInfo(
       url,
@@ -32,9 +32,9 @@ void getInfo(AnimeExtractor client, String url) {
   });
 }
 
-void getSources(AnimeExtractor client, EpisodeInfo episode) {
+void getSources(MangaExtractor client, ChapterInfo chapter) {
   test('Sources', () async {
-    final res = await client.getSources(episode);
+    final res = await client.getChapter(chapter);
 
     // ignore: avoid_print
     print(const JsonEncoder.withIndent('  ').convert(res));
