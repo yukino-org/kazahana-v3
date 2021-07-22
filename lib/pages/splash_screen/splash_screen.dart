@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../plugins/router.dart';
 
@@ -14,8 +13,8 @@ class ScreenState extends State<Screen> {
   void initState() {
     super.initState();
 
-    scheduleMicrotask(() {
-      Navigator.of(context).pushReplacementNamed(RouteNames.home);
+    Future.microtask(() {
+      Navigator.of(context).restorablePushReplacementNamed(RouteNames.home);
     });
   }
 
@@ -23,9 +22,10 @@ class ScreenState extends State<Screen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: SafeArea(
-          child: Center(
-        child: CircularProgressIndicator(),
-      )),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }

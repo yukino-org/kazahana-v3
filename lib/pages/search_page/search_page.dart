@@ -152,164 +152,162 @@ class PageState extends State<Page> {
           selectPlugins(context);
         },
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: utils.remToPx(1),
-              horizontal: utils.remToPx(1.25),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  Translator.t.search(),
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: utils.remToPx(1),
+            horizontal: utils.remToPx(1.25),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                Translator.t.search(),
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: Translator.t.searchInPlugin(currentPlugin),
-                  ),
-                  onSubmitted: (terms) async {
-                    setState(() {
-                      state = utils.LoadState.resolving;
-                    });
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: Translator.t.searchInPlugin(currentPlugin),
+                ),
+                onSubmitted: (terms) async {
+                  setState(() {
+                    state = utils.LoadState.resolving;
+                  });
 
-                    try {
-                      final res = await search(terms);
-                      setState(() {
-                        results = res;
-                        state = utils.LoadState.resolved;
-                      });
-                    } catch (e) {
-                      setState(() {
-                        state = utils.LoadState.failed;
-                      });
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: utils.remToPx(1.25),
-                ),
-                Visibility(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      state == utils.LoadState.waiting
-                          ? Translator.t.enterToSearch()
-                          : state == utils.LoadState.resolved
-                              ? Translator.t.noResultsFound()
-                              : state == utils.LoadState.failed
-                                  ? Translator.t.failedToGetResults()
-                                  : '',
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .color!
-                            .withOpacity(0.7),
-                      ),
+                  try {
+                    final res = await search(terms);
+                    setState(() {
+                      results = res;
+                      state = utils.LoadState.resolved;
+                    });
+                  } catch (e) {
+                    setState(() {
+                      state = utils.LoadState.failed;
+                    });
+                  }
+                },
+              ),
+              SizedBox(
+                height: utils.remToPx(1.25),
+              ),
+              Visibility(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    state == utils.LoadState.waiting
+                        ? Translator.t.enterToSearch()
+                        : state == utils.LoadState.resolved
+                            ? Translator.t.noResultsFound()
+                            : state == utils.LoadState.failed
+                                ? Translator.t.failedToGetResults()
+                                : '',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .color!
+                          .withOpacity(0.7),
                     ),
                   ),
-                  visible:
-                      (state == utils.LoadState.resolved && results.isEmpty) ||
-                          state == utils.LoadState.waiting ||
-                          state == utils.LoadState.failed,
                 ),
-                Visibility(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: utils.remToPx(1.5),
-                    ),
-                    child: const Center(child: CircularProgressIndicator()),
+                visible:
+                    (state == utils.LoadState.resolved && results.isEmpty) ||
+                        state == utils.LoadState.waiting ||
+                        state == utils.LoadState.failed,
+              ),
+              Visibility(
+                child: Container(
+                  margin: EdgeInsets.only(
+                    top: utils.remToPx(1.5),
                   ),
-                  visible: state == utils.LoadState.resolving,
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
-                Visibility(
-                  child: Column(
-                    children: results
-                        .map(
-                          (x) => Card(
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(4),
-                              child: Padding(
-                                padding: EdgeInsets.all(utils.remToPx(0.5)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: utils.remToPx(4),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          utils.remToPx(0.25),
-                                        ),
-                                        child: x.thumbnail != null
-                                            ? Image.network(x.thumbnail!)
-                                            : Image.asset(
-                                                utils.Assets.placeholderImage(
-                                                    utils.Fns.isDarkContext(
-                                                        context)),
-                                              ),
+                visible: state == utils.LoadState.resolving,
+              ),
+              Visibility(
+                child: Column(
+                  children: results
+                      .map(
+                        (x) => Card(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Padding(
+                              padding: EdgeInsets.all(utils.remToPx(0.5)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: utils.remToPx(4),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        utils.remToPx(0.25),
                                       ),
-                                    ),
-                                    SizedBox(width: utils.remToPx(0.75)),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            x.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6
-                                                  ?.fontSize,
+                                      child: x.thumbnail != null
+                                          ? Image.network(x.thumbnail!)
+                                          : Image.asset(
+                                              utils.Assets.placeholderImage(
+                                                  utils.Fns.isDarkContext(
+                                                      context)),
                                             ),
-                                          ),
-                                          Text(
-                                            x.plugin,
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1
-                                                  ?.fontSize,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pushNamed(
-                                  RouteNames.animePage,
-                                  arguments: anime_page.PageArguments(
-                                    src: x.url,
-                                    plugin: x.plugin,
                                   ),
-                                );
-                              },
+                                  SizedBox(width: utils.remToPx(0.75)),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          x.title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: Theme.of(context)
+                                                .textTheme
+                                                .headline6
+                                                ?.fontSize,
+                                          ),
+                                        ),
+                                        Text(
+                                          x.plugin,
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1
+                                                ?.fontSize,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                RouteNames.animePage,
+                                arguments: anime_page.PageArguments(
+                                  src: x.url,
+                                  plugin: x.plugin,
+                                ),
+                              );
+                            },
                           ),
-                        )
-                        .toList(),
-                  ),
-                  visible:
-                      state == utils.LoadState.resolved && results.isNotEmpty,
-                )
-              ],
-            ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                visible:
+                    state == utils.LoadState.resolved && results.isNotEmpty,
+              )
+            ],
           ),
         ),
       ),

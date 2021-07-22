@@ -348,7 +348,7 @@ class PageState extends State<Page> {
             return true;
           }
 
-          goToPage(0);
+          goToPage(Pages.home.index);
           return false;
         });
   }

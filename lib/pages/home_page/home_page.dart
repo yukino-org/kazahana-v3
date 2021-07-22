@@ -12,26 +12,23 @@ class Page extends StatefulWidget {
 class PageState extends State<Page> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: utils.remToPx(1),
-            horizontal: utils.remToPx(1.25),
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: utils.remToPx(1),
+        horizontal: utils.remToPx(1.25),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            Translator.t.home(),
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          child: Column(
-            children: [
-              Text(
-                Translator.t.home(),
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

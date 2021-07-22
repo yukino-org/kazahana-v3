@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../components/bottom_bar.dart' as bottom_bar;
 import '../../plugins/router.dart';
 
@@ -98,13 +97,14 @@ class PageState extends State<Page> {
             return false;
           }
 
-          if (currentIndex == homeIndex &&
-              (ModalRoute.of(context)?.isFirst ?? false)) {
-            await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-            return true;
-          }
+          // if (currentIndex == homeIndex &&
+          //     (ModalRoute.of(context)?.isFirst ?? false)) {
+          //   await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          //   return true;
+          // }
 
-          return !await Navigator.of(context).maybePop();
+          Navigator.of(context).pop();
+          return true;
         });
   }
 }

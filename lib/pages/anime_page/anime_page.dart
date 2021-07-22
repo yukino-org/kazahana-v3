@@ -49,11 +49,10 @@ class PageState extends State<Page> {
       );
 
   Future<List<anime_model.EpisodeSource>> getSources(
-          String plugin, String src) =>
-      extractor.Extractors.anime[plugin]!.getSources(
-        src,
-        locale: Translator.t.code,
-      );
+    String plugin,
+    anime_model.EpisodeInfo episode,
+  ) =>
+      extractor.Extractors.anime[plugin]!.getSources(episode);
 
   Widget heroBuilder(
       anime_page.PageArguments args, anime_model.AnimeInfo info) {
@@ -219,7 +218,7 @@ class PageState extends State<Page> {
             ),
             episode != null
                 ? FutureBuilder(
-                    future: getSources(arguments.plugin, episode!.url),
+                    future: getSources(arguments.plugin, episode!),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done &&
                           snapshot.hasData &&
