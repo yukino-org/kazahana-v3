@@ -1,4 +1,4 @@
-import 'package:yukino_app/core/extractor/manga/mangadexdotorg.dart';
+import 'package:yukino_app/core/extractor/manga/mangadex_org.dart';
 import '../tester.dart' as tester;
 
 void main() => tester.getInfo(MangaDex(),

@@ -1,5 +1,5 @@
 import 'package:yukino_app/core/extractor/manga/model.dart';
-import 'package:yukino_app/core/extractor/manga/mangadexdotorg.dart';
+import 'package:yukino_app/core/extractor/manga/mangadex_org.dart';
 import 'package:yukino_app/plugins/translator/model.dart';
 import '../tester.dart' as tester;
 

@@ -69,4 +69,34 @@ class Sentences extends LanguageSentences {
 
   @override
   chooseLanguage() => 'Choose language';
+
+  @override
+  anime() => 'Anime';
+
+  @override
+  manga() => 'Manga';
+
+  @override
+  chapters() => 'Chapters';
+
+  @override
+  volumes() => 'Volumes';
+
+  @override
+  chapter() => 'Chapter';
+
+  @override
+  volume() => 'Volume';
+
+  @override
+  page() => 'Page';
+
+  @override
+  noPagesFound() => 'No valid pages were found.';
+
+  @override
+  vol() => 'Vol.';
+
+  @override
+  ch() => 'Ch.';
 }

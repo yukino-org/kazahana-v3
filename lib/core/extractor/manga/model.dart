@@ -1,18 +1,20 @@
 import '../../../plugins/translator/model.dart'
     show LanguageCodes, LanguageName;
+import '../model.dart';
 
-class SearchInfo {
-  final String title;
-  final String url;
-  final String? thumbnail;
+class SearchInfo extends BaseSearchInfo {
   final LanguageCodes locale;
 
   SearchInfo({
-    required final this.url,
-    required final this.title,
-    final this.thumbnail,
+    required final url,
+    required final title,
+    final thumbnail,
     required final this.locale,
-  });
+  }) : super(
+          title: title,
+          thumbnail: thumbnail,
+          url: url,
+        );
 
   Map<String, dynamic> toJson() => {
         'title': title,
@@ -91,12 +93,7 @@ class PageInfo {
       };
 }
 
-abstract class MangaExtractor {
-  Future<List<SearchInfo>> search(
-    final String terms, {
-    required final LanguageCodes locale,
-  });
-
+abstract class MangaExtractor extends BaseExtractorPlugin<SearchInfo> {
   Future<MangaInfo> getInfo(
     final String url, {
     required final LanguageCodes locale,

@@ -57,7 +57,7 @@ class AppState extends State<App> {
       useDarkMode = current.useDarkMode;
     });
 
-    if (current.locale != Translator.t.code.code) {
+    if (current.locale != null && current.locale != Translator.t.code.code) {
       Translator.setLanguage(current.locale!);
     }
   }
@@ -80,7 +80,7 @@ class AppState extends State<App> {
         final route = RouteManager.routes.values.firstWhereOrNull((x) {
           if (x.alreadyHandled) return false;
           if (x.matcher != null) return x.matcher!(settings);
-          return settings.name == x.route;
+          return RouteManager.getOnlyRoute(settings.name!) == x.route;
         });
         if (route == null) throw ('Invalid route: ${settings.name}');
 

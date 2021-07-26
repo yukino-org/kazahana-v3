@@ -1,5 +1,6 @@
 import '../../../plugins/translator/model.dart'
     show LanguageCodes, LanguageName;
+import '../model.dart';
 
 enum Qualities { q_144p, q_360p, q_480p, q_720p, q_1080p, unknown }
 
@@ -24,18 +25,19 @@ final Map<Qualities, Quality> quality = {
   Qualities.unknown: Quality(Qualities.unknown, 'unknown', '?'),
 };
 
-class SearchInfo {
-  String title;
-  String url;
-  String? thumbnail;
+class SearchInfo extends BaseSearchInfo {
   LanguageCodes locale;
 
   SearchInfo({
-    required final this.url,
-    required final this.title,
-    final this.thumbnail,
+    required final url,
+    required final title,
+    final thumbnail,
     required final this.locale,
-  });
+  }) : super(
+          title: title,
+          thumbnail: thumbnail,
+          url: url,
+        );
 
   Map<String, dynamic> toJson() => {
         'title': title,
@@ -108,12 +110,7 @@ class EpisodeSource {
       };
 }
 
-abstract class AnimeExtractor {
-  Future<List<SearchInfo>> search(
-    final String terms, {
-    required final LanguageCodes locale,
-  });
-
+abstract class AnimeExtractor extends BaseExtractorPlugin<SearchInfo> {
   Future<AnimeInfo> getInfo(
     final String url, {
     required final LanguageCodes locale,

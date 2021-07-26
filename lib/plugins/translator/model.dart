@@ -34,4 +34,14 @@ abstract class LanguageSentences {
   String chooseTheme();
   String language();
   String chooseLanguage();
+  String anime();
+  String manga();
+  String chapters();
+  String volumes();
+  String chapter();
+  String volume();
+  String page();
+  String noPagesFound();
+  String vol();
+  String ch();
 }

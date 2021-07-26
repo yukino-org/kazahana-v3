@@ -12,6 +12,9 @@ final Map<DataQuality, String> dataQualityValues = {
 };
 
 class MangaDex implements MangaExtractor {
+  @override
+  get name => 'Mangadex.org';
+
   final apiURL = 'https://api.mangadex.org';
   final uploadsURL = 'https://uploads.mangadex.org';
 
@@ -43,7 +46,7 @@ class MangaDex implements MangaExtractor {
       '$uploadsURL/covers/$mangaID/$coverFile';
 
   String? extractIdFromURL(final String url) =>
-      RegExp(r'https:\/\/api\.mangadex\.org\/manga\/([\S\s]+)\/?')
+      RegExp(r'https:\/\/api\.mangadex\.org\/manga\/([^\/]+)')
           .firstMatch(url)?[1];
 
   @override
@@ -109,9 +112,10 @@ class MangaDex implements MangaExtractor {
         final results = (json.decode(res.body)['results'] as List<dynamic>)
             .cast<Map<String, dynamic>>();
         for (final x in results) {
+          final String? title = x['data']['attributes']['title'];
           chapters.add(
             ChapterInfo(
-              title: x['data']['attributes']['title'],
+              title: title != null && title.isNotEmpty ? title : null,
               volume: x['data']['attributes']['volume'],
               chapter: x['data']['attributes']['chapter'],
               url: chapterApiURL(

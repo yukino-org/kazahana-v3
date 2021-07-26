@@ -56,6 +56,9 @@ class TwistEpisodeSource {
 }
 
 class TwistMoe implements AnimeExtractor {
+  @override
+  get name => 'Twist.moe';
+
   final baseURL = 'https://twist.moe';
   final apiURL = 'https://api.twist.moe/api';
 
@@ -73,7 +76,7 @@ class TwistMoe implements AnimeExtractor {
   String animeSourcesURL(final String slug) => '${animeApiURL(slug)}/sources';
 
   String? extractSlugFromURL(final String url) =>
-      RegExp(r'https:\/\/twist\.moe\/a\/([\S\s]+)\/?').firstMatch(url)?[1];
+      RegExp(r'https:\/\/twist\.moe\/a\/([^\/]+)').firstMatch(url)?[1];
 
   @override
   search(
@@ -138,7 +141,8 @@ class TwistMoe implements AnimeExtractor {
       final parsed = json.decode(res.body);
 
       final animeURLP = animeURL(slug);
-      final episodes = (parsed['episodes'] as List<Map<String, dynamic>>)
+      final episodes = (parsed['episodes'] as List<dynamic>)
+          .cast<Map<String, dynamic>>()
           .map(
             (x) => EpisodeInfo(
               episode: (x['number'] as int).toString(),

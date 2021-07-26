@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show DeviceOrientation;
 import '../../core/utils.dart' as utils;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/player.dart' as player_model;
+import '../../plugins/router.dart';
+import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
 import '../../components/player/player.dart';
 import '../../components/full_screen.dart';
+import '../../components/oriented_widget.dart';
 
 enum Pages { home, player }
 
@@ -118,8 +122,9 @@ class PageState extends State<Page> {
 
   @override
   Widget build(BuildContext context) {
-    final arguments =
-        ModalRoute.of(context)!.settings.arguments as anime_page.PageArguments;
+    final args = anime_page.PageArguments.fromJson(
+      RouteManager.parseRoute(ModalRoute.of(context)!.settings.name!).params,
+    );
 
     const loader = Center(
       child: CircularProgressIndicator(),
@@ -140,75 +145,78 @@ class PageState extends State<Page> {
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               body: FutureBuilder(
-                  future: getInfo(arguments),
+                  future: getInfo(args),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done &&
                         snapshot.hasData &&
                         snapshot.data is anime_model.AnimeInfo) {
                       final info = snapshot.data as anime_model.AnimeInfo;
 
-                      return Container(
-                        padding: EdgeInsets.only(
-                          left: utils.remToPx(1.25),
-                          right: utils.remToPx(1.25),
-                          bottom: utils.remToPx(1),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            heroBuilder(arguments, info),
-                            SizedBox(
-                              height: utils.remToPx(1.5),
-                            ),
-                            Text(
-                              Translator.t.episodes(),
-                              style: TextStyle(
-                                fontSize: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.fontSize,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.color
-                                    ?.withOpacity(0.7),
+                      return SingleChildScrollView(
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            left: utils.remToPx(1.25),
+                            right: utils.remToPx(1.25),
+                            bottom: utils.remToPx(1),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              heroBuilder(args, info),
+                              SizedBox(
+                                height: utils.remToPx(1.5),
                               ),
-                            ),
-                            Wrap(
-                              children: info.episodes
-                                  .map(
-                                    (x) => Card(
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: utils.remToPx(0.9),
-                                            vertical: utils.remToPx(0.1),
-                                          ),
-                                          child: Text(
-                                            x.episode,
-                                            style: TextStyle(
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6
-                                                  ?.fontSize,
+                              Text(
+                                Translator.t.episodes(),
+                                style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.fontSize,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color
+                                      ?.withOpacity(0.7),
+                                ),
+                              ),
+                              Wrap(
+                                children: info.episodes
+                                    .map(
+                                      (x) => Card(
+                                        child: InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: utils.remToPx(0.9),
+                                              vertical: utils.remToPx(0.1),
+                                            ),
+                                            child: Text(
+                                              x.episode,
+                                              style: TextStyle(
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6
+                                                    ?.fontSize,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            player = null;
-                                            episode = x;
-                                          });
+                                          onTap: () {
+                                            setState(() {
+                                              player = null;
+                                              episode = x;
+                                            });
 
-                                          goToPage(Pages.player);
-                                        },
+                                            goToPage(Pages.player);
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ],
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }
@@ -218,7 +226,7 @@ class PageState extends State<Page> {
             ),
             episode != null
                 ? FutureBuilder(
-                    future: getSources(arguments.plugin, episode!),
+                    future: getSources(args.plugin, episode!),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done &&
                           snapshot.hasData &&
@@ -243,9 +251,18 @@ class PageState extends State<Page> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               return FullScreenWidget(
-                                child: AspectRatio(
-                                  aspectRatio: 16 / 9,
-                                  child: player!.getWidget(),
+                                child: OrientedWidget(
+                                  child: AspectRatio(
+                                    aspectRatio: 16 / 9,
+                                    child: player!.getWidget(),
+                                  ),
+                                  orientation: AppState.settings.current
+                                          .fullscreenVideoPlayer
+                                      ? [
+                                          DeviceOrientation.landscapeLeft,
+                                          DeviceOrientation.landscapeRight,
+                                        ]
+                                      : [],
                                 ),
                               );
                             }

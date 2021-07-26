@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart' as utils;
 import '../../core/extractor/extractors.dart' as extractor;
-import '../../core/extractor/animes/model.dart' as anime_model;
+import '../../core/extractor/model.dart' as base_model;
 import '../../core/models/anime_page.dart' as anime_page;
+import '../../core/models/manga_page.dart' as manga_page;
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
-import '../../plugins/translator/model.dart' show LanguageCodes;
+
+enum PluginTypes { anime, manga }
+
+extension PluginRoutes on PluginTypes {
+  String route() {
+    switch (this) {
+      case PluginTypes.anime:
+        return RouteNames.animePage;
+
+      case PluginTypes.manga:
+        return RouteNames.mangaPage;
+    }
+  }
+
+  Map<String, String> params({
+    required final String plugin,
+    required final String src,
+  }) {
+    switch (this) {
+      case PluginTypes.anime:
+        return anime_page.PageArguments(src: src, plugin: plugin).toJson();
+
+      case PluginTypes.manga:
+        return manga_page.PageArguments(src: src, plugin: plugin).toJson();
+    }
+  }
+}
+
+class CurrentPlugin {
+  final PluginTypes type;
+  final base_model.BaseExtractorPlugin plugin;
+
+  CurrentPlugin({required final this.type, required final this.plugin});
+
+  @override
+  String toString() => '${type.toString}-${plugin.name}';
+}
 
 class Page extends StatefulWidget {
   const Page({
@@ -18,50 +55,73 @@ class Page extends StatefulWidget {
   State<Page> createState() => PageState();
 }
 
-class SearchInfo extends anime_model.SearchInfo {
-  String plugin;
+class SearchInfo extends base_model.BaseSearchInfo {
+  final String plugin;
+  final PluginTypes pluginType;
 
   SearchInfo({
     required String title,
     required String url,
     String? thumbnail,
     required this.plugin,
-    required LanguageCodes locale,
+    required this.pluginType,
   }) : super(
           title: title,
           url: url,
           thumbnail: thumbnail,
-          locale: locale,
         );
 }
 
 class PageState extends State<Page> {
   utils.LoadState state = utils.LoadState.waiting;
-  List<String> allPlugins = extractor.Extractors.anime.keys.toList();
-  String currentPlugin = extractor.Extractors.anime.keys.first;
+  List<String> animePlugins = extractor.Extractors.anime.keys.toList();
+  List<String> mangaPlugins = extractor.Extractors.manga.keys.toList();
+  CurrentPlugin currentPlugin = CurrentPlugin(
+    type: PluginTypes.anime,
+    plugin: extractor.Extractors.anime[extractor.Extractors.anime.keys.first]!,
+  );
   List<SearchInfo> results = [];
 
   Future<List<SearchInfo>> search(final String terms) async {
     List<SearchInfo> results = [];
-    final inst = extractor.Extractors.anime[currentPlugin];
-    if (inst != null) {
-      final infos = await inst.search(
-        terms,
-        locale: Translator.t.code,
-      );
-      results.addAll(
-        infos.map(
-          (x) => SearchInfo(
-            title: x.title,
-            url: x.url,
-            thumbnail: x.thumbnail,
-            plugin: currentPlugin,
-            locale: Translator.t.code,
-          ),
+
+    final searches = await currentPlugin.plugin.search(
+      terms,
+      locale: Translator.t.code,
+    );
+    results.addAll(
+      searches.map(
+        (x) => SearchInfo(
+          title: x.title,
+          url: x.url,
+          thumbnail: x.thumbnail,
+          plugin: currentPlugin.plugin.name,
+          pluginType: currentPlugin.type,
         ),
-      );
-    }
+      ),
+    );
+
     return results;
+  }
+
+  Widget getPluginWidget(CurrentPlugin plugin) {
+    return Material(
+      type: MaterialType.transparency,
+      child: RadioListTile(
+        title: Text(plugin.plugin.name),
+        value: plugin.toString(),
+        groupValue: currentPlugin.toString(),
+        activeColor: Theme.of(context).primaryColor,
+        onChanged: (val) {
+          setState(() {
+            if (val != null) {
+              currentPlugin = plugin;
+              Navigator.of(context).pop();
+            }
+          });
+        },
+      ),
+    );
   }
 
   void selectPlugins(BuildContext context) async {
@@ -91,22 +151,56 @@ class PageState extends State<Page> {
                   const SizedBox(
                     height: 6,
                   ),
-                  ...allPlugins
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: utils.remToPx(1),
+                    ),
+                    child: Text(
+                      Translator.t.anime(),
+                      style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.bodyText1?.fontSize,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            ?.color
+                            ?.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                  ...animePlugins
                       .map(
-                        (x) => Material(
-                          type: MaterialType.transparency,
-                          child: RadioListTile(
-                            title: Text(x),
-                            value: x,
-                            groupValue: currentPlugin,
-                            activeColor: Theme.of(context).primaryColor,
-                            onChanged: (val) {
-                              setState(() {
-                                if (val != null) {
-                                  currentPlugin = x;
-                                }
-                              });
-                            },
+                        (x) => getPluginWidget(
+                          CurrentPlugin(
+                            type: PluginTypes.anime,
+                            plugin: extractor.Extractors.anime[x]!,
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: utils.remToPx(1),
+                    ),
+                    child: Text(
+                      Translator.t.manga(),
+                      style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.bodyText1?.fontSize,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            ?.color
+                            ?.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                  ...mangaPlugins
+                      .map(
+                        (x) => getPluginWidget(
+                          CurrentPlugin(
+                            type: PluginTypes.manga,
+                            plugin: extractor.Extractors.manga[x]!,
                           ),
                         ),
                       )
@@ -171,7 +265,8 @@ class PageState extends State<Page> {
               ),
               TextField(
                 decoration: InputDecoration(
-                  labelText: Translator.t.searchInPlugin(currentPlugin),
+                  labelText:
+                      Translator.t.searchInPlugin(currentPlugin.plugin.name),
                 ),
                 onSubmitted: (terms) async {
                   setState(() {
@@ -292,11 +387,13 @@ class PageState extends State<Page> {
                             ),
                             onTap: () {
                               Navigator.of(context).pushNamed(
-                                RouteNames.animePage,
-                                arguments: anime_page.PageArguments(
-                                  src: x.url,
-                                  plugin: x.plugin,
-                                ),
+                                ParsedRouteInfo(
+                                  x.pluginType.route(),
+                                  x.pluginType.params(
+                                    src: x.url,
+                                    plugin: x.plugin,
+                                  ),
+                                ).toString(),
                               );
                             },
                           ),

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import '../plugins/state.dart';
 import '../plugins/translator/translator.dart';
-import '../pages/splash_screen/splash_screen.dart' as splash_screen;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
 import '../pages/home_page/home_page.dart' as home_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
 import '../pages/anime_page/anime_page.dart' as anime_page;
+import '../pages/manga_page/manga_page.dart' as manga_page;
 
 abstract class RouteNames {
   static const initialRoute = '/';
 
-  static const splashScreen = '/';
-  static const homeHandler = '/home';
-  static const home = '/home/home';
-  static const search = '/home/search';
+  static const homeHandler = '/';
+  static const home = '/home';
+  static const search = '/search';
   static const settings = '/settings';
   static const animePage = '/anime_page';
+  static const mangaPage = '/manga_page';
 }
 
 class RouteInfo {
@@ -75,20 +75,20 @@ class RouteKeeper extends NavigatorObserver {
   }
 }
 
+class ParsedRouteInfo {
+  final String route;
+  final Map<String, String> params;
+
+  ParsedRouteInfo(this.route, this.params);
+
+  @override
+  String toString() => '$route?${RouteManager.makeUrlParams(params)}';
+}
+
 abstract class RouteManager {
   static final navigationKey = GlobalKey<NavigatorState>();
   static final keeper = RouteKeeper();
   static final Map<String, RouteInfo> routes = {
-    RouteNames.splashScreen: RouteInfo(
-      route: RouteNames.splashScreen,
-      builder: (BuildContext context) => const splash_screen.Screen(),
-    ),
-    RouteNames.homeHandler: RouteInfo(
-      route: RouteNames.homeHandler,
-      builder: (BuildContext context) => const stacked_home_page.Page(),
-      matcher: (settings) =>
-          settings.name?.startsWith(RouteNames.homeHandler) ?? false,
-    ),
     RouteNames.home: RouteInfo(
       name: Translator.t.home,
       route: RouteNames.home,
@@ -116,8 +116,47 @@ abstract class RouteManager {
       route: RouteNames.animePage,
       builder: (BuildContext context) => const anime_page.Page(),
     ),
+    RouteNames.mangaPage: RouteInfo(
+      route: RouteNames.mangaPage,
+      builder: (BuildContext context) => const manga_page.Page(),
+    ),
+    RouteNames.homeHandler: RouteInfo(
+      route: RouteNames.homeHandler,
+      builder: (BuildContext context) => const stacked_home_page.Page(),
+      matcher: (settings) =>
+          settings.name?.startsWith(RouteNames.homeHandler) ?? false,
+    ),
   };
 
   static List<RouteInfo> get labeledRoutes =>
       routes.values.where((x) => x.isPublic).toList();
+
+  static String getOnlyRoute(String route) => route.split('?')[0];
+
+  static ParsedRouteInfo parseRoute(String route) {
+    final split = route.split('?');
+    return ParsedRouteInfo(
+      split[0],
+      parseUrlParams(split.length > 1 ? split[1] : ''),
+    );
+  }
+
+  static Map<String, String> parseUrlParams(String queries) {
+    final Map<String, String> params = {};
+    queries.split('&').forEach((x) {
+      final kv = x.split('=');
+      if (kv.length == 2) {
+        params[kv[0]] = Uri.decodeComponent(kv[1]);
+      }
+    });
+    return params;
+  }
+
+  static String makeUrlParams(Map<String, String> queries) {
+    List<String> params = [];
+    queries.forEach((k, v) {
+      params.add('$k=$v');
+    });
+    return params.join('&');
+  }
 }

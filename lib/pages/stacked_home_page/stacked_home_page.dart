@@ -97,12 +97,6 @@ class PageState extends State<Page> {
             return false;
           }
 
-          // if (currentIndex == homeIndex &&
-          //     (ModalRoute.of(context)?.isFirst ?? false)) {
-          //   await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-          //   return true;
-          // }
-
           Navigator.of(context).pop();
           return true;
         });
