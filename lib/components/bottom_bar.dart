@@ -19,8 +19,11 @@ class BottomBar extends StatefulWidget {
   final List<BottomBarItem> items;
   final int initialIndex;
 
-  const BottomBar({Key? key, required this.items, this.initialIndex = 0})
-      : super(key: key);
+  const BottomBar({
+    Key? key,
+    required this.items,
+    this.initialIndex = 0,
+  }) : super(key: key);
 
   @override
   State<BottomBar> createState() => BottomBarState();
@@ -42,42 +45,50 @@ class BottomBarState extends State<BottomBar> {
       ),
       child: BottomAppBar(
         color: Theme.of(context).backgroundColor,
-        child: Container(
-          padding: EdgeInsets.all(utils.remToPx(0.2)),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: widget.items.map((x) {
-                  final color = x.isActive
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          ?.color
-                          ?.withOpacity(0.7);
+        child: Wrap(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: widget.items.map((x) {
+                final color = x.isActive
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.color
+                        ?.withOpacity(0.7);
 
-                  return MaterialButton(
-                    padding: EdgeInsets.all(utils.remToPx(0.2)),
-                    shape: const CircleBorder(),
-                    child: Column(
-                      children: [
-                        Icon(x.icon, size: utils.remToPx(1.25), color: color),
-                        SizedBox(height: utils.remToPx(0.1)),
-                        Text(
-                          x.name,
-                          style: TextStyle(
-                            color: color,
-                          ),
-                        )
-                      ],
+                return Expanded(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkResponse(
+                      radius: (MediaQuery.of(context).size.width /
+                              widget.items.length /
+                              2) -
+                          utils.remToPx(1),
+                      child: Padding(
+                        padding: EdgeInsets.all(utils.remToPx(0.25)),
+                        child: Column(
+                          children: [
+                            Icon(x.icon,
+                                size: utils.remToPx(1.25), color: color),
+                            SizedBox(height: utils.remToPx(0.1)),
+                            Text(
+                              x.name,
+                              style: TextStyle(
+                                color: color,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      onTap: x.onPressed,
                     ),
-                    onPressed: x.onPressed,
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
