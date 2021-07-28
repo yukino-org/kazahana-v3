@@ -17,6 +17,9 @@ class Sentences extends LanguageSentences {
   episodes() => 'Episodes';
 
   @override
+  episode() => 'Episode';
+
+  @override
   noValidSources() => 'No valid sources were found.';
 
   @override
@@ -99,4 +102,22 @@ class Sentences extends LanguageSentences {
 
   @override
   ch() => 'Ch.';
+
+  @override
+  mangaReaderDirection() => 'Manga Reader Direction';
+
+  @override
+  mangaReaderSwipeDirection() => 'Manga Reader Swipe Direction';
+
+  @override
+  horizontal() => 'Horizontal';
+
+  @override
+  vertical() => 'Vertical';
+
+  @override
+  leftToRight() => 'Left to Right';
+
+  @override
+  rightToLeft() => 'Right to Left';
 }

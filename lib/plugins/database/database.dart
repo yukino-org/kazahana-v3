@@ -20,6 +20,8 @@ abstract class DataStore {
     await Hive.initFlutter();
 
     Hive.registerAdapter(settings_schema.SettingsSchemaAdapter());
+    Hive.registerAdapter(settings_schema.MangaDirectionsAdapter());
+    Hive.registerAdapter(settings_schema.MangaSwipeDirectionsAdapter());
 
     await Hive.openBox(DataStoreBoxNames.main);
   }

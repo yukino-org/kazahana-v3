@@ -15,4 +15,28 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(4)
   late String? locale;
+
+  @HiveField(5, defaultValue: MangaDirections.leftToRight)
+  late MangaDirections mangaReaderDirection;
+
+  @HiveField(6, defaultValue: MangaSwipeDirections.horizontal)
+  late MangaSwipeDirections mangaReaderSwipeDirection;
+}
+
+@HiveType(typeId: 2)
+enum MangaDirections {
+  @HiveField(0)
+  leftToRight,
+
+  @HiveField(1)
+  rightToLeft,
+}
+
+@HiveType(typeId: 3)
+enum MangaSwipeDirections {
+  @HiveField(0)
+  horizontal,
+
+  @HiveField(1)
+  vertical,
 }

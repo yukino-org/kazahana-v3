@@ -16,6 +16,7 @@ abstract class LanguageSentences {
   String search();
   String settings();
   String episodes();
+  String episode();
   String noValidSources();
   String prohibitedPage();
   String selectPlugin();
@@ -44,4 +45,10 @@ abstract class LanguageSentences {
   String noPagesFound();
   String vol();
   String ch();
+  String mangaReaderDirection();
+  String horizontal();
+  String vertical();
+  String mangaReaderSwipeDirection();
+  String leftToRight();
+  String rightToLeft();
 }
