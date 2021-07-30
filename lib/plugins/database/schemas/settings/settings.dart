@@ -21,6 +21,9 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(6, defaultValue: MangaSwipeDirections.horizontal)
   late MangaSwipeDirections mangaReaderSwipeDirection;
+
+  @HiveField(7, defaultValue: MangaMode.page)
+  late MangaMode mangaReaderMode;
 }
 
 @HiveType(typeId: 2)
@@ -39,4 +42,13 @@ enum MangaSwipeDirections {
 
   @HiveField(1)
   vertical,
+}
+
+@HiveType(typeId: 4)
+enum MangaMode {
+  @HiveField(0)
+  page,
+
+  @HiveField(1)
+  list,
 }

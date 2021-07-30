@@ -5,8 +5,12 @@ import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../core/models/manga_page.dart' as manga_page;
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
+import '../../plugins/state.dart' show AppState;
+import '../../plugins/database/schemas/settings/settings.dart'
+    show MangaMode, SettingsSchema;
 import '../../components/full_screen.dart';
-import './reader_page.dart';
+import './page_reader.dart';
+import './list_reader.dart';
 
 enum Pages { home, reader }
 
@@ -31,6 +35,7 @@ class PageState extends State<Page> {
   );
 
   late manga_page.PageArguments args;
+  MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
   @override
   void initState() {
@@ -47,13 +52,22 @@ class PageState extends State<Page> {
 
       getInfo();
     });
+
+    AppState.settings.subscribe(onAppStateChange);
   }
 
   @override
   void dispose() {
     controller.dispose();
+    AppState.settings.unsubscribe(onAppStateChange);
 
     super.dispose();
+  }
+
+  void onAppStateChange(SettingsSchema current, SettingsSchema previous) {
+    setState(() {
+      mangaMode = AppState.settings.current.mangaReaderMode;
+    });
   }
 
   Future<void> goToPage(Pages page) async {
@@ -273,37 +287,73 @@ class PageState extends State<Page> {
                     chapter != null
                         ? pages[chapter] != null && pages[chapter]!.isNotEmpty
                             ? FullScreenWidget(
-                                child: MangaReader(
-                                  key: ValueKey(
-                                    '${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                  ),
-                                  info: info!,
-                                  chapter: chapter!,
-                                  pages: pages[chapter]!,
-                                  previousChapter: () {
-                                    if (currentChapterIndex != null &&
-                                        currentChapterIndex! - 1 >= 0) {
-                                      setChapter(currentChapterIndex! - 1);
-                                    } else {
-                                      setChapter(null);
-                                      goToPage(Pages.home);
-                                    }
-                                  },
-                                  nextChapter: () {
-                                    if (currentChapterIndex != null &&
-                                        currentChapterIndex! + 1 <
-                                            info!.chapters.length) {
-                                      setChapter(currentChapterIndex! + 1);
-                                    } else {
-                                      setChapter(null);
-                                      goToPage(Pages.home);
-                                    }
-                                  },
-                                  onPop: () {
-                                    setChapter(null);
-                                    goToPage(Pages.home);
-                                  },
-                                ),
+                                child: mangaMode == MangaMode.page
+                                    ? PageReader(
+                                        key: ValueKey(
+                                          'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                        ),
+                                        info: info!,
+                                        chapter: chapter!,
+                                        pages: pages[chapter]!,
+                                        previousChapter: () {
+                                          if (currentChapterIndex != null &&
+                                              currentChapterIndex! - 1 >= 0) {
+                                            setChapter(
+                                                currentChapterIndex! - 1);
+                                          } else {
+                                            setChapter(null);
+                                            goToPage(Pages.home);
+                                          }
+                                        },
+                                        nextChapter: () {
+                                          if (currentChapterIndex != null &&
+                                              currentChapterIndex! + 1 <
+                                                  info!.chapters.length) {
+                                            setChapter(
+                                                currentChapterIndex! + 1);
+                                          } else {
+                                            setChapter(null);
+                                            goToPage(Pages.home);
+                                          }
+                                        },
+                                        onPop: () {
+                                          setChapter(null);
+                                          goToPage(Pages.home);
+                                        },
+                                      )
+                                    : ListReader(
+                                        key: ValueKey(
+                                          'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                        ),
+                                        info: info!,
+                                        chapter: chapter!,
+                                        pages: pages[chapter]!,
+                                        previousChapter: () {
+                                          if (currentChapterIndex != null &&
+                                              currentChapterIndex! - 1 >= 0) {
+                                            setChapter(
+                                                currentChapterIndex! - 1);
+                                          } else {
+                                            setChapter(null);
+                                            goToPage(Pages.home);
+                                          }
+                                        },
+                                        nextChapter: () {
+                                          if (currentChapterIndex != null &&
+                                              currentChapterIndex! + 1 <
+                                                  info!.chapters.length) {
+                                            setChapter(
+                                                currentChapterIndex! + 1);
+                                          } else {
+                                            setChapter(null);
+                                            goToPage(Pages.home);
+                                          }
+                                        },
+                                        onPop: () {
+                                          setChapter(null);
+                                          goToPage(Pages.home);
+                                        },
+                                      ),
                               )
                             : loader
                         : const SizedBox.shrink(),

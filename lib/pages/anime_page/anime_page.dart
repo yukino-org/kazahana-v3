@@ -120,6 +120,37 @@ class PageState extends State<Page> {
     });
   }
 
+  List<Widget> getEpisodeCard(anime_model.EpisodeInfo episode) {
+    List<String> first = [];
+    List<String> second = [];
+
+    if (episode.title != null) {
+      first.add('${Translator.t.episode()} ${episode.episode}');
+      second.add(episode.title!);
+    } else {
+      second.add('${Translator.t.episode()} ${episode.episode}');
+    }
+
+    return [
+      first.isNotEmpty
+          ? Text(
+              first.join(' & '),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : const SizedBox.shrink(),
+      Text(
+        second.join(' '),
+        style: TextStyle(
+          fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = anime_page.PageArguments.fromJson(
@@ -181,6 +212,7 @@ class PageState extends State<Page> {
                                 ),
                               ),
                               Wrap(
+                                // crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: info.episodes
                                     .map(
                                       (x) => Card(
@@ -189,17 +221,13 @@ class PageState extends State<Page> {
                                               BorderRadius.circular(4),
                                           child: Padding(
                                             padding: EdgeInsets.symmetric(
-                                              horizontal: utils.remToPx(0.9),
-                                              vertical: utils.remToPx(0.1),
+                                              horizontal: utils.remToPx(0.4),
+                                              vertical: utils.remToPx(0.2),
                                             ),
-                                            child: Text(
-                                              x.episode,
-                                              style: TextStyle(
-                                                fontSize: Theme.of(context)
-                                                    .textTheme
-                                                    .headline6
-                                                    ?.fontSize,
-                                              ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: getEpisodeCard(x),
                                             ),
                                           ),
                                           onTap: () {

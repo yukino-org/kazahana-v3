@@ -51,4 +51,6 @@ abstract class LanguageSentences {
   String mangaReaderSwipeDirection();
   String leftToRight();
   String rightToLeft();
+  String mangaReaderMode();
+  String list();
 }

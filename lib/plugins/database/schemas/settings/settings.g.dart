@@ -84,6 +84,45 @@ class MangaSwipeDirectionsAdapter extends TypeAdapter<MangaSwipeDirections> {
           typeId == other.typeId;
 }
 
+class MangaModeAdapter extends TypeAdapter<MangaMode> {
+  @override
+  final int typeId = 4;
+
+  @override
+  MangaMode read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MangaMode.page;
+      case 1:
+        return MangaMode.list;
+      default:
+        return MangaMode.page;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MangaMode obj) {
+    switch (obj) {
+      case MangaMode.page:
+        writer.writeByte(0);
+        break;
+      case MangaMode.list:
+        writer.writeByte(1);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MangaModeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
   @override
   final int typeId = 1;
@@ -104,13 +143,15 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
           : fields[5] as MangaDirections
       ..mangaReaderSwipeDirection = fields[6] == null
           ? MangaSwipeDirections.horizontal
-          : fields[6] as MangaSwipeDirections;
+          : fields[6] as MangaSwipeDirections
+      ..mangaReaderMode =
+          fields[7] == null ? MangaMode.page : fields[7] as MangaMode;
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
@@ -122,7 +163,9 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..writeByte(5)
       ..write(obj.mangaReaderDirection)
       ..writeByte(6)
-      ..write(obj.mangaReaderSwipeDirection);
+      ..write(obj.mangaReaderSwipeDirection)
+      ..writeByte(7)
+      ..write(obj.mangaReaderMode);
   }
 
   @override

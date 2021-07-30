@@ -4,12 +4,12 @@ import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/translator/translator.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/database/schemas/settings/settings.dart'
-    show MangaDirections, MangaSwipeDirections;
+    show MangaDirections, MangaSwipeDirections, MangaMode;
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../settings_page/setting_radio.dart';
 
-class MangaReader extends StatefulWidget {
+class PageReader extends StatefulWidget {
   final manga_model.MangaInfo info;
   final manga_model.ChapterInfo chapter;
   final List<manga_model.PageInfo> pages;
@@ -18,7 +18,7 @@ class MangaReader extends StatefulWidget {
   final void Function() previousChapter;
   final void Function() nextChapter;
 
-  const MangaReader({
+  const PageReader({
     Key? key,
     required this.info,
     required this.chapter,
@@ -29,10 +29,10 @@ class MangaReader extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  MangaReaderState createState() => MangaReaderState();
+  PageReaderState createState() => PageReaderState();
 }
 
-class MangaReaderState extends State<MangaReader>
+class PageReaderState extends State<PageReader>
     with SingleTickerProviderStateMixin {
   final animationDuration = const Duration(milliseconds: 300);
 
@@ -106,6 +106,21 @@ class MangaReaderState extends State<MangaReader>
                   Column(
                     children: [
                       SettingRadio(
+                        title: Translator.t.mangaReaderMode(),
+                        icon: Icons.pageview,
+                        value: AppState.settings.current.mangaReaderMode,
+                        labels: {
+                          MangaMode.list: Translator.t.list(),
+                          MangaMode.page: Translator.t.page(),
+                        },
+                        onChanged: (MangaMode val) async {
+                          AppState.settings.current.mangaReaderMode = val;
+                          await AppState.settings.current.save();
+                          AppState.settings.modify(AppState.settings.current);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      SettingRadio(
                         title: Translator.t.mangaReaderDirection(),
                         icon: Icons.auto_stories,
                         value: AppState.settings.current.mangaReaderDirection,
@@ -115,15 +130,12 @@ class MangaReaderState extends State<MangaReader>
                           MangaDirections.rightToLeft:
                               Translator.t.rightToLeft(),
                         },
-                        onChanged: (val) async {
-                          if (val is MangaDirections) {
-                            AppState.settings.current.mangaReaderDirection =
-                                val;
-                            await AppState.settings.current.save();
-                            setState(() {
-                              isReversed = val == MangaDirections.rightToLeft;
-                            });
-                          }
+                        onChanged: (MangaDirections val) async {
+                          AppState.settings.current.mangaReaderDirection = val;
+                          await AppState.settings.current.save();
+                          setState(() {
+                            isReversed = val == MangaDirections.rightToLeft;
+                          });
                         },
                       ),
                       SettingRadio(
@@ -137,16 +149,14 @@ class MangaReaderState extends State<MangaReader>
                           MangaSwipeDirections.vertical:
                               Translator.t.vertical(),
                         },
-                        onChanged: (val) async {
-                          if (val is MangaSwipeDirections) {
-                            AppState.settings.current
-                                .mangaReaderSwipeDirection = val;
-                            await AppState.settings.current.save();
-                            setState(() {
-                              isHorizontal =
-                                  val == MangaSwipeDirections.horizontal;
-                            });
-                          }
+                        onChanged: (MangaSwipeDirections val) async {
+                          AppState.settings.current.mangaReaderSwipeDirection =
+                              val;
+                          await AppState.settings.current.save();
+                          setState(() {
+                            isHorizontal =
+                                val == MangaSwipeDirections.horizontal;
+                          });
                         },
                       ),
                     ],
@@ -176,7 +186,7 @@ class MangaReaderState extends State<MangaReader>
               onPressed: () {
                 showOptions();
               },
-              icon: const Icon(Icons.opacity_outlined),
+              icon: const Icon(Icons.more_vert),
             ),
           ],
           title: Column(
@@ -197,94 +207,6 @@ class MangaReaderState extends State<MangaReader>
         ),
         controller: overlayController,
         visible: showOverlay,
-      ),
-      bottomNavigationBar: ToggleableSlideWidget(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: utils.remToPx(0.5),
-            vertical: utils.remToPx(1) +
-                Theme.of(context).textTheme.subtitle2!.fontSize!,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(utils.remToPx(0.25)),
-              ),
-              color: Theme.of(context).cardColor,
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: utils.remToPx(0.5),
-              ),
-              child: Row(
-                children: [
-                  Material(
-                    type: MaterialType.transparency,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        Theme.of(context).textTheme.headline4!.fontSize!,
-                      ),
-                      child: Icon(
-                        Icons.first_page,
-                        size: Theme.of(context).textTheme.headline4?.fontSize,
-                      ),
-                      onTap: widget.previousChapter,
-                    ),
-                  ),
-                  Expanded(
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      children: [
-                        SliderTheme(
-                          data: SliderThemeData(
-                            thumbShape: RoundSliderThumbShape(
-                              enabledThumbRadius: utils.remToPx(0.3),
-                            ),
-                            trackHeight: utils.remToPx(0.15),
-                            showValueIndicator: ShowValueIndicator.always,
-                          ),
-                          child: Slider(
-                            value: currentPage + 1,
-                            min: 1,
-                            max: widget.pages.length.toDouble(),
-                            label: (currentPage + 1).toString(),
-                            onChanged: (value) {
-                              setState(() {
-                                currentPage = value.toInt() - 1;
-                              });
-                            },
-                            onChangeEnd: (value) async {
-                              goToPage(value.toInt() - 1);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Material(
-                    type: MaterialType.transparency,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        Theme.of(context).textTheme.headline4!.fontSize!,
-                      ),
-                      child: Icon(
-                        Icons.last_page,
-                        size: Theme.of(context).textTheme.headline4?.fontSize,
-                      ),
-                      onTap: widget.nextChapter,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        offsetBegin: Offset.zero,
-        offsetEnd: const Offset(0, 1),
-        visible: showOverlay,
-        controller: overlayController,
       ),
       body: widget.pages.isEmpty
           ? Center(
@@ -406,6 +328,94 @@ class MangaReaderState extends State<MangaReader>
                         .toList(),
               ),
             ),
+      bottomNavigationBar: ToggleableSlideWidget(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: utils.remToPx(0.5),
+            vertical: utils.remToPx(1) +
+                Theme.of(context).textTheme.subtitle2!.fontSize!,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(
+                Radius.circular(utils.remToPx(0.25)),
+              ),
+              color: Theme.of(context).cardColor,
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: utils.remToPx(0.5),
+              ),
+              child: Row(
+                children: [
+                  Material(
+                    type: MaterialType.transparency,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        Theme.of(context).textTheme.headline4!.fontSize!,
+                      ),
+                      child: Icon(
+                        Icons.first_page,
+                        size: Theme.of(context).textTheme.headline4?.fontSize,
+                      ),
+                      onTap: widget.previousChapter,
+                    ),
+                  ),
+                  Expanded(
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      children: [
+                        SliderTheme(
+                          data: SliderThemeData(
+                            thumbShape: RoundSliderThumbShape(
+                              enabledThumbRadius: utils.remToPx(0.3),
+                            ),
+                            trackHeight: utils.remToPx(0.15),
+                            showValueIndicator: ShowValueIndicator.always,
+                          ),
+                          child: Slider(
+                            value: currentPage + 1,
+                            min: 1,
+                            max: widget.pages.length.toDouble(),
+                            label: (currentPage + 1).toString(),
+                            onChanged: (value) {
+                              setState(() {
+                                currentPage = value.toInt() - 1;
+                              });
+                            },
+                            onChangeEnd: (value) async {
+                              goToPage(value.toInt() - 1);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Material(
+                    type: MaterialType.transparency,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        Theme.of(context).textTheme.headline4!.fontSize!,
+                      ),
+                      child: Icon(
+                        Icons.last_page,
+                        size: Theme.of(context).textTheme.headline4?.fontSize,
+                      ),
+                      onTap: widget.nextChapter,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        offsetBegin: Offset.zero,
+        offsetEnd: const Offset(0, 1),
+        visible: showOverlay,
+        controller: overlayController,
+      ),
     );
   }
 }

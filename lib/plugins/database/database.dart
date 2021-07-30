@@ -22,6 +22,7 @@ abstract class DataStore {
     Hive.registerAdapter(settings_schema.SettingsSchemaAdapter());
     Hive.registerAdapter(settings_schema.MangaDirectionsAdapter());
     Hive.registerAdapter(settings_schema.MangaSwipeDirectionsAdapter());
+    Hive.registerAdapter(settings_schema.MangaModeAdapter());
 
     await Hive.openBox(DataStoreBoxNames.main);
   }

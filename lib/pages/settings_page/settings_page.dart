@@ -62,26 +62,25 @@ class PageState extends State<Page> {
             for (final lang in LanguageCodes.values) lang.code: lang.language,
           },
           onChanged: (val) async {
-            if (val is int) {
-              setState(() {
-                switch (val) {
-                  case 0:
-                    settings.useSystemPreferredTheme = true;
-                    break;
+            setState(() {
+              switch (val) {
+                case 0:
+                  settings.useSystemPreferredTheme = true;
+                  break;
 
-                  case 1:
-                    settings.useSystemPreferredTheme = false;
-                    settings.useDarkMode = false;
-                    break;
+                case 1:
+                  settings.useSystemPreferredTheme = false;
+                  settings.useDarkMode = false;
+                  break;
 
-                  case 2:
-                    settings.useSystemPreferredTheme = false;
-                    settings.useDarkMode = true;
-                    break;
-                }
-              });
-              await saveSettings();
-            }
+                case 2:
+                  settings.useSystemPreferredTheme = false;
+                  settings.useDarkMode = true;
+                  break;
+              }
+            });
+
+            await saveSettings();
           },
         ),
         SettingRadio(
@@ -99,26 +98,24 @@ class PageState extends State<Page> {
             2: Translator.t.darkMode(),
           },
           onChanged: (val) async {
-            if (val is int) {
-              setState(() {
-                switch (val) {
-                  case 0:
-                    settings.useSystemPreferredTheme = true;
-                    break;
+            setState(() {
+              switch (val) {
+                case 0:
+                  settings.useSystemPreferredTheme = true;
+                  break;
 
-                  case 1:
-                    settings.useSystemPreferredTheme = false;
-                    settings.useDarkMode = false;
-                    break;
+                case 1:
+                  settings.useSystemPreferredTheme = false;
+                  settings.useDarkMode = false;
+                  break;
 
-                  case 2:
-                    settings.useSystemPreferredTheme = false;
-                    settings.useDarkMode = true;
-                    break;
-                }
-              });
-              await saveSettings();
-            }
+                case 2:
+                  settings.useSystemPreferredTheme = false;
+                  settings.useDarkMode = true;
+                  break;
+              }
+            });
+            await saveSettings();
           },
         ),
         SettingSwitch(
@@ -127,13 +124,11 @@ class PageState extends State<Page> {
           desc: Translator.t.landscapeVideoPlayerDetail(),
           value: settings.fullscreenVideoPlayer,
           onChanged: (val) async {
-            if (val is bool) {
-              setState(() {
-                settings.fullscreenVideoPlayer = val;
-              });
+            setState(() {
+              settings.fullscreenVideoPlayer = val;
+            });
 
-              await settings.save();
-            }
+            await saveSettings();
           },
         ),
         SettingRadio(
@@ -144,14 +139,12 @@ class PageState extends State<Page> {
             MangaDirections.leftToRight: Translator.t.leftToRight(),
             MangaDirections.rightToLeft: Translator.t.rightToLeft(),
           },
-          onChanged: (val) async {
-            if (val is MangaDirections) {
-              setState(() {
-                settings.mangaReaderDirection = val;
-              });
+          onChanged: (MangaDirections val) async {
+            setState(() {
+              settings.mangaReaderDirection = val;
+            });
 
-              await settings.save();
-            }
+            await saveSettings();
           },
         ),
         SettingRadio(
@@ -162,14 +155,28 @@ class PageState extends State<Page> {
             MangaSwipeDirections.horizontal: Translator.t.horizontal(),
             MangaSwipeDirections.vertical: Translator.t.vertical(),
           },
-          onChanged: (val) async {
-            if (val is MangaSwipeDirections) {
-              setState(() {
-                settings.mangaReaderSwipeDirection = val;
-              });
+          onChanged: (MangaSwipeDirections val) async {
+            setState(() {
+              settings.mangaReaderSwipeDirection = val;
+            });
 
-              await settings.save();
-            }
+            await saveSettings();
+          },
+        ),
+        SettingRadio(
+          title: Translator.t.mangaReaderMode(),
+          icon: Icons.pageview,
+          value: settings.mangaReaderMode,
+          labels: {
+            MangaMode.list: Translator.t.list(),
+            MangaMode.page: Translator.t.page(),
+          },
+          onChanged: (MangaMode val) async {
+            setState(() {
+              settings.mangaReaderMode = val;
+            });
+
+            await saveSettings();
           },
         ),
       ]

@@ -120,4 +120,10 @@ class Sentences extends LanguageSentences {
 
   @override
   rightToLeft() => 'Right to Left';
+
+  @override
+  mangaReaderMode() => 'Manga Reader Mode';
+
+  @override
+  list() => 'List';
 }
