@@ -118,6 +118,15 @@ abstract class Fns {
 
   static bool isDarkContext(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
+
+  static String prettyShortDuration(Duration duration) {
+    List<String> prettied = [];
+    final hours = duration.inHours.remainder(24);
+    if (hours != 0) prettied.add(hours.toString().padLeft(2, '0'));
+    prettied.add(duration.inMinutes.remainder(60).toString().padLeft(2, '0'));
+    prettied.add(duration.inSeconds.remainder(60).toString().padLeft(2, '0'));
+    return prettied.join(':');
+  }
 }
 
 abstract class Assets {

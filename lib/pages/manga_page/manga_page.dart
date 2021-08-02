@@ -53,18 +53,18 @@ class PageState extends State<Page> {
       getInfo();
     });
 
-    AppState.settings.subscribe(onAppStateChange);
+    AppState.settings.subscribe(_appStateChange);
   }
 
   @override
   void dispose() {
     controller.dispose();
-    AppState.settings.unsubscribe(onAppStateChange);
+    AppState.settings.unsubscribe(_appStateChange);
 
     super.dispose();
   }
 
-  void onAppStateChange(SettingsSchema current, SettingsSchema previous) {
+  void _appStateChange(SettingsSchema current, SettingsSchema previous) {
     setState(() {
       mangaMode = AppState.settings.current.mangaReaderMode;
     });
@@ -200,6 +200,34 @@ class PageState extends State<Page> {
     ];
   }
 
+  void _previousChapter() {
+    if (currentChapterIndex != null && currentChapterIndex! - 1 >= 0) {
+      setChapter(
+        currentChapterIndex! - 1,
+      );
+    } else {
+      setChapter(null);
+      goToPage(Pages.home);
+    }
+  }
+
+  void _nextChapter() {
+    if (currentChapterIndex != null &&
+        currentChapterIndex! + 1 < info!.chapters.length) {
+      setChapter(
+        currentChapterIndex! + 1,
+      );
+    } else {
+      setChapter(null);
+      goToPage(Pages.home);
+    }
+  }
+
+  void _onPop() {
+    setChapter(null);
+    goToPage(Pages.home);
+  }
+
   @override
   Widget build(BuildContext context) {
     final appBar = AppBar(
@@ -285,76 +313,41 @@ class PageState extends State<Page> {
                       ),
                     ),
                     chapter != null
-                        ? pages[chapter] != null && pages[chapter]!.isNotEmpty
-                            ? FullScreenWidget(
-                                child: mangaMode == MangaMode.page
-                                    ? PageReader(
-                                        key: ValueKey(
-                                          'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                        ),
-                                        info: info!,
-                                        chapter: chapter!,
-                                        pages: pages[chapter]!,
-                                        previousChapter: () {
-                                          if (currentChapterIndex != null &&
-                                              currentChapterIndex! - 1 >= 0) {
-                                            setChapter(
-                                                currentChapterIndex! - 1);
-                                          } else {
-                                            setChapter(null);
-                                            goToPage(Pages.home);
-                                          }
-                                        },
-                                        nextChapter: () {
-                                          if (currentChapterIndex != null &&
-                                              currentChapterIndex! + 1 <
-                                                  info!.chapters.length) {
-                                            setChapter(
-                                                currentChapterIndex! + 1);
-                                          } else {
-                                            setChapter(null);
-                                            goToPage(Pages.home);
-                                          }
-                                        },
-                                        onPop: () {
-                                          setChapter(null);
-                                          goToPage(Pages.home);
-                                        },
-                                      )
-                                    : ListReader(
-                                        key: ValueKey(
-                                          'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                        ),
-                                        info: info!,
-                                        chapter: chapter!,
-                                        pages: pages[chapter]!,
-                                        previousChapter: () {
-                                          if (currentChapterIndex != null &&
-                                              currentChapterIndex! - 1 >= 0) {
-                                            setChapter(
-                                                currentChapterIndex! - 1);
-                                          } else {
-                                            setChapter(null);
-                                            goToPage(Pages.home);
-                                          }
-                                        },
-                                        nextChapter: () {
-                                          if (currentChapterIndex != null &&
-                                              currentChapterIndex! + 1 <
-                                                  info!.chapters.length) {
-                                            setChapter(
-                                                currentChapterIndex! + 1);
-                                          } else {
-                                            setChapter(null);
-                                            goToPage(Pages.home);
-                                          }
-                                        },
-                                        onPop: () {
-                                          setChapter(null);
-                                          goToPage(Pages.home);
-                                        },
+                        ? pages[chapter] != null
+                            ? pages[chapter]!.isNotEmpty
+                                ? FullScreenWidget(
+                                    child: mangaMode == MangaMode.page
+                                        ? PageReader(
+                                            key: ValueKey(
+                                              'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                            ),
+                                            info: info!,
+                                            chapter: chapter!,
+                                            pages: pages[chapter]!,
+                                            previousChapter: _previousChapter,
+                                            nextChapter: _nextChapter,
+                                            onPop: _onPop,
+                                          )
+                                        : ListReader(
+                                            key: ValueKey(
+                                              'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                            ),
+                                            info: info!,
+                                            chapter: chapter!,
+                                            pages: pages[chapter]!,
+                                            previousChapter: _previousChapter,
+                                            nextChapter: _nextChapter,
+                                            onPop: _onPop,
+                                          ),
+                                  )
+                                : Material(
+                                    type: MaterialType.transparency,
+                                    child: Center(
+                                      child: Text(
+                                        Translator.t.noValidSources(),
                                       ),
-                              )
+                                    ),
+                                  )
                             : loader
                         : const SizedBox.shrink(),
                   ],

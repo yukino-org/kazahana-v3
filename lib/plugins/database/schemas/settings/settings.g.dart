@@ -145,13 +145,18 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
           ? MangaSwipeDirections.horizontal
           : fields[6] as MangaSwipeDirections
       ..mangaReaderMode =
-          fields[7] == null ? MangaMode.page : fields[7] as MangaMode;
+          fields[7] == null ? MangaMode.page : fields[7] as MangaMode
+      ..introDuration = fields[8] == null ? 85 : fields[8] as int
+      ..seekDuration = fields[9] == null ? 15 : fields[9] as int
+      ..volume = fields[10] == null ? 100 : fields[10] as int
+      ..autoNext = fields[11] == null ? false : fields[11] as bool
+      ..autoPlay = fields[12] == null ? false : fields[12] as bool;
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(12)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
@@ -165,7 +170,17 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..writeByte(6)
       ..write(obj.mangaReaderSwipeDirection)
       ..writeByte(7)
-      ..write(obj.mangaReaderMode);
+      ..write(obj.mangaReaderMode)
+      ..writeByte(8)
+      ..write(obj.introDuration)
+      ..writeByte(9)
+      ..write(obj.seekDuration)
+      ..writeByte(10)
+      ..write(obj.volume)
+      ..writeByte(11)
+      ..write(obj.autoNext)
+      ..writeByte(12)
+      ..write(obj.autoPlay);
   }
 
   @override

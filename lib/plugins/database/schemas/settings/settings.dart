@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import '../../../../core/models/player.dart' show Player;
 
 part 'settings.g.dart';
 
@@ -24,6 +25,21 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(7, defaultValue: MangaMode.page)
   late MangaMode mangaReaderMode;
+
+  @HiveField(8, defaultValue: Player.defaultIntroLength)
+  late int introDuration;
+
+  @HiveField(9, defaultValue: Player.defaultSeekLength)
+  late int seekDuration;
+
+  @HiveField(10, defaultValue: Player.maxVolume)
+  late int volume;
+
+  @HiveField(11, defaultValue: false)
+  late bool autoNext;
+
+  @HiveField(12, defaultValue: false)
+  late bool autoPlay;
 }
 
 @HiveType(typeId: 2)

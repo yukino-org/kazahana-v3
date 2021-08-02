@@ -346,7 +346,8 @@ class PageState extends State<Page> {
                                           : Image.asset(
                                               utils.Assets.placeholderImage(
                                                   utils.Fns.isDarkContext(
-                                                      context)),
+                                                context,
+                                              )),
                                             ),
                                     ),
                                   ),

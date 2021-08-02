@@ -55,7 +55,7 @@ class SettingRadio<T extends Object> extends StatelessWidget {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

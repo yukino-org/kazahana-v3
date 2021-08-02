@@ -53,4 +53,14 @@ abstract class LanguageSentences {
   String rightToLeft();
   String mangaReaderMode();
   String list();
+  String previous();
+  String next();
+  String skipIntro();
+  String skipIntroDuration();
+  String seekDuration();
+  String seconds();
+  String autoPlay();
+  String autoPlayDetail();
+  String autoNext();
+  String autoNextDetail();
 }

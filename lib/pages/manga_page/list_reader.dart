@@ -30,8 +30,7 @@ class ListReader extends StatefulWidget {
   ListReaderState createState() => ListReaderState();
 }
 
-class ListReaderState extends State<ListReader>
-    with SingleTickerProviderStateMixin {
+class ListReaderState extends State<ListReader> {
   void showOptions() {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
@@ -170,22 +169,6 @@ class ListReaderState extends State<ListReader>
                 );
               },
             ),
-      // bottomNavigationBar: ReaderBottomBar(
-      //   controller: overlayController,
-      //   show: showOverlay,
-      //   currentPage: currentPage,
-      //   totalPages: widget.pages.length,
-      //   onPageChangeStart: (page) {
-      //     setState(() {
-      //       currentPage = page;
-      //     });
-      //   },
-      //   onPageChangeEnd: (page) {
-      //     goToPage(page);
-      //   },
-      //   previousChapter: widget.previousChapter,
-      //   nextChapter: widget.nextChapter,
-      // ),
     );
   }
 }

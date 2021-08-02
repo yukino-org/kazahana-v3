@@ -48,20 +48,17 @@ class SearchInfo extends BaseSearchInfo {
 }
 
 class EpisodeInfo {
-  String? title;
   String episode;
   String url;
   LanguageCodes locale;
 
   EpisodeInfo({
-    this.title,
     required final this.episode,
     required final this.url,
     required final this.locale,
   });
 
   Map<String, dynamic> toJson() => {
-        'title': title,
         'episode': episode,
         'url': url,
         'locale': locale.code,

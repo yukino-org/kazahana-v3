@@ -126,4 +126,35 @@ class Sentences extends LanguageSentences {
 
   @override
   list() => 'List';
+
+  @override
+  previous() => 'Previous';
+
+  @override
+  next() => 'Next';
+
+  @override
+  skipIntro() => 'Skip Intro';
+
+  @override
+  skipIntroDuration() => 'Skip Intro Duration';
+
+  @override
+  seekDuration() => 'Seek Duration';
+
+  @override
+  seconds() => 'Seconds';
+
+  @override
+  autoPlay() => 'Auto Play';
+
+  @override
+  autoPlayDetail() => 'Starts playing the video automatically';
+
+  @override
+  autoNext() => 'Auto Next';
+
+  @override
+  autoNextDetail() =>
+      'Starts playing the next video automatically after the current video';
 }
