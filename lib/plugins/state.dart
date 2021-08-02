@@ -1,5 +1,7 @@
+import 'package:flutter/services.dart' show SystemChrome;
 import './database/database.dart' as database;
 import './database/schemas/settings/settings.dart' as settings_schema;
+import './helpers/eventer.dart';
 
 typedef StateSubscriber<T> = void Function(T current, T previous);
 
@@ -34,9 +36,14 @@ class SubscriberManager<T> {
 
 abstract class AppState {
   static final settings = SubscriberManager<settings_schema.SettingsSchema>();
+  static final uiStyleNotifier = Eventer<bool>();
 
   static Future<void> initialize() async {
     final settings = database.DataStore.getSettings();
     AppState.settings.initialize(settings);
+
+    SystemChrome.setSystemUIChangeCallback((isOnFullscreen) async {
+      uiStyleNotifier.dispatch(isOnFullscreen);
+    });
   }
 }
