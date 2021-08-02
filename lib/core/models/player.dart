@@ -9,6 +9,7 @@ enum PlayerEvents {
   seek,
   volume,
   end,
+  speed,
 }
 
 class PlayerSource {
@@ -32,6 +33,7 @@ abstract class Player extends Eventer<PlayerEvents> {
   Future<void> pause();
   Future<void> seek(Duration position);
   Future<void> setVolume(int volume);
+  Future<void> setSpeed(double speed);
   Widget getWidget();
 
   @override
@@ -44,6 +46,7 @@ abstract class Player extends Eventer<PlayerEvents> {
   Duration? get duration;
   Duration? get totalDuration;
   int get volume;
+  double get speed;
 
   static const minVolume = 0;
   static const maxVolume = 100;
@@ -55,4 +58,16 @@ abstract class Player extends Eventer<PlayerEvents> {
   static const minSeekLength = 0;
   static const maxSeekLength = 60;
   static const defaultSeekLength = 15;
+
+  static const allowedSpeeds = [
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+  ];
+  static const defaultSpeed = 1.0;
 }

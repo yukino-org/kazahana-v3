@@ -157,4 +157,7 @@ class Sentences extends LanguageSentences {
   @override
   autoNextDetail() =>
       'Starts playing the next video automatically after the current video';
+
+  @override
+  speed() => 'Speed';
 }

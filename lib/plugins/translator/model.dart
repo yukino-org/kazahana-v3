@@ -63,4 +63,5 @@ abstract class LanguageSentences {
   String autoPlayDetail();
   String autoNext();
   String autoNextDetail();
+  String speed();
 }

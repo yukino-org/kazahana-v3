@@ -10,6 +10,7 @@ import '../../components/player/player.dart';
 import '../settings_page/setting_tile.dart';
 import '../settings_page/setting_switch.dart';
 import '../settings_page/setting_dialog.dart';
+import '../settings_page/setting_radio.dart';
 
 class VideoDuration {
   final Duration current;
@@ -54,6 +55,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   bool autoPlay = AppState.settings.current.autoPlay;
   bool autoNext = AppState.settings.current.autoNext;
   bool? wasPausedBySlider;
+  double speed = player_model.Player.defaultSpeed;
   int seekDuration = AppState.settings.current.seekDuration;
   int introDuration = AppState.settings.current.introDuration;
   final animationDuration = const Duration(milliseconds: 300);
@@ -193,6 +195,10 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             widget.nextEpisode();
           }
         }
+        break;
+
+      case player_model.PlayerEvents.speed:
+        speed = player!.speed;
         break;
     }
   }
@@ -341,6 +347,22 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                 );
                               },
                             );
+                          },
+                        ),
+                        SettingRadio(
+                          title: Translator.t.speed(),
+                          icon: Icons.speed,
+                          value: speed,
+                          labels: {
+                            for (final speed
+                                in player_model.Player.allowedSpeeds)
+                              speed: '${speed}x',
+                          },
+                          onChanged: (double val) async {
+                            await player?.setSpeed(val);
+                            setState(() {
+                              speed = val;
+                            });
                           },
                         ),
                         SettingDialog(
@@ -543,7 +565,9 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               opacity: overlayController,
               child: showControls
                   ? Container(
-                      color: Colors.black.withOpacity(0.3),
+                      color: !locked
+                          ? Colors.black.withOpacity(0.3)
+                          : Colors.transparent,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: utils.remToPx(0.7),
@@ -553,7 +577,12 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               ? [
                                   Align(
                                     alignment: Alignment.topRight,
-                                    child: lock,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: utils.remToPx(0.5),
+                                      ),
+                                      child: lock,
+                                    ),
                                   ),
                                 ]
                               : [

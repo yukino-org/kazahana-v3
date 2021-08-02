@@ -61,6 +61,10 @@ class VideoPlayer extends model.Player {
             dispatch(model.PlayerEvents.end);
             break;
 
+          case better_player.BetterPlayerEventType.setSpeed:
+            dispatch(model.PlayerEvents.speed);
+            break;
+
           default:
             break;
         }
@@ -85,6 +89,11 @@ class VideoPlayer extends model.Player {
   @override
   setVolume(volume) async {
     _controller.setVolume(volume / model.Player.maxVolume);
+  }
+
+  @override
+  setSpeed(speed) async {
+    _controller.setSpeed(speed);
   }
 
   @override
@@ -121,5 +130,11 @@ class VideoPlayer extends model.Player {
                 model.Player.minVolume) *
             model.Player.maxVolume)
         .toInt();
+  }
+
+  @override
+  get speed {
+    return _controller.videoPlayerController?.value.speed ??
+        model.Player.defaultSpeed;
   }
 }
