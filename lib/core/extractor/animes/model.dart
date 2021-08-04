@@ -1,5 +1,4 @@
-import '../../../plugins/translator/model.dart'
-    show LanguageCodes, LanguageName;
+import '../../models/languages.dart' show LanguageCodes, LanguageName;
 import '../model.dart';
 
 enum Qualities { q_144p, q_360p, q_480p, q_720p, q_1080p, unknown }

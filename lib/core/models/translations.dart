@@ -1,15 +1,6 @@
-enum LanguageCodes { en }
+import './languages.dart';
 
-const Map<LanguageCodes, String> languages = {
-  LanguageCodes.en: 'English',
-};
-
-extension LanguageName on LanguageCodes {
-  String get code => toString().split('.').last;
-  String get language => languages[this]!;
-}
-
-abstract class LanguageSentences {
+abstract class TranslationSentences {
   LanguageCodes get code;
 
   String home();
@@ -64,4 +55,8 @@ abstract class LanguageSentences {
   String autoNext();
   String autoNextDetail();
   String speed();
+  String doubleTapToSwitchChapter();
+  String doubleTapToSwitchChapterDetail();
+  String tapAgainToSwitchPreviousChapter();
+  String tapAgainToSwitchNextChapter();
 }

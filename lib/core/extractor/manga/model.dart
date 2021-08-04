@@ -1,15 +1,14 @@
-import '../../../plugins/translator/model.dart'
-    show LanguageCodes, LanguageName;
+import '../../models/languages.dart' show LanguageCodes, LanguageName;
 import '../model.dart';
 
 class SearchInfo extends BaseSearchInfo {
   final LanguageCodes locale;
 
   SearchInfo({
-    required final url,
-    required final title,
-    final thumbnail,
-    required final this.locale,
+    required url,
+    required title,
+    thumbnail,
+    required this.locale,
   }) : super(
           title: title,
           thumbnail: thumbnail,
@@ -33,11 +32,11 @@ class ChapterInfo {
   final Map<String, dynamic> other;
 
   ChapterInfo({
-    final this.title,
-    final this.volume,
-    required final this.chapter,
-    required final this.url,
-    required final this.locale,
+    this.title,
+    this.volume,
+    required this.chapter,
+    required this.url,
+    required this.locale,
     this.other = const {},
   });
 
@@ -57,13 +56,15 @@ class MangaInfo {
   final List<ChapterInfo> chapters;
   final String? thumbnail;
   final LanguageCodes locale;
+  final List<LanguageCodes> availableLocales;
 
   MangaInfo({
-    required final this.url,
-    required final this.title,
-    required final this.chapters,
-    final this.thumbnail,
-    required final this.locale,
+    required this.url,
+    required this.title,
+    required this.chapters,
+    this.thumbnail,
+    required this.locale,
+    this.availableLocales = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -72,6 +73,11 @@ class MangaInfo {
         'thumbnail': thumbnail,
         'chapters': chapters.map((x) => x.toJson()).toList(),
         'locale': locale.code,
+        'availableLocales': availableLocales
+            .map((x) => x.code)
+            .cast<String>()
+            .toList()
+            .toString(),
       };
 }
 
@@ -81,9 +87,9 @@ class PageInfo {
   final LanguageCodes locale;
 
   PageInfo({
-    required final this.url,
-    final this.headers = const {},
-    required final this.locale,
+    required this.url,
+    this.headers = const {},
+    required this.locale,
   });
 
   Map<String, dynamic> toJson() => {
@@ -94,10 +100,14 @@ class PageInfo {
 }
 
 abstract class MangaExtractor extends BaseExtractorPlugin<SearchInfo> {
+  LanguageCodes get defaultLocale;
+
   Future<MangaInfo> getInfo(
-    final String url, {
-    required final LanguageCodes locale,
+    String url, {
+    LanguageCodes locale,
   });
 
-  Future<List<PageInfo>> getChapter(final ChapterInfo chapter);
+  Future<List<PageInfo>> getChapter(
+    ChapterInfo chapter,
+  );
 }

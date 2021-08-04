@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import '../../core/utils.dart' as utils;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../core/models/manga_page.dart' as manga_page;
+import '../../core/models/languages.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../components/full_screen.dart';
+import '../../components/toggleable_slide_widget.dart';
 import './page_reader.dart';
 import './list_reader.dart';
 
@@ -21,7 +24,7 @@ class Page extends StatefulWidget {
   State<Page> createState() => PageState();
 }
 
-class PageState extends State<Page> {
+class PageState extends State<Page> with SingleTickerProviderStateMixin {
   manga_model.MangaInfo? info;
 
   manga_model.ChapterInfo? chapter;
@@ -30,12 +33,19 @@ class PageState extends State<Page> {
 
   late PageController controller;
 
+  ScrollDirection? lastScrollDirection;
+  final showFloatingButton = ValueNotifier(true);
+  late AnimationController floatingButtonController;
+
   Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
 
   late manga_page.PageArguments args;
+  LanguageCodes? locale;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
+
+  final animationDuration = const Duration(milliseconds: 200);
 
   @override
   void initState() {
@@ -43,6 +53,11 @@ class PageState extends State<Page> {
 
     controller = PageController(
       initialPage: Pages.home.index,
+    );
+
+    floatingButtonController = AnimationController(
+      vsync: this,
+      duration: animationDuration,
     );
 
     Future.delayed(Duration.zero, () async {
@@ -58,6 +73,8 @@ class PageState extends State<Page> {
 
   @override
   void dispose() {
+    showFloatingButton.dispose();
+
     controller.dispose();
     AppState.settings.unsubscribe(_appStateChange);
 
@@ -73,7 +90,7 @@ class PageState extends State<Page> {
   Future<void> goToPage(Pages page) async {
     await controller.animateToPage(
       page.index,
-      duration: const Duration(milliseconds: 200),
+      duration: animationDuration,
       curve: Curves.easeInOut,
     );
   }
@@ -81,7 +98,8 @@ class PageState extends State<Page> {
   void getInfo() async => extractor.Extractors.manga[args.plugin]!
       .getInfo(
         args.src,
-        locale: Translator.t.code,
+        locale:
+            locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
       )
       .then((x) => setState(() {
             info = x;
@@ -228,6 +246,89 @@ class PageState extends State<Page> {
     goToPage(Pages.home);
   }
 
+  void showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              vertical: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                  ),
+                  child: Text(
+                    Translator.t.chooseLanguage(),
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                const SizedBox(
+                  height: 6,
+                ),
+                ...info!.availableLocales
+                    .map(
+                      (x) => Material(
+                        type: MaterialType.transparency,
+                        child: RadioListTile(
+                          title: Text(x.language),
+                          value: x,
+                          groupValue: info!.locale,
+                          activeColor: Theme.of(context).primaryColor,
+                          onChanged: (LanguageCodes? val) {
+                            if (val != null && val != info!.locale) {
+                              setState(() {
+                                locale = val;
+                                info = null;
+                              });
+                              getInfo();
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    )
+                    .toList(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: utils.remToPx(0.6),
+                          vertical: utils.remToPx(0.3),
+                        ),
+                        child: Text(
+                          Translator.t.close(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appBar = AppBar(
@@ -243,71 +344,109 @@ class PageState extends State<Page> {
                   controller: controller,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    Scaffold(
-                      extendBodyBehindAppBar: true,
-                      appBar: appBar,
-                      body: SingleChildScrollView(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            left: utils.remToPx(1.25),
-                            right: utils.remToPx(1.25),
-                            bottom: utils.remToPx(1),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(
-                                height: appBar.preferredSize.height,
-                              ),
-                              getHero(),
-                              SizedBox(
-                                height: utils.remToPx(1.5),
-                              ),
-                              Text(
-                                Translator.t.chapters(),
-                                style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.fontSize,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.color
-                                      ?.withOpacity(0.7),
+                    NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification notification) {
+                        if (notification is UserScrollNotification) {
+                          showFloatingButton.value = notification.direction !=
+                                  ScrollDirection.reverse &&
+                              lastScrollDirection != ScrollDirection.reverse;
+
+                          if (notification.direction ==
+                                  ScrollDirection.forward ||
+                              notification.direction ==
+                                  ScrollDirection.reverse) {
+                            lastScrollDirection = notification.direction;
+                          }
+                        }
+
+                        return false;
+                      },
+                      child: Scaffold(
+                        extendBodyBehindAppBar: true,
+                        appBar: appBar,
+                        body: SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.only(
+                              left: utils.remToPx(1.25),
+                              right: utils.remToPx(1.25),
+                              bottom: utils.remToPx(1),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(
+                                  height: appBar.preferredSize.height,
                                 ),
-                              ),
-                              ...info!.chapters
-                                  .asMap()
-                                  .map(
-                                    (k, x) => MapEntry(
-                                      k,
-                                      Card(
-                                        child: InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: utils.remToPx(0.4),
-                                              vertical: utils.remToPx(0.2),
+                                getHero(),
+                                SizedBox(
+                                  height: utils.remToPx(1.5),
+                                ),
+                                Text(
+                                  Translator.t.chapters(),
+                                  style: TextStyle(
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.fontSize,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.color
+                                        ?.withOpacity(0.7),
+                                  ),
+                                ),
+                                ...info!.chapters
+                                    .asMap()
+                                    .map(
+                                      (k, x) => MapEntry(
+                                        k,
+                                        Card(
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: utils.remToPx(0.4),
+                                                vertical: utils.remToPx(0.2),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: getChapterCard(x),
+                                              ),
                                             ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: getChapterCard(x),
-                                            ),
+                                            onTap: () {
+                                              setChapter(k);
+                                              goToPage(Pages.reader);
+                                            },
                                           ),
-                                          onTap: () {
-                                            setChapter(k);
-                                            goToPage(Pages.reader);
-                                          },
                                         ),
                                       ),
-                                    ),
-                                  )
-                                  .values
-                                  .toList(),
-                            ],
+                                    )
+                                    .values
+                                    .toList(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        floatingActionButton: ValueListenableBuilder(
+                          valueListenable: showFloatingButton,
+                          builder: (context, bool showFloatingButton, child) {
+                            return ToggleableSlideWidget(
+                              controller: floatingButtonController,
+                              visible: showFloatingButton,
+                              child: child!,
+                              curve: Curves.easeInOut,
+                              offsetBegin: const Offset(0, 0),
+                              offsetEnd: const Offset(0, 1.5),
+                            );
+                          },
+                          child: FloatingActionButton.extended(
+                            icon: const Icon(Icons.language),
+                            label: Text(Translator.t.language()),
+                            onPressed: () {
+                              showLanguageDialog();
+                            },
                           ),
                         ),
                       ),

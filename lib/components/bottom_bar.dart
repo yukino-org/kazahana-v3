@@ -38,13 +38,15 @@ class BottomBarState extends State<BottomBar> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: utils.Fns.isDarkContext(context)
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.1),
             blurRadius: utils.remToPx(0.5),
           ),
         ],
       ),
       child: BottomAppBar(
-        color: Theme.of(context).backgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Wrap(
           children: [
             Row(

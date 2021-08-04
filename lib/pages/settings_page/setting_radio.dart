@@ -102,8 +102,8 @@ class SettingRadio<T extends Object> extends StatelessWidget {
                                           val is T &&
                                           val != value) {
                                         onChanged(val);
-                                        Navigator.of(context).pop();
                                       }
+                                      Navigator.of(context).pop();
                                     },
                                   ),
                                 ),

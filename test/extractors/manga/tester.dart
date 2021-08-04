@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:yukino_app/core/extractor/manga/model.dart';
-import 'package:yukino_app/plugins/translator/model.dart';
+import 'package:yukino_app/core/models/languages.dart';
 
 void search(MangaExtractor client, String terms) {
   test('Search', () async {

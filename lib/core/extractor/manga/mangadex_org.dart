@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
-import '../../../plugins/translator/model.dart' show LanguageName;
+import '../../models/languages.dart';
 import './model.dart';
 
 enum DataQuality { original, compressed }
@@ -11,48 +11,60 @@ final Map<DataQuality, String> dataQualityValues = {
   DataQuality.compressed: 'data-saver',
 };
 
-class MangaDex implements MangaExtractor {
+const _defaultLocale = LanguageCodes.en;
+
+class MangaDex extends MangaExtractor {
   @override
   get name => 'Mangadex.org';
+
+  @override
+  get defaultLocale => _defaultLocale;
 
   final apiURL = 'https://api.mangadex.org';
   final uploadsURL = 'https://uploads.mangadex.org';
 
   final Map<String, String> defaultHeaders = {};
 
-  String searchApiURL(final String terms) => '$apiURL/manga?title=$terms';
-  String mangaApiURL(final String id) => '$apiURL/manga/$id';
+  String searchApiURL(String terms) => '$apiURL/manga?title=$terms';
+  String mangaApiURL(String id) => '$apiURL/manga/$id';
   String mangaFeedApiURL(
-    final String id, {
-    final int limit = 500,
-    final int offset = 0,
-    required final String locale,
+    String id, {
+    int limit = 500,
+    int offset = 0,
+    required String locale,
   }) =>
       '$apiURL/manga/$id/feed?limit=$limit&offset=$offset&order[chapter]=asc&translatedLanguage[]=$locale';
-  String mangaServerApiURL(final String id) => '$apiURL/at-home/server/$id';
+  String mangaChapterOverviewURL(
+    String id, {
+    int chapter = 1,
+    int volume = 1,
+    int limit = 100,
+  }) =>
+      '$apiURL/chapter?manga=$id&chapter=$chapter&volume=$volume&limit=$limit&order[chapter]=asc';
+  String mangaServerApiURL(String id) => '$apiURL/at-home/server/$id';
   String chapterApiURL(
-    final String serverURL,
-    final DataQuality quality,
-    final String hash,
+    String serverURL,
+    DataQuality quality,
+    String hash,
   ) =>
       '$serverURL/${dataQualityValues[quality]}/$hash';
   String pageSourceURL(
-    final String chapterApiURL,
-    final String filename,
+    String chapterApiURL,
+    String filename,
   ) =>
       '$chapterApiURL/$filename';
-  String coverAPIURL(final String coverID) => '$apiURL/cover/$coverID';
-  String coverURL(final String mangaID, final String coverFile) =>
+  String coverAPIURL(String coverID) => '$apiURL/cover/$coverID';
+  String coverURL(String mangaID, String coverFile) =>
       '$uploadsURL/covers/$mangaID/$coverFile';
 
-  String? extractIdFromURL(final String url) =>
+  String? extractIdFromURL(String url) =>
       RegExp(r'https:\/\/api\.mangadex\.org\/manga\/([^\/]+)')
           .firstMatch(url)?[1];
 
   @override
   search(
-    final terms, {
-    required final locale,
+    terms, {
+    required locale,
   }) async {
     try {
       final res = await http.get(
@@ -86,8 +98,8 @@ class MangaDex implements MangaExtractor {
 
   @override
   getInfo(
-    final url, {
-    required final locale,
+    url, {
+    locale = _defaultLocale,
   }) async {
     final id = extractIdFromURL(url);
     if (id == null) throw ('Failed to parse id from URL');
@@ -100,12 +112,16 @@ class MangaDex implements MangaExtractor {
       bool finished = false;
       while (!finished) {
         final res = await http.get(
-          Uri.parse(Uri.encodeFull(mangaFeedApiURL(
-            id,
-            limit: limit,
-            offset: offset,
-            locale: locale.code,
-          ))),
+          Uri.parse(
+            Uri.encodeFull(
+              mangaFeedApiURL(
+                id,
+                limit: limit,
+                offset: offset,
+                locale: locale.code,
+              ),
+            ),
+          ),
           headers: defaultHeaders,
         );
 
@@ -151,11 +167,14 @@ class MangaDex implements MangaExtractor {
 
       return MangaInfo(
         url: mangaURL,
-        title: (parsed['data']['attributes']['title']['en'] as String),
+        title: ((parsed['data']['attributes']['title'][locale.code] ??
+                parsed['data']['attributes']['title'][_defaultLocale.code])
+            as String),
         thumbnail:
             coverArt != null ? await getCoverImageURL(id, coverArt) : null,
         chapters: chapters,
         locale: locale,
+        availableLocales: await getAvailableLanguages(id),
       );
     } catch (e) {
       rethrow;
@@ -163,7 +182,7 @@ class MangaDex implements MangaExtractor {
   }
 
   @override
-  getChapter(final chapter) async {
+  getChapter(chapter) async {
     final serverRes = await http.get(
       Uri.parse(Uri.encodeFull(mangaServerApiURL(chapter.other['id']))),
       headers: defaultHeaders,
@@ -184,8 +203,7 @@ class MangaDex implements MangaExtractor {
     return pages;
   }
 
-  Future<String?> getCoverImageURL(
-      final String mangaID, final String coverID) async {
+  Future<String?> getCoverImageURL(String mangaID, String coverID) async {
     try {
       final res = await http.get(
         Uri.parse(Uri.encodeFull(coverAPIURL(coverID))),
@@ -196,5 +214,29 @@ class MangaDex implements MangaExtractor {
     } catch (e) {
       return null;
     }
+  }
+
+  Future<List<LanguageCodes>> getAvailableLanguages(String mangaID) async {
+    final res = await http.get(
+      Uri.parse(Uri.encodeFull(mangaChapterOverviewURL(mangaID))),
+      headers: defaultHeaders,
+    );
+
+    final List<LanguageCodes> locales = [];
+
+    for (final x in (json.decode(res.body)['results'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()) {
+      final String? code = RegExp(r'\w+').firstMatch(
+        x['data']['attributes']['translatedLanguage'] as String,
+      )?[0];
+      if (code != null) {
+        final lang = LanguageUtils.codeLangaugeMap[code];
+        if (lang != null) {
+          locales.add(lang);
+        }
+      }
+    }
+
+    return locales;
   }
 }

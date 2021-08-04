@@ -122,6 +122,10 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    isPlaying.dispose();
+    duration.dispose();
+    volume.dispose();
+
     if (player != null) {
       playerChild = null;
       player!.destroy();

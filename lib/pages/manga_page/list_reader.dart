@@ -61,7 +61,7 @@ class ListReaderState extends State<ListReader> {
                           AppState.settings.current.mangaReaderMode = val;
                           await AppState.settings.current.save();
                           AppState.settings.modify(AppState.settings.current);
-                          Navigator.pop(context);
+                          Navigator.of(context).pop();
                         },
                       ),
                     ],

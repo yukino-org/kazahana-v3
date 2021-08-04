@@ -37,9 +37,8 @@ class Page extends StatefulWidget {
 }
 
 class PageState extends State<Page> {
-  final animationDuration = const Duration(milliseconds: 300);
+  final animationDuration = const Duration(milliseconds: 200);
   Pages currentPage = Pages.home;
-  // late Widget currentPage;
   final List<SettingsCategory> categories = [
     SettingsCategory(
       Translator.t.preferences(),
@@ -417,6 +416,35 @@ class PageState extends State<Page> {
                 await saveSettings();
               },
             ),
+            SettingRadio(
+              title: Translator.t.mangaReaderMode(),
+              icon: Icons.pageview,
+              value: settings.mangaReaderMode,
+              labels: {
+                MangaMode.list: Translator.t.list(),
+                MangaMode.page: Translator.t.page(),
+              },
+              onChanged: (MangaMode val) async {
+                setState(() {
+                  settings.mangaReaderMode = val;
+                });
+
+                await saveSettings();
+              },
+            ),
+            SettingSwitch(
+              title: Translator.t.doubleTapToSwitchChapter(),
+              icon: Icons.double_arrow,
+              desc: Translator.t.doubleTapToSwitchChapterDetail(),
+              value: settings.doubleClickSwitchChapter,
+              onChanged: (val) async {
+                setState(() {
+                  settings.doubleClickSwitchChapter = val;
+                });
+
+                await saveSettings();
+              },
+            ),
           ],
         );
     }
@@ -425,7 +453,6 @@ class PageState extends State<Page> {
   void goToPage(Pages page) {
     setState(() {
       currentPage = page;
-      // currentPage = buildPage(currentIndex);
     });
   }
 
@@ -441,7 +468,6 @@ class PageState extends State<Page> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: AnimatedSwitcher(
-              switchInCurve: Curves.easeInOut,
               switchOutCurve: Curves.easeInOut,
               duration: animationDuration,
               child: getPage(currentPage),
@@ -451,13 +477,13 @@ class PageState extends State<Page> {
                   child: child,
                 );
 
-                if (animation.isCompleted) {
+                if (child.key == const ValueKey(Pages.home)) {
                   return fade;
                 }
 
                 return SlideTransition(
                   position: Tween(
-                    begin: const Offset(0, 0.2),
+                    begin: const Offset(0, 0.1),
                     end: const Offset(0, 0),
                   ).animate(animation),
                   child: fade,

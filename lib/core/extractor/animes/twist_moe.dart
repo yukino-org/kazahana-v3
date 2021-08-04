@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fuzzy/fuzzy.dart';
-import '../../../plugins/translator/model.dart' show LanguageCodes;
+import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
 import './model.dart';
 

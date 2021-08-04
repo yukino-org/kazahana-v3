@@ -6,7 +6,7 @@ import './plugins/router.dart';
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
 import './plugins/translator/translator.dart';
-import './plugins/translator/model.dart' show LanguageName;
+import 'core/models/languages.dart' show LanguageName;
 
 void main() async {
   await DataStore.initialize();

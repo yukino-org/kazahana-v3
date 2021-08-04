@@ -1,4 +1,4 @@
-import '../../plugins/translator/model.dart' show LanguageCodes;
+import '../models/languages.dart' show LanguageCodes;
 
 abstract class BaseExtractor {
   String get name;

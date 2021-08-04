@@ -1,6 +1,7 @@
-import '../model.dart';
+import '../../../core/models/languages.dart';
+import '../../../core/models/translations.dart';
 
-class Sentences extends LanguageSentences {
+class Sentences extends TranslationSentences {
   @override
   get code => LanguageCodes.en;
 
@@ -160,4 +161,17 @@ class Sentences extends LanguageSentences {
 
   @override
   speed() => 'Speed';
+
+  @override
+  doubleTapToSwitchChapter() => 'Double Tap to Switch Chapters';
+
+  @override
+  doubleTapToSwitchChapterDetail() =>
+      'Switches to previous or next chapter only when double clicked';
+
+  @override
+  tapAgainToSwitchPreviousChapter() => 'Tap again to go to previous chapter';
+
+  @override
+  tapAgainToSwitchNextChapter() => 'Tap again to go to next chapter';
 }

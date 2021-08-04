@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ToggleableSlideWidget extends StatelessWidget {
   final Widget child;
   final AnimationController controller;
+  final Curve curve;
   final bool visible;
   final Offset offsetBegin;
   final Offset offsetEnd;
@@ -11,6 +12,7 @@ class ToggleableSlideWidget extends StatelessWidget {
     Key? key,
     required this.child,
     required this.controller,
+    required this.curve,
     required this.visible,
     required this.offsetBegin,
     required this.offsetEnd,
@@ -26,7 +28,7 @@ class ToggleableSlideWidget extends StatelessWidget {
       ).animate(
         CurvedAnimation(
           parent: controller,
-          curve: Curves.fastOutSlowIn,
+          curve: curve,
         ),
       ),
       child: child,
