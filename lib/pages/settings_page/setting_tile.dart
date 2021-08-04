@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/utils.dart' as utils;
 
 class SettingTile extends StatelessWidget {
   final String title;
@@ -21,18 +20,18 @@ class SettingTile extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: utils.remToPx(0.9),
-            vertical: utils.remToPx(0.5),
-          ),
+          padding: const EdgeInsets.all(8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: Theme.of(context).primaryColor,
+              SizedBox(
+                width: 42,
+                child: Icon(
+                  icon,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
-              const SizedBox(width: 30),
+              const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -26,18 +26,18 @@ class SettingRadio<T extends Object> extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: utils.remToPx(1),
-            vertical: utils.remToPx(0.5),
-          ),
+          padding: const EdgeInsets.all(8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: Theme.of(context).primaryColor,
+              SizedBox(
+                width: 40,
+                child: Icon(
+                  icon,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
-              const SizedBox(width: 32),
+              const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
