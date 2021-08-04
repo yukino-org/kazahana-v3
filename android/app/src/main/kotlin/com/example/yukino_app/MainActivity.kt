@@ -1,4 +1,4 @@
-package com.example.yukino_app
+package io.github.zyrouge.yukino_app
 
 import io.flutter.embedding.android.FlutterActivity
 
