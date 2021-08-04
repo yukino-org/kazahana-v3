@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:yukino_app/plugins/database/schemas/settings/settings.dart'
-    as settings_schema;
+import './schemas/settings/settings.dart' as settings_schema;
 
 abstract class DataStoreBoxNames {
   static const main = 'main_box';

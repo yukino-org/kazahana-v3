@@ -133,30 +133,32 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return SettingsSchema()
-      ..useSystemPreferredTheme = fields[1] == null ? true : fields[1] as bool
-      ..useDarkMode = fields[2] == null ? false : fields[2] as bool
-      ..fullscreenVideoPlayer = fields[3] == null ? false : fields[3] as bool
-      ..locale = fields[4] as String?
-      ..mangaReaderDirection = fields[5] == null
+    return SettingsSchema(
+      useSystemPreferredTheme: fields[1] == null ? true : fields[1] as bool,
+      useDarkMode: fields[2] == null ? false : fields[2] as bool,
+      fullscreenVideoPlayer: fields[3] == null ? false : fields[3] as bool,
+      locale: fields[4] as String?,
+      mangaReaderDirection: fields[5] == null
           ? MangaDirections.leftToRight
-          : fields[5] as MangaDirections
-      ..mangaReaderSwipeDirection = fields[6] == null
+          : fields[5] as MangaDirections,
+      mangaReaderSwipeDirection: fields[6] == null
           ? MangaSwipeDirections.horizontal
-          : fields[6] as MangaSwipeDirections
-      ..mangaReaderMode =
-          fields[7] == null ? MangaMode.page : fields[7] as MangaMode
-      ..introDuration = fields[8] == null ? 85 : fields[8] as int
-      ..seekDuration = fields[9] == null ? 15 : fields[9] as int
-      ..volume = fields[10] == null ? 100 : fields[10] as int
-      ..autoNext = fields[11] == null ? false : fields[11] as bool
-      ..autoPlay = fields[12] == null ? false : fields[12] as bool;
+          : fields[6] as MangaSwipeDirections,
+      mangaReaderMode:
+          fields[7] == null ? MangaMode.page : fields[7] as MangaMode,
+      introDuration: fields[8] == null ? 85 : fields[8] as int,
+      seekDuration: fields[9] == null ? 15 : fields[9] as int,
+      volume: fields[10] == null ? 100 : fields[10] as int,
+      autoNext: fields[11] == null ? false : fields[11] as bool,
+      autoPlay: fields[12] == null ? false : fields[12] as bool,
+      doubleClickSwitchChapter: fields[13] == null ? true : fields[13] as bool,
+    );
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
@@ -180,7 +182,9 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..writeByte(11)
       ..write(obj.autoNext)
       ..writeByte(12)
-      ..write(obj.autoPlay);
+      ..write(obj.autoPlay)
+      ..writeByte(13)
+      ..write(obj.doubleClickSwitchChapter);
   }
 
   @override
