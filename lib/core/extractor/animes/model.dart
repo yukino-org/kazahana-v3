@@ -1,7 +1,14 @@
 import '../../models/languages.dart' show LanguageCodes, LanguageName;
 import '../model.dart';
 
-enum Qualities { q_144p, q_360p, q_480p, q_720p, q_1080p, unknown }
+enum Qualities {
+  q_144p,
+  q_360p,
+  q_480p,
+  q_720p,
+  q_1080p,
+  unknown,
+}
 
 class Quality {
   final Qualities quality;
@@ -15,23 +22,28 @@ class Quality {
   );
 }
 
-final Map<Qualities, Quality> quality = {
-  Qualities.q_144p: Quality(Qualities.q_144p, '144p', 'sd'),
-  Qualities.q_360p: Quality(Qualities.q_360p, '360p', 'sd'),
-  Qualities.q_480p: Quality(Qualities.q_480p, '480p', 'sd'),
-  Qualities.q_720p: Quality(Qualities.q_720p, '720p', 'hd'),
-  Qualities.q_1080p: Quality(Qualities.q_1080p, '1080p', 'fhd'),
-  Qualities.unknown: Quality(Qualities.unknown, 'unknown', '?'),
-};
+final Map<Qualities, Quality> quality = [
+  Quality(Qualities.q_144p, '144p', 'sd'),
+  Quality(Qualities.q_360p, '360p', 'sd'),
+  Quality(Qualities.q_480p, '480p', 'sd'),
+  Quality(Qualities.q_720p, '720p', 'hd'),
+  Quality(Qualities.q_1080p, '1080p', 'fhd'),
+  Quality(Qualities.unknown, 'unknown', '?'),
+]
+    .asMap()
+    .map(
+      (k, x) => MapEntry(x.quality, x),
+    )
+    .cast<Qualities, Quality>();
 
 class SearchInfo extends BaseSearchInfo {
   LanguageCodes locale;
 
   SearchInfo({
-    required final url,
-    required final title,
-    final thumbnail,
-    required final this.locale,
+    required url,
+    required title,
+    thumbnail,
+    required this.locale,
   }) : super(
           title: title,
           thumbnail: thumbnail,
@@ -52,9 +64,9 @@ class EpisodeInfo {
   LanguageCodes locale;
 
   EpisodeInfo({
-    required final this.episode,
-    required final this.url,
-    required final this.locale,
+    required this.episode,
+    required this.url,
+    required this.locale,
   });
 
   Map<String, dynamic> toJson() => {
@@ -70,13 +82,15 @@ class AnimeInfo {
   List<EpisodeInfo> episodes;
   String? thumbnail;
   LanguageCodes locale;
+  final List<LanguageCodes> availableLocales;
 
   AnimeInfo({
-    required final this.url,
-    required final this.title,
-    required final this.episodes,
-    final this.thumbnail,
-    required final this.locale,
+    required this.url,
+    required this.title,
+    required this.episodes,
+    this.thumbnail,
+    required this.locale,
+    required this.availableLocales,
   });
 
   Map<String, dynamic> toJson() => {
@@ -95,10 +109,10 @@ class EpisodeSource {
   LanguageCodes locale;
 
   EpisodeSource({
-    required final this.url,
-    required final this.quality,
-    final this.headers = const {},
-    required final this.locale,
+    required this.url,
+    required this.quality,
+    this.headers = const {},
+    required this.locale,
   });
 
   Map<String, dynamic> toJson() => {
@@ -110,10 +124,12 @@ class EpisodeSource {
 }
 
 abstract class AnimeExtractor extends BaseExtractorPlugin<SearchInfo> {
+  LanguageCodes get defaultLocale;
+
   Future<AnimeInfo> getInfo(
-    final String url, {
-    required final LanguageCodes locale,
+    String url, {
+    required LanguageCodes locale,
   });
 
-  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode);
+  Future<List<EpisodeSource>> getSources(EpisodeInfo episode);
 }

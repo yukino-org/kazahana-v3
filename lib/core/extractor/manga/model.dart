@@ -104,7 +104,7 @@ abstract class MangaExtractor extends BaseExtractorPlugin<SearchInfo> {
 
   Future<MangaInfo> getInfo(
     String url, {
-    LanguageCodes locale,
+    required LanguageCodes locale,
   });
 
   Future<List<PageInfo>> getChapter(

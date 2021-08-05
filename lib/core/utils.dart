@@ -127,6 +127,38 @@ abstract class Fns {
     prettied.add(duration.inSeconds.remainder(60).toString().padLeft(2, '0'));
     return prettied.join(':');
   }
+
+  static String domainFromURL(String url) =>
+      RegExp(r':\/\/([^\/]+)').firstMatch(url)?[1] ?? url.substring(0, 10);
+
+  static List<List<T>> chunkList<T>(List<T> elements, int count, [T? filler]) {
+    final List<List<T>> chunked = [];
+    final size = elements.length;
+    for (var i = 0; i < size; i += count) {
+      final end = i + count;
+      final extra = end > size ? end - size : 0;
+      final chunk = elements.sublist(i, end - extra);
+      if (filler != null) {
+        for (var i = 0; i < extra; i++) {
+          chunk.add(filler);
+        }
+      }
+      chunked.add(chunk);
+    }
+    return chunked;
+  }
+
+  static List<T> insertBetweenList<T>(List<T> elements, T insert) {
+    final List<T> inserted = [];
+    final size = elements.length;
+    for (var i = 0; i < size; i++) {
+      if (i != 0 && i < size) {
+        inserted.add(insert);
+      }
+      inserted.add(elements[i]);
+    }
+    return inserted;
+  }
 }
 
 abstract class Assets {

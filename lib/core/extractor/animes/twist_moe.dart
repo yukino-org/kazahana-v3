@@ -5,17 +5,18 @@ import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
 import './model.dart';
 
+const _defaultLocale = LanguageCodes.en;
 const twistDecryptKey = '267041df55ca2b36f2e322d05ee2c9cf';
 
 class TwistSearchInfo extends SearchInfo {
   final String? altTitle;
 
   TwistSearchInfo(
-    final String url,
-    final String title, {
-    final String? thumbnail,
-    final this.altTitle,
-    required final LanguageCodes locale,
+    String url,
+    String title, {
+    String? thumbnail,
+    this.altTitle,
+    required LanguageCodes locale,
   }) : super(
           url: url,
           title: title,
@@ -33,10 +34,10 @@ class TwistEpisodeSource {
   EpisodeSource? cachedSource;
 
   TwistEpisodeSource({
-    required final this.episode,
-    required final this.source,
-    required final this.headers,
-    required final this.locale,
+    required this.episode,
+    required this.source,
+    required this.headers,
+    required this.locale,
   });
 
   EpisodeSource getSource() {
@@ -59,6 +60,9 @@ class TwistMoe implements AnimeExtractor {
   @override
   get name => 'Twist.moe';
 
+  @override
+  get defaultLocale => _defaultLocale;
+
   final baseURL = 'https://twist.moe';
   final apiURL = 'https://api.twist.moe/api';
 
@@ -71,17 +75,17 @@ class TwistMoe implements AnimeExtractor {
   };
 
   String searchApiURL() => '$apiURL/anime';
-  String animeURL(final String slug) => '$baseURL/a/$slug';
-  String animeApiURL(final String slug) => '$apiURL/anime/$slug';
-  String animeSourcesURL(final String slug) => '${animeApiURL(slug)}/sources';
+  String animeURL(String slug) => '$baseURL/a/$slug';
+  String animeApiURL(String slug) => '$apiURL/anime/$slug';
+  String animeSourcesURL(String slug) => '${animeApiURL(slug)}/sources';
 
-  String? extractSlugFromURL(final String url) =>
+  String? extractSlugFromURL(String url) =>
       RegExp(r'https:\/\/twist\.moe\/a\/([^\/]+)').firstMatch(url)?[1];
 
   @override
   search(
-    final terms, {
-    required final locale,
+    terms, {
+    required locale,
   }) async {
     if (searcher == null) {
       try {
@@ -126,8 +130,8 @@ class TwistMoe implements AnimeExtractor {
 
   @override
   getInfo(
-    final url, {
-    required final locale,
+    url, {
+    locale = _defaultLocale,
   }) async {
     final slug = extractSlugFromURL(url);
     if (slug == null) throw ('Failed to parse slug from URL');
@@ -158,6 +162,9 @@ class TwistMoe implements AnimeExtractor {
         title: (parsed['title'] as String),
         episodes: episodes,
         locale: locale,
+        availableLocales: [
+          _defaultLocale,
+        ],
       );
     } catch (e) {
       rethrow;
@@ -165,7 +172,7 @@ class TwistMoe implements AnimeExtractor {
   }
 
   @override
-  getSources(final episode) async {
+  getSources(episode) async {
     final slug = extractSlugFromURL(episode.url);
     if (slug == null) throw ('Failed to parse slug from URL');
 
@@ -203,6 +210,8 @@ class TwistMoe implements AnimeExtractor {
         animeSourceCache[slug]?.firstWhere((x) => x.episode == number);
     if (source == null) throw ('Failed to find source for the episode');
 
-    return [source.getSource()];
+    return [
+      source.getSource(),
+    ];
   }
 }

@@ -59,4 +59,6 @@ abstract class TranslationSentences {
   String doubleTapToSwitchChapterDetail();
   String tapAgainToSwitchPreviousChapter();
   String tapAgainToSwitchNextChapter();
+  String selectSource();
+  String sources();
 }

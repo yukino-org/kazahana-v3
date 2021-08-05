@@ -18,7 +18,9 @@ import './list_reader.dart';
 enum Pages { home, reader }
 
 class Page extends StatefulWidget {
-  const Page({final Key? key}) : super(key: key);
+  const Page({
+    final Key? key,
+  }) : super(key: key);
 
   @override
   State<Page> createState() => PageState();

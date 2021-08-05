@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import '../../core/utils.dart' as utils;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/anime_page.dart' as anime_page;
+import '../../core/models/languages.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 import '../../components/full_screen.dart';
+import '../../components/toggleable_slide_widget.dart';
 import './watch_page.dart';
 
 enum Pages { home, player }
@@ -19,7 +22,7 @@ class Page extends StatefulWidget {
   State<Page> createState() => PageState();
 }
 
-class PageState extends State<Page> {
+class PageState extends State<Page> with SingleTickerProviderStateMixin {
   anime_model.AnimeInfo? info;
 
   anime_model.EpisodeInfo? episode;
@@ -28,11 +31,18 @@ class PageState extends State<Page> {
   late PageController controller;
   Map<anime_model.EpisodeInfo, List<anime_model.EpisodeSource>> sources = {};
 
+  ScrollDirection? lastScrollDirection;
+  final showFloatingButton = ValueNotifier(true);
+  late AnimationController floatingButtonController;
+
   final loader = const Center(
     child: CircularProgressIndicator(),
   );
 
   late anime_page.PageArguments args;
+  LanguageCodes? locale;
+
+  final animationDuration = const Duration(milliseconds: 200);
 
   @override
   void initState() {
@@ -41,6 +51,11 @@ class PageState extends State<Page> {
     controller = PageController(
       initialPage: Pages.home.index,
       keepPage: true,
+    );
+
+    floatingButtonController = AnimationController(
+      vsync: this,
+      duration: animationDuration,
     );
 
     Future.delayed(Duration.zero, () async {
@@ -63,7 +78,8 @@ class PageState extends State<Page> {
   void getInfo() => extractor.Extractors.anime[args.plugin]!
       .getInfo(
         args.src,
-        locale: Translator.t.code,
+        locale:
+            locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
       )
       .then((x) => setState(() {
             info = x;
@@ -154,34 +170,123 @@ class PageState extends State<Page> {
   }
 
   Widget getGridLayout(int count, List<Widget> children) {
-    List<Widget> rows = [];
-    final size = children.length;
+    // List<Widget> rows = [];
+    // final size = children.length;
     const filler = Expanded(
       child: SizedBox.shrink(),
     );
 
-    for (var i = 0; i < children.length; i += count) {
-      final end = i + count;
-      final extra = end > size ? end - size : 0;
+    // for (var i = 0; i < children.length; i += count) {
+    //   final end = i + count;
+    //   final extra = end > size ? end - size : 0;
 
-      rows.add(
-        Row(
-          children: [
-            ...children.sublist(
-              i,
-              end - extra,
-            ),
-            ...List.generate(
-              extra,
-              (_) => filler,
-            ),
-          ],
-        ),
-      );
-    }
+    //   rows.add(
+    //     Row(
+    //       children: [
+    //         ...children.sublist(
+    //           i,
+    //           end - extra,
+    //         ),
+    //         ...List.generate(
+    //           extra,
+    //           (_) => filler,
+    //         ),
+    //       ],
+    //     ),
+    //   );
+    // }
 
     return Column(
-      children: rows,
+      children: utils.Fns.chunkList<Widget>(children, count, filler)
+          .map(
+            (x) => Row(
+              children: x,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  void showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              vertical: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                  ),
+                  child: Text(
+                    Translator.t.chooseLanguage(),
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                const SizedBox(
+                  height: 6,
+                ),
+                ...info!.availableLocales
+                    .map(
+                      (x) => Material(
+                        type: MaterialType.transparency,
+                        child: RadioListTile(
+                          title: Text(x.language),
+                          value: x,
+                          groupValue: info!.locale,
+                          activeColor: Theme.of(context).primaryColor,
+                          onChanged: (LanguageCodes? val) {
+                            if (val != null && val != info!.locale) {
+                              setState(() {
+                                locale = val;
+                                info = null;
+                              });
+                              getInfo();
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    )
+                    .toList(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: utils.remToPx(0.6),
+                          vertical: utils.remToPx(0.3),
+                        ),
+                        child: Text(
+                          Translator.t.close(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -202,110 +307,153 @@ class PageState extends State<Page> {
                       controller: controller,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        Scaffold(
-                          extendBodyBehindAppBar: true,
-                          appBar: appBar,
-                          body: SingleChildScrollView(
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                left: utils.remToPx(1.25),
-                                right: utils.remToPx(1.25),
-                                bottom: utils.remToPx(1),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SizedBox(
-                                    height: appBar.preferredSize.height,
-                                  ),
-                                  getHero(
-                                    context,
-                                    constraints,
-                                  ),
-                                  SizedBox(
-                                    height: utils.remToPx(1.5),
-                                  ),
-                                  Text(
-                                    Translator.t.episodes(),
-                                    style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.fontSize,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color
-                                          ?.withOpacity(0.7),
+                        NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification notification) {
+                            if (notification is UserScrollNotification) {
+                              showFloatingButton.value =
+                                  notification.direction !=
+                                          ScrollDirection.reverse &&
+                                      lastScrollDirection !=
+                                          ScrollDirection.reverse;
+
+                              if (notification.direction ==
+                                      ScrollDirection.forward ||
+                                  notification.direction ==
+                                      ScrollDirection.reverse) {
+                                lastScrollDirection = notification.direction;
+                              }
+                            }
+
+                            return false;
+                          },
+                          child: Scaffold(
+                            extendBodyBehindAppBar: true,
+                            appBar: appBar,
+                            body: SingleChildScrollView(
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                  left: utils.remToPx(1.25),
+                                  right: utils.remToPx(1.25),
+                                  bottom: utils.remToPx(1),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(
+                                      height: appBar.preferredSize.height,
                                     ),
-                                  ),
-                                  getGridLayout(
-                                    constraints.maxWidth ~/ utils.remToPx(8),
-                                    info!.episodes
-                                        .asMap()
-                                        .map(
-                                          (k, x) => MapEntry(
-                                            k,
-                                            Expanded(
-                                              child: Card(
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  child: Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal:
-                                                          utils.remToPx(0.4),
-                                                      vertical:
-                                                          utils.remToPx(0.3),
-                                                    ),
-                                                    child: RichText(
-                                                      text: TextSpan(
-                                                        children: [
-                                                          TextSpan(
-                                                            text:
-                                                                '${Translator.t.episode()} ',
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .subtitle2,
-                                                          ),
-                                                          TextSpan(
-                                                            text: x.episode
-                                                                .padLeft(
-                                                              2,
-                                                              '0',
-                                                            ),
-                                                            style: Theme.of(
-                                                              context,
-                                                            )
-                                                                .textTheme
-                                                                .subtitle2
-                                                                ?.copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                          ),
-                                                        ],
+                                    getHero(
+                                      context,
+                                      constraints,
+                                    ),
+                                    SizedBox(
+                                      height: utils.remToPx(1.5),
+                                    ),
+                                    Text(
+                                      Translator.t.episodes(),
+                                      style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            ?.fontSize,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            ?.color
+                                            ?.withOpacity(0.7),
+                                      ),
+                                    ),
+                                    getGridLayout(
+                                      constraints.maxWidth ~/ utils.remToPx(8),
+                                      info!.episodes
+                                          .asMap()
+                                          .map(
+                                            (k, x) => MapEntry(
+                                              k,
+                                              Expanded(
+                                                child: Card(
+                                                  child: InkWell(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                        horizontal:
+                                                            utils.remToPx(0.4),
+                                                        vertical:
+                                                            utils.remToPx(0.3),
                                                       ),
-                                                      textAlign:
-                                                          TextAlign.center,
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text:
+                                                                  '${Translator.t.episode()} ',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .subtitle2,
+                                                            ),
+                                                            TextSpan(
+                                                              text: x.episode
+                                                                  .padLeft(
+                                                                2,
+                                                                '0',
+                                                              ),
+                                                              style: Theme.of(
+                                                                context,
+                                                              )
+                                                                  .textTheme
+                                                                  .subtitle2
+                                                                  ?.copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
                                                     ),
+                                                    onTap: () {
+                                                      setEpisode(k);
+                                                      goToPage(Pages.player);
+                                                    },
                                                   ),
-                                                  onTap: () {
-                                                    setEpisode(k);
-                                                    goToPage(Pages.player);
-                                                  },
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                        .values
-                                        .toList(),
-                                  ),
-                                ],
+                                          )
+                                          .values
+                                          .toList(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            floatingActionButton: ValueListenableBuilder(
+                              valueListenable: showFloatingButton,
+                              builder:
+                                  (context, bool showFloatingButton, child) {
+                                return ToggleableSlideWidget(
+                                  controller: floatingButtonController,
+                                  visible: showFloatingButton,
+                                  child: child!,
+                                  curve: Curves.easeInOut,
+                                  offsetBegin: const Offset(0, 0),
+                                  offsetEnd: const Offset(0, 1.5),
+                                );
+                              },
+                              child: FloatingActionButton.extended(
+                                icon: const Icon(Icons.language),
+                                label: Text(Translator.t.language()),
+                                onPressed: () {
+                                  showLanguageDialog();
+                                },
                               ),
                             ),
                           ),

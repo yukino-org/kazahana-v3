@@ -174,4 +174,10 @@ class Sentences extends TranslationSentences {
 
   @override
   tapAgainToSwitchNextChapter() => 'Tap again to go to next chapter';
+
+  @override
+  selectSource() => 'Select Source';
+
+  @override
+  sources() => 'Sources';
 }
