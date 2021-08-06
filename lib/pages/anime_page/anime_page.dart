@@ -170,31 +170,9 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
   }
 
   Widget getGridLayout(int count, List<Widget> children) {
-    // List<Widget> rows = [];
-    // final size = children.length;
     const filler = Expanded(
       child: SizedBox.shrink(),
     );
-
-    // for (var i = 0; i < children.length; i += count) {
-    //   final end = i + count;
-    //   final extra = end > size ? end - size : 0;
-
-    //   rows.add(
-    //     Row(
-    //       children: [
-    //         ...children.sublist(
-    //           i,
-    //           end - extra,
-    //         ),
-    //         ...List.generate(
-    //           extra,
-    //           (_) => filler,
-    //         ),
-    //       ],
-    //     ),
-    //   );
-    // }
 
     return Column(
       children: utils.Fns.chunkList<Widget>(children, count, filler)

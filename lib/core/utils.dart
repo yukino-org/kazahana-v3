@@ -109,6 +109,9 @@ abstract class Crypto {
 abstract class Http {
   static const userAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
+  static const timeout = Duration(seconds: 10);
+  static const extendedTimeout = Duration(seconds: 20);
 }
 
 abstract class Fns {
@@ -158,6 +161,21 @@ abstract class Fns {
       inserted.add(elements[i]);
     }
     return inserted;
+  }
+
+  static String ensureHTTPS(String url) =>
+      url.startsWith('http:') ? url.replaceFirst('http:', 'https:') : url;
+
+  static String ensureProtocol(String url, [bool https = true]) =>
+      !url.startsWith('http')
+          ? https
+              ? 'https:$url'
+              : 'http:$url'
+          : url;
+
+  static tryEncodeURL(String url) {
+    if (url == Uri.decodeFull(url)) return Uri.encodeFull(url);
+    return url;
   }
 }
 

@@ -37,7 +37,10 @@ void getSources(AnimeExtractor client, EpisodeInfo episode) {
     final res = await client.getSources(episode);
 
     // ignore: avoid_print
-    print(const JsonEncoder.withIndent('  ').convert(res));
+    print(
+      const JsonEncoder.withIndent('  ')
+          .convert(res.map((x) => x.toJson()).toList()),
+    );
 
     expect(res.isEmpty, false);
   });

@@ -1,7 +1,11 @@
 import '../models/languages.dart' show LanguageCodes;
 
+Map<String, T> mapName<T extends BaseExtractor>(final List<T> items) =>
+    items.asMap().map((key, value) => MapEntry(value.name, value));
+
 abstract class BaseExtractor {
   String get name;
+  String get baseURL;
 }
 
 abstract class BaseExtractorSearch<T> {

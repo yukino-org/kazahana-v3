@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import '../../models/languages.dart';
+import '../../utils.dart' as utils;
 import './model.dart';
 
 enum DataQuality { original, compressed }
@@ -15,10 +16,13 @@ const _defaultLocale = LanguageCodes.en;
 
 class MangaDex extends MangaExtractor {
   @override
-  get name => 'Mangadex.org';
+  final name = 'Mangadex.org';
 
   @override
-  get defaultLocale => _defaultLocale;
+  final defaultLocale = _defaultLocale;
+
+  @override
+  final baseURL = 'https://mangadex.org';
 
   final apiURL = 'https://api.mangadex.org';
   final uploadsURL = 'https://uploads.mangadex.org';
@@ -58,7 +62,7 @@ class MangaDex extends MangaExtractor {
       '$uploadsURL/covers/$mangaID/$coverFile';
 
   String? extractIdFromURL(String url) =>
-      RegExp(r'https:\/\/api\.mangadex\.org\/manga\/([^\/]+)')
+      RegExp(r'https?:\/\/api\.mangadex\.org\/manga\/([^\/]+)')
           .firstMatch(url)?[1];
 
   @override
@@ -67,10 +71,12 @@ class MangaDex extends MangaExtractor {
     required locale,
   }) async {
     try {
-      final res = await http.get(
-        Uri.parse(Uri.encodeFull(searchApiURL(terms))),
-        headers: defaultHeaders,
-      );
+      final res = await http
+          .get(
+            Uri.parse(utils.Fns.tryEncodeURL(searchApiURL(terms))),
+            headers: defaultHeaders,
+          )
+          .timeout(utils.Http.timeout);
 
       final List<SearchInfo> searches = [];
       for (final x in (json.decode(res.body)['results'] as List<dynamic>)
@@ -111,19 +117,21 @@ class MangaDex extends MangaExtractor {
       int offset = 0;
       bool finished = false;
       while (!finished) {
-        final res = await http.get(
-          Uri.parse(
-            Uri.encodeFull(
-              mangaFeedApiURL(
-                id,
-                limit: limit,
-                offset: offset,
-                locale: locale.code,
+        final res = await http
+            .get(
+              Uri.parse(
+                utils.Fns.tryEncodeURL(
+                  mangaFeedApiURL(
+                    id,
+                    limit: limit,
+                    offset: offset,
+                    locale: locale.code,
+                  ),
+                ),
               ),
-            ),
-          ),
-          headers: defaultHeaders,
-        );
+              headers: defaultHeaders,
+            )
+            .timeout(utils.Http.timeout);
 
         final results = (json.decode(res.body)['results'] as List<dynamic>)
             .cast<Map<String, dynamic>>();
@@ -157,10 +165,12 @@ class MangaDex extends MangaExtractor {
       }
 
       final String mangaURL = mangaApiURL(id);
-      final res = await http.get(
-        Uri.parse(Uri.encodeFull(mangaURL)),
-        headers: defaultHeaders,
-      );
+      final res = await http
+          .get(
+            Uri.parse(utils.Fns.tryEncodeURL(mangaURL)),
+            headers: defaultHeaders,
+          )
+          .timeout(utils.Http.timeout);
       final parsed = json.decode(res.body);
       final String? coverArt = (parsed['relationships'] as List<dynamic>)
           .firstWhereOrNull((x) => x['type'] == 'cover_art')['id'];
@@ -183,10 +193,13 @@ class MangaDex extends MangaExtractor {
 
   @override
   getChapter(chapter) async {
-    final serverRes = await http.get(
-      Uri.parse(Uri.encodeFull(mangaServerApiURL(chapter.other['id']))),
-      headers: defaultHeaders,
-    );
+    final serverRes = await http
+        .get(
+          Uri.parse(
+              utils.Fns.tryEncodeURL(mangaServerApiURL(chapter.other['id']))),
+          headers: defaultHeaders,
+        )
+        .timeout(utils.Http.timeout);
     final chapterURL = chapter.url
         .replaceFirst('<serverURL>', json.decode(serverRes.body)['baseUrl']);
 
@@ -205,10 +218,12 @@ class MangaDex extends MangaExtractor {
 
   Future<String?> getCoverImageURL(String mangaID, String coverID) async {
     try {
-      final res = await http.get(
-        Uri.parse(Uri.encodeFull(coverAPIURL(coverID))),
-        headers: defaultHeaders,
-      );
+      final res = await http
+          .get(
+            Uri.parse(utils.Fns.tryEncodeURL(coverAPIURL(coverID))),
+            headers: defaultHeaders,
+          )
+          .timeout(utils.Http.timeout);
       final parsed = json.decode(res.body);
       return coverURL(mangaID, parsed['data']['attributes']['fileName']);
     } catch (e) {
@@ -217,10 +232,12 @@ class MangaDex extends MangaExtractor {
   }
 
   Future<List<LanguageCodes>> getAvailableLanguages(String mangaID) async {
-    final res = await http.get(
-      Uri.parse(Uri.encodeFull(mangaChapterOverviewURL(mangaID))),
-      headers: defaultHeaders,
-    );
+    final res = await http
+        .get(
+          Uri.parse(utils.Fns.tryEncodeURL(mangaChapterOverviewURL(mangaID))),
+          headers: defaultHeaders,
+        )
+        .timeout(utils.Http.timeout);
 
     final List<LanguageCodes> locales = [];
 

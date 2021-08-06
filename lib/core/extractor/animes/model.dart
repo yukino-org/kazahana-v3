@@ -1,5 +1,6 @@
 import '../../models/languages.dart' show LanguageCodes, LanguageName;
 import '../model.dart';
+import './sources/model.dart' show RetrievedSource;
 
 enum Qualities {
   q_144p,
@@ -22,27 +23,26 @@ class Quality {
   );
 }
 
-final Map<Qualities, Quality> quality = [
+final quality = [
   Quality(Qualities.q_144p, '144p', 'sd'),
   Quality(Qualities.q_360p, '360p', 'sd'),
   Quality(Qualities.q_480p, '480p', 'sd'),
   Quality(Qualities.q_720p, '720p', 'hd'),
   Quality(Qualities.q_1080p, '1080p', 'fhd'),
   Quality(Qualities.unknown, 'unknown', '?'),
-]
-    .asMap()
-    .map(
+].asMap().map(
       (k, x) => MapEntry(x.quality, x),
-    )
-    .cast<Qualities, Quality>();
+    );
+
+Quality getQuality(Qualities q) => quality[q]!;
 
 class SearchInfo extends BaseSearchInfo {
   LanguageCodes locale;
 
   SearchInfo({
-    required url,
-    required title,
-    thumbnail,
+    required String url,
+    required String title,
+    String? thumbnail,
     required this.locale,
   }) : super(
           title: title,
@@ -115,8 +115,20 @@ class EpisodeSource {
     required this.locale,
   });
 
+  factory EpisodeSource.fromRetrievedSource({
+    required RetrievedSource retrieved,
+    required LanguageCodes locale,
+  }) {
+    return EpisodeSource(
+      url: retrieved.url,
+      headers: retrieved.headers,
+      quality: retrieved.quality,
+      locale: locale,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
-        'quality': quality,
+        'quality': quality.code,
         'url': url,
         'headers': headers,
         'locale': locale.code,
