@@ -36,6 +36,16 @@ final quality = [
 
 Quality getQuality(Qualities q) => quality[q]!;
 
+Quality resolveQuality(String approx) {
+  approx = approx.toLowerCase();
+  for (final q in quality.values) {
+    if (q.code == approx ||
+        q.code.substring(0, q.code.length - 1) == approx ||
+        q.short == approx) return q;
+  }
+  return getQuality(Qualities.unknown);
+}
+
 class SearchInfo extends BaseSearchInfo {
   LanguageCodes locale;
 
@@ -111,7 +121,7 @@ class EpisodeSource {
   EpisodeSource({
     required this.url,
     required this.quality,
-    this.headers = const {},
+    required this.headers,
     required this.locale,
   });
 
