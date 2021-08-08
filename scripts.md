@@ -1,5 +1,17 @@
 # Scripts
 
+### Running the app (development)
+
+```bash
+flutter run
+```
+
+### Building the app
+
+```bash
+flutter build
+```
+
 ## Hive generate
 
 ```bash

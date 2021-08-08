@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart' as better_player;
+import 'package:flutter/material.dart';
 import '../../../core/models/player.dart' as model;
 
 class VideoPlayer extends model.Player {
+  VideoPlayer(final model.PlayerSource source) : super(source);
+
   late better_player.BetterPlayerConfiguration _configuration;
   late better_player.BetterPlayerDataSource _dataSource;
   late better_player.BetterPlayerController _controller;
-
-  VideoPlayer(model.PlayerSource source) : super(source);
 
   @override
   Future<void> initialize() async {
@@ -28,113 +28,105 @@ class VideoPlayer extends model.Player {
     _controller = better_player.BetterPlayerController(_configuration)
       ..setupDataSource(_dataSource)
       ..setControlsEnabled(false)
-      ..addEventsListener((e) {
-        switch (e.betterPlayerEventType) {
-          case better_player.BetterPlayerEventType.initialized:
-            dispatch(model.PlayerEvents.load);
-            ready = true;
-            break;
+      ..addEventsListener(
+        (final better_player.BetterPlayerEvent e) {
+          switch (e.betterPlayerEventType) {
+            case better_player.BetterPlayerEventType.initialized:
+              dispatch(model.PlayerEvents.load);
+              ready = true;
+              break;
 
-          case better_player.BetterPlayerEventType.progress:
-          case better_player.BetterPlayerEventType.setupDataSource:
-            dispatch(model.PlayerEvents.durationUpdate);
-            break;
+            case better_player.BetterPlayerEventType.progress:
+            case better_player.BetterPlayerEventType.setupDataSource:
+              dispatch(model.PlayerEvents.durationUpdate);
+              break;
 
-          case better_player.BetterPlayerEventType.play:
-            dispatch(model.PlayerEvents.play);
-            break;
+            case better_player.BetterPlayerEventType.play:
+              dispatch(model.PlayerEvents.play);
+              break;
 
-          case better_player.BetterPlayerEventType.pause:
-            dispatch(model.PlayerEvents.pause);
-            break;
+            case better_player.BetterPlayerEventType.pause:
+              dispatch(model.PlayerEvents.pause);
+              break;
 
-          case better_player.BetterPlayerEventType.seekTo:
-            dispatch(model.PlayerEvents.durationUpdate);
-            dispatch(model.PlayerEvents.seek);
-            break;
+            case better_player.BetterPlayerEventType.seekTo:
+              dispatch(model.PlayerEvents.durationUpdate);
+              dispatch(model.PlayerEvents.seek);
+              break;
 
-          case better_player.BetterPlayerEventType.setVolume:
-            dispatch(model.PlayerEvents.volume);
-            break;
+            case better_player.BetterPlayerEventType.setVolume:
+              dispatch(model.PlayerEvents.volume);
+              break;
 
-          case better_player.BetterPlayerEventType.finished:
-            dispatch(model.PlayerEvents.end);
-            break;
+            case better_player.BetterPlayerEventType.finished:
+              dispatch(model.PlayerEvents.end);
+              break;
 
-          case better_player.BetterPlayerEventType.setSpeed:
-            dispatch(model.PlayerEvents.speed);
-            break;
+            case better_player.BetterPlayerEventType.setSpeed:
+              dispatch(model.PlayerEvents.speed);
+              break;
 
-          default:
-            break;
-        }
-      });
+            default:
+              break;
+          }
+        },
+      );
   }
 
   @override
-  play() async {
+  Future<void> play() async {
     _controller.play();
   }
 
   @override
-  pause() async {
+  Future<void> pause() async {
     _controller.pause();
   }
 
   @override
-  seek(position) async {
+  Future<void> seek(final Duration position) async {
     _controller.seekTo(position);
   }
 
   @override
-  setVolume(volume) async {
+  Future<void> setVolume(final int volume) async {
     _controller.setVolume(volume / model.Player.maxVolume);
   }
 
   @override
-  setSpeed(speed) async {
+  Future<void> setSpeed(final double speed) async {
     _controller.setSpeed(speed);
   }
 
   @override
-  getWidget() {
-    return better_player.BetterPlayer(
-      controller: _controller,
-    );
-  }
+  Widget getWidget() => better_player.BetterPlayer(
+        controller: _controller,
+      );
 
   @override
-  destroy() async {
+  Future<void> destroy() async {
     _controller.dispose();
     super.destroy();
   }
 
   @override
-  get isPlaying {
-    return _controller.isPlaying() ?? false;
-  }
+  bool get isPlaying => _controller.isPlaying() ?? false;
 
   @override
-  get duration {
-    return _controller.videoPlayerController?.value.position;
-  }
+  Duration? get duration => _controller.videoPlayerController?.value.position;
 
   @override
-  get totalDuration {
-    return _controller.videoPlayerController?.value.duration;
-  }
+  Duration? get totalDuration =>
+      _controller.videoPlayerController?.value.duration;
 
   @override
-  get volume {
-    return ((_controller.videoPlayerController?.value.volume ??
-                model.Player.minVolume) *
-            model.Player.maxVolume)
-        .toInt();
-  }
+  int get volume => ((_controller.videoPlayerController?.value.volume ??
+              model.Player.minVolume) *
+          model.Player.maxVolume)
+      .toInt();
 
   @override
-  get speed {
-    return _controller.videoPlayerController?.value.speed ??
-        model.Player.defaultSpeed;
-  }
+  double get speed =>
+      _controller.videoPlayerController?.value.speed ??
+      model.Player.defaultSpeed;
 }

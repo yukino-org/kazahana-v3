@@ -1,14 +1,14 @@
-import 'package:yukino_app/core/extractor/animes/gogoanime_pe.dart';
+import 'package:yukino_app/core/extractor/animes/kawaiifu_com.dart';
 import 'package:yukino_app/core/extractor/animes/model.dart';
 import 'package:yukino_app/core/models/languages.dart';
 import '../tester.dart' as tester;
 
 void main() => tester.getSources(
-      GogoAnimePe(),
+      KawaiifuCom(),
       EpisodeInfo(
-        episode: '1',
+        episode: '6',
         url:
-            'https://gogoanime.pe/seishun-buta-yarou-wa-bunny-girl-senpai-no-yume-wo-minai-picture-drama-episode-1',
+            'https://domdom.stream/anime/season/summer-2021/girlfriend-girlfriend-kanojo-mo-kanojo-episode?ep=6',
         locale: LanguageCodes.en,
       ),
     );

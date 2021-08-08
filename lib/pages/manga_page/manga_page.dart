@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../../core/utils.dart' as utils;
-import '../../core/extractor/extractors.dart' as extractor;
-import '../../core/extractor/manga/model.dart' as manga_model;
-import '../../core/models/manga_page.dart' as manga_page;
-import '../../core/models/languages.dart';
-import '../../plugins/router.dart';
-import '../../plugins/translator/translator.dart';
-import '../../plugins/state.dart' show AppState;
-import '../../plugins/database/schemas/settings/settings.dart'
-    show MangaMode, SettingsSchema;
+import './list_reader.dart';
+import './page_reader.dart';
 import '../../components/full_screen.dart';
 import '../../components/toggleable_slide_widget.dart';
-import './page_reader.dart';
-import './list_reader.dart';
+import '../../core/extractor/extractors.dart' as extractor;
+import '../../core/extractor/manga/model.dart' as manga_model;
+import '../../core/models/languages.dart';
+import '../../core/models/manga_page.dart' as manga_page;
+import '../../core/utils.dart' as utils;
+import '../../plugins/database/schemas/settings/settings.dart'
+    show MangaMode, SettingsSchema;
+import '../../plugins/router.dart';
+import '../../plugins/state.dart' show AppState;
+import '../../plugins/translator/translator.dart';
 
-enum Pages { home, reader }
+enum Pages {
+  home,
+  reader,
+}
 
 class Page extends StatefulWidget {
   const Page({
@@ -31,15 +34,16 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
 
   manga_model.ChapterInfo? chapter;
   int? currentChapterIndex;
-  Map<manga_model.ChapterInfo, List<manga_model.PageInfo>> pages = {};
+  Map<manga_model.ChapterInfo, List<manga_model.PageInfo>> pages =
+      <manga_model.ChapterInfo, List<manga_model.PageInfo>>{};
 
   late PageController controller;
 
   ScrollDirection? lastScrollDirection;
-  final showFloatingButton = ValueNotifier(true);
+  final ValueNotifier<bool> showFloatingButton = ValueNotifier<bool>(true);
   late AnimationController floatingButtonController;
 
-  Widget loader = const Center(
+  final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
 
@@ -47,7 +51,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
   LanguageCodes? locale;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
-  final animationDuration = const Duration(milliseconds: 200);
+  final Duration animationDuration = const Duration(milliseconds: 200);
 
   @override
   void initState() {
@@ -62,7 +66,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
       duration: animationDuration,
     );
 
-    Future.delayed(Duration.zero, () async {
+    Future<void>.delayed(Duration.zero, () async {
       args = manga_page.PageArguments.fromJson(
         RouteManager.parseRoute(ModalRoute.of(context)!.settings.name!).params,
       );
@@ -83,13 +87,16 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _appStateChange(SettingsSchema current, SettingsSchema previous) {
+  void _appStateChange(
+    final SettingsSchema current,
+    final SettingsSchema previous,
+  ) {
     setState(() {
       mangaMode = AppState.settings.current.mangaReaderMode;
     });
   }
 
-  Future<void> goToPage(Pages page) async {
+  Future<void> goToPage(final Pages page) async {
     await controller.animateToPage(
       page.index,
       duration: animationDuration,
@@ -97,18 +104,20 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
   }
 
-  void getInfo() async => extractor.Extractors.manga[args.plugin]!
+  Future<void> getInfo() async => extractor.Extractors.manga[args.plugin]!
       .getInfo(
         args.src,
         locale:
             locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
       )
-      .then((x) => setState(() {
-            info = x;
-          }));
+      .then(
+        (final manga_model.MangaInfo x) => setState(() {
+          info = x;
+        }),
+      );
 
   void setChapter(
-    int? index,
+    final int? index,
   ) {
     setState(() {
       currentChapterIndex = index;
@@ -116,7 +125,9 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     });
 
     if (chapter != null && pages[chapter] == null) {
-      extractor.Extractors.manga[args.plugin]!.getChapter(chapter!).then((x) {
+      extractor.Extractors.manga[args.plugin]!
+          .getChapter(chapter!)
+          .then((final List<manga_model.PageInfo> x) {
         setState(() {
           pages[chapter!] = x;
         });
@@ -124,72 +135,71 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     }
   }
 
-  Widget getHero() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final image = info!.thumbnail != null
-            ? Image.network(
-                info!.thumbnail!,
-                width: utils.remToPx(7),
-              )
-            : Image.asset(
-                utils.Assets.placeholderImage(
-                  utils.Fns.isDarkContext(context),
+  Widget getHero() => LayoutBuilder(
+        builder:
+            (final BuildContext context, final BoxConstraints constraints) {
+          final Widget image = info!.thumbnail != null
+              ? Image.network(
+                  info!.thumbnail!,
+                  width: utils.remToPx(7),
+                )
+              : Image.asset(
+                  utils.Assets.placeholderImage(
+                    utils.Fns.isDarkContext(context),
+                  ),
+                  width: utils.remToPx(7),
+                );
+
+          final Widget left = ClipRRect(
+            borderRadius: BorderRadius.circular(utils.remToPx(0.5)),
+            child: image,
+          );
+
+          final Widget right = Column(
+            children: <Widget>[
+              Text(
+                info!.title,
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.headline4?.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
-                width: utils.remToPx(7),
-              );
-
-        final left = ClipRRect(
-          borderRadius: BorderRadius.circular(utils.remToPx(0.5)),
-          child: image,
-        );
-
-        final right = Column(
-          children: [
-            Text(
-              info!.title,
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.headline4?.fontSize,
-                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              args.plugin,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-                fontWeight: FontWeight.bold,
+              Text(
+                args.plugin,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
-        );
-
-        if (constraints.maxWidth > utils.ResponsiveSizes.md) {
-          return Row(
-            children: [
-              left,
-              right,
             ],
           );
-        } else {
-          return Column(
-            children: [
-              left,
-              SizedBox(
-                height: utils.remToPx(1),
-              ),
-              right,
-            ],
-          );
-        }
-      },
-    );
-  }
 
-  List<Widget> getChapterCard(manga_model.ChapterInfo chapter) {
-    List<String> first = [];
-    List<String> second = [];
+          if (constraints.maxWidth > utils.ResponsiveSizes.md) {
+            return Row(
+              children: <Widget>[
+                left,
+                right,
+              ],
+            );
+          } else {
+            return Column(
+              children: <Widget>[
+                left,
+                SizedBox(
+                  height: utils.remToPx(1),
+                ),
+                right,
+              ],
+            );
+          }
+        },
+      );
+
+  List<Widget> getChapterCard(final manga_model.ChapterInfo chapter) {
+    final List<String> first = <String>[];
+    final List<String> second = <String>[];
 
     if (chapter.volume != null) {
       first.add('${Translator.t.volume()} ${chapter.volume}');
@@ -202,7 +212,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
       second.add('${Translator.t.chapter()} ${chapter.chapter}');
     }
 
-    return [
+    return <Widget>[
       Text(
         first.join(' & '),
         style: TextStyle(
@@ -251,262 +261,267 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
   void showLanguageDialog() {
     showDialog(
       context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
+      builder: (final BuildContext context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
           ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                  ),
-                  child: Text(
-                    Translator.t.chooseLanguage(),
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
                 ),
-                const SizedBox(
-                  height: 6,
+                child: Text(
+                  Translator.t.chooseLanguage(),
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-                ...info!.availableLocales
-                    .map(
-                      (x) => Material(
-                        type: MaterialType.transparency,
-                        child: RadioListTile(
-                          title: Text(x.language),
-                          value: x,
-                          groupValue: info!.locale,
-                          activeColor: Theme.of(context).primaryColor,
-                          onChanged: (LanguageCodes? val) {
-                            if (val != null && val != info!.locale) {
-                              setState(() {
-                                locale = val;
-                                info = null;
-                              });
-                              getInfo();
-                            }
-                            Navigator.of(context).pop();
-                          },
-                        ),
+              ),
+              const SizedBox(
+                height: 6,
+              ),
+              ...info!.availableLocales
+                  .map(
+                    (final LanguageCodes x) => Material(
+                      type: MaterialType.transparency,
+                      child: RadioListTile<LanguageCodes>(
+                        title: Text(x.language),
+                        value: x,
+                        groupValue: info!.locale,
+                        activeColor: Theme.of(context).primaryColor,
+                        onChanged: (final LanguageCodes? val) {
+                          if (val != null && val != info!.locale) {
+                            setState(() {
+                              locale = val;
+                              info = null;
+                            });
+                            getInfo();
+                          }
+                          Navigator.of(context).pop();
+                        },
                       ),
-                    )
-                    .toList(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: utils.remToPx(0.6),
-                          vertical: utils.remToPx(0.3),
-                        ),
-                        child: Text(
-                          Translator.t.close(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
                     ),
+                  )
+                  .toList(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: utils.remToPx(0.6),
+                        vertical: utils.remToPx(0.3),
+                      ),
+                      child: Text(
+                        Translator.t.close(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
-    final appBar = AppBar(
+  Widget build(final BuildContext context) {
+    final PreferredSizeWidget appBar = AppBar(
       backgroundColor:
           Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
       elevation: 0,
     );
 
     return WillPopScope(
-        child: SafeArea(
-          child: info != null
-              ? PageView(
-                  controller: controller,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    NotificationListener<ScrollNotification>(
-                      onNotification: (ScrollNotification notification) {
-                        if (notification is UserScrollNotification) {
-                          showFloatingButton.value = notification.direction !=
-                                  ScrollDirection.reverse &&
-                              lastScrollDirection != ScrollDirection.reverse;
+      child: SafeArea(
+        child: info != null
+            ? PageView(
+                controller: controller,
+                physics: const NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  NotificationListener<ScrollNotification>(
+                    onNotification: (final ScrollNotification notification) {
+                      if (notification is UserScrollNotification) {
+                        showFloatingButton.value =
+                            notification.direction != ScrollDirection.reverse &&
+                                lastScrollDirection != ScrollDirection.reverse;
 
-                          if (notification.direction ==
-                                  ScrollDirection.forward ||
-                              notification.direction ==
-                                  ScrollDirection.reverse) {
-                            lastScrollDirection = notification.direction;
-                          }
+                        if (notification.direction == ScrollDirection.forward ||
+                            notification.direction == ScrollDirection.reverse) {
+                          lastScrollDirection = notification.direction;
                         }
+                      }
 
-                        return false;
-                      },
-                      child: Scaffold(
-                        extendBodyBehindAppBar: true,
-                        appBar: appBar,
-                        body: SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              left: utils.remToPx(1.25),
-                              right: utils.remToPx(1.25),
-                              bottom: utils.remToPx(1),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(
-                                  height: appBar.preferredSize.height,
+                      return false;
+                    },
+                    child: Scaffold(
+                      extendBodyBehindAppBar: true,
+                      appBar: appBar,
+                      body: SingleChildScrollView(
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            left: utils.remToPx(1.25),
+                            right: utils.remToPx(1.25),
+                            bottom: utils.remToPx(1),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              SizedBox(
+                                height: appBar.preferredSize.height,
+                              ),
+                              getHero(),
+                              SizedBox(
+                                height: utils.remToPx(1.5),
+                              ),
+                              Text(
+                                Translator.t.chapters(),
+                                style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.fontSize,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color
+                                      ?.withOpacity(0.7),
                                 ),
-                                getHero(),
-                                SizedBox(
-                                  height: utils.remToPx(1.5),
-                                ),
-                                Text(
-                                  Translator.t.chapters(),
-                                  style: TextStyle(
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.fontSize,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.color
-                                        ?.withOpacity(0.7),
-                                  ),
-                                ),
-                                ...info!.chapters
-                                    .asMap()
-                                    .map(
-                                      (k, x) => MapEntry(
-                                        k,
-                                        Card(
-                                          child: InkWell(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: utils.remToPx(0.4),
-                                                vertical: utils.remToPx(0.2),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: getChapterCard(x),
-                                              ),
+                              ),
+                              ...info!.chapters
+                                  .asMap()
+                                  .map(
+                                    (
+                                      final int k,
+                                      final manga_model.ChapterInfo x,
+                                    ) =>
+                                        MapEntry<int, Widget>(
+                                      k,
+                                      Card(
+                                        child: InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: utils.remToPx(0.4),
+                                              vertical: utils.remToPx(0.2),
                                             ),
-                                            onTap: () {
-                                              setChapter(k);
-                                              goToPage(Pages.reader);
-                                            },
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: getChapterCard(x),
+                                            ),
                                           ),
+                                          onTap: () {
+                                            setChapter(k);
+                                            goToPage(Pages.reader);
+                                          },
                                         ),
-                                      ),
-                                    )
-                                    .values
-                                    .toList(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        floatingActionButton: ValueListenableBuilder(
-                          valueListenable: showFloatingButton,
-                          builder: (context, bool showFloatingButton, child) {
-                            return ToggleableSlideWidget(
-                              controller: floatingButtonController,
-                              visible: showFloatingButton,
-                              child: child!,
-                              curve: Curves.easeInOut,
-                              offsetBegin: const Offset(0, 0),
-                              offsetEnd: const Offset(0, 1.5),
-                            );
-                          },
-                          child: FloatingActionButton.extended(
-                            icon: const Icon(Icons.language),
-                            label: Text(Translator.t.language()),
-                            onPressed: () {
-                              showLanguageDialog();
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    chapter != null
-                        ? pages[chapter] != null
-                            ? pages[chapter]!.isNotEmpty
-                                ? FullScreenWidget(
-                                    child: mangaMode == MangaMode.page
-                                        ? PageReader(
-                                            key: ValueKey(
-                                              'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                            ),
-                                            info: info!,
-                                            chapter: chapter!,
-                                            pages: pages[chapter]!,
-                                            previousChapter: _previousChapter,
-                                            nextChapter: _nextChapter,
-                                            onPop: _onPop,
-                                          )
-                                        : ListReader(
-                                            key: ValueKey(
-                                              'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                            ),
-                                            info: info!,
-                                            chapter: chapter!,
-                                            pages: pages[chapter]!,
-                                            previousChapter: _previousChapter,
-                                            nextChapter: _nextChapter,
-                                            onPop: _onPop,
-                                          ),
-                                  )
-                                : Material(
-                                    type: MaterialType.transparency,
-                                    child: Center(
-                                      child: Text(
-                                        Translator.t.noValidSources(),
                                       ),
                                     ),
                                   )
-                            : loader
-                        : const SizedBox.shrink(),
-                  ],
-                )
-              : loader,
-        ),
-        onWillPop: () async {
-          if (controller.page!.toInt() != Pages.home.index) {
-            setState(() {
-              setChapter(null);
-            });
+                                  .values
+                                  .toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      floatingActionButton: ValueListenableBuilder<bool>(
+                        valueListenable: showFloatingButton,
+                        builder: (
+                          final BuildContext context,
+                          final bool showFloatingButton,
+                          final Widget? child,
+                        ) =>
+                            ToggleableSlideWidget(
+                          controller: floatingButtonController,
+                          visible: showFloatingButton,
+                          curve: Curves.easeInOut,
+                          offsetBegin: const Offset(0, 0),
+                          offsetEnd: const Offset(0, 1.5),
+                          child: child!,
+                        ),
+                        child: FloatingActionButton.extended(
+                          icon: const Icon(Icons.language),
+                          label: Text(Translator.t.language()),
+                          onPressed: () {
+                            showLanguageDialog();
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (chapter != null)
+                    pages[chapter] != null
+                        ? pages[chapter]!.isNotEmpty
+                            ? FullScreenWidget(
+                                child: mangaMode == MangaMode.page
+                                    ? PageReader(
+                                        key: ValueKey<String>(
+                                          'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                        ),
+                                        info: info!,
+                                        chapter: chapter!,
+                                        pages: pages[chapter]!,
+                                        previousChapter: _previousChapter,
+                                        nextChapter: _nextChapter,
+                                        onPop: _onPop,
+                                      )
+                                    : ListReader(
+                                        key: ValueKey<String>(
+                                          'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                        ),
+                                        info: info!,
+                                        chapter: chapter!,
+                                        pages: pages[chapter]!,
+                                        previousChapter: _previousChapter,
+                                        nextChapter: _nextChapter,
+                                        onPop: _onPop,
+                                      ),
+                              )
+                            : Material(
+                                type: MaterialType.transparency,
+                                child: Center(
+                                  child: Text(
+                                    Translator.t.noValidSources(),
+                                  ),
+                                ),
+                              )
+                        : loader
+                  else
+                    const SizedBox.shrink(),
+                ],
+              )
+            : loader,
+      ),
+      onWillPop: () async {
+        if (controller.page!.toInt() != Pages.home.index) {
+          setState(() {
+            setChapter(null);
+          });
 
-            goToPage(Pages.home);
-            return false;
-          }
+          goToPage(Pages.home);
+          return false;
+        }
 
-          Navigator.of(context).pop();
-          return true;
-        });
+        Navigator.of(context).pop();
+        return true;
+      },
+    );
   }
 }

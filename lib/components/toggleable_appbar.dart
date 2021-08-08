@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ToggleableAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const ToggleableAppBar({
+    required final this.child,
+    required final this.controller,
+    required final this.visible,
+    final Key? key,
+  }) : super(key: key);
+
   final PreferredSizeWidget child;
   final AnimationController controller;
   final bool visible;
-
-  const ToggleableAppBar({
-    Key? key,
-    required this.child,
-    required this.controller,
-    required this.visible,
-  }) : super(key: key);
 
   @override
   Size get preferredSize => child.preferredSize;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     visible ? controller.reverse() : controller.forward();
     return SlideTransition(
       position: Tween<Offset>(

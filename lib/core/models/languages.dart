@@ -190,7 +190,8 @@ extension LanguageName on LanguageCodes {
 }
 
 abstract class LanguageUtils {
-  static const Map<LanguageCodes, String> languageNameMap = {
+  static const Map<LanguageCodes, String> languageNameMap =
+      <LanguageCodes, String>{
     LanguageCodes.aa: 'Afar',
     LanguageCodes.ab: 'Abkhazian',
     LanguageCodes.af: 'Afrikaans',
@@ -378,10 +379,10 @@ abstract class LanguageUtils {
     LanguageCodes.zu: 'Zulu'
   };
 
-  static final codeLangaugeMap = LanguageCodes.values
+  static final Map<String, LanguageCodes> codeLangaugeMap = LanguageCodes.values
       .asMap()
       .map(
-        (k, v) => MapEntry(
+        (final int k, final LanguageCodes v) => MapEntry<String, LanguageCodes>(
           v.code,
           v,
         ),

@@ -1,26 +1,38 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/utils.dart' as utils;
+import './select_source.dart';
+import '../../components/player/player.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/player.dart' as player_model;
-import '../../plugins/translator/translator.dart';
+import '../../core/utils.dart' as utils;
 import '../../plugins/state.dart' show AppState;
-import '../../components/player/player.dart';
-import '../settings_page/setting_tile.dart';
-import '../settings_page/setting_switch.dart';
+import '../../plugins/translator/translator.dart';
 import '../settings_page/setting_dialog.dart';
 import '../settings_page/setting_radio.dart';
-import './select_source.dart';
+import '../settings_page/setting_switch.dart';
+import '../settings_page/setting_tile.dart';
 
 class VideoDuration {
+  VideoDuration(this.current, this.total);
+
   final Duration current;
   final Duration total;
-
-  VideoDuration(this.current, this.total);
 }
 
 class WatchPage extends StatefulWidget {
+  const WatchPage({
+    required final this.sources,
+    required final this.title,
+    required final this.onPop,
+    required final this.previousEpisodeEnabled,
+    required final this.previousEpisode,
+    required final this.nextEpisodeEnabled,
+    required final this.nextEpisode,
+    final Key? key,
+    final this.initialIndex,
+  }) : super(key: key);
+
   final int? initialIndex;
   final List<anime_model.EpisodeSource> sources;
   final Widget title;
@@ -29,18 +41,6 @@ class WatchPage extends StatefulWidget {
   final void Function() previousEpisode;
   final bool nextEpisodeEnabled;
   final void Function() nextEpisode;
-
-  const WatchPage({
-    Key? key,
-    required this.sources,
-    this.initialIndex,
-    required this.title,
-    required this.onPop,
-    required this.previousEpisodeEnabled,
-    required this.previousEpisode,
-    required this.nextEpisodeEnabled,
-    required this.nextEpisode,
-  }) : super(key: key);
 
   @override
   WatchPageState createState() => WatchPageState();
@@ -59,20 +59,21 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   double speed = player_model.Player.defaultSpeed;
   int seekDuration = AppState.settings.current.seekDuration;
   int introDuration = AppState.settings.current.introDuration;
-  final animationDuration = const Duration(milliseconds: 300);
+  final Duration animationDuration = const Duration(milliseconds: 300);
 
-  final isPlaying = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
   late AnimationController playPauseController;
   late AnimationController overlayController;
 
-  late final duration = ValueNotifier<VideoDuration>(
+  late final ValueNotifier<VideoDuration> duration =
+      ValueNotifier<VideoDuration>(
     VideoDuration(Duration.zero, Duration.zero),
   );
-  late final volume = ValueNotifier<int>(
+  late final ValueNotifier<int> volume = ValueNotifier<int>(
     100,
   );
 
-  final loader = const Center(
+  final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
 
@@ -80,7 +81,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero, () {
+    Future<void>.delayed(Duration.zero, () {
       showSelectSources();
     });
 
@@ -95,7 +96,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       value: showControls ? 1 : 0,
     );
 
-    overlayController.addStatusListener((status) {
+    overlayController.addStatusListener((final AnimationStatus status) {
       switch (status) {
         case AnimationStatus.forward:
           setState(() {
@@ -136,7 +137,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> setPlayer(int index) async {
+  Future<void> setPlayer(final int index) async {
     setState(() {
       currentIndex = index;
       playerChild = null;
@@ -158,7 +159,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     await player!.initialize();
   }
 
-  void _subscriber(player_model.PlayerEvents event) {
+  void _subscriber(final player_model.PlayerEvents event) {
     switch (event) {
       case player_model.PlayerEvents.load:
         player!.setVolume(volume.value);
@@ -215,32 +216,29 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     );
   }
 
-  void _updateLandscape([bool reset = false]) {
+  void _updateLandscape([final bool reset = false]) {
     SystemChrome.setPreferredOrientations(
       !reset && AppState.settings.current.fullscreenVideoPlayer
-          ? [
+          ? <DeviceOrientation>[
               DeviceOrientation.landscapeLeft,
               DeviceOrientation.landscapeRight,
             ]
-          : [],
+          : <DeviceOrientation>[],
     );
   }
 
   void showSelectSources() {
     showDialog(
       context: context,
-      builder: (context) {
-        return Dialog(
-          child: SelectSourceWidget(
-            sources: widget.sources,
-            selected:
-                currentIndex != null ? widget.sources[currentIndex!] : null,
-          ),
-        );
-      },
-    ).then((value) {
+      builder: (final BuildContext context) => Dialog(
+        child: SelectSourceWidget(
+          sources: widget.sources,
+          selected: currentIndex != null ? widget.sources[currentIndex!] : null,
+        ),
+      ),
+    ).then((final dynamic value) {
       if (value is anime_model.EpisodeSource) {
-        final index = widget.sources.indexOf(value);
+        final int index = widget.sources.indexOf(value);
         if (index >= 0) {
           setPlayer(index);
         }
@@ -257,334 +255,319 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         ),
       ),
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: utils.remToPx(0.25)),
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: [
-                    Column(
-                      children: [
-                        SettingSwitch(
-                          title: Translator.t.landscapeVideoPlayer(),
-                          icon: Icons.screen_lock_landscape,
-                          desc: Translator.t.landscapeVideoPlayerDetail(),
-                          value:
-                              AppState.settings.current.fullscreenVideoPlayer,
-                          onChanged: (val) async {
-                            AppState.settings.current.fullscreenVideoPlayer =
-                                val;
-                            await AppState.settings.current.save();
-                            _updateLandscape();
-                            setState(() {});
-                          },
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: volume,
-                          builder: (context, int volume, child) {
-                            return SettingTile(
-                              icon: Icons.volume_up,
-                              title: Translator.t.volume(),
-                              subtitle: '$volume%',
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return Dialog(
-                                          child: Row(
-                                            children: [
-                                              IconButton(
-                                                icon: const Icon(
-                                                    Icons.volume_mute),
-                                                onPressed: () {
-                                                  player?.setVolume(
-                                                    player_model
-                                                        .Player.minVolume,
-                                                  );
-                                                  volume = player_model
-                                                      .Player.minVolume;
-                                                  setState(() {});
-                                                },
-                                              ),
-                                              Expanded(
-                                                child: Wrap(
-                                                  direction: Axis.horizontal,
-                                                  children: [
-                                                    SliderTheme(
-                                                      data: SliderThemeData(
-                                                        thumbShape:
-                                                            RoundSliderThumbShape(
-                                                          enabledThumbRadius:
-                                                              utils
-                                                                  .remToPx(0.4),
-                                                        ),
-                                                        showValueIndicator:
-                                                            ShowValueIndicator
-                                                                .always,
-                                                      ),
-                                                      child: Slider(
-                                                        label: '$volume%',
-                                                        value:
-                                                            volume.toDouble(),
-                                                        min: player_model
-                                                            .Player.minVolume
-                                                            .toDouble(),
-                                                        max: player_model
-                                                            .Player.maxVolume
-                                                            .toDouble(),
-                                                        onChanged: (value) {
-                                                          volume =
-                                                              value.toInt();
-                                                          setState(() {});
-                                                        },
-                                                        onChangeEnd: (value) {
-                                                          player?.setVolume(
-                                                            value.toInt(),
-                                                          );
-                                                          setState(() {});
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon:
-                                                    const Icon(Icons.volume_up),
-                                                onPressed: () {
-                                                  player?.setVolume(
-                                                    player_model
-                                                        .Player.maxVolume,
-                                                  );
-                                                  volume = player_model
-                                                      .Player.maxVolume;
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            ],
-                                          ),
+      builder: (final BuildContext context) => StatefulBuilder(
+        builder: (
+          final BuildContext context,
+          final StateSetter setState,
+        ) =>
+            Padding(
+          padding: EdgeInsets.symmetric(vertical: utils.remToPx(0.25)),
+          child: SingleChildScrollView(
+            child: Wrap(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    SettingSwitch(
+                      title: Translator.t.landscapeVideoPlayer(),
+                      icon: Icons.screen_lock_landscape,
+                      desc: Translator.t.landscapeVideoPlayerDetail(),
+                      value: AppState.settings.current.fullscreenVideoPlayer,
+                      onChanged: (final bool val) async {
+                        AppState.settings.current.fullscreenVideoPlayer = val;
+                        await AppState.settings.current.save();
+                        _updateLandscape();
+                        setState(() {});
+                      },
+                    ),
+                    ValueListenableBuilder<int>(
+                      valueListenable: volume,
+                      builder: (
+                        final BuildContext context,
+                        int volume,
+                        final Widget? child,
+                      ) =>
+                          SettingTile(
+                        icon: Icons.volume_up,
+                        title: Translator.t.volume(),
+                        subtitle: '$volume%',
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (final BuildContext context) =>
+                                StatefulBuilder(
+                              builder: (
+                                final BuildContext context,
+                                final StateSetter setState,
+                              ) =>
+                                  Dialog(
+                                child: Row(
+                                  children: <Widget>[
+                                    IconButton(
+                                      icon: const Icon(Icons.volume_mute),
+                                      onPressed: () {
+                                        player?.setVolume(
+                                          player_model.Player.minVolume,
                                         );
+                                        volume = player_model.Player.minVolume;
+                                        setState(() {});
                                       },
-                                    );
-                                  },
-                                );
+                                    ),
+                                    Expanded(
+                                      child: Wrap(
+                                        children: <Widget>[
+                                          SliderTheme(
+                                            data: SliderThemeData(
+                                              thumbShape: RoundSliderThumbShape(
+                                                enabledThumbRadius:
+                                                    utils.remToPx(0.4),
+                                              ),
+                                              showValueIndicator:
+                                                  ShowValueIndicator.always,
+                                            ),
+                                            child: Slider(
+                                              label: '$volume%',
+                                              value: volume.toDouble(),
+                                              min: player_model.Player.minVolume
+                                                  .toDouble(),
+                                              max: player_model.Player.maxVolume
+                                                  .toDouble(),
+                                              onChanged: (final double value) {
+                                                volume = value.toInt();
+                                                setState(() {});
+                                              },
+                                              onChangeEnd:
+                                                  (final double value) {
+                                                player?.setVolume(
+                                                  value.toInt(),
+                                                );
+                                                setState(() {});
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.volume_up),
+                                      onPressed: () {
+                                        player?.setVolume(
+                                          player_model.Player.maxVolume,
+                                        );
+                                        volume = player_model.Player.maxVolume;
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SettingRadio<double>(
+                      title: Translator.t.speed(),
+                      icon: Icons.speed,
+                      value: speed,
+                      labels: <double, String>{
+                        for (final double speed
+                            in player_model.Player.allowedSpeeds)
+                          speed: '${speed}x',
+                      },
+                      onChanged: (final double val) async {
+                        await player?.setSpeed(val);
+                        setState(() {
+                          speed = val;
+                        });
+                      },
+                    ),
+                    SettingDialog(
+                      title: Translator.t.skipIntroDuration(),
+                      icon: Icons.fast_forward,
+                      subtitle: '$introDuration ${Translator.t.seconds()}',
+                      builder: (
+                        final BuildContext context,
+                        final StateSetter setState,
+                      ) =>
+                          Wrap(
+                        children: <Widget>[
+                          SliderTheme(
+                            data: SliderThemeData(
+                              thumbShape: RoundSliderThumbShape(
+                                enabledThumbRadius: utils.remToPx(0.4),
+                              ),
+                              showValueIndicator: ShowValueIndicator.always,
+                            ),
+                            child: Slider(
+                              label: '$introDuration ${Translator.t.seconds()}',
+                              value: introDuration.toDouble(),
+                              min:
+                                  player_model.Player.minIntroLength.toDouble(),
+                              max:
+                                  player_model.Player.maxIntroLength.toDouble(),
+                              onChanged: (final double value) {
+                                setState(() {
+                                  introDuration = value.toInt();
+                                });
                               },
-                            );
-                          },
-                        ),
-                        SettingRadio(
-                          title: Translator.t.speed(),
-                          icon: Icons.speed,
-                          value: speed,
-                          labels: {
-                            for (final speed
-                                in player_model.Player.allowedSpeeds)
-                              speed: '${speed}x',
-                          },
-                          onChanged: (double val) async {
-                            await player?.setSpeed(val);
-                            setState(() {
-                              speed = val;
-                            });
-                          },
-                        ),
-                        SettingDialog(
-                          title: Translator.t.skipIntroDuration(),
-                          icon: Icons.fast_forward,
-                          subtitle: '$introDuration ${Translator.t.seconds()}',
-                          builder: (context, setState) {
-                            return Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                SliderTheme(
-                                  data: SliderThemeData(
-                                    thumbShape: RoundSliderThumbShape(
-                                      enabledThumbRadius: utils.remToPx(0.4),
-                                    ),
-                                    showValueIndicator:
-                                        ShowValueIndicator.always,
-                                  ),
-                                  child: Slider(
-                                    label:
-                                        '$introDuration ${Translator.t.seconds()}',
-                                    value: introDuration.toDouble(),
-                                    min: player_model.Player.minIntroLength
-                                        .toDouble(),
-                                    max: player_model.Player.maxIntroLength
-                                        .toDouble(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        introDuration = value.toInt();
-                                      });
-                                    },
-                                    onChangeEnd: (value) async {
-                                      setState(() {
-                                        introDuration = value.toInt();
-                                      });
-                                      AppState.settings.current.introDuration =
-                                          introDuration;
-                                      await AppState.settings.current.save();
-                                      this.setState(() {});
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        SettingDialog(
-                          title: Translator.t.seekDuration(),
-                          icon: Icons.fast_forward,
-                          subtitle: '$seekDuration ${Translator.t.seconds()}',
-                          builder: (context, setState) {
-                            return Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                SliderTheme(
-                                  data: SliderThemeData(
-                                    thumbShape: RoundSliderThumbShape(
-                                      enabledThumbRadius: utils.remToPx(0.4),
-                                    ),
-                                    showValueIndicator:
-                                        ShowValueIndicator.always,
-                                  ),
-                                  child: Slider(
-                                    label:
-                                        '$seekDuration ${Translator.t.seconds()}',
-                                    value: seekDuration.toDouble(),
-                                    min: player_model.Player.minSeekLength
-                                        .toDouble(),
-                                    max: player_model.Player.maxSeekLength
-                                        .toDouble(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        seekDuration = value.toInt();
-                                      });
-                                    },
-                                    onChangeEnd: (value) async {
-                                      setState(() {
-                                        seekDuration = value.toInt();
-                                      });
-                                      AppState.settings.current.seekDuration =
-                                          seekDuration;
-                                      await AppState.settings.current.save();
-                                      this.setState(() {});
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        SettingSwitch(
-                          title: Translator.t.autoPlay(),
-                          icon: Icons.slideshow,
-                          desc: Translator.t.autoPlayDetail(),
-                          value: autoPlay,
-                          onChanged: (val) async {
-                            setState(() {
-                              autoPlay = val;
-                            });
-                            AppState.settings.current.autoPlay = val;
-                            await AppState.settings.current.save();
-                          },
-                        ),
-                        SettingSwitch(
-                          title: Translator.t.autoNext(),
-                          icon: Icons.skip_next,
-                          desc: Translator.t.autoNextDetail(),
-                          value: AppState.settings.current.autoNext,
-                          onChanged: (val) async {
-                            setState(() {
-                              autoNext = val;
-                            });
-                            AppState.settings.current.autoNext = val;
-                            await AppState.settings.current.save();
-                          },
-                        ),
-                      ],
+                              onChangeEnd: (final double value) async {
+                                setState(() {
+                                  introDuration = value.toInt();
+                                });
+                                AppState.settings.current.introDuration =
+                                    introDuration;
+                                await AppState.settings.current.save();
+                                this.setState(() {});
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SettingDialog(
+                      title: Translator.t.seekDuration(),
+                      icon: Icons.fast_forward,
+                      subtitle: '$seekDuration ${Translator.t.seconds()}',
+                      builder: (
+                        final BuildContext context,
+                        final StateSetter setState,
+                      ) =>
+                          Wrap(
+                        children: <Widget>[
+                          SliderTheme(
+                            data: SliderThemeData(
+                              thumbShape: RoundSliderThumbShape(
+                                enabledThumbRadius: utils.remToPx(0.4),
+                              ),
+                              showValueIndicator: ShowValueIndicator.always,
+                            ),
+                            child: Slider(
+                              label: '$seekDuration ${Translator.t.seconds()}',
+                              value: seekDuration.toDouble(),
+                              min: player_model.Player.minSeekLength.toDouble(),
+                              max: player_model.Player.maxSeekLength.toDouble(),
+                              onChanged: (final double value) {
+                                setState(() {
+                                  seekDuration = value.toInt();
+                                });
+                              },
+                              onChangeEnd: (final double value) async {
+                                setState(() {
+                                  seekDuration = value.toInt();
+                                });
+                                AppState.settings.current.seekDuration =
+                                    seekDuration;
+                                await AppState.settings.current.save();
+                                this.setState(() {});
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SettingSwitch(
+                      title: Translator.t.autoPlay(),
+                      icon: Icons.slideshow,
+                      desc: Translator.t.autoPlayDetail(),
+                      value: autoPlay,
+                      onChanged: (final bool val) async {
+                        setState(() {
+                          autoPlay = val;
+                        });
+                        AppState.settings.current.autoPlay = val;
+                        await AppState.settings.current.save();
+                      },
+                    ),
+                    SettingSwitch(
+                      title: Translator.t.autoNext(),
+                      icon: Icons.skip_next,
+                      desc: Translator.t.autoNextDetail(),
+                      value: AppState.settings.current.autoNext,
+                      onChanged: (final bool val) async {
+                        setState(() {
+                          autoNext = val;
+                        });
+                        AppState.settings.current.autoNext = val;
+                        await AppState.settings.current.save();
+                      },
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        );
-      },
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Widget actionButton({
-    required IconData icon,
-    required String label,
-    required void Function() onPressed,
-    required bool enabled,
-  }) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: utils.remToPx(0.2),
+    required final IconData icon,
+    required final String label,
+    required final void Function() onPressed,
+    required final bool enabled,
+  }) =>
+      OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          padding: EdgeInsets.symmetric(
+            horizontal: utils.remToPx(0.2),
+          ),
+          side: BorderSide(
+            color:
+                Theme.of(context).textTheme.headline6!.color!.withOpacity(0.3),
+          ),
+          backgroundColor: Colors.black.withOpacity(0.5),
         ),
-        side: BorderSide(
-          width: 1,
-          color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.3),
-        ),
-        backgroundColor: Colors.black.withOpacity(0.5),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: utils.remToPx(0.4),
-          vertical: utils.remToPx(0.2),
-        ),
-        child: Opacity(
-          opacity: enabled ? 1 : 0.5,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: Theme.of(context).textTheme.subtitle1?.fontSize,
-                color: Theme.of(context).textTheme.headline6?.color,
-              ),
-              SizedBox(
-                width: utils.remToPx(0.2),
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.subtitle1?.fontSize,
+        onPressed: enabled ? onPressed : null,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: utils.remToPx(0.4),
+            vertical: utils.remToPx(0.2),
+          ),
+          child: Opacity(
+            opacity: enabled ? 1 : 0.5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  icon,
+                  size: Theme.of(context).textTheme.subtitle1?.fontSize,
                   color: Theme.of(context).textTheme.headline6?.color,
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: utils.remToPx(0.2),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.subtitle1?.fontSize,
+                    color: Theme.of(context).textTheme.headline6?.color,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      onPressed: enabled ? onPressed : null,
-    );
-  }
+      );
 
   Widget getLayoutedButton(
-    List<Widget> children,
-    BoxConstraints constraints,
-    int maxPerWhenSm,
+    final List<Widget> children,
+    final BoxConstraints constraints,
+    final int maxPerWhenSm,
   ) {
-    final spacer = SizedBox(
+    final Widget spacer = SizedBox(
       width: utils.remToPx(0.4),
     );
 
     if (constraints.maxWidth < utils.ResponsiveSizes.sm) {
-      final rows = utils.Fns.chunkList(children, maxPerWhenSm);
+      final List<List<Widget>> rows =
+          utils.Fns.chunkList(children, maxPerWhenSm);
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: rows
             .map(
-              (x) => Flexible(
+              (final List<Widget> x) => Flexible(
                 child: Row(
                   children: utils.Fns.insertBetweenList(x, spacer),
                 ),
@@ -600,8 +583,8 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final lock = IconButton(
+  Widget build(final BuildContext context) {
+    final Widget lock = IconButton(
       onPressed: () {
         setState(() {
           locked = !locked;
@@ -617,385 +600,371 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         child: Stack(
-          children: [
-            playerChild != null ? playerChild! : loader,
+          children: <Widget>[
+            if (playerChild != null) playerChild! else loader,
             FadeTransition(
               opacity: overlayController,
               child: showControls
                   ? LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Container(
-                          color: !locked
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: utils.remToPx(0.7),
-                            ),
-                            child: Stack(
-                              children: locked
-                                  ? [
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: utils.remToPx(0.5),
-                                          ),
-                                          child: lock,
+                      builder: (
+                        final BuildContext context,
+                        final BoxConstraints constraints,
+                      ) =>
+                          Container(
+                        color: !locked
+                            ? Colors.black.withOpacity(0.3)
+                            : Colors.transparent,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: utils.remToPx(0.7),
+                          ),
+                          child: Stack(
+                            children: locked
+                                ? <Widget>[
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          top: utils.remToPx(0.5),
                                         ),
+                                        child: lock,
                                       ),
-                                    ]
-                                  : [
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: utils.remToPx(0.5),
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              IconButton(
-                                                icon: const Icon(
-                                                    Icons.arrow_back),
-                                                onPressed: widget.onPop,
-                                                padding: EdgeInsets.only(
-                                                  right: utils.remToPx(1),
-                                                  top: utils.remToPx(0.5),
-                                                  bottom: utils.remToPx(0.5),
-                                                ),
-                                              ),
-                                              widget.title,
-                                              lock,
-                                              IconButton(
-                                                onPressed: () {
-                                                  showOptions();
-                                                },
-                                                icon:
-                                                    const Icon(Icons.more_vert),
-                                              ),
-                                            ],
-                                          ),
+                                    ),
+                                  ]
+                                : <Widget>[
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          top: utils.remToPx(0.5),
                                         ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.center,
-                                        child: playerChild != null
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    shape: const CircleBorder(),
-                                                    clipBehavior: Clip.hardEdge,
-                                                    child: IconButton(
-                                                      iconSize:
-                                                          utils.remToPx(2),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final amt = duration
-                                                                  .value
-                                                                  .current -
-                                                              Duration(
-                                                                seconds:
-                                                                    seekDuration,
-                                                              );
-                                                          player!.seek(
-                                                            amt <= Duration.zero
-                                                                ? Duration.zero
-                                                                : amt,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.fast_rewind),
-                                                    ),
-                                                  ),
-                                                  ValueListenableBuilder(
-                                                    valueListenable: isPlaying,
-                                                    builder: (context,
-                                                        bool isPlaying, child) {
-                                                      isPlaying
-                                                          ? playPauseController
-                                                              .forward()
-                                                          : playPauseController
-                                                              .reverse();
-                                                      return Material(
-                                                        type: MaterialType
-                                                            .transparency,
-                                                        shape:
-                                                            const CircleBorder(),
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        child: IconButton(
-                                                          iconSize:
-                                                              utils.remToPx(3),
-                                                          onPressed: () {
-                                                            if (player !=
-                                                                    null &&
-                                                                player!.ready) {
-                                                              player!.isPlaying
-                                                                  ? player!
-                                                                      .pause()
-                                                                  : player!
-                                                                      .play();
-                                                            }
-                                                          },
-                                                          icon: AnimatedIcon(
-                                                            icon: AnimatedIcons
-                                                                .play_pause,
-                                                            progress:
-                                                                playPauseController,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                  Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    shape: const CircleBorder(),
-                                                    clipBehavior: Clip.hardEdge,
-                                                    child: IconButton(
-                                                      iconSize:
-                                                          utils.remToPx(2),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final amt = duration
-                                                                  .value
-                                                                  .current +
-                                                              Duration(
-                                                                seconds:
-                                                                    seekDuration,
-                                                              );
-                                                          player!.seek(
-                                                            amt <
-                                                                    duration
-                                                                        .value
-                                                                        .total
-                                                                ? amt
-                                                                : duration.value
-                                                                    .total,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.fast_forward),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Flexible(
-                                              child: getLayoutedButton(
-                                                [
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.skip_previous,
-                                                      label: Translator.t
-                                                          .previous(),
-                                                      onPressed: widget
-                                                          .previousEpisode,
-                                                      enabled: widget
-                                                          .previousEpisodeEnabled,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.fast_forward,
-                                                      label: Translator.t
-                                                          .skipIntro(),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final amt = duration
-                                                                  .value
-                                                                  .current +
-                                                              Duration(
-                                                                seconds:
-                                                                    introDuration,
-                                                              );
-                                                          player!.seek(
-                                                            amt <
-                                                                    duration
-                                                                        .value
-                                                                        .total
-                                                                ? amt
-                                                                : duration.value
-                                                                    .total,
-                                                          );
-                                                        }
-                                                      },
-                                                      enabled:
-                                                          playerChild != null,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.playlist_play,
-                                                      label: Translator.t
-                                                          .sources(),
-                                                      onPressed:
-                                                          showSelectSources,
-                                                      enabled: true,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.skip_next,
-                                                      label:
-                                                          Translator.t.next(),
-                                                      onPressed:
-                                                          widget.nextEpisode,
-                                                      enabled: widget
-                                                          .nextEpisodeEnabled,
-                                                    ),
-                                                  ),
-                                                ],
-                                                constraints,
-                                                2,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            IconButton(
+                                              icon:
+                                                  const Icon(Icons.arrow_back),
+                                              onPressed: widget.onPop,
+                                              padding: EdgeInsets.only(
+                                                right: utils.remToPx(1),
+                                                top: utils.remToPx(0.5),
+                                                bottom: utils.remToPx(0.5),
                                               ),
                                             ),
-                                            playerChild != null
-                                                ? ValueListenableBuilder(
-                                                    valueListenable: duration,
-                                                    builder: (
-                                                      context,
-                                                      VideoDuration duration,
-                                                      child,
-                                                    ) {
-                                                      return Row(
-                                                        children: [
-                                                          Container(
-                                                            constraints:
-                                                                BoxConstraints(
-                                                              minWidth: utils
-                                                                  .remToPx(1.8),
-                                                            ),
-                                                            child: Text(
-                                                              utils.Fns
-                                                                  .prettyShortDuration(
-                                                                duration
-                                                                    .current,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: SliderTheme(
-                                                              data:
-                                                                  SliderThemeData(
-                                                                thumbShape:
-                                                                    RoundSliderThumbShape(
-                                                                  enabledThumbRadius:
-                                                                      utils.remToPx(
-                                                                          0.3),
-                                                                ),
-                                                                showValueIndicator:
-                                                                    ShowValueIndicator
-                                                                        .always,
-                                                              ),
-                                                              child: Slider(
-                                                                label: utils.Fns
-                                                                    .prettyShortDuration(
-                                                                  duration
-                                                                      .current,
-                                                                ),
-                                                                value: duration
-                                                                    .current
-                                                                    .inSeconds
-                                                                    .toDouble(),
-                                                                min: 0,
-                                                                max: duration
-                                                                    .total
-                                                                    .inSeconds
-                                                                    .toDouble(),
-                                                                onChanged:
-                                                                    (value) {
-                                                                  this
-                                                                          .duration
-                                                                          .value =
-                                                                      VideoDuration(
-                                                                    Duration(
-                                                                      seconds: value
-                                                                          .toInt(),
-                                                                    ),
-                                                                    duration
-                                                                        .total,
-                                                                  );
-                                                                },
-                                                                onChangeStart:
-                                                                    (value) {
-                                                                  if (player
-                                                                          ?.isPlaying ??
-                                                                      false) {
-                                                                    player!
-                                                                        .pause();
-                                                                    wasPausedBySlider =
-                                                                        true;
-                                                                  }
-                                                                },
-                                                                onChangeEnd:
-                                                                    (value) async {
-                                                                  if (player
-                                                                          ?.ready ??
-                                                                      false) {
-                                                                    await player!
-                                                                        .seek(
-                                                                      Duration(
-                                                                        seconds:
-                                                                            value.toInt(),
-                                                                      ),
-                                                                    );
-                                                                  }
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          ConstrainedBox(
-                                                            constraints:
-                                                                BoxConstraints(
-                                                              minWidth: utils
-                                                                  .remToPx(1.8),
-                                                            ),
-                                                            child: Text(
-                                                              utils.Fns
-                                                                  .prettyShortDuration(
-                                                                duration.total,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  )
-                                                : const SizedBox.shrink(),
+                                            widget.title,
+                                            lock,
+                                            IconButton(
+                                              onPressed: () {
+                                                showOptions();
+                                              },
+                                              icon: const Icon(Icons.more_vert),
+                                            ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                            ),
+                                    ),
+                                    Align(
+                                      child: playerChild != null
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
+                                                Material(
+                                                  type:
+                                                      MaterialType.transparency,
+                                                  shape: const CircleBorder(),
+                                                  clipBehavior: Clip.hardEdge,
+                                                  child: IconButton(
+                                                    iconSize: utils.remToPx(2),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current -
+                                                                Duration(
+                                                                  seconds:
+                                                                      seekDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <= Duration.zero
+                                                              ? Duration.zero
+                                                              : amt,
+                                                        );
+                                                      }
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.fast_rewind,
+                                                    ),
+                                                  ),
+                                                ),
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable: isPlaying,
+                                                  builder: (
+                                                    final BuildContext context,
+                                                    final bool isPlaying,
+                                                    final Widget? child,
+                                                  ) {
+                                                    isPlaying
+                                                        ? playPauseController
+                                                            .forward()
+                                                        : playPauseController
+                                                            .reverse();
+                                                    return Material(
+                                                      type: MaterialType
+                                                          .transparency,
+                                                      shape:
+                                                          const CircleBorder(),
+                                                      clipBehavior:
+                                                          Clip.hardEdge,
+                                                      child: IconButton(
+                                                        iconSize:
+                                                            utils.remToPx(3),
+                                                        onPressed: () {
+                                                          if (player != null &&
+                                                              player!.ready) {
+                                                            player!.isPlaying
+                                                                ? player!
+                                                                    .pause()
+                                                                : player!
+                                                                    .play();
+                                                          }
+                                                        },
+                                                        icon: AnimatedIcon(
+                                                          icon: AnimatedIcons
+                                                              .play_pause,
+                                                          progress:
+                                                              playPauseController,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                                Material(
+                                                  type:
+                                                      MaterialType.transparency,
+                                                  shape: const CircleBorder(),
+                                                  clipBehavior: Clip.hardEdge,
+                                                  child: IconButton(
+                                                    iconSize: utils.remToPx(2),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current +
+                                                                Duration(
+                                                                  seconds:
+                                                                      seekDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <
+                                                                  duration.value
+                                                                      .total
+                                                              ? amt
+                                                              : duration
+                                                                  .value.total,
+                                                        );
+                                                      }
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.fast_forward,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: <Widget>[
+                                          Flexible(
+                                            child: getLayoutedButton(
+                                              <Widget>[
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.skip_previous,
+                                                    label:
+                                                        Translator.t.previous(),
+                                                    onPressed:
+                                                        widget.previousEpisode,
+                                                    enabled: widget
+                                                        .previousEpisodeEnabled,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.fast_forward,
+                                                    label: Translator.t
+                                                        .skipIntro(),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current +
+                                                                Duration(
+                                                                  seconds:
+                                                                      introDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <
+                                                                  duration.value
+                                                                      .total
+                                                              ? amt
+                                                              : duration
+                                                                  .value.total,
+                                                        );
+                                                      }
+                                                    },
+                                                    enabled:
+                                                        playerChild != null,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.playlist_play,
+                                                    label:
+                                                        Translator.t.sources(),
+                                                    onPressed:
+                                                        showSelectSources,
+                                                    enabled: true,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.skip_next,
+                                                    label: Translator.t.next(),
+                                                    onPressed:
+                                                        widget.nextEpisode,
+                                                    enabled: widget
+                                                        .nextEpisodeEnabled,
+                                                  ),
+                                                ),
+                                              ],
+                                              constraints,
+                                              2,
+                                            ),
+                                          ),
+                                          if (playerChild != null)
+                                            ValueListenableBuilder<
+                                                VideoDuration>(
+                                              valueListenable: duration,
+                                              builder: (
+                                                final BuildContext context,
+                                                final VideoDuration duration,
+                                                final Widget? child,
+                                              ) =>
+                                                  Row(
+                                                children: <Widget>[
+                                                  Container(
+                                                    constraints: BoxConstraints(
+                                                      minWidth:
+                                                          utils.remToPx(1.8),
+                                                    ),
+                                                    child: Text(
+                                                      utils.Fns
+                                                          .prettyShortDuration(
+                                                        duration.current,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: SliderTheme(
+                                                      data: SliderThemeData(
+                                                        thumbShape:
+                                                            RoundSliderThumbShape(
+                                                          enabledThumbRadius:
+                                                              utils
+                                                                  .remToPx(0.3),
+                                                        ),
+                                                        showValueIndicator:
+                                                            ShowValueIndicator
+                                                                .always,
+                                                      ),
+                                                      child: Slider(
+                                                        label: utils.Fns
+                                                            .prettyShortDuration(
+                                                          duration.current,
+                                                        ),
+                                                        value: duration
+                                                            .current.inSeconds
+                                                            .toDouble(),
+                                                        max: duration
+                                                            .total.inSeconds
+                                                            .toDouble(),
+                                                        onChanged: (
+                                                          final double value,
+                                                        ) {
+                                                          this.duration.value =
+                                                              VideoDuration(
+                                                            Duration(
+                                                              seconds:
+                                                                  value.toInt(),
+                                                            ),
+                                                            duration.total,
+                                                          );
+                                                        },
+                                                        onChangeStart: (
+                                                          final double value,
+                                                        ) {
+                                                          if (player
+                                                                  ?.isPlaying ??
+                                                              false) {
+                                                            player!.pause();
+                                                            wasPausedBySlider =
+                                                                true;
+                                                          }
+                                                        },
+                                                        onChangeEnd: (
+                                                          final double value,
+                                                        ) async {
+                                                          if (player?.ready ??
+                                                              false) {
+                                                            await player!.seek(
+                                                              Duration(
+                                                                seconds: value
+                                                                    .toInt(),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  ConstrainedBox(
+                                                    constraints: BoxConstraints(
+                                                      minWidth:
+                                                          utils.remToPx(1.8),
+                                                    ),
+                                                    child: Text(
+                                                      utils.Fns
+                                                          .prettyShortDuration(
+                                                        duration.total,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          else
+                                            const SizedBox.shrink(),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     )
                   : const SizedBox.shrink(),
             ),

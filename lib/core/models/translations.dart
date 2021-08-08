@@ -11,7 +11,7 @@ abstract class TranslationSentences {
   String noValidSources();
   String prohibitedPage();
   String selectPlugin();
-  String searchInPlugin(String plugin);
+  String searchInPlugin(final String plugin);
   String enterToSearch();
   String noResultsFound();
   String failedToGetResults();

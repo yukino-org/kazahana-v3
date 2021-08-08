@@ -1,53 +1,54 @@
-import 'package:http/http.dart' as http;
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
+import 'package:http/http.dart' as http;
+import './model.dart';
 import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
-import './model.dart';
 
-const _defaultLocale = LanguageCodes.en;
+const LanguageCodes _defaultLocale = LanguageCodes.en;
 
 class AnimePradiseOrg implements AnimeExtractor {
   @override
-  final name = 'AnimeParadise.org';
+  final String name = 'AnimeParadise.org';
 
   @override
-  final defaultLocale = _defaultLocale;
+  final LanguageCodes defaultLocale = _defaultLocale;
 
   @override
-  final baseURL = 'https://animeparadise.org';
+  final String baseURL = 'https://animeparadise.org';
 
-  late final Map<String, String> defaultHeaders = {
+  late final Map<String, String> defaultHeaders = <String, String>{
     'User-Agent': utils.Http.userAgent,
     'Referer': baseURL,
   };
 
-  String searchURL(String terms) => '$baseURL/search.php?query=$terms';
+  String searchURL(final String terms) => '$baseURL/search.php?query=$terms';
 
   @override
-  search(
-    terms, {
-    required locale,
+  Future<List<SearchInfo>> search(
+    final String terms, {
+    required final LanguageCodes locale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
+      final dom.Document document = html.parse(res.body);
       return document
           .querySelectorAll('.media')
           .map(
-            (x) {
-              final link = x.querySelector('a');
-              final title = link?.text.trim();
-              final url = link?.attributes['href']?.trim();
-              final thumbnail =
+            (final dom.Element x) {
+              final dom.Element? link = x.querySelector('a');
+              final String? title = link?.text.trim();
+              final String? url = link?.attributes['href']?.trim();
+              final String? thumbnail =
                   x.querySelector('img')?.attributes['src']?.trim();
-              final tags = x
+              final List<String> tags = x
                   .querySelectorAll('.tag')
-                  .map((x) => '(${x.text.trim()})')
+                  .map((final dom.Element x) => '(${x.text.trim()})')
                   .toList();
 
               if (title != null && url != null) {
@@ -68,25 +69,25 @@ class AnimePradiseOrg implements AnimeExtractor {
   }
 
   @override
-  getInfo(
-    url, {
-    locale = _defaultLocale,
+  Future<AnimeInfo> getInfo(
+    final String url, {
+    final LanguageCodes locale = _defaultLocale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final document = html.parse(res.body);
-      final episodes = document
+      final dom.Document document = html.parse(res.body);
+      final List<EpisodeInfo> episodes = document
           .querySelectorAll('.container .columns a.box')
           .map(
-            (x) {
-              final episode = x.querySelector('.title')?.text.trim();
-              final url = x.attributes['href']?.trim();
+            (final dom.Element x) {
+              final String? episode = x.querySelector('.title')?.text.trim();
+              final String? url = x.attributes['href']?.trim();
               if (episode != null && url != null) {
                 return EpisodeInfo(
                   episode: episode,
@@ -99,10 +100,11 @@ class AnimePradiseOrg implements AnimeExtractor {
           .whereType<EpisodeInfo>()
           .toList();
 
-      final tags = document
+      final List<String> tags = document
           .querySelectorAll('.column > .tag')
-          .map((x) => '(${x.text.trim()})')
+          .map((final dom.Element x) => '(${x.text.trim()})')
           .toList();
+
       return AnimeInfo(
         title:
             '${document.querySelector('.column strong')?.text.trim()} ${tags.join(' ')}'
@@ -114,7 +116,7 @@ class AnimePradiseOrg implements AnimeExtractor {
             ?.trim(),
         episodes: episodes,
         locale: locale,
-        availableLocales: [
+        availableLocales: <LanguageCodes>[
           _defaultLocale,
         ],
       );
@@ -124,20 +126,21 @@ class AnimePradiseOrg implements AnimeExtractor {
   }
 
   @override
-  getSources(episode) async {
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
+
+      final dom.Document document = html.parse(res.body);
       return document
           .querySelectorAll('video source')
           .map(
-            (x) {
-              final src = x.attributes['src']?.trim();
+            (final dom.Element x) {
+              final String? src = x.attributes['src']?.trim();
               if (src != null) {
                 return EpisodeSource(
                   url: src,

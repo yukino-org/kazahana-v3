@@ -1,29 +1,35 @@
 import 'dart:io' show Platform;
+import './translations/en.dart' as en;
 import '../../core/models/languages.dart';
 import '../../core/models/translations.dart';
-import './translations/en.dart' as en;
 
 abstract class Translator {
-  static final List<TranslationSentences> _availableTranslations = [
+  static final List<TranslationSentences> _availableTranslations =
+      <TranslationSentences>[
     en.Sentences(),
   ];
 
-  static Map<String, TranslationSentences> translations = {
-    for (final lang in _availableTranslations) lang.code.code: lang,
+  static Map<String, TranslationSentences> translations = <String, TranslationSentences>{
+    for (final TranslationSentences lang in _availableTranslations)
+      lang.code.code: lang,
   };
 
   static late TranslationSentences t;
 
   static void setLanguage(final String language) {
-    final lang = translations[language];
-    if (lang == null) throw ('Unknown language: $language');
+    final TranslationSentences? lang = translations[language];
+    if (lang == null) {
+      throw ArgumentError('Unknown language: $language');
+    }
+
     t = lang;
   }
 
-  static bool isSupportedLocale(String locale) => translations[locale] != null;
+  static bool isSupportedLocale(final String locale) =>
+      translations[locale] != null;
 
   static String getSupportedLocale() {
-    final sysLang = Platform.localeName.split('_')[0];
+    final String sysLang = Platform.localeName.split('_')[0];
     return isSupportedLocale(sysLang) ? sysLang : LanguageCodes.en.code;
   }
 }

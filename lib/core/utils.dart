@@ -6,7 +6,7 @@ import 'package:encrypt/encrypt.dart' as crypto;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-double remToPx(double rem) => rem * 20;
+double remToPx(final double rem) => rem * 20;
 
 enum LoadState { waiting, resolving, resolved, failed }
 
@@ -18,7 +18,7 @@ abstract class ResponsiveSizes {
 }
 
 abstract class Palette {
-  static const indigo = MaterialColor(0xFF6366F1, {
+  static const MaterialColor indigo = MaterialColor(0xFF6366F1, <int, Color>{
     50: Color(0xFFEEF2FF),
     100: Color(0xFFE0E7FF),
     200: Color(0xFFC7D2FE),
@@ -31,7 +31,7 @@ abstract class Palette {
     900: Color(0xFF312E81)
   });
 
-  static const gray = MaterialColor(0xFF6366F1, {
+  static const MaterialColor gray = MaterialColor(0xFF6366F1, <int, Color>{
     50: Color(0xFFFAFAFA),
     100: Color(0xFFF4F4F5),
     200: Color(0xFFE4E4E7),
@@ -44,7 +44,7 @@ abstract class Palette {
     900: Color(0xFF18181B)
   });
 
-  static final lightTheme = ThemeData(
+  static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: Palette.indigo[500],
     primarySwatch: Palette.indigo,
@@ -52,14 +52,14 @@ abstract class Palette {
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 
-  static final darkTheme = ThemeData(
+  static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primaryColor: Palette.indigo[500],
     primarySwatch: Palette.indigo,
     backgroundColor: Palette.gray[800],
     scaffoldBackgroundColor: Palette.gray[900],
     cardColor: Palette.gray[800],
-    dialogBackgroundColor: Palette.gray[800]!,
+    dialogBackgroundColor: Palette.gray[800],
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       foregroundColor: Colors.white,
       backgroundColor: Palette.indigo[500],
@@ -75,22 +75,25 @@ abstract class Palette {
 }
 
 abstract class Crypto {
-  static String decryptCryptoJsAES(String salted, String decrypter,
-      [int length = 48]) {
-    final encrypted = base64.decode(salted);
+  static String decryptCryptoJsAES(
+    final String salted,
+    final String decrypter, [
+    final int length = 48,
+  ]) {
+    final Uint8List encrypted = base64.decode(salted);
 
-    final salt = encrypted.sublist(8, 16);
+    final Uint8List salt = encrypted.sublist(8, 16);
     final Uint8List data = Uint8List.fromList(decrypter.codeUnits + salt);
     List<int> keyIv = md5.convert(data).bytes;
-    BytesBuilder builtKeyIv = BytesBuilder()..add(keyIv);
+    final BytesBuilder builtKeyIv = BytesBuilder()..add(keyIv);
 
     while (builtKeyIv.length < length) {
       keyIv = md5.convert(keyIv + data).bytes;
       builtKeyIv.add(keyIv);
     }
 
-    final requiredKeyIv = builtKeyIv.toBytes().sublist(0, length);
-    final algorithm = crypto.Encrypter(
+    final Uint8List requiredKeyIv = builtKeyIv.toBytes().sublist(0, length);
+    final crypto.Encrypter algorithm = crypto.Encrypter(
       crypto.AES(
         crypto.Key.fromBase64(
           base64.encode(requiredKeyIv.sublist(0, 32)),
@@ -107,42 +110,44 @@ abstract class Crypto {
 }
 
 abstract class Http {
-  static const userAgent =
+  static const String userAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
-  static const timeout = Duration(seconds: 10);
-  static const extendedTimeout = Duration(seconds: 20);
+  static const Duration timeout = Duration(seconds: 10);
+  static const Duration extendedTimeout = Duration(seconds: 20);
 }
 
 abstract class Fns {
-  static T random<T>(List<T> list) {
-    return list[Random().nextInt(list.length)];
-  }
+  static T random<T>(final List<T> list) => list[Random().nextInt(list.length)];
 
-  static bool isDarkContext(BuildContext context) =>
+  static bool isDarkContext(final BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
 
-  static String prettyShortDuration(Duration duration) {
-    List<String> prettied = [];
-    final hours = duration.inHours.remainder(24);
+  static String prettyShortDuration(final Duration duration) {
+    final List<String> prettied = <String>[];
+    final int hours = duration.inHours.remainder(24);
     if (hours != 0) prettied.add(hours.toString().padLeft(2, '0'));
     prettied.add(duration.inMinutes.remainder(60).toString().padLeft(2, '0'));
     prettied.add(duration.inSeconds.remainder(60).toString().padLeft(2, '0'));
     return prettied.join(':');
   }
 
-  static String domainFromURL(String url) =>
+  static String domainFromURL(final String url) =>
       RegExp(r':\/\/([^\/]+)').firstMatch(url)?[1] ?? url.substring(0, 10);
 
-  static List<List<T>> chunkList<T>(List<T> elements, int count, [T? filler]) {
-    final List<List<T>> chunked = [];
-    final size = elements.length;
-    for (var i = 0; i < size; i += count) {
-      final end = i + count;
-      final extra = end > size ? end - size : 0;
-      final chunk = elements.sublist(i, end - extra);
+  static List<List<T>> chunkList<T>(
+    final List<T> elements,
+    final int count, [
+    final T? filler,
+  ]) {
+    final List<List<T>> chunked = <List<T>>[];
+    final int size = elements.length;
+    for (int i = 0; i < size; i += count) {
+      final int end = i + count;
+      final int extra = end > size ? end - size : 0;
+      final List<T> chunk = elements.sublist(i, end - extra);
       if (filler != null) {
-        for (var i = 0; i < extra; i++) {
+        for (int i = 0; i < extra; i++) {
           chunk.add(filler);
         }
       }
@@ -151,10 +156,10 @@ abstract class Fns {
     return chunked;
   }
 
-  static List<T> insertBetweenList<T>(List<T> elements, T insert) {
-    final List<T> inserted = [];
-    final size = elements.length;
-    for (var i = 0; i < size; i++) {
+  static List<T> insertBetweenList<T>(final List<T> elements, final T insert) {
+    final List<T> inserted = <T>[];
+    final int size = elements.length;
+    for (int i = 0; i < size; i++) {
       if (i != 0 && i < size) {
         inserted.add(insert);
       }
@@ -163,24 +168,25 @@ abstract class Fns {
     return inserted;
   }
 
-  static String ensureHTTPS(String url) =>
+  static String ensureHTTPS(final String url) =>
       url.startsWith('http:') ? url.replaceFirst('http:', 'https:') : url;
 
-  static String ensureProtocol(String url, [bool https = true]) =>
+  static String ensureProtocol(final String url, {final bool https = true}) =>
       !url.startsWith('http')
           ? https
               ? 'https:$url'
               : 'http:$url'
           : url;
 
-  static tryEncodeURL(String url) {
+  static String tryEncodeURL(final String url) {
     if (url == Uri.decodeFull(url)) return Uri.encodeFull(url);
     return url;
   }
 }
 
 abstract class Assets {
-  static String placeholderImage(bool dark) => dark
+  // ignore: avoid_positional_boolean_parameters
+  static String placeholderImage(final bool dark) => dark
       ? 'assets/images/dark-placeholder-image.png'
       : 'assets/images/light-placeholder-image.png';
 }

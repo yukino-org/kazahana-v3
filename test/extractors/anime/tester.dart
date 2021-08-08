@@ -3,24 +3,26 @@ import 'package:test/test.dart';
 import 'package:yukino_app/core/extractor/animes/model.dart';
 import 'package:yukino_app/core/models/languages.dart';
 
-void search(AnimeExtractor client, String terms) {
+void search(final AnimeExtractor client, final String terms) {
   test('Search', () async {
-    final res = await client.search(
+    final List<SearchInfo> res = await client.search(
       terms,
       locale: LanguageCodes.en,
     );
 
     // ignore: avoid_print
-    print(const JsonEncoder.withIndent('  ')
-        .convert(res.map((x) => x.toJson()).toList()));
+    print(
+      const JsonEncoder.withIndent('  ')
+          .convert(res.map((final SearchInfo x) => x.toJson()).toList()),
+    );
 
     expect(res.isEmpty, false);
   });
 }
 
-void getInfo(AnimeExtractor client, String url) {
+void getInfo(final AnimeExtractor client, final String url) {
   test('Information', () async {
-    final res = await client.getInfo(
+    final AnimeInfo res = await client.getInfo(
       url,
       locale: LanguageCodes.en,
     );
@@ -32,14 +34,14 @@ void getInfo(AnimeExtractor client, String url) {
   });
 }
 
-void getSources(AnimeExtractor client, EpisodeInfo episode) {
+void getSources(final AnimeExtractor client, final EpisodeInfo episode) {
   test('Sources', () async {
-    final res = await client.getSources(episode);
+    final List<EpisodeSource> res = await client.getSources(episode);
 
     // ignore: avoid_print
     print(
       const JsonEncoder.withIndent('  ')
-          .convert(res.map((x) => x.toJson()).toList()),
+          .convert(res.map((final EpisodeSource x) => x.toJson()).toList()),
     );
 
     expect(res.isEmpty, false);

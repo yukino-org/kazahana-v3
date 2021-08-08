@@ -3,15 +3,15 @@ import 'package:hive_flutter/hive_flutter.dart';
 import './schemas/settings/settings.dart' as settings_schema;
 
 abstract class DataStoreBoxNames {
-  static const main = 'main_box';
+  static const String main = 'main_box';
 }
 
 abstract class DataStoreKeys {
-  static const settings = 'settings';
+  static const String settings = 'settings';
 }
 
 abstract class DataBox {
-  static Box get main => Hive.box(DataStoreBoxNames.main);
+  static Box<dynamic> get main => Hive.box(DataStoreBoxNames.main);
 }
 
 abstract class DataStore {
@@ -29,5 +29,5 @@ abstract class DataStore {
   static settings_schema.SettingsSchema getSettings() => DataBox.main.get(
         DataStoreKeys.settings,
         defaultValue: settings_schema.SettingsSchema(),
-      );
+      ) as settings_schema.SettingsSchema;
 }

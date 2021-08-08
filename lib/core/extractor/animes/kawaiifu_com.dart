@@ -1,55 +1,59 @@
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html;
 import 'package:collection/collection.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as html;
+import 'package:http/http.dart' as http;
+import './model.dart';
 import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
-import './model.dart';
 
-const _defaultLocale = LanguageCodes.en;
+const LanguageCodes _defaultLocale = LanguageCodes.en;
 
 class KawaiifuCom implements AnimeExtractor {
   @override
-  final name = 'Kawaiifu.com';
+  final String name = 'Kawaiifu.com';
 
   @override
-  final defaultLocale = _defaultLocale;
+  final LanguageCodes defaultLocale = _defaultLocale;
 
   @override
-  final baseURL = 'https://kawaiifu.com';
+  final String baseURL = 'https://kawaiifu.com';
 
-  late final Map<String, String> defaultHeaders = {
+  late final Map<String, String> defaultHeaders = <String, String>{
     'User-Agent': utils.Http.userAgent,
     'Referer': baseURL,
   };
 
-  String searchURL(String terms) => '$baseURL/search-movie?keyword=$terms';
+  String searchURL(final String terms) =>
+      '$baseURL/search-movie?keyword=$terms';
 
   @override
-  search(
-    terms, {
-    required locale,
+  Future<List<SearchInfo>> search(
+    final String terms, {
+    required final LanguageCodes locale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
+
+      final dom.Document document = html.parse(res.body);
       return document
           .querySelectorAll('.today-update .item')
           .map(
-            (x) {
-              final thumb = x.querySelector('.thumb');
-              final url = thumb?.attributes['href']?.trim();
-              final thumbnail =
+            (final dom.Element x) {
+              final String? title =
+                  x.querySelectorAll('.info h4 a').lastOrNull?.text.trim();
+              final String? url =
+                  x.querySelector('.thumb')?.attributes['href']?.trim();
+              final String? thumbnail =
                   x.querySelector('img')?.attributes['src']?.trim();
-              final title = x.querySelectorAll('.info h4 a').lastOrNull;
 
               if (title != null && url != null) {
                 return SearchInfo(
-                  title: title.text.trim(),
+                  title: title,
                   url: url,
                   thumbnail: thumbnail,
                   locale: locale,
@@ -65,23 +69,26 @@ class KawaiifuCom implements AnimeExtractor {
   }
 
   @override
-  getInfo(
-    url, {
-    locale = _defaultLocale,
+  Future<AnimeInfo> getInfo(
+    final String url, {
+    final LanguageCodes locale = _defaultLocale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final document = html.parse(res.body);
-      final server = document
+      final dom.Document document = html.parse(res.body);
+      final String? server = document
           .querySelectorAll('.list-server')
-          .firstWhereOrNull((x) =>
-              (x.attributes['style'] ?? '').contains('display: none') == false)
+          .firstWhereOrNull(
+            (final dom.Element x) =>
+                (x.attributes['style'] ?? '').contains('display: none') ==
+                false,
+          )
           ?.querySelector('a')
           ?.attributes['href']
           ?.trim();
@@ -90,22 +97,25 @@ class KawaiifuCom implements AnimeExtractor {
         throw AssertionError('Improper server information');
       }
 
-      final sevRes = await http
+      final http.Response sevRes = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(server)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final episodes = html
+      final List<EpisodeInfo> episodes = html
           .parse(sevRes.body)
           .querySelectorAll('.list-ep')
-          .firstWhere((x) =>
-              (x.attributes['style'] ?? '').contains('display: none') == false)
+          .firstWhere(
+            (final dom.Element x) =>
+                (x.attributes['style'] ?? '').contains('display: none') ==
+                false,
+          )
           .querySelectorAll('a')
           .map(
-            (x) {
-              final url = x.attributes['href']?.trim();
+            (final dom.Element x) {
+              final String? url = x.attributes['href']?.trim();
               if (url != null) {
                 return EpisodeInfo(
                   episode: x.text.replaceFirst('Ep', '').trim(),
@@ -129,7 +139,7 @@ class KawaiifuCom implements AnimeExtractor {
             ?.trim(),
         episodes: episodes,
         locale: locale,
-        availableLocales: [
+        availableLocales: <LanguageCodes>[
           _defaultLocale,
         ],
       );
@@ -139,19 +149,20 @@ class KawaiifuCom implements AnimeExtractor {
   }
 
   @override
-  getSources(episode) async {
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
-      List<EpisodeSource> sources = [];
 
-      final source = document.querySelector('.player source');
-      final src = source?.attributes['src'];
+      final dom.Document document = html.parse(res.body);
+      final List<EpisodeSource> sources = <EpisodeSource>[];
+
+      final dom.Element? source = document.querySelector('.player source');
+      final String? src = source?.attributes['src'];
       if (source != null && src != null) {
         sources.add(
           EpisodeSource(

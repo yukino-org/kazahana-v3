@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ToggleableSlideWidget extends StatelessWidget {
+  const ToggleableSlideWidget({
+    required final this.child,
+    required final this.controller,
+    required final this.curve,
+    required final this.visible,
+    required final this.offsetBegin,
+    required final this.offsetEnd,
+    final Key? key,
+  }) : super(key: key);
+
   final Widget child;
   final AnimationController controller;
   final Curve curve;
@@ -8,18 +18,8 @@ class ToggleableSlideWidget extends StatelessWidget {
   final Offset offsetBegin;
   final Offset offsetEnd;
 
-  const ToggleableSlideWidget({
-    Key? key,
-    required this.child,
-    required this.controller,
-    required this.curve,
-    required this.visible,
-    required this.offsetBegin,
-    required this.offsetEnd,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     visible ? controller.reverse() : controller.forward();
     return SlideTransition(
       position: Tween<Offset>(

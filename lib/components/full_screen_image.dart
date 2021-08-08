@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class FullScreenInteractiveImage extends StatefulWidget {
-  final Widget child;
-
   const FullScreenInteractiveImage({
-    Key? key,
-    required this.child,
+    required final this.child,
+    final Key? key,
   }) : super(key: key);
+
+  final Widget child;
 
   @override
   FullScreenInteractiveImageState createState() =>
@@ -15,7 +15,7 @@ class FullScreenInteractiveImage extends StatefulWidget {
 
 class FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
     with SingleTickerProviderStateMixin {
-  final duration = const Duration(milliseconds: 100);
+  final Duration duration = const Duration(milliseconds: 100);
 
   late TransformationController transformationController;
   late AnimationController animationController;
@@ -54,8 +54,8 @@ class FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
   }
 
   void animate({
-    Matrix4? begin,
-    required Matrix4 end,
+    required final Matrix4 end,
+    final Matrix4? begin,
   }) {
     tween.begin = begin ?? transformationController.value;
     tween.end = end;
@@ -65,52 +65,48 @@ class FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor:
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
-        elevation: 0,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: GestureDetector(
-              child: InteractiveViewer(
-                child: widget.child,
-                transformationController: transformationController,
-              ),
-              onDoubleTap: () {
-                if (lastDoubleTapDetail != null) {
-                  final position = lastDoubleTapDetail!.localPosition;
-
-                  if (transformationController.value.isIdentity()) {
-                    animate(
-                      end: Matrix4.identity()
-                        ..translate(
-                          -position.dx * 2,
-                          -position.dy * 2,
-                        )
-                        ..scale(3.0),
-                    );
-                  } else {
-                    animate(
-                      end: Matrix4.identity(),
-                    );
+  Widget build(final BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor:
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+          elevation: 0,
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: GestureDetector(
+                child: InteractiveViewer(
+                  transformationController: transformationController,
+                  child: widget.child,
+                ),
+                onDoubleTap: () {
+                  if (lastDoubleTapDetail != null) {
+                    final Offset position = lastDoubleTapDetail!.localPosition;
+                    if (transformationController.value.isIdentity()) {
+                      animate(
+                        end: Matrix4.identity()
+                          ..translate(
+                            -position.dx * 2,
+                            -position.dy * 2,
+                          )
+                          ..scale(3.0),
+                      );
+                    } else {
+                      animate(
+                        end: Matrix4.identity(),
+                      );
+                    }
+                    lastDoubleTapDetail = null;
                   }
-
-                  lastDoubleTapDetail = null;
-                }
-              },
-              onDoubleTapDown: (details) {
-                lastDoubleTapDetail = details;
-              },
+                },
+                onDoubleTapDown: (final TapDownDetails details) {
+                  lastDoubleTapDetail = details;
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

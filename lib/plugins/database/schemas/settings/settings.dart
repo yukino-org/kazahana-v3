@@ -3,22 +3,39 @@ import '../../../../core/models/player.dart';
 
 part 'settings.g.dart';
 
-const _useSystemPreferredTheme = true;
-const _useDarkMode = false;
-const _fullscreenVideoPlayer = false;
-const _locale = null;
-const _mangaReaderDirection = MangaDirections.leftToRight;
-const _mangaReaderSwipeDirection = MangaSwipeDirections.horizontal;
-const _mangaReaderMode = MangaMode.page;
-const _introDuration = Player.defaultIntroLength;
-const _seekDuration = Player.defaultSeekLength;
-const _volume = Player.maxVolume;
-const _autoNext = false;
-const _autoPlay = false;
-const _doubleClickSwitchChapter = true;
+const bool _useSystemPreferredTheme = true;
+const bool _useDarkMode = false;
+const bool _fullscreenVideoPlayer = false;
+const String? _locale = null;
+const MangaDirections _mangaReaderDirection = MangaDirections.leftToRight;
+const MangaSwipeDirections _mangaReaderSwipeDirection =
+    MangaSwipeDirections.horizontal;
+const MangaMode _mangaReaderMode = MangaMode.page;
+const int _introDuration = Player.defaultIntroLength;
+const int _seekDuration = Player.defaultSeekLength;
+const int _volume = Player.maxVolume;
+const bool _autoNext = false;
+const bool _autoPlay = false;
+const bool _doubleClickSwitchChapter = true;
 
 @HiveType(typeId: 1)
 class SettingsSchema extends HiveObject {
+  SettingsSchema({
+    final this.useSystemPreferredTheme = _useSystemPreferredTheme,
+    final this.useDarkMode = _useDarkMode,
+    final this.fullscreenVideoPlayer = _fullscreenVideoPlayer,
+    final this.locale = _locale,
+    final this.mangaReaderDirection = _mangaReaderDirection,
+    final this.mangaReaderSwipeDirection = _mangaReaderSwipeDirection,
+    final this.mangaReaderMode = _mangaReaderMode,
+    final this.introDuration = _introDuration,
+    final this.seekDuration = _seekDuration,
+    final this.volume = _volume,
+    final this.autoNext = _autoNext,
+    final this.autoPlay = _autoPlay,
+    final this.doubleClickSwitchChapter = _doubleClickSwitchChapter,
+  });
+
   @HiveField(1, defaultValue: _useSystemPreferredTheme)
   bool useSystemPreferredTheme;
 
@@ -57,22 +74,6 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(13, defaultValue: _doubleClickSwitchChapter)
   bool doubleClickSwitchChapter;
-
-  SettingsSchema({
-    this.useSystemPreferredTheme = _useSystemPreferredTheme,
-    this.useDarkMode = _useDarkMode,
-    this.fullscreenVideoPlayer = _fullscreenVideoPlayer,
-    this.locale = _locale,
-    this.mangaReaderDirection = _mangaReaderDirection,
-    this.mangaReaderSwipeDirection = _mangaReaderSwipeDirection,
-    this.mangaReaderMode = _mangaReaderMode,
-    this.introDuration = _introDuration,
-    this.seekDuration = _seekDuration,
-    this.volume = _volume,
-    this.autoNext = _autoNext,
-    this.autoPlay = _autoPlay,
-    this.doubleClickSwitchChapter = _doubleClickSwitchChapter,
-  });
 }
 
 @HiveType(typeId: 2)

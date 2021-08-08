@@ -1,32 +1,41 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:collection/collection.dart';
+import 'package:fuzzy/data/result.dart';
 import 'package:fuzzy/fuzzy.dart';
+import 'package:http/http.dart' as http;
+import './model.dart';
 import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
-import './model.dart';
 
-const _defaultLocale = LanguageCodes.en;
-const _twistDecryptKey = '267041df55ca2b36f2e322d05ee2c9cf';
-const _twistAccessToken = '0df14814b9e590a1f26d3071a4ed7974';
+const LanguageCodes _defaultLocale = LanguageCodes.en;
+const String _twistDecryptKey = '267041df55ca2b36f2e322d05ee2c9cf';
+const String _twistAccessToken = '0df14814b9e590a1f26d3071a4ed7974';
 
 class TwistSearchInfo extends SearchInfo {
-  final String? altTitle;
-
   TwistSearchInfo(
-    String url,
-    String title, {
-    String? thumbnail,
-    this.altTitle,
-    required LanguageCodes locale,
+    final String url,
+    final String title, {
+    required final LanguageCodes locale,
+    final String? thumbnail,
+    final this.altTitle,
   }) : super(
           url: url,
           title: title,
           thumbnail: thumbnail,
           locale: locale,
         );
+
+  final String? altTitle;
 }
 
 class TwistEpisodeSource {
+  TwistEpisodeSource({
+    required final this.episode,
+    required final this.source,
+    required final this.headers,
+    required final this.locale,
+  });
+
   final int episode;
   final String source;
   final Map<String, String> headers;
@@ -34,16 +43,9 @@ class TwistEpisodeSource {
 
   EpisodeSource? cachedSource;
 
-  TwistEpisodeSource({
-    required this.episode,
-    required this.source,
-    required this.headers,
-    required this.locale,
-  });
-
   EpisodeSource getSource() {
     if (cachedSource == null) {
-      final decrypted =
+      final String decrypted =
           utils.Crypto.decryptCryptoJsAES(source, _twistDecryptKey);
       cachedSource = EpisodeSource(
         url: 'https://cdn.twist.moe$decrypted',
@@ -59,69 +61,71 @@ class TwistEpisodeSource {
 
 class TwistMoe implements AnimeExtractor {
   @override
-  final name = 'Twist.moe';
+  final String name = 'Twist.moe';
 
   @override
-  final defaultLocale = _defaultLocale;
+  final LanguageCodes defaultLocale = _defaultLocale;
 
   @override
-  final baseURL = 'https://twist.moe';
+  final String baseURL = 'https://twist.moe';
 
-  final apiURL = 'https://api.twist.moe/api';
+  final String apiURL = 'https://api.twist.moe/api';
 
   Fuzzy<TwistSearchInfo>? searcher;
-  final Map<String, List<TwistEpisodeSource>> animeSourceCache = {};
-  late final Map<String, String> defaultHeaders = {
+  final Map<String, List<TwistEpisodeSource>> animeSourceCache =
+      <String, List<TwistEpisodeSource>>{};
+  late final Map<String, String> defaultHeaders = <String, String>{
     'User-Agent': utils.Http.userAgent,
     'Referer': baseURL,
     'x-access-token': _twistAccessToken,
   };
 
   String searchApiURL() => '$apiURL/anime';
-  String animeURL(String slug) => '$baseURL/a/$slug';
-  String animeApiURL(String slug) => '$apiURL/anime/$slug';
-  String animeSourcesURL(String slug) => '${animeApiURL(slug)}/sources';
+  String animeURL(final String slug) => '$baseURL/a/$slug';
+  String animeApiURL(final String slug) => '$apiURL/anime/$slug';
+  String animeSourcesURL(final String slug) => '${animeApiURL(slug)}/sources';
 
-  String? extractSlugFromURL(String url) =>
+  String? extractSlugFromURL(final String url) =>
       RegExp(r'https?:\/\/twist\.moe\/a\/([^\/]+)').firstMatch(url)?[1];
 
   @override
-  search(
-    terms, {
-    required locale,
+  Future<List<SearchInfo>> search(
+    final String terms, {
+    required final LanguageCodes locale,
   }) async {
     if (searcher == null) {
       try {
-        final res = await http
+        final http.Response res = await http
             .get(
               Uri.parse(utils.Fns.tryEncodeURL(searchApiURL())),
               headers: defaultHeaders,
             )
             .timeout(utils.Http.timeout);
-        final animes = json
-            .decode(res.body)
-            .cast<dynamic>()
-            .map(
-              (x) {
-                return TwistSearchInfo(
-                  animeURL(x['slug']['slug']),
-                  x['title'],
-                  locale: locale,
-                );
-              },
-            )
-            .whereType<TwistSearchInfo>()
-            .toList();
+
+        final List<TwistSearchInfo> animes =
+            (json.decode(res.body) as List<dynamic>)
+                .map(
+                  (final dynamic x) => TwistSearchInfo(
+                    animeURL(x['slug']['slug'] as String),
+                    x['title'] as String,
+                    locale: locale,
+                  ),
+                )
+                .whereType<TwistSearchInfo>()
+                .toList();
 
         searcher = Fuzzy<TwistSearchInfo>(
           animes,
-          options: FuzzyOptions(
-            shouldSort: true,
-            keys: [
-              WeightedKey(name: 'title', getter: (x) => x.title, weight: 2),
-              WeightedKey(
+          options: FuzzyOptions<TwistSearchInfo>(
+            keys: <WeightedKey<TwistSearchInfo>>[
+              WeightedKey<TwistSearchInfo>(
+                name: 'title',
+                getter: (final TwistSearchInfo x) => x.title,
+                weight: 2,
+              ),
+              WeightedKey<TwistSearchInfo>(
                 name: 'altTitle',
-                getter: (x) => x.altTitle ?? '',
+                getter: (final TwistSearchInfo x) => x.altTitle ?? '',
                 weight: 1,
               ),
             ],
@@ -132,48 +136,51 @@ class TwistMoe implements AnimeExtractor {
       }
     }
 
-    return searcher!.search(terms, 10).map((x) => x.item).toList();
+    return searcher!
+        .search(terms, 10)
+        .map((final Result<TwistSearchInfo> x) => x.item)
+        .toList();
   }
 
   @override
-  getInfo(
-    url, {
-    locale = _defaultLocale,
+  Future<AnimeInfo> getInfo(
+    final String url, {
+    final LanguageCodes locale = _defaultLocale,
   }) async {
-    final slug = extractSlugFromURL(url);
-    if (slug == null) throw ('Failed to parse slug from URL');
+    final String? slug = extractSlugFromURL(url);
+    if (slug == null) {
+      throw AssertionError('Failed to parse slug from URL');
+    }
 
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(animeApiURL(slug))),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final parsed = json.decode(res.body);
-
-      final animeURLP = animeURL(slug);
-      final episodes = (parsed['episodes'] as List<dynamic>)
+      final Map<String, dynamic> parsed =
+          json.decode(res.body) as Map<String, dynamic>;
+      final String animeURLP = animeURL(slug);
+      final List<EpisodeInfo> episodes = (parsed['episodes'] as List<dynamic>)
           .cast<Map<String, dynamic>>()
           .map(
-            (x) {
-              return EpisodeInfo(
-                episode: (x['number'] as int).toString(),
-                url: '$animeURLP/${x['number']}',
-                locale: locale,
-              );
-            },
+            (final Map<String, dynamic> x) => EpisodeInfo(
+              episode: (x['number'] as int).toString(),
+              url: '$animeURLP/${x['number']}',
+              locale: locale,
+            ),
           )
           .whereType<EpisodeInfo>()
           .toList();
 
       return AnimeInfo(
         url: animeURLP,
-        title: (parsed['title'] as String),
+        title: parsed['title'] as String,
         episodes: episodes,
         locale: locale,
-        availableLocales: [
+        availableLocales: <LanguageCodes>[
           _defaultLocale,
         ],
       );
@@ -183,17 +190,21 @@ class TwistMoe implements AnimeExtractor {
   }
 
   @override
-  getSources(episode) async {
-    final slug = extractSlugFromURL(episode.url);
-    if (slug == null) throw ('Failed to parse slug from URL');
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode) async {
+    final String? slug = extractSlugFromURL(episode.url);
+    if (slug == null) {
+      throw AssertionError('Failed to parse slug from URL');
+    }
 
-    final number =
+    final int? number =
         int.tryParse(RegExp(r'\d+$').stringMatch(episode.url) ?? '1');
-    if (number == null) throw ('Failed to parse episode from URL');
+    if (number == null) {
+      throw AssertionError('Failed to parse episode from URL');
+    }
 
     if (animeSourceCache[slug] == null) {
       try {
-        final res = await http
+        final http.Response res = await http
             .get(
               Uri.parse(utils.Fns.tryEncodeURL(animeSourcesURL(slug))),
               headers: defaultHeaders,
@@ -201,18 +212,17 @@ class TwistMoe implements AnimeExtractor {
             .timeout(utils.Http.timeout);
 
         animeSourceCache[slug] = (json.decode(res.body) as List<dynamic>)
+            .cast<Map<String, dynamic>>()
             .map(
-              (x) {
-                return TwistEpisodeSource(
-                  episode: x['number'],
-                  source: x['source'],
-                  headers: {
-                    'Referer': '$baseURL/a/$slug/${x['number']}',
-                    'User-Agent': utils.Http.userAgent
-                  },
-                  locale: episode.locale,
-                );
-              },
+              (final Map<String, dynamic> x) => TwistEpisodeSource(
+                episode: x['number'] as int,
+                source: x['source'] as String,
+                headers: <String, String>{
+                  'Referer': '$baseURL/a/$slug/${x['number']}',
+                  'User-Agent': utils.Http.userAgent
+                },
+                locale: episode.locale,
+              ),
             )
             .whereType<TwistEpisodeSource>()
             .toList();
@@ -221,11 +231,13 @@ class TwistMoe implements AnimeExtractor {
       }
     }
 
-    final source =
-        animeSourceCache[slug]?.firstWhere((x) => x.episode == number);
-    if (source == null) throw ('Failed to find source for the episode');
+    final TwistEpisodeSource? source = animeSourceCache[slug]
+        ?.firstWhereOrNull((final TwistEpisodeSource x) => x.episode == number);
+    if (source == null) {
+      throw AssertionError('Failed to find source for the episode');
+    }
 
-    return [
+    return <EpisodeSource>[
       source.getSource(),
     ];
   }

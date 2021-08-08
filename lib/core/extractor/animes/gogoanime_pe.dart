@@ -1,59 +1,62 @@
-import 'package:http/http.dart' as http;
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
+import 'package:http/http.dart' as http;
+import './model.dart';
+import './sources/model.dart';
+import './sources/sources.dart';
 import '../../models/languages.dart' show LanguageCodes;
 import '../../utils.dart' as utils;
-import './sources/sources.dart';
-import './model.dart';
 
-const _defaultLocale = LanguageCodes.en;
+const LanguageCodes _defaultLocale = LanguageCodes.en;
 
 class GogoAnimePe implements AnimeExtractor {
   @override
-  final name = 'GogoAnime.pe';
+  final String name = 'GogoAnime.pe';
 
   @override
-  final defaultLocale = _defaultLocale;
+  final LanguageCodes defaultLocale = _defaultLocale;
 
   @override
-  final baseURL = 'https://gogoanime.pe';
+  final String baseURL = 'https://gogoanime.pe';
 
-  late final Map<String, String> defaultHeaders = {
+  late final Map<String, String> defaultHeaders = <String, String>{
     'User-Agent': utils.Http.userAgent,
     'Referer': baseURL,
   };
 
-  String searchURL(String terms) => '$baseURL/search.html?keyword=$terms';
+  String searchURL(final String terms) => '$baseURL/search.html?keyword=$terms';
   String episodeApiURL({
-    required String start,
-    required String end,
-    required String id,
+    required final String start,
+    required final String end,
+    required final String id,
   }) {
-    final reverse = (int.tryParse(start) ?? 0) > (int.tryParse(end) ?? 0);
-    final s = reverse ? end : start;
-    final e = reverse ? start : end;
+    final bool reverse = (int.tryParse(start) ?? 0) > (int.tryParse(end) ?? 0);
+    final String s = reverse ? end : start;
+    final String e = reverse ? start : end;
     return 'https://ajax.gogo-load.com/ajax/load-list-episode?ep_start=$s&ep_end=$e&id=$id';
   }
 
   @override
-  search(
-    terms, {
-    required locale,
+  Future<List<SearchInfo>> search(
+    final String terms, {
+    required final LanguageCodes locale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
+
+      final dom.Document document = html.parse(res.body);
       return document
           .querySelectorAll('.items li')
           .map(
-            (x) {
-              final title = x.querySelector('.name a');
-              final url = title?.attributes['href']?.trim();
-              final thumbnail =
+            (final dom.Element x) {
+              final dom.Element? title = x.querySelector('.name a');
+              final String? url = title?.attributes['href']?.trim();
+              final String? thumbnail =
                   x.querySelector('.img img')?.attributes['src']?.trim();
 
               if (title != null && url != null) {
@@ -74,51 +77,57 @@ class GogoAnimePe implements AnimeExtractor {
   }
 
   @override
-  getInfo(
-    url, {
-    locale = _defaultLocale,
+  Future<AnimeInfo> getInfo(
+    final String url, {
+    final LanguageCodes locale = _defaultLocale,
   }) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final document = html.parse(res.body);
+      final dom.Document document = html.parse(res.body);
 
-      final epPages = document.querySelectorAll('#episode_page a');
-      final epStart = epPages.first.attributes['ep_start']?.trim();
-      final epEnd = epPages.last.attributes['ep_end']?.trim();
-      final epId =
+      final List<dom.Element> epPages =
+          document.querySelectorAll('#episode_page a');
+      final String? epStart = epPages.first.attributes['ep_start']?.trim();
+      final String? epEnd = epPages.last.attributes['ep_end']?.trim();
+      final String? epId =
           document.querySelector('input#movie_id')?.attributes['value']?.trim();
 
       if (epStart is! String || epEnd is! String || epId is! String) {
         throw AssertionError('Improper episode information');
       }
 
-      final epRes = await http
+      final http.Response epRes = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(episodeApiURL(
-              start: epStart,
-              end: epEnd,
-              id: epId,
-            ))),
+            Uri.parse(
+              utils.Fns.tryEncodeURL(
+                episodeApiURL(
+                  start: epStart,
+                  end: epEnd,
+                  id: epId,
+                ),
+              ),
+            ),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
 
-      final episodes = html
+      final List<EpisodeInfo> episodes = html
           .parse(epRes.body)
           .querySelectorAll('#episode_related a')
           .map(
-            (x) {
-              final episode = x.querySelector('.name');
-              final url = x.attributes['href']?.trim();
+            (final dom.Element x) {
+              final String? episode =
+                  x.querySelector('.name')?.text.replaceFirst('EP', '').trim();
+              final String? url = x.attributes['href']?.trim();
               if (episode != null && url != null) {
                 return EpisodeInfo(
-                  episode: episode.text.replaceFirst('EP', '').trim(),
+                  episode: episode,
                   url: '$baseURL$url',
                   locale: locale,
                 );
@@ -138,7 +147,7 @@ class GogoAnimePe implements AnimeExtractor {
             ?.trim(),
         episodes: episodes,
         locale: locale,
-        availableLocales: [
+        availableLocales: <LanguageCodes>[
           _defaultLocale,
         ],
       );
@@ -148,31 +157,31 @@ class GogoAnimePe implements AnimeExtractor {
   }
 
   @override
-  getSources(episode) async {
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode) async {
     try {
-      final res = await http
+      final http.Response res = await http
           .get(
             Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
           .timeout(utils.Http.timeout);
-      final document = html.parse(res.body);
 
-      final links = document
+      final dom.Document document = html.parse(res.body);
+      final Iterable<String> links = document
           .querySelectorAll('.anime_muti_link a')
-          .map((x) => x.attributes['data-video'])
+          .map((final dom.Element x) => x.attributes['data-video'])
           .whereType<String>();
 
-      final List<EpisodeSource> sources = [];
-      for (var src in links) {
-        src = utils.Fns.ensureProtocol(src);
-        final retriever = SourceRetrievers.match(src);
+      final List<EpisodeSource> sources = <EpisodeSource>[];
+      for (final String _src in links) {
+        final String src = utils.Fns.ensureProtocol(_src);
+        final SourceRetriever? retriever = SourceRetrievers.match(src);
         if (retriever != null) {
           try {
-            final retrieved = await retriever.fetch(src);
+            final List<RetrievedSource> retrieved = await retriever.fetch(src);
             sources.addAll(
               retrieved.map(
-                (x) => EpisodeSource.fromRetrievedSource(
+                (final RetrievedSource x) => EpisodeSource.fromRetrievedSource(
                   retrieved: x,
                   locale: episode.locale,
                 ),

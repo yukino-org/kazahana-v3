@@ -1,5 +1,5 @@
-import 'package:yukino_app/core/extractor/animes/model.dart';
 import 'package:yukino_app/core/extractor/animes/animeparadise_org.dart';
+import 'package:yukino_app/core/extractor/animes/model.dart';
 import 'package:yukino_app/core/models/languages.dart';
 import '../tester.dart' as tester;
 

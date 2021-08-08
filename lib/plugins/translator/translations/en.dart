@@ -3,181 +3,183 @@ import '../../../core/models/translations.dart';
 
 class Sentences extends TranslationSentences {
   @override
-  get code => LanguageCodes.en;
+  final LanguageCodes code = LanguageCodes.en;
 
   @override
-  home() => 'Home';
+  String home() => 'Home';
 
   @override
-  search() => 'Search';
+  String search() => 'Search';
 
   @override
-  settings() => 'Settings';
+  String settings() => 'Settings';
 
   @override
-  episodes() => 'Episodes';
+  String episodes() => 'Episodes';
 
   @override
-  episode() => 'Episode';
+  String episode() => 'Episode';
 
   @override
-  noValidSources() => 'No valid sources were found.';
+  String noValidSources() => 'No valid sources were found.';
 
   @override
-  prohibitedPage() => 'You shouldn\'t be here.';
+  String prohibitedPage() => "You shouldn't be here.";
 
   @override
-  selectPlugin() => 'Select Plugin';
+  String selectPlugin() => 'Select Plugin';
 
   @override
-  searchInPlugin(plugin) => 'Search in $plugin';
+  String searchInPlugin(final String plugin) => 'Search in $plugin';
 
   @override
-  enterToSearch() => 'Enter something to search!';
+  String enterToSearch() => 'Enter something to search!';
 
   @override
-  noResultsFound() => 'No results were found.';
+  String noResultsFound() => 'No results were found.';
 
   @override
-  failedToGetResults() => 'No results were found.';
+  String failedToGetResults() => 'No results were found.';
 
   @override
-  preferences() => 'Preferences';
+  String preferences() => 'Preferences';
 
   @override
-  landscapeVideoPlayer() => 'Landscape Video Player';
+  String landscapeVideoPlayer() => 'Landscape Video Player';
 
   @override
-  landscapeVideoPlayerDetail() => 'Force auto-landscape when playing video';
+  String landscapeVideoPlayerDetail() =>
+      'Force auto-landscape when playing video';
 
   @override
-  theme() => 'Theme';
+  String theme() => 'Theme';
 
   @override
-  systemPreferredTheme() => 'System Preferred Theme';
+  String systemPreferredTheme() => 'System Preferred Theme';
 
   @override
-  defaultTheme() => 'Default Theme';
+  String defaultTheme() => 'Default Theme';
 
   @override
-  darkMode() => 'Dark Theme';
+  String darkMode() => 'Dark Theme';
 
   @override
-  close() => 'Close';
+  String close() => 'Close';
 
   @override
-  chooseTheme() => 'Choose Theme';
+  String chooseTheme() => 'Choose Theme';
 
   @override
-  language() => 'Language';
+  String language() => 'Language';
 
   @override
-  chooseLanguage() => 'Choose language';
+  String chooseLanguage() => 'Choose language';
 
   @override
-  anime() => 'Anime';
+  String anime() => 'Anime';
 
   @override
-  manga() => 'Manga';
+  String manga() => 'Manga';
 
   @override
-  chapters() => 'Chapters';
+  String chapters() => 'Chapters';
 
   @override
-  volumes() => 'Volumes';
+  String volumes() => 'Volumes';
 
   @override
-  chapter() => 'Chapter';
+  String chapter() => 'Chapter';
 
   @override
-  volume() => 'Volume';
+  String volume() => 'Volume';
 
   @override
-  page() => 'Page';
+  String page() => 'Page';
 
   @override
-  noPagesFound() => 'No valid pages were found.';
+  String noPagesFound() => 'No valid pages were found.';
 
   @override
-  vol() => 'Vol.';
+  String vol() => 'Vol.';
 
   @override
-  ch() => 'Ch.';
+  String ch() => 'Ch.';
 
   @override
-  mangaReaderDirection() => 'Manga Reader Direction';
+  String mangaReaderDirection() => 'Manga Reader Direction';
 
   @override
-  mangaReaderSwipeDirection() => 'Manga Reader Swipe Direction';
+  String mangaReaderSwipeDirection() => 'Manga Reader Swipe Direction';
 
   @override
-  horizontal() => 'Horizontal';
+  String horizontal() => 'Horizontal';
 
   @override
-  vertical() => 'Vertical';
+  String vertical() => 'Vertical';
 
   @override
-  leftToRight() => 'Left to Right';
+  String leftToRight() => 'Left to Right';
 
   @override
-  rightToLeft() => 'Right to Left';
+  String rightToLeft() => 'Right to Left';
 
   @override
-  mangaReaderMode() => 'Manga Reader Mode';
+  String mangaReaderMode() => 'Manga Reader Mode';
 
   @override
-  list() => 'List';
+  String list() => 'List';
 
   @override
-  previous() => 'Previous';
+  String previous() => 'Previous';
 
   @override
-  next() => 'Next';
+  String next() => 'Next';
 
   @override
-  skipIntro() => 'Skip Intro';
+  String skipIntro() => 'Skip Intro';
 
   @override
-  skipIntroDuration() => 'Skip Intro Duration';
+  String skipIntroDuration() => 'Skip Intro Duration';
 
   @override
-  seekDuration() => 'Seek Duration';
+  String seekDuration() => 'Seek Duration';
 
   @override
-  seconds() => 'Seconds';
+  String seconds() => 'Seconds';
 
   @override
-  autoPlay() => 'Auto Play';
+  String autoPlay() => 'Auto Play';
 
   @override
-  autoPlayDetail() => 'Starts playing the video automatically';
+  String autoPlayDetail() => 'Starts playing the video automatically';
 
   @override
-  autoNext() => 'Auto Next';
+  String autoNext() => 'Auto Next';
 
   @override
-  autoNextDetail() =>
+  String autoNextDetail() =>
       'Starts playing the next video automatically after the current video';
 
   @override
-  speed() => 'Speed';
+  String speed() => 'Speed';
 
   @override
-  doubleTapToSwitchChapter() => 'Double Tap to Switch Chapters';
+  String doubleTapToSwitchChapter() => 'Double Tap to Switch Chapters';
 
   @override
-  doubleTapToSwitchChapterDetail() =>
+  String doubleTapToSwitchChapterDetail() =>
       'Switches to previous or next chapter only when double clicked';
 
   @override
-  tapAgainToSwitchPreviousChapter() => 'Tap again to go to previous chapter';
+  String tapAgainToSwitchPreviousChapter() =>
+      'Tap again to go to previous chapter';
 
   @override
-  tapAgainToSwitchNextChapter() => 'Tap again to go to next chapter';
+  String tapAgainToSwitchNextChapter() => 'Tap again to go to next chapter';
 
   @override
-  selectSource() => 'Select Source';
+  String selectSource() => 'Select Source';
 
   @override
-  sources() => 'Sources';
+  String sources() => 'Sources';
 }

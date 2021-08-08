@@ -1,16 +1,75 @@
-# yukino_app
+<br />
 
-A new Flutter project.
+<p align="center">
+    <img src="./media/large.png" width="50%">
+</p>
 
-## Getting Started
+# Yukino
 
-This project is a starting point for a Flutter application.
+Yukino lets you read manga or stream anime ad-free from multiple sources. The project's name "Yukino" meaning "Snow" named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
 
-A few resources to get you started if this is your first Flutter project:
+We do not support piracy nor run/serve any illegal or copyrighted contents, everything is acquired from third-party sources. The developer of this application does not have any affiliation with any of the third-party sources.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+<!-- [![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg?style=flat)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg?style=flat)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Site](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish (Electron)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml/badge.svg?branch=main>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml>) [![Publish (Capacitor - Android)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml/badge.svg>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml>) [![CodeFactor](https://www.codefactor.io/repository/github/zyrouge/yukino-app/badge/next)](https://www.codefactor.io/repository/github/zyrouge/yukino-app/overview/next)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Download
+
+You can download the latest version of app from the [releases](https://github.com/zyrouge/yukino-app/releases) tab.
+
+## Preview
+
+![Home](./screenshots/desktop/home.png)
+
+> All previews available at [https://zyrouge.github.io/yukino-app/](https://zyrouge.github.io/yukino-app/) -->
+
+## Links
+
+-   [Website](https://yukino-app.github.io/)
+-   [User guide](https://yukino-app.github.io/guides/)
+-   [Discord](https://yukino-app.github.io/discord/)
+-   [GitHub](https://github.com/yukino-app/yukino/)
+-   [Patreon](https://patreon.com/zyrouge/)
+
+## Branding
+
+### Colors
+
+[![Primary](https://img.shields.io/badge/Primary-%236366F1-white.svg?style=flat&color=6366F1)](https://img.shields.io/badge/Indigo-%236366F1-white.svg?color=6366F1) [![Secondary](https://img.shields.io/badge/Secondary-%2318181b-white.svg?style=flat&color=18181b)](https://img.shields.io/badge/Indigo-%236366F1-white.svg?color=6366F1)
+
+## Technology
+
+-   [Dart](https://dart.dev/) (Language)
+-   [Flutter](https://flutter.dev/) (SDK)
+-   [Pub](https://pub.dev/) (Package manager)
+
+## Code structure
+
+-   [./lib](./lib) - Core flutter app
+-   [./android](./android) - Android related files
+-   [./ios](./ios) - iOS related files
+-   [./test](./test) - Test files
+-   [./media](./media) - Local assets
+<!-- -   [./screenshots](./resources) - App previews -->
+
+## Contributing
+
+Ways to contribute to this project:
+
+-   Submitting bugs and feature requests in [issues](https://github.com/yukino-app/yukino/issues).
+-   Opening [pull requests](https://github.com/yukino-app/yukino/pulls) containing bug fixes, new features, etc.
+
+## Developer guide
+
+### Cloning & Installing
+
+```bash
+git clone https://github.com/yukino-app/yukino.git
+cd yukino-app
+flutter pub get
+```
+
+> Check [scripts.md](./scripts.md) for all the scripts
+
+## License
+
+[GPL-3.0](./LICENSE)

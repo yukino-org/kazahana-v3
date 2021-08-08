@@ -13,27 +13,27 @@ enum PlayerEvents {
 }
 
 class PlayerSource {
+  PlayerSource({
+    required final this.url,
+    final this.headers = const <String, String>{},
+  });
+
   final String url;
   final Map<String, String> headers;
-
-  PlayerSource({
-    required this.url,
-    this.headers = const {},
-  });
 }
 
 abstract class Player extends Eventer<PlayerEvents> {
+  Player(this.source);
+
   final PlayerSource source;
   bool ready = false;
-
-  Player(this.source);
 
   Future<void> initialize();
   Future<void> play();
   Future<void> pause();
-  Future<void> seek(Duration position);
-  Future<void> setVolume(int volume);
-  Future<void> setSpeed(double speed);
+  Future<void> seek(final Duration position);
+  Future<void> setVolume(final int volume);
+  Future<void> setSpeed(final double speed);
   Widget getWidget();
 
   @override
@@ -48,18 +48,18 @@ abstract class Player extends Eventer<PlayerEvents> {
   int get volume;
   double get speed;
 
-  static const minVolume = 0;
-  static const maxVolume = 100;
+  static const int minVolume = 0;
+  static const int maxVolume = 100;
 
-  static const minIntroLength = 30;
-  static const maxIntroLength = 180;
-  static const defaultIntroLength = 85;
+  static const int minIntroLength = 30;
+  static const int maxIntroLength = 180;
+  static const int defaultIntroLength = 85;
 
-  static const minSeekLength = 0;
-  static const maxSeekLength = 60;
-  static const defaultSeekLength = 15;
+  static const int minSeekLength = 0;
+  static const int maxSeekLength = 60;
+  static const int defaultSeekLength = 15;
 
-  static const allowedSpeeds = [
+  static const List<double> allowedSpeeds = <double>[
     0.25,
     0.5,
     0.75,
@@ -69,5 +69,5 @@ abstract class Player extends Eventer<PlayerEvents> {
     1.75,
     2.0,
   ];
-  static const defaultSpeed = 1.0;
+  static const double defaultSpeed = 1.0;
 }

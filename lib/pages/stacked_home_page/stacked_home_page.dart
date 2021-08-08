@@ -3,14 +3,16 @@ import '../../components/bottom_bar.dart' as bottom_bar;
 import '../../plugins/router.dart';
 
 class StackPage {
+  StackPage(this.index, this.r);
+
   final RouteInfo r;
   final int index;
-
-  StackPage(this.index, this.r);
 }
 
 class Page extends StatefulWidget {
-  const Page({Key? key}) : super(key: key);
+  const Page({
+    final Key? key,
+  }) : super(key: key);
 
   @override
   State<Page> createState() => PageState();
@@ -20,16 +22,23 @@ class PageState extends State<Page> {
   late int currentIndex;
   late PageController controller;
 
-  final List<StackPage> stack = [
+  final List<StackPage> stack = <RouteInfo>[
     RouteManager.routes[RouteNames.home]!,
     RouteManager.routes[RouteNames.search]!,
-  ].asMap().map((i, x) => MapEntry(i, StackPage(i, x))).values.toList();
-  final List<RouteInfo> routes = [
+  ]
+      .asMap()
+      .map(
+        (final int i, final RouteInfo x) =>
+            MapEntry<int, StackPage>(i, StackPage(i, x)),
+      )
+      .values
+      .toList();
+  final List<RouteInfo> routes = <RouteInfo>[
     RouteManager.routes[RouteNames.settings]!,
   ];
 
-  int? getIndexOfRoute(String route) =>
-      stack.indexWhere((x) => x.r.route == route);
+  int? getIndexOfRoute(final String route) =>
+      stack.indexWhere((final StackPage x) => x.r.route == route);
 
   @override
   void initState() {
@@ -39,59 +48,60 @@ class PageState extends State<Page> {
             ? getIndexOfRoute(RouteManager.keeper.currentRoute!.settings.name!)
             : null) ??
         0;
-    controller = PageController(initialPage: currentIndex, keepPage: true);
+    controller = PageController(initialPage: currentIndex);
   }
 
-  void goToPage(int page) => controller.animateToPage(
+  void goToPage(final int page) => controller.animateToPage(
         page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
       );
 
   @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
+  Widget build(final BuildContext context) => WillPopScope(
         child: Scaffold(
           body: SafeArea(
             child: PageView(
-              onPageChanged: (page) {
+              onPageChanged: (final int page) {
                 setState(() {
                   currentIndex = page;
                 });
               },
               physics: const NeverScrollableScrollPhysics(),
               controller: controller,
-              children: stack.map((x) => x.r.builder(context)).toList(),
+              children: stack
+                  .map((final StackPage x) => x.r.builder(context))
+                  .toList(),
             ),
           ),
           bottomNavigationBar: bottom_bar.BottomBar(
             initialIndex: currentIndex,
-            items: [
-              ...(stack.map((x) {
-                return bottom_bar.BottomBarItem(
+            items: <bottom_bar.BottomBarItem>[
+              ...stack.map(
+                (final StackPage x) => bottom_bar.BottomBarItem(
                   name: x.r.name!(),
                   icon: x.r.icon!,
                   isActive: currentIndex == x.index,
                   onPressed: () {
                     goToPage(x.index);
                   },
-                );
-              })),
-              ...(routes.map((x) {
-                return bottom_bar.BottomBarItem(
+                ),
+              ),
+              ...routes.map(
+                (final RouteInfo x) => bottom_bar.BottomBarItem(
                   name: x.name!(),
                   icon: x.icon!,
                   isActive: false,
                   onPressed: () {
                     Navigator.of(context).pushNamed(x.route);
                   },
-                );
-              })),
+                ),
+              ),
             ],
           ),
         ),
         onWillPop: () async {
-          final homeIndex = stack[getIndexOfRoute(RouteNames.home)!].index;
+          final int homeIndex = stack[getIndexOfRoute(RouteNames.home)!].index;
           if (currentIndex != homeIndex) {
             goToPage(homeIndex);
             return false;
@@ -99,6 +109,6 @@ class PageState extends State<Page> {
 
           Navigator.of(context).pop();
           return true;
-        });
-  }
+        },
+      );
 }

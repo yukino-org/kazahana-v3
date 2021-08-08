@@ -1,6 +1,6 @@
+import './sources/model.dart' show RetrievedSource;
 import '../../models/languages.dart' show LanguageCodes, LanguageName;
 import '../model.dart';
-import './sources/model.dart' show RetrievedSource;
 
 enum Qualities {
   q_144p,
@@ -12,18 +12,18 @@ enum Qualities {
 }
 
 class Quality {
-  final Qualities quality;
-  final String code;
-  final String short;
-
   Quality(
     this.quality,
     this.code,
     this.short,
   );
+
+  final Qualities quality;
+  final String code;
+  final String short;
 }
 
-final quality = [
+final Map<Qualities, Quality> quality = <Quality>[
   Quality(Qualities.q_144p, '144p', 'sd'),
   Quality(Qualities.q_360p, '360p', 'sd'),
   Quality(Qualities.q_480p, '480p', 'sd'),
@@ -31,14 +31,15 @@ final quality = [
   Quality(Qualities.q_1080p, '1080p', 'fhd'),
   Quality(Qualities.unknown, 'unknown', '?'),
 ].asMap().map(
-      (k, x) => MapEntry(x.quality, x),
+      (final int k, final Quality x) =>
+          MapEntry<Qualities, Quality>(x.quality, x),
     );
 
-Quality getQuality(Qualities q) => quality[q]!;
+Quality getQuality(final Qualities q) => quality[q]!;
 
-Quality resolveQuality(String approx) {
-  approx = approx.toLowerCase();
-  for (final q in quality.values) {
+Quality resolveQuality(final String _approx) {
+  final String approx = _approx.toLowerCase();
+  for (final Quality q in quality.values) {
     if (q.code == approx ||
         q.code.substring(0, q.code.length - 1) == approx ||
         q.short == approx) return q;
@@ -47,20 +48,20 @@ Quality resolveQuality(String approx) {
 }
 
 class SearchInfo extends BaseSearchInfo {
-  LanguageCodes locale;
-
   SearchInfo({
-    required String url,
-    required String title,
-    String? thumbnail,
-    required this.locale,
+    required final String url,
+    required final String title,
+    required final this.locale,
+    final String? thumbnail,
   }) : super(
           title: title,
           thumbnail: thumbnail,
           url: url,
         );
 
-  Map<String, dynamic> toJson() => {
+  LanguageCodes locale;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'title': title,
         'url': url,
         'thumbnail': thumbnail,
@@ -69,17 +70,17 @@ class SearchInfo extends BaseSearchInfo {
 }
 
 class EpisodeInfo {
+  EpisodeInfo({
+    required final this.episode,
+    required final this.url,
+    required final this.locale,
+  });
+
   String episode;
   String url;
   LanguageCodes locale;
 
-  EpisodeInfo({
-    required this.episode,
-    required this.url,
-    required this.locale,
-  });
-
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'episode': episode,
         'url': url,
         'locale': locale.code,
@@ -87,6 +88,15 @@ class EpisodeInfo {
 }
 
 class AnimeInfo {
+  AnimeInfo({
+    required final this.url,
+    required final this.title,
+    required final this.episodes,
+    required final this.locale,
+    required final this.availableLocales,
+    final this.thumbnail,
+  });
+
   String title;
   String url;
   List<EpisodeInfo> episodes;
@@ -94,50 +104,40 @@ class AnimeInfo {
   LanguageCodes locale;
   final List<LanguageCodes> availableLocales;
 
-  AnimeInfo({
-    required this.url,
-    required this.title,
-    required this.episodes,
-    this.thumbnail,
-    required this.locale,
-    required this.availableLocales,
-  });
-
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'title': title,
         'url': url,
         'thumbnail': thumbnail,
-        'episodes': episodes.map((x) => x.toJson()).toList(),
+        'episodes': episodes.map((final EpisodeInfo x) => x.toJson()).toList(),
         'locale': locale.code,
       };
 }
 
 class EpisodeSource {
+  EpisodeSource({
+    required final this.url,
+    required final this.quality,
+    required final this.headers,
+    required final this.locale,
+  });
+
+  factory EpisodeSource.fromRetrievedSource({
+    required final RetrievedSource retrieved,
+    required final LanguageCodes locale,
+  }) =>
+      EpisodeSource(
+        url: retrieved.url,
+        headers: retrieved.headers,
+        quality: retrieved.quality,
+        locale: locale,
+      );
+
   String url;
   Quality quality;
   Map<String, String> headers;
   LanguageCodes locale;
 
-  EpisodeSource({
-    required this.url,
-    required this.quality,
-    required this.headers,
-    required this.locale,
-  });
-
-  factory EpisodeSource.fromRetrievedSource({
-    required RetrievedSource retrieved,
-    required LanguageCodes locale,
-  }) {
-    return EpisodeSource(
-      url: retrieved.url,
-      headers: retrieved.headers,
-      quality: retrieved.quality,
-      locale: locale,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'quality': quality.code,
         'url': url,
         'headers': headers,
@@ -149,9 +149,9 @@ abstract class AnimeExtractor extends BaseExtractorPlugin<SearchInfo> {
   LanguageCodes get defaultLocale;
 
   Future<AnimeInfo> getInfo(
-    String url, {
-    required LanguageCodes locale,
+    final String url, {
+    required final LanguageCodes locale,
   });
 
-  Future<List<EpisodeSource>> getSources(EpisodeInfo episode);
+  Future<List<EpisodeSource>> getSources(final EpisodeInfo episode);
 }

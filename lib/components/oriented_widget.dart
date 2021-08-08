@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class OrientedWidget extends StatefulWidget {
+  const OrientedWidget({
+    required final this.child,
+    required final this.orientation,
+    final Key? key,
+    final this.resetOrientation = const <DeviceOrientation>[],
+  }) : super(key: key);
+
   final List<DeviceOrientation> orientation;
   final List<DeviceOrientation> resetOrientation;
   final Widget child;
-
-  const OrientedWidget({
-    final Key? key,
-    required final this.child,
-    required final this.orientation,
-    final this.resetOrientation = const [],
-  }) : super(key: key);
 
   @override
   State<OrientedWidget> createState() => OrientedWidgetState();
@@ -33,7 +33,5 @@ class OrientedWidgetState extends State<OrientedWidget> {
   }
 
   @override
-  Widget build(final context) {
-    return widget.child;
-  }
+  Widget build(final BuildContext context) => widget.child;
 }

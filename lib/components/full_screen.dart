@@ -1,20 +1,22 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../plugins/state.dart' show AppState;
 
 class FullScreenWidget extends StatefulWidget {
-  final Widget child;
+  const FullScreenWidget({
+    required final this.child,
+    final Key? key,
+  }) : super(key: key);
 
-  const FullScreenWidget({Key? key, required this.child}) : super(key: key);
+  final Widget child;
 
   @override
   FullScreenState createState() => FullScreenState();
 }
 
 class FullScreenState extends State<FullScreenWidget> {
-  final interval = const Duration(seconds: 5);
+  final Duration interval = const Duration(seconds: 5);
   Timer? currentTimer;
   late bool isOnFullscreen;
 
@@ -37,9 +39,8 @@ class FullScreenState extends State<FullScreenWidget> {
     super.dispose();
   }
 
-  void _onUiChange(bool isOnFullscreen) {
-    isOnFullscreen = isOnFullscreen;
-
+  void _onUiChange(final bool fullscreen) {
+    isOnFullscreen = fullscreen;
     currentTimer?.cancel();
     currentTimer = null;
     if (!isOnFullscreen) {
@@ -52,12 +53,10 @@ class FullScreenState extends State<FullScreenWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Container(
-        color: Colors.black,
-        child: widget.child,
-      ),
-    );
-  }
+  Widget build(final BuildContext context) => SizedBox.expand(
+        child: Container(
+          color: Colors.black,
+          child: widget.child,
+        ),
+      );
 }
