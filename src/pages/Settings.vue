@@ -21,7 +21,16 @@
                             <p class="text-sm opacity-75">{{ setting.name }}</p>
 
                             <select
-                                class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                                class="
+                                    bg-gray-100
+                                    dark:bg-gray-800
+                                    capitalize
+                                    w-full
+                                    mt-1
+                                    rounded
+                                    border-transparent
+                                    focus:outline-none focus:ring-0
+                                "
                                 @change="handleSettings($event, name)"
                                 v-if="setting.values"
                             >
@@ -34,7 +43,16 @@
                                 </option>
                             </select>
                             <input
-                                class="bg-gray-100 dark:bg-gray-800 capitalize w-full mt-1 rounded border-transparent focus:outline-none focus:ring-0"
+                                class="
+                                    bg-gray-100
+                                    dark:bg-gray-800
+                                    capitalize
+                                    w-full
+                                    mt-1
+                                    rounded
+                                    border-transparent
+                                    focus:outline-none focus:ring-0
+                                "
                                 :type="setting.type"
                                 v-else-if="setting.type"
                                 @input="handleSettings($event, name)"
@@ -254,8 +272,8 @@
             <p
                 v-else-if="
                     !changelogs.body.features.length &&
-                        !changelogs.body.fixes.length &&
-                        !changelogs.body.refactors.length
+                    !changelogs.body.fixes.length &&
+                    !changelogs.body.refactors.length
                 "
             >
                 No changes were found.
@@ -270,7 +288,14 @@
                         <li class="mt-1" v-for="m in changelogs.body.features">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="
+                                    bg-gray-200
+                                    dark:bg-gray-700
+                                    px-1
+                                    py-0.5
+                                    text-sm
+                                    rounded
+                                "
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -284,7 +309,14 @@
                         <li class="mt-1" v-for="m in changelogs.body.fixes">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="
+                                    bg-gray-200
+                                    dark:bg-gray-700
+                                    px-1
+                                    py-0.5
+                                    text-sm
+                                    rounded
+                                "
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -298,7 +330,14 @@
                         <li class="mt-1" v-for="m in changelogs.body.refactors">
                             <span class="mr-2">•</span>
                             <span
-                                class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 text-sm rounded"
+                                class="
+                                    bg-gray-200
+                                    dark:bg-gray-700
+                                    px-1
+                                    py-0.5
+                                    text-sm
+                                    rounded
+                                "
                                 >{{ parseChangelogMsg(m).id }}</span
                             >
                             {{ parseChangelogMsg(m).msg }}
@@ -321,7 +360,7 @@ import {
     UpdateChannels,
     SideBarPosition,
     StoreKeys,
-    StoreStructure
+    StoreStructure,
 } from "../plugins/types";
 
 import PageTitle from "../components/PageTitle.vue";
@@ -333,7 +372,7 @@ const AppInfo = {
     platform: app_platform,
     os: app_os,
     version: app_version,
-    builtAt: util.prettyDate(new Date(app_builtAt))
+    builtAt: util.prettyDate(new Date(app_builtAt)),
 };
 
 type Settings = StoreStructure[StoreKeys.settings];
@@ -357,7 +396,7 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        Popup
+        Popup,
     },
     data() {
         const config: {
@@ -367,55 +406,56 @@ export default defineComponent({
                 name: "Update Channel",
                 validate: ArrayCheck(UpdateChannels),
                 values: UpdateChannels,
-                supported: this.$state.props.runtime.isElectron
+                supported: this.$state.props.runtime.isElectron,
             },
             incognito: {
                 name: "Incognito",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: true,
             },
             sideBarPosition: {
                 name: "Sidebar Position",
                 validate: ArrayCheck(SideBarPosition),
                 values: SideBarPosition,
-                supported: this.$state.props.runtime.isElectron
+                supported: this.$state.props.runtime.isElectron,
             },
             discordRpc: {
                 name: "Discord RPC",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: this.$state.props.runtime.isElectron
+                supported: this.$state.props.runtime.isElectron,
             },
             discordRpcPrivacy: {
                 name: "Discord RPC (Privacy Mode)",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: this.$state.props.runtime.isElectron
+                supported: this.$state.props.runtime.isElectron,
             },
             autoDetectTheme: {
                 name: "Use system preferred theme",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: true,
             },
             darkMode: {
                 name: "Dark Mode",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: settings => settings.autoDetectTheme === "disabled"
+                supported: (settings) =>
+                    settings.autoDetectTheme === "disabled",
             },
             autoPlay: {
                 name: "Autoplay",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: true,
             },
             autoNext: {
                 name: "Autoplay Next",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
+                supported: true,
             },
             defaultPlayerWidth: {
                 name: "Video Player Width",
@@ -423,8 +463,8 @@ export default defineComponent({
                 values: TenToHundredPercent,
                 type: "number",
                 supported: this.$state.props.runtime.isElectron,
-                pretty: value => `${value}%`,
-                transform: value => Math.trunc(+value || 0)
+                pretty: (value) => `${value}%`,
+                transform: (value) => Math.trunc(+value || 0),
             },
             defaultPageWidth: {
                 name: "Manga Page Width",
@@ -432,26 +472,26 @@ export default defineComponent({
                 values: TenToHundredPercent,
                 type: "number",
                 supported: true,
-                pretty: value => `${value}%`,
-                transform: value => Math.trunc(+value || 0)
+                pretty: (value) => `${value}%`,
+                transform: (value) => Math.trunc(+value || 0),
             },
             hideBottomBarText: {
                 name: "Hide Bottom Bar Text",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: this.$state.props.runtime.isCapacitor
+                supported: this.$state.props.runtime.isCapacitor,
             },
             compactBottomBar: {
                 name: "Compact Bottom Bar",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: this.$state.props.runtime.isCapacitor
+                supported: this.$state.props.runtime.isCapacitor,
             },
             bottomBarItemsCount: {
                 name: "Bottom Bar Items Count",
                 validate: ArrayCheck(BottomBarItemsCount),
                 values: BottomBarItemsCount,
-                supported: this.$state.props.runtime.isCapacitor
+                supported: this.$state.props.runtime.isCapacitor,
             },
             defaultSeekLength: {
                 name: "Seek Duration (in seconds)",
@@ -459,7 +499,7 @@ export default defineComponent({
                     typeof value === "number" && util.isFiniteNumber(value),
                 type: "number",
                 supported: true,
-                transform: value => Math.trunc(+value || 0)
+                transform: (value) => Math.trunc(+value || 0),
             },
             skipIntroLength: {
                 name: "Skip Intro Length (in seconds)",
@@ -467,7 +507,7 @@ export default defineComponent({
                     typeof value === "number" && util.isFiniteNumber(value),
                 type: "number",
                 supported: true,
-                transform: value => Math.trunc(+value || 0)
+                transform: (value) => Math.trunc(+value || 0),
             },
             defaultVolume: {
                 name: "Player Volume (1 - 100)",
@@ -476,18 +516,18 @@ export default defineComponent({
                     util.isFiniteNumber(value) &&
                     value <= 100,
                 type: "number",
-                transform: value =>
+                transform: (value) =>
                     Math.trunc(
                         +(value.match(/[0-9]?[0-9]?[0-9]/)?.[0] || "0") || 0
                     ),
-                supported: true
+                supported: true,
             },
             videoPlayerGestures: {
                 name: "Video Player Gestures",
                 validate: ArrayCheck(EnabledDisabled),
                 values: EnabledDisabled,
-                supported: true
-            }
+                supported: true,
+            },
         };
 
         const data: {
@@ -510,8 +550,8 @@ export default defineComponent({
             links: constants.links,
             changelogs: {
                 open: false,
-                body: null
-            }
+                body: null,
+            },
         };
 
         return data;
@@ -557,7 +597,7 @@ export default defineComponent({
                     "sideBarPosition",
                     "hideBottomBarText",
                     "compactBottomBar",
-                    "bottomBarItemsCount"
+                    "bottomBarItemsCount",
                 ].includes(key)
             ) {
                 this.$state.update({
@@ -570,14 +610,14 @@ export default defineComponent({
                         this.settings.hideBottomBarText === "enabled",
                     compactBottomBar:
                         this.settings.compactBottomBar === "enabled",
-                    bottomBarItemsCount: this.settings.bottomBarItemsCount
+                    bottomBarItemsCount: this.settings.bottomBarItemsCount,
                 });
             }
         },
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "On settings page"
+                details: "On settings page",
             });
         },
         async resetDatabase() {
@@ -604,39 +644,39 @@ export default defineComponent({
                     `https://api.github.com/repos/${constants.github.owner}/${constants.github.repo}/releases/tags/v${app_version}`,
                     {
                         headers: {},
-                        responseType: "text"
+                        responseType: "text",
                     }
                 );
 
                 const data = JSON.parse(res);
                 const changes = (<any[]>data.assets).find(
-                    x => x.name === "changelogs.json"
+                    (x) => x.name === "changelogs.json"
                 )?.browser_download_url;
 
                 if (changes) {
                     this.changelogs.body = JSON.parse(
                         await client.get(changes, {
                             headers: {},
-                            responseType: "text"
+                            responseType: "text",
                         })
                     );
                 } else {
                     this.changelogs.body = {
                         features: [],
                         fixes: [],
-                        refactors: []
+                        refactors: [],
                     };
                 }
-            } catch (err) {}
+            } catch (err: any) {}
         },
         parseChangelogMsg(text: string) {
             const [id, ...msg] = text.split(" ");
             return {
                 id,
-                msg: msg.join(" ")
+                msg: msg.join(" "),
             };
-        }
-    }
+        },
+    },
 });
 </script>
 

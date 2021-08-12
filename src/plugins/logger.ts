@@ -19,7 +19,7 @@ class Logger {
         this.listeners.forEach((handler) => {
             try {
                 handler(type, msg);
-            } catch (err) {}
+            } catch (err: any) {}
         });
 
         const dbug = await Debugger.getClient();

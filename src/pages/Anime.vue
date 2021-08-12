@@ -361,7 +361,7 @@ export default defineComponent({
         MangaSourceViewer,
         Loading,
         MyAnimeListAnimeConnection,
-        AniListAnimeConnection
+        AniListAnimeConnection,
     },
     data() {
         const data: {
@@ -386,10 +386,10 @@ export default defineComponent({
             info: util.createStateController(),
             extractors: {
                 anime: [],
-                manga: []
+                manga: [],
             },
             opened: {
-                about: false
+                about: false,
             },
             [StoreKeys.favorite]: false,
             [StoreKeys.bookmarked]: false,
@@ -398,7 +398,7 @@ export default defineComponent({
                     this.$route.query.url.match(
                         /https:\/\/myanimelist\.net\/anime\/(\d+)/
                     )?.[1]) ||
-                null
+                null,
         };
 
         return data;
@@ -410,14 +410,14 @@ export default defineComponent({
     methods: {
         async getAnimeInfo(_url?: string) {
             window.scrollTo({
-                top: 0
+                top: 0,
             });
 
             if (_url) {
                 this.$router.push({
                     query: {
-                        url: _url
-                    }
+                        url: _url,
+                    },
                 });
             }
 
@@ -446,20 +446,20 @@ export default defineComponent({
                     buttons: [
                         {
                             label: "View",
-                            url
-                        }
-                    ]
+                            url,
+                        },
+                    ],
                 });
 
                 const store = await Store.getClient();
 
                 ([StoreKeys.bookmarked, StoreKeys.favorite] as const).forEach(
-                    async key => {
+                    async (key) => {
                         const allBookmarked = (await store.get(key)) || [];
 
                         this[key] =
                             allBookmarked.findIndex(
-                                x =>
+                                (x) =>
                                     x.route.queries.url ===
                                     this.$route.query.url
                             ) >= 0;
@@ -477,16 +477,16 @@ export default defineComponent({
                         route: {
                             route: this.$route.path,
                             queries: {
-                                ...(<Record<string, string>>this.$route.query)
-                            }
-                        }
+                                ...(<Record<string, string>>this.$route.query),
+                            },
+                        },
                     });
                     await store.set(
                         StoreKeys.recentlyViewed,
                         allRecentlyViewed.slice(0, 100)
                     );
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.info.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -501,7 +501,7 @@ export default defineComponent({
             const allBookmarked = (await store.get(StoreKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
-                x => x.route.queries.url === this.$route.query.url
+                (x) => x.route.queries.url === this.$route.query.url
             );
 
             if (index >= 0) {
@@ -516,9 +516,9 @@ export default defineComponent({
                     route: {
                         route: this.$route.path,
                         queries: {
-                            ...(<Record<string, string>>this.$route.query)
-                        }
-                    }
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
                 });
                 this[StoreKeys[type]] = true;
             }
@@ -534,7 +534,7 @@ export default defineComponent({
             // @ts-ignore
             this.opened[key] = !this.opened[key];
         },
-        getValidImageUrl: util.getValidImageUrl
-    }
+        getValidImageUrl: util.getValidImageUrl,
+    },
 });
 </script>

@@ -74,7 +74,7 @@ export const AnimeStatus = [
     "completed",
     "on_hold",
     "dropped",
-    "plan_to_watch"
+    "plan_to_watch",
 ] as const;
 export type AnimeStatusType = typeof AnimeStatus[number];
 
@@ -141,7 +141,7 @@ export const MangaStatus = [
     "completed",
     "on_hold",
     "dropped",
-    "plan_to_read"
+    "plan_to_read",
 ] as const;
 export type MangaStatusType = typeof MangaStatus[number];
 
@@ -154,7 +154,7 @@ export class MyAnimeListManager {
     constructor() {
         this.auth = new Auth({
             id: secrets.client_id,
-            redirect: secrets.callback
+            redirect: secrets.callback,
         });
     }
 
@@ -207,8 +207,9 @@ export class MyAnimeListManager {
         const perpage = 100;
         const res = await this.request(
             "get",
-            `/users/@me/animelist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${perpage *
-                page}${status ? `&status=${status}` : ""}`
+            `/users/@me/animelist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${
+                perpage * page
+            }${status ? `&status=${status}` : ""}`
         );
         return <AnimeListEntity | null>((res && JSON.parse(res)) || null);
     }
@@ -241,8 +242,9 @@ export class MyAnimeListManager {
         const perpage = 100;
         const res = await this.request(
             "get",
-            `/users/@me/mangalist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${perpage *
-                page}${status ? `&status=${status}` : ""}`
+            `/users/@me/mangalist?fields=list_status&sort=list_updated_at&limit=${perpage}&offset=${
+                perpage * page
+            }${status ? `&status=${status}` : ""}`
         );
         return <MangaListEntity | null>((res && JSON.parse(res)) || null);
     }
@@ -289,9 +291,9 @@ export class MyAnimeListManager {
             responseType: "text";
         } = {
             headers: {
-                Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`
+                Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`,
             },
-            responseType: "text"
+            responseType: "text",
         };
         if (body) {
             options.headers["Content-Type"] =
@@ -313,7 +315,7 @@ export class MyAnimeListManager {
                     res = await client[type](url, body, options);
                     break;
             }
-        } catch (err) {
+        } catch (err: any) {
             if (
                 typeof err?.message === "string" &&
                 (<string>err.message).includes("401")

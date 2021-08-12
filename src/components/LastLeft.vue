@@ -121,7 +121,7 @@ export default defineComponent({
         const data: {
             info: StoreStructure[StoreKeys.lastWatchedLeft] | null;
         } = {
-            info: null
+            info: null,
         };
 
         return data;
@@ -139,14 +139,14 @@ export default defineComponent({
                 if (lastWatched) {
                     this.info = lastWatched;
                 }
-            } catch (err) {}
+            } catch (err: any) {}
         },
         async deleteLastWatched() {
             try {
                 const store = await Store.getClient();
                 await store.set(StoreKeys.lastWatchedLeft, null);
                 this.info = null;
-            } catch (err) {}
+            } catch (err: any) {}
         },
         async toggleDialog() {
             if (this.info) {
@@ -157,7 +157,7 @@ export default defineComponent({
                         StoreKeys.lastWatchedLeft,
                         util.mergeObject({}, this.info)
                     );
-                } catch (err) {}
+                } catch (err: any) {}
             }
         },
         getFormattedDuration(sec: number) {
@@ -177,13 +177,13 @@ export default defineComponent({
             if (this.info.episode) {
                 Object.assign(query, {
                     episode: this.info.episode.episode,
-                    watched: this.info.episode.watched
+                    watched: this.info.episode.watched,
                 });
             } else if (this.info.reading) {
                 Object.assign(query, {
                     page: this.info.reading.read,
                     volume: this.info.reading.volume,
-                    chapter: this.info.reading.chapter
+                    chapter: this.info.reading.chapter,
                 });
             }
 
@@ -191,11 +191,11 @@ export default defineComponent({
                 path: this.info.route.route,
                 query: {
                     ...this.info.route.queries,
-                    ...query
-                }
+                    ...query,
+                },
             });
-        }
-    }
+        },
+    },
 });
 </script>
 

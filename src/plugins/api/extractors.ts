@@ -3,16 +3,16 @@ import { util } from "../util";
 import { Requester } from "anime-ext/dist/types";
 
 import MALAnimeSearch, {
-    SearchResult as MALSearchAnimeSearchResult
+    SearchResult as MALSearchAnimeSearchResult,
 } from "anime-ext/dist/integrations/myanimelist/anime-search";
 import MALMangaSearch, {
-    SearchResult as MALSearchMangaSearchResult
+    SearchResult as MALSearchMangaSearchResult,
 } from "anime-ext/dist/integrations/myanimelist/manga-search";
 import MALAnimeInfo, {
-    InfoResult as MALAnimeInfoInfoResult
+    InfoResult as MALAnimeInfoInfoResult,
 } from "anime-ext/dist/integrations/myanimelist/anime-info";
 import MALMangaInfo, {
-    InfoResult as MALMangaInfoInfoResult
+    InfoResult as MALMangaInfoInfoResult,
 } from "anime-ext/dist/integrations/myanimelist/manga-info";
 import * as MALTopAnimes from "anime-ext/dist/integrations/myanimelist/top";
 import * as MALSchedule from "anime-ext/dist/integrations/myanimelist/schedule";
@@ -27,7 +27,7 @@ import TenshiMoe from "anime-ext/dist/extractors/anime/tenshidotmoe";
 import {
     MangaExtractorConstructorOptions,
     MangaExtractorModel,
-    MangaExtractorPageImageResult
+    MangaExtractorPageImageResult,
 } from "anime-ext/dist/extractors/manga/model";
 import FanFoxManga from "anime-ext/dist/extractors/manga/fanfox";
 import MangaDexManga from "anime-ext/dist/extractors/manga/mangadex";
@@ -64,7 +64,7 @@ export const Extractors = {
     async getOptions() {
         if (!this.__options) {
             this.__options = {
-                http: await http.getClient()
+                http: await http.getClient(),
             };
         }
 
@@ -100,14 +100,14 @@ export const Extractors = {
                         },
                         async season() {
                             return MALSeason.default(options);
-                        }
-                    }
+                        },
+                    },
                 },
                 anime: {
                     GogoAnime: new GogoAnime(options),
                     Kawaiifu: new KawaiifuAnime(options),
                     AnimeParadise: new AnimeParadise(options),
-                    TenshiMoe: new TenshiMoe(options)
+                    TenshiMoe: new TenshiMoe(options),
                 },
                 manga: {
                     FanFox: new FanFoxManga(options),
@@ -120,13 +120,13 @@ export const Extractors = {
                     ManhwaTop: new (Mangab64Chapters(
                         Mangab64Search(ManhwaTop)
                     ))(options),
-                    ComicK: new ComicK(options)
-                }
+                    ComicK: new ComicK(options),
+                },
             };
         }
 
         return this.__extractor;
-    }
+    },
 };
 
 type MangaModelClass = new (
@@ -141,7 +141,7 @@ function Mangab64Search(cls: MangaModelClass) {
                     const img = res[key].thumbnail;
                     if (img && img.startsWith("http")) {
                         res[key].thumbnail = await getBase64Image(img, {
-                            headers: {}
+                            headers: {},
                         });
                     }
                 }
@@ -163,8 +163,8 @@ function Mangab64Chapters(cls: MangaModelClass) {
             return <MangaExtractorPageImageResult>{
                 page: "-",
                 image: await getBase64Image(url, {
-                    headers: headers || {}
-                })
+                    headers: headers || {},
+                }),
             };
         }
     };
@@ -178,10 +178,10 @@ async function getBase64Image(
         const client = await http.getClient();
         const res = await client.get(url, {
             ...options,
-            responseType: "buffer"
+            responseType: "buffer",
         });
         return `data:image/png;base64,${util.BufferToBase64(res)}`;
-    } catch (err) {
+    } catch (err: any) {
         throw err;
     }
 }

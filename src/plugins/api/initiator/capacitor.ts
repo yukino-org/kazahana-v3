@@ -24,7 +24,7 @@ export const initiator: InitiatorFn = async () => {
                     App.exitApp();
                 }
             }
-        } catch (err) {}
+        } catch (err: any) {}
     });
 
     notifyUpdate();
@@ -89,7 +89,7 @@ async function notifyUpdate() {
                 }
             }
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(`Update failed: ${err?.message}`);
     }
 }

@@ -9,9 +9,9 @@ const appendFile = async (txt: string) => {
             path: logFile,
             directory: Directory.Data,
             data: `\n${txt}`,
-            encoding: Encoding.UTF8
+            encoding: Encoding.UTF8,
         });
-    } catch (err) {}
+    } catch (err: any) {}
 };
 
 export const debugger_: DebuggerEntity = {
@@ -29,5 +29,5 @@ export const debugger_: DebuggerEntity = {
         await appendFile(
             `[${new Date().toLocaleTimeString()} ERR!] ${proc}: ${txt}`
         );
-    }
+    },
 };

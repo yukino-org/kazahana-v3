@@ -87,7 +87,7 @@ export class Auth {
                 refresh_token: this._token.refresh_token,
                 grant_type: "refresh_token",
             });
-        } catch (err) {
+        } catch (err: any) {
             return {
                 success: false,
                 error: err?.message,
@@ -134,7 +134,7 @@ export class Auth {
                 }
             );
             return <TokenInfo>JSON.parse(res);
-        } catch (err) {
+        } catch (err: any) {
             throw err;
         }
     }

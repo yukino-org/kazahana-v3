@@ -18,7 +18,7 @@ export default defineComponent({
     name: "Authentication",
     components: {
         PageTitle,
-        Loading
+        Loading,
     },
     data() {
         const data: {
@@ -26,7 +26,7 @@ export default defineComponent({
             msg: string;
         } = {
             state: "waiting",
-            msg: "Processing..."
+            msg: "Processing...",
         };
 
         return data;
@@ -56,13 +56,13 @@ export default defineComponent({
                 await AniList.authenticate({
                     access_token,
                     token_type,
-                    expires_in: +expires_in
+                    expires_in: +expires_in,
                 });
 
                 this.$logger.emit("success", "Authentication success!");
                 this.state = "resolved";
                 this.$router.push("/connections");
-            } catch (err) {
+            } catch (err: any) {
                 this.$logger.emit(
                     "error",
                     `Authentication failed: ${err?.message}`
@@ -70,7 +70,7 @@ export default defineComponent({
                 this.state = "failed";
                 this.msg = "Authentication failed";
             }
-        }
-    }
+        },
+    },
 });
 </script>

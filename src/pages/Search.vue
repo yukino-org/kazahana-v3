@@ -532,7 +532,7 @@ export default defineComponent({
                             })
                         );
                     }
-                } catch (err) {
+                } catch (err: any) {
                     this.result.state = "failed";
                     return this.$logger.emit(
                         "error",

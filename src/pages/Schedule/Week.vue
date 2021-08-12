@@ -215,7 +215,7 @@ export default defineComponent({
                 const data = await client.integrations.MyAnimeList.schedule();
                 this.schedule.data = data;
                 this.schedule.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.schedule.state = "failed";
                 this.$logger.emit(
                     "error",

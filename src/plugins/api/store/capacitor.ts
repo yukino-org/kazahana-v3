@@ -6,10 +6,10 @@ export const Store: StoreEntity<StoreStructure> = {
     async get(key) {
         try {
             const { value } = await SecureStoragePlugin.get({
-                key
+                key,
             });
             return value ? JSON.parse(value) : null;
-        } catch (err) {
+        } catch (err: any) {
             return null;
         }
     },
@@ -17,15 +17,15 @@ export const Store: StoreEntity<StoreStructure> = {
         try {
             await SecureStoragePlugin.set({
                 key,
-                value: JSON.stringify(value)
+                value: JSON.stringify(value),
             });
-        } catch (err) {}
+        } catch (err: any) {}
     },
     async clear() {
         try {
             const { value } = await SecureStoragePlugin.clear();
             return value;
-        } catch (err) {
+        } catch (err: any) {
             return false;
         }
     },
@@ -39,5 +39,5 @@ export const Store: StoreEntity<StoreStructure> = {
         }
 
         return <StoreAllType<StoreStructure>>all;
-    }
+    },
 };

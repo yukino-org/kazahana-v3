@@ -3,9 +3,7 @@
         <PageTitle title="Home" />
 
         <div>
-            <p class="-mt-1 text-xl text-indigo-500 font-bold">
-                Top Animes
-            </p>
+            <p class="-mt-1 text-xl text-indigo-500 font-bold">Top Animes</p>
 
             <Loading
                 class="mt-4"
@@ -48,7 +46,7 @@
                                 'capitalize px-1.5 rounded-sm cursor-pointer',
                                 cat === selected
                                     ? 'bg-indigo-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-800'
+                                    : 'bg-gray-100 dark:bg-gray-800',
                             ]"
                             @click.stop.prevent="!!void selectCategory(cat)"
                         >
@@ -81,8 +79,8 @@
                                 :to="{
                                     path: '/anime',
                                     query: {
-                                        url: anime.url
-                                    }
+                                        url: anime.url,
+                                    },
                                 }"
                             >
                                 <div
@@ -163,7 +161,7 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        ExternalLink
+        ExternalLink,
     },
     data() {
         const data: {
@@ -182,7 +180,7 @@ export default defineComponent({
         } = {
             categories: [],
             animes: util.createStateControllerNoNull({}),
-            selected: "all"
+            selected: "all",
         };
 
         return data;
@@ -195,7 +193,8 @@ export default defineComponent({
     methods: {
         async getCategories() {
             const client = await Extractors.getClient();
-            this.categories = await client.integrations.MyAnimeList.getTopAnimeTypes();
+            this.categories =
+                await client.integrations.MyAnimeList.getTopAnimeTypes();
         },
         async getTopAnimes(type: string) {
             try {
@@ -206,7 +205,7 @@ export default defineComponent({
                 );
                 this.animes.data[type] = data;
                 this.animes.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.animes.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -217,7 +216,7 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "On Homepage"
+                details: "On Homepage",
             });
         },
         selectCategory(type: string) {
@@ -230,7 +229,7 @@ export default defineComponent({
         makeProperCategory(cat: string) {
             if (cat === "bypopularity") cat = "Popularity";
             return cat;
-        }
-    }
+        },
+    },
 });
 </script>

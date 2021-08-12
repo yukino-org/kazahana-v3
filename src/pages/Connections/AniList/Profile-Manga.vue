@@ -21,7 +21,13 @@
         </p>
         <div class="mt-6" v-else-if="userinfo.data">
             <div
-                class="flex flex-row justify-center items-center flex-wrap gap-4"
+                class="
+                    flex flex-row
+                    justify-center
+                    items-center
+                    flex-wrap
+                    gap-4
+                "
             >
                 <img
                     class="flex-none w-16 h-16 rounded-full"
@@ -79,8 +85,8 @@
                         :to="{
                             path: '/manga',
                             query: {
-                                url: `${malBaseURL}/manga/${item.media.idMal}`
-                            }
+                                url: `${malBaseURL}/manga/${item.media.idMal}`,
+                            },
                         }"
                         v-for="item in items.data"
                     >
@@ -134,7 +140,7 @@
                                     class="mt-1.5 text-xs opacity-75"
                                     v-if="
                                         selectedTab === 'COMPLETED' &&
-                                            item.completedAt
+                                        item.completedAt
                                     "
                                 >
                                     Completed at:
@@ -230,7 +236,7 @@ export default defineComponent({
         PageTitle,
         Loading,
         TabBar,
-        ExternalLink
+        ExternalLink,
     },
     data() {
         const data: {
@@ -246,9 +252,9 @@ export default defineComponent({
             malBaseURL: string;
         } = {
             userinfo: util.createStateController(),
-            tabs: Status.map(x => ({
+            tabs: Status.map((x) => ({
                 id: x,
-                text: `${x[0].toUpperCase()}${x.slice(1).toLowerCase()}`
+                text: `${x[0].toUpperCase()}${x.slice(1).toLowerCase()}`,
             })),
             selectedTab:
                 typeof this.$route.query.selected === "string"
@@ -256,7 +262,7 @@ export default defineComponent({
                     : Status[0],
             items: util.createStateController(),
             page: 0,
-            malBaseURL: MyAnimeList.webURL
+            malBaseURL: MyAnimeList.webURL,
         };
 
         return data;
@@ -283,7 +289,7 @@ export default defineComponent({
 
                 this.userinfo.data = info;
                 this.userinfo.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.userinfo.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -301,7 +307,7 @@ export default defineComponent({
                 );
                 this.items.state = "resolved";
                 this.items.data = items || null;
-            } catch (err) {
+            } catch (err: any) {
                 this.items.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -323,18 +329,18 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their AniList profile (Manga)"
+                details: "Viewing their AniList profile (Manga)",
             });
         },
         handleTabChange(tab: TabEntity) {
             this.selectedTab = tab.id;
             this.$router.replace({
                 query: {
-                    selected: tab.id
-                }
+                    selected: tab.id,
+                },
             });
             this.getItems();
-        }
-    }
+        },
+    },
 });
 </script>

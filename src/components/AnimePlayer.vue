@@ -55,7 +55,15 @@
                     >
                         <span class="mr-2 opacity-75">Player width:</span>
                         <select
-                            class="bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                            class="
+                                bg-gray-100
+                                dark:bg-gray-800
+                                rounded
+                                py-1
+                                border-transparent
+                                focus:ring-0 focus:outline-none
+                                capitalize
+                            "
                             v-model="playerWidth"
                         >
                             <option
@@ -108,7 +116,7 @@
                 <span
                     :class="[
                         'ml-2 cursor-pointer opacity-75 hover:opacity-100 transition duration-200',
-                        showCopied && 'opacity-100 text-green-500'
+                        showCopied && 'opacity-100 text-green-500',
                     ]"
                     @click.stop.prevent="!!void copyCurrentUrlToClipboard()"
                 >
@@ -221,7 +229,7 @@ import {
     Extractors,
     ExtractorsEntity,
     FullScreen,
-    Store
+    Store,
 } from "../plugins/api";
 import { Await, StateController, constants, util } from "../plugins/util";
 import { StoreKeys } from "../plugins/types";
@@ -235,14 +243,14 @@ export default defineComponent({
     components: {
         Loading,
         ExternalLink,
-        VideoPlayer
+        VideoPlayer,
     },
     props: {
         title: String,
         episode: String,
         plugin: String,
         link: String,
-        autoPlayHandler: Function
+        autoPlayHandler: Function,
     },
     setup() {
         const player = ref<InstanceType<typeof VideoPlayer> | null>(null);
@@ -276,7 +284,7 @@ export default defineComponent({
             lastWatchUpdated: 0,
             autoPlay: false,
             autoNext: false,
-            showCopied: false
+            showCopied: false,
         };
 
         return data;
@@ -327,7 +335,7 @@ export default defineComponent({
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop,
-                    behavior: "smooth"
+                    behavior: "smooth",
                 });
             }
         },
@@ -353,8 +361,8 @@ export default defineComponent({
                     this.link
                 );
 
-                this.info.data = data.sort(x =>
-                    x.type.some(y => ["streamable"].includes(y)) ? -1 : 1
+                this.info.data = data.sort((x) =>
+                    x.type.some((y) => ["streamable"].includes(y)) ? -1 : 1
                 );
                 this.info.state = "resolved";
 
@@ -365,7 +373,7 @@ export default defineComponent({
                         this.$bus.dispatch("set-AniList-anime-episode", ep);
                     }
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.info.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -400,7 +408,7 @@ export default defineComponent({
 
             this.currentPlaying = {
                 type,
-                url
+                url,
             };
 
             if (url?.includes("m3u8")) {
@@ -444,13 +452,13 @@ export default defineComponent({
                         this.$bus.dispatch("update-MAL-anime-status", {
                             episode: +ep,
                             status: "watching",
-                            autoComplete: true
+                            autoComplete: true,
                         });
 
                         this.$bus.dispatch("update-AniList-anime-status", {
                             episode: +ep,
                             status: "CURRENT",
-                            autoComplete: true
+                            autoComplete: true,
                         });
                     }
                 }
@@ -463,20 +471,20 @@ export default defineComponent({
                             episode: {
                                 episode: this.episode!,
                                 watched: this.player.duration.playedSecs,
-                                total: this.player.duration.totalSecs
+                                total: this.player.duration.totalSecs,
                             },
                             updatedAt: Date.now(),
                             route: {
                                 route: this.$route.path,
                                 queries: <Record<string, string>>{
-                                    ...this.$route.query
-                                }
+                                    ...this.$route.query,
+                                },
                             },
-                            showPopup: true
+                            showPopup: true,
                         });
                         this.lastWatchUpdated = Date.now();
                     }
-                } catch (err) {
+                } catch (err: any) {
                     this.$logger.emit(
                         "error",
                         `Failed to updated last watched: ${err?.message}`
@@ -498,7 +506,7 @@ export default defineComponent({
             }, 5000);
         },
         shrinkText: (txt: string) => util.shrinkedText(txt, 80),
-        getValidImageUrl: util.getValidImageUrl
-    }
+        getValidImageUrl: util.getValidImageUrl,
+    },
 });
 </script>

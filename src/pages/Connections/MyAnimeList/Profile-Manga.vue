@@ -68,8 +68,8 @@
                         :to="{
                             path: '/anime',
                             query: {
-                                url: `${malBaseURL}/anime/${item.node.id}`
-                            }
+                                url: `${malBaseURL}/anime/${item.node.id}`,
+                            },
                         }"
                         v-for="item in items.data.data"
                     >
@@ -205,7 +205,7 @@
 import { defineComponent } from "vue";
 import { Rpc } from "../../../plugins/api";
 import MyAnimeList, {
-    MangaStatus
+    MangaStatus,
 } from "../../../plugins/integrations/myanimelist";
 import { Await, NotNull, StateController, util } from "../../../plugins/util";
 
@@ -218,7 +218,7 @@ export default defineComponent({
     components: {
         PageTitle,
         Loading,
-        TabBar
+        TabBar,
     },
     data() {
         const data: {
@@ -234,14 +234,14 @@ export default defineComponent({
             malBaseURL: string;
         } = {
             userinfo: util.createStateController(),
-            tabs: MangaStatus.map(x => ({
+            tabs: MangaStatus.map((x) => ({
                 id: x,
-                text: x.replace(/_/g, " ")
+                text: x.replace(/_/g, " "),
             })),
             selectedTab: MangaStatus[0],
             items: util.createStateController(),
             page: 0,
-            malBaseURL: MyAnimeList.webURL
+            malBaseURL: MyAnimeList.webURL,
         };
 
         return data;
@@ -268,7 +268,7 @@ export default defineComponent({
 
                 this.userinfo.data = info;
                 this.userinfo.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.userinfo.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -288,7 +288,7 @@ export default defineComponent({
                 this.items.state = "resolved";
 
                 this.items.data = items || null;
-            } catch (err) {
+            } catch (err: any) {
                 this.items.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -310,13 +310,13 @@ export default defineComponent({
         async setRpc() {
             const rpc = await Rpc.getClient();
             rpc?.({
-                details: "Viewing their MyAnimeList profile (Manga)"
+                details: "Viewing their MyAnimeList profile (Manga)",
             });
         },
         handleTabChange(tab: TabEntity) {
             this.selectedTab = tab.id;
             this.getItems();
-        }
-    }
+        },
+    },
 });
 </script>

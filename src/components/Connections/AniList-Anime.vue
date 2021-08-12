@@ -1,7 +1,14 @@
 <template>
     <div>
         <div
-            class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4"
+            class="
+                flex flex-col
+                md:flex-row
+                justify-center
+                items-center
+                gap-2
+                md:gap-4
+            "
         >
             <div class="w-full md:w-auto flex-grow flex items-center gap-3">
                 <img class="w-7 h-auto rounded" :src="logo" alt="AniList" />
@@ -28,10 +35,29 @@
             </div>
 
             <div
-                class="w-full md:w-auto flex flex-row justify-end items-center gap-2 flex-wrap text-sm"
+                class="
+                    w-full
+                    md:w-auto
+                    flex flex-row
+                    justify-end
+                    items-center
+                    gap-2
+                    flex-wrap
+                    text-sm
+                "
             >
                 <router-link
-                    class="text-white px-3 py-2 focus:outline-none bg-blue-500 hover:bg-blue-600 transition duration-200 rounded"
+                    class="
+                        text-white
+                        px-3
+                        py-2
+                        focus:outline-none
+                        bg-blue-500
+                        hover:bg-blue-600
+                        transition
+                        duration-200
+                        rounded
+                    "
                     to="/connections"
                     v-if="!loggedIn"
                 >
@@ -42,14 +68,34 @@
                     v-if="info.data && typeof currentEpisode === 'number'"
                 >
                     <button
-                        class="text-white focus:outline-none bg-red-500 hover:bg-red-600 transition duration-300 px-3 py-2 rounded"
+                        class="
+                            text-white
+                            focus:outline-none
+                            bg-red-500
+                            hover:bg-red-600
+                            transition
+                            duration-300
+                            px-3
+                            py-2
+                            rounded
+                        "
                         v-if="info.data.progress >= currentEpisode"
                         @click.stop.prevent="!!void setWatched(false)"
                     >
                         <Icon class="mr-1" icon="eye-slash" /> Mark as unwatched
                     </button>
                     <button
-                        class="text-white focus:outline-none bg-green-500 hover:bg-green-600 transition duration-300 px-3 py-2 rounded"
+                        class="
+                            text-white
+                            focus:outline-none
+                            bg-green-500
+                            hover:bg-green-600
+                            transition
+                            duration-300
+                            px-3
+                            py-2
+                            rounded
+                        "
                         v-else
                         @click.stop.prevent="!!void setWatched(true)"
                     >
@@ -58,7 +104,15 @@
                 </template>
 
                 <select
-                    class="bg-gray-100 dark:bg-gray-800 rounded py-1.5 border-transparent focus:ring-0 focus:outline-none capitalize"
+                    class="
+                        bg-gray-100
+                        dark:bg-gray-800
+                        rounded
+                        py-1.5
+                        border-transparent
+                        focus:ring-0 focus:outline-none
+                        capitalize
+                    "
                     style="font-size: inherit"
                     @change="updateStatus($event)"
                     v-if="info.data"
@@ -70,7 +124,7 @@
                     >
                         {{
                             status[0].toUpperCase() +
-                                status.slice(1).toLowerCase()
+                            status.slice(1).toLowerCase()
                         }}
                     </option>
                 </select>
@@ -88,7 +142,15 @@
                 "
             >
                 <input
-                    class="flex-grow bg-gray-100 dark:bg-gray-800 rounded border-transparent transition duration-300"
+                    class="
+                        flex-grow
+                        bg-gray-100
+                        dark:bg-gray-800
+                        rounded
+                        border-transparent
+                        transition
+                        duration-300
+                    "
                     v-model="computedAltTitle"
                     type="text"
                     placeholder="Type in anime's name..."
@@ -97,7 +159,16 @@
 
                 <button
                     type="submit"
-                    class="text-white px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600 transition duration-200"
+                    class="
+                        text-white
+                        px-4
+                        py-2
+                        rounded
+                        bg-indigo-500
+                        hover:bg-indigo-600
+                        transition
+                        duration-200
+                    "
                     @click.stop.prevent="!!void searchAniList()"
                 >
                     Search
@@ -124,7 +195,7 @@
                     class="mt-6 opacity-75 text-center"
                     v-else-if="
                         others.animeSearchResults.state === 'resolved' &&
-                            !others.animeSearchResults.data
+                        !others.animeSearchResults.data
                     "
                 >
                     No results were found.
@@ -133,7 +204,7 @@
                     class="grid gap-2"
                     v-else="
                         others.animeSearchResults.state === 'resolved' &&
-                            others.animeSearchResults.data
+                        others.animeSearchResults.data
                     "
                 >
                     <div
@@ -180,11 +251,11 @@ import {
     NotNull,
     StateController,
     constants,
-    util
+    util,
 } from "../../plugins/util";
 import {
     AniListAnimeConnectionSubscriber,
-    StoreKeys
+    StoreKeys,
 } from "../../plugins/types";
 
 import Loading from "../Loading.vue";
@@ -199,16 +270,16 @@ export default defineComponent({
     props: {
         id: Number,
         altTitle: String,
-        altURL: String
+        altURL: String,
     },
     components: {
         Loading,
-        Popup
+        Popup,
     },
     data() {
         const data: {
             computedId: number | null;
-            computedAltTitle: string | null;
+            computedAltTitle: string;
             loggedIn: boolean;
             logo: string;
             info: StateController<ReducedGetAnimeEntity>;
@@ -222,16 +293,16 @@ export default defineComponent({
             currentEpisode: number | null;
         } = {
             computedId: this.id || null,
-            computedAltTitle: this.altTitle || null,
+            computedAltTitle: this.altTitle || "",
             loggedIn: AniList.isLoggedIn(),
             logo: constants.assets.images.aniListLogo,
             info: util.createStateController(),
             allowedStatus: <any>Status,
             others: {
-                animeSearchResults: util.createStateController()
+                animeSearchResults: util.createStateController(),
             },
             showSearch: false,
-            currentEpisode: null
+            currentEpisode: null,
         };
 
         return data;
@@ -277,7 +348,7 @@ export default defineComponent({
             const all =
                 (await store.get(StoreKeys.aniListAnimeCacheTitles)) || [];
 
-            const cached = all.find(x => x.altURLs.includes(this.altURL!));
+            const cached = all.find((x) => x.altURLs.includes(this.altURL!));
 
             if (cached) {
                 this.computedId = cached.id;
@@ -291,14 +362,16 @@ export default defineComponent({
                 (await store.get(StoreKeys.aniListAnimeCacheTitles)) || [];
 
             let added = false;
-            all.map(item => {
+            all.map((item) => {
                 if (item.id === this.computedId) {
                     if (!item.altURLs.includes(this.altURL!)) {
                         item.altURLs.push(this.altURL!);
                     }
                     added = true;
                 } else if (item.altURLs.includes(this.altURL!)) {
-                    item.altURLs = item.altURLs.filter(x => x !== this.altURL!);
+                    item.altURLs = item.altURLs.filter(
+                        (x) => x !== this.altURL!
+                    );
                 }
 
                 return item;
@@ -307,7 +380,7 @@ export default defineComponent({
             if (!added) {
                 all.push({
                     id: this.computedId,
-                    altURLs: [this.altURL]
+                    altURLs: [this.altURL],
                 });
             }
 
@@ -347,7 +420,7 @@ export default defineComponent({
                     info = {
                         status: "CURRENT",
                         progress: 0,
-                        media: gen
+                        media: gen,
                     };
                 }
             }
@@ -365,7 +438,7 @@ export default defineComponent({
             const value = (event.target as HTMLInputElement | null)?.value;
             if (value && this.allowedStatus.includes(value)) {
                 await AniList.updateAnime(this.computedId, {
-                    status: <any>value
+                    status: <any>value,
                 });
             }
         },
@@ -389,12 +462,12 @@ export default defineComponent({
             try {
                 const res = await AniList.updateAnime(this.computedId, {
                     progress: data.episode,
-                    status: data.status || "CURRENT"
+                    status: data.status || "CURRENT",
                 });
                 if (res) {
                     this.info.data = res;
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.$logger.emit(
                     "error",
                     `Failed to update episode while syncing with MAL: ${err?.message}`
@@ -414,9 +487,11 @@ export default defineComponent({
             if (typeof this.currentEpisode !== "number") return;
 
             this.setStatus({
-                episode: watched ? this.currentEpisode : this.currentEpisode - 1
+                episode: watched
+                    ? this.currentEpisode
+                    : this.currentEpisode - 1,
             });
-        }
-    }
+        },
+    },
 });
 </script>

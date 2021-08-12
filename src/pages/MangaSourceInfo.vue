@@ -26,7 +26,13 @@
             v-else-if="info.state === 'resolved' && info.data"
         >
             <div
-                class="flex flex-col md:flex-row justify-center items-center gap-6"
+                class="
+                    flex flex-col
+                    md:flex-row
+                    justify-center
+                    items-center
+                    gap-6
+                "
             >
                 <img
                     class="flex-none w-36 lg:w-44 rounded"
@@ -39,7 +45,7 @@
                     :class="[
                         'flex-grow text-center',
                         selected &&
-                            'flex flex-col md:flex-row justify-between items-center gap-6'
+                            'flex flex-col md:flex-row justify-between items-center gap-6',
                     ]"
                 >
                     <PageTitle :title="info.data.title" />
@@ -48,14 +54,14 @@
                         :class="[
                             !selected && 'mt-6',
                             'flex-grow md:flex-initial flex flex-row justify-center items-center flex-wrap',
-                            selected ? 'gap-6' : 'gap-8'
+                            selected ? 'gap-6' : 'gap-8',
                         ]"
                     >
                         <div>
                             <p
                                 :class="[
                                     'opacity-75 block',
-                                    selected && 'md:hidden'
+                                    selected && 'md:hidden',
                                 ]"
                             >
                                 Favorite
@@ -82,7 +88,7 @@
                             <p
                                 :class="[
                                     'opacity-75 block',
-                                    selected && 'md:hidden'
+                                    selected && 'md:hidden',
                                 ]"
                             >
                                 Bookmark
@@ -279,7 +285,7 @@ export default defineComponent({
         ExternalLink,
         MangaPager,
         MyAnimeListMangaConnection,
-        AniListMangaConnection
+        AniListMangaConnection,
     },
     data() {
         const data: {
@@ -305,7 +311,7 @@ export default defineComponent({
             selected: null,
             [StoreKeys.bookmarked]: false,
             [StoreKeys.favorite]: false,
-            reversed: false
+            reversed: false,
         };
 
         return data;
@@ -340,7 +346,7 @@ export default defineComponent({
 
                 if (typeof chapter === "string" && typeof volume === "string") {
                     const foundChap = this.info.data.chapters.find(
-                        x => x.chapter === chapter && x.volume === volume
+                        (x) => x.chapter === chapter && x.volume === volume
                     );
                     if (foundChap) {
                         this.selectChapter(foundChap);
@@ -352,12 +358,12 @@ export default defineComponent({
                 const store = await Store.getClient();
 
                 ([StoreKeys.bookmarked, StoreKeys.favorite] as const).forEach(
-                    async key => {
+                    async (key) => {
                         const allBookmarked = (await store.get(key)) || [];
 
                         this[key] =
                             allBookmarked.findIndex(
-                                x =>
+                                (x) =>
                                     x.route.queries.url ===
                                     this.$route.query.url
                             ) >= 0;
@@ -380,9 +386,9 @@ export default defineComponent({
                         route: {
                             route: this.$route.path,
                             queries: {
-                                ...(<Record<string, string>>this.$route.query)
-                            }
-                        }
+                                ...(<Record<string, string>>this.$route.query),
+                            },
+                        },
                     });
 
                     await store.set(
@@ -390,7 +396,7 @@ export default defineComponent({
                         allRecentlyViewed.slice(0, 100)
                     );
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.info.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -418,10 +424,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link
-                              }
+                                  url: this.link,
+                              },
                           ]
-                        : undefined
+                        : undefined,
                 });
             } else {
                 this.refreshRpc();
@@ -432,7 +438,7 @@ export default defineComponent({
 
             if (this.selected) {
                 const currentIndex = this.info.data.chapters.findIndex(
-                    x => x.url === this.selected?.url
+                    (x) => x.url === this.selected?.url
                 );
                 const prevChapter = this.info.data.chapters[currentIndex - 1];
                 if (prevChapter) {
@@ -449,7 +455,7 @@ export default defineComponent({
 
             if (this.selected) {
                 const currentIndex = this.info.data.chapters.findIndex(
-                    x => x.url === this.selected?.url
+                    (x) => x.url === this.selected?.url
                 );
                 const nextChapter = this.info.data.chapters[currentIndex + 1];
                 if (nextChapter) {
@@ -472,10 +478,10 @@ export default defineComponent({
                         ? [
                               {
                                   label: "View",
-                                  url: this.link
-                              }
+                                  url: this.link,
+                              },
                           ]
-                        : undefined
+                        : undefined,
                 });
             }
         },
@@ -486,7 +492,7 @@ export default defineComponent({
             const allBookmarked = (await store.get(StoreKeys[type])) || [];
 
             const index = allBookmarked.findIndex(
-                x => x.route.queries.url === this.$route.query.url
+                (x) => x.route.queries.url === this.$route.query.url
             );
 
             if (index >= 0) {
@@ -501,15 +507,15 @@ export default defineComponent({
                     route: {
                         route: this.$route.path,
                         queries: {
-                            ...(<Record<string, string>>this.$route.query)
-                        }
-                    }
+                            ...(<Record<string, string>>this.$route.query),
+                        },
+                    },
                 });
                 this[StoreKeys[type]] = true;
             }
 
             await store.set(StoreKeys[type], allBookmarked);
-        }
-    }
+        },
+    },
 });
 </script>

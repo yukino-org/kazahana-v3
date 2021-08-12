@@ -54,7 +54,15 @@
                         >
                             <span class="mr-2 opacity-75">Page width:</span>
                             <select
-                                class="bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                                class="
+                                    bg-gray-100
+                                    dark:bg-gray-800
+                                    rounded
+                                    py-1
+                                    border-transparent
+                                    focus:ring-0 focus:outline-none
+                                    capitalize
+                                "
                                 v-model="pageWidth"
                             >
                                 <option
@@ -69,7 +77,16 @@
                         </div>
 
                         <select
-                            class="ml-3 bg-gray-100 dark:bg-gray-800 rounded py-1 border-transparent focus:ring-0 focus:outline-none capitalize"
+                            class="
+                                ml-3
+                                bg-gray-100
+                                dark:bg-gray-800
+                                rounded
+                                py-1
+                                border-transparent
+                                focus:ring-0 focus:outline-none
+                                capitalize
+                            "
                             v-model="currentPage"
                         >
                             <option disabled :value="undefined">
@@ -90,9 +107,9 @@
                     <div
                         :class="
                             fullscreen &&
-                                `fixed ${
-                                    hasTitleBar ? 'top-8' : 'top-0'
-                                } bottom-0 right-0 left-0 bg-black bg-opacity-[0.85] z-50`
+                            `fixed ${
+                                hasTitleBar ? 'top-8' : 'top-0'
+                            } bottom-0 right-0 left-0 bg-black bg-opacity-[0.85] z-50`
                         "
                         @click.stop.prevent="!!void toggleFullscreen()"
                     >
@@ -145,7 +162,7 @@
                                     width: !fullscreen
                                         ? `${pageWidth}%`
                                         : undefined,
-                                    cursor: fullscreen ? 'zoom-out' : 'zoom-in'
+                                    cursor: fullscreen ? 'zoom-out' : 'zoom-in',
                                 }"
                                 :key="currentPageImage"
                                 @click.stop.prevent="!!void toggleFullscreen()"
@@ -184,15 +201,15 @@
                         Image URL:
                         <span
                             class="
-                        ml-2
-                        bg-gray-100
-                        dark:bg-gray-800
-                        rounded
-                        px-1
-                        break-all
-                        select-all
-                        cursor-pointer
-                    "
+                                ml-2
+                                bg-gray-100
+                                dark:bg-gray-800
+                                rounded
+                                px-1
+                                break-all
+                                select-all
+                                cursor-pointer
+                            "
                             @click.stop.prevent="
                                 !!void copyCurrentUrlToClipboard()
                             "
@@ -201,7 +218,7 @@
                         <span
                             :class="[
                                 'ml-2 cursor-pointer opacity-75 hover:opacity-100 transition duration-200',
-                                showCopied && 'opacity-100 text-green-500'
+                                showCopied && 'opacity-100 text-green-500',
                             ]"
                             @click.stop.prevent="
                                 !!void copyCurrentUrlToClipboard()
@@ -267,7 +284,15 @@
                 </button>
 
                 <select
-                    class="bg-gray-100 dark:bg-gray-800 rounded py-2 border-transparent focus:ring-0 focus:outline-none capitalize"
+                    class="
+                        bg-gray-100
+                        dark:bg-gray-800
+                        rounded
+                        py-2
+                        border-transparent
+                        focus:ring-0 focus:outline-none
+                        capitalize
+                    "
                     v-model="currentPage"
                 >
                     <option disabled :value="undefined">
@@ -297,7 +322,7 @@ import ExternalLink from "./ExternalLink.vue";
 export default defineComponent({
     components: {
         Loading,
-        ExternalLink
+        ExternalLink,
     },
     props: {
         title: String,
@@ -305,7 +330,7 @@ export default defineComponent({
         chapTitle: String,
         volume: String,
         chapter: String,
-        link: String
+        link: String,
     },
     data() {
         const data: {
@@ -320,7 +345,7 @@ export default defineComponent({
                       image: string;
                   }[]
                 | null;
-            currentPage: string | null;
+            currentPage: string;
             currentPageImage: string | null;
             pageWidth: number;
             hasTitleBar: boolean;
@@ -329,12 +354,12 @@ export default defineComponent({
         } = {
             info: util.createStateController(),
             images: null,
-            currentPage: null,
+            currentPage: "",
             currentPageImage: null,
             pageWidth: 100,
             hasTitleBar: this.$state.props.runtime.isElectron,
             fullscreen: false,
-            showCopied: false
+            showCopied: false,
         };
 
         return data;
@@ -356,7 +381,7 @@ export default defineComponent({
     },
     methods: {
         attachKeys() {
-            document.addEventListener("keydown", e => {
+            document.addEventListener("keydown", (e) => {
                 switch (e.key) {
                     case "ArrowLeft":
                         this.prevPage();
@@ -392,13 +417,13 @@ export default defineComponent({
         watchPage() {
             watch(
                 () => this.currentPage,
-                cur => {
+                (cur) => {
                     if (cur) {
                         this.updatePageImage();
 
                         if (this.info.data && this.chapter) {
                             const i = this.info.data.entities.findIndex(
-                                x => x.page === this.currentPage
+                                (x) => x.page === this.currentPage
                             );
 
                             if (i === this.info.data.entities.length - 1) {
@@ -423,7 +448,7 @@ export default defineComponent({
                 this.info.state = "resolving";
                 this.info.data = null;
                 this.images = null;
-                this.currentPage = null;
+                this.currentPage = "";
                 this.currentPageImage = null;
 
                 const client = await Extractors.getClient();
@@ -441,7 +466,7 @@ export default defineComponent({
                 delete this.$route.query.page;
 
                 this.info.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.info.state = "failed";
                 this.$logger.emit(
                     "error",
@@ -456,11 +481,12 @@ export default defineComponent({
 
             if (!this.images) this.images = [];
 
-            const found = this.images.find(x => x.page === page);
+            const found = this.images.find((x) => x.page === page);
             if (found) return found.image;
 
-            const url = this.info.data?.entities.find(x => x.page === page)
-                ?.url;
+            const url = this.info.data?.entities.find(
+                (x) => x.page === page
+            )?.url;
             if (!url) {
                 return this.$logger.emit(
                     "error",
@@ -477,11 +503,11 @@ export default defineComponent({
                 if (data) {
                     this.images.push({
                         page,
-                        image: data.image
+                        image: data.image,
                     });
                     return data.image;
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.$logger.emit(
                     "error",
                     `Could not fetch anime's information: ${err?.message}`
@@ -499,7 +525,7 @@ export default defineComponent({
                 this.info.data?.type === "page_urls"
                     ? await this.getPageImage(this.currentPage)
                     : this.info.data?.entities.find(
-                          x => x.page === this.currentPage
+                          (x) => x.page === this.currentPage
                       )?.url;
             if (img) {
                 this.currentPageImage = img;
@@ -511,7 +537,7 @@ export default defineComponent({
                 if (this.currentPage) {
                     const prevIndex =
                         this.info.data.entities.findIndex(
-                            x => x.page === this.currentPage
+                            (x) => x.page === this.currentPage
                         ) - 1;
 
                     const prev = this.info.data.entities[prevIndex];
@@ -526,7 +552,7 @@ export default defineComponent({
                 if (this.currentPage) {
                     const nextIndex =
                         this.info.data.entities.findIndex(
-                            x => x.page === this.currentPage
+                            (x) => x.page === this.currentPage
                         ) + 1;
 
                     const next = this.info.data.entities[nextIndex];
@@ -541,7 +567,7 @@ export default defineComponent({
             if (ele) {
                 window.scrollTo({
                     top: ele.offsetTop,
-                    behavior: "smooth"
+                    behavior: "smooth",
                 });
             }
         },
@@ -563,17 +589,17 @@ export default defineComponent({
                             read: this.currentPage || "-",
                             total:
                                 this.info.data?.entities.length.toString() ||
-                                "-"
+                                "-",
                         },
                         updatedAt: Date.now(),
                         route: {
                             route: this.$route.path,
-                            queries: <any>{ ...this.$route.query }
+                            queries: <any>{ ...this.$route.query },
                         },
-                        showPopup: true
+                        showPopup: true,
                     });
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.$logger.emit(
                     "error",
                     `Failed to updated last watched: ${err?.message}`
@@ -605,17 +631,17 @@ export default defineComponent({
             this.$bus.dispatch("update-MAL-manga-status", {
                 chapter: +this.chapter,
                 volume: this.volume ? +this.volume : undefined,
-                status: "reading"
+                status: "reading",
             });
 
             this.$bus.dispatch("update-AniList-manga-status", {
                 chapter: +this.chapter,
                 volume: this.volume ? +this.volume : undefined,
-                status: "CURRENT"
+                status: "CURRENT",
             });
         },
         shrinkText: (txt: string) => util.shrinkedText(txt, 80),
-        getValidImageUrl: util.getValidImageUrl
-    }
+        getValidImageUrl: util.getValidImageUrl,
+    },
 });
 </script>

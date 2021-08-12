@@ -2,7 +2,7 @@ const {
     productName,
     description,
     version,
-    homepage
+    homepage,
 } = require("../../package.json");
 const { Client: DiscordRPC } = require("discord-rpc");
 const Logger = require("./logger");
@@ -28,7 +28,7 @@ class RPC {
          * @type {DiscordRPC["prototype"]}
          */
         this.rpc = new DiscordRPC({
-            transport: "ipc"
+            transport: "ipc",
         });
 
         /**
@@ -40,6 +40,12 @@ class RPC {
          * @type {boolean}
          */
         this.disabled = Store.store.get("settings.discordRpc") === "disabled";
+
+        /**
+         * @type {boolean}
+         */
+        this.privacyMode =
+            Store.store.get("settings.discordRpcPrivacy") === "enabled";
 
         /**
          * @type {boolean}
@@ -59,14 +65,12 @@ class RPC {
     setActivity(activity) {
         try {
             if (this.ready) {
-                if (
-                    Store.store.get("settings.discordRpcPrivacy") === "enabled"
-                ) {
+                if (this.privacyMode) {
                     if (!this.alreadySetInPrivacyMode) {
                         this.rpc.setActivity(this.defaultActivity);
                         this.alreadySetInPrivacyMode = true;
-                        return;
                     }
+                    return;
                 }
 
                 this.rpc.setActivity(
@@ -90,7 +94,7 @@ class RPC {
             return false;
         }
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             this.rpc.on("ready", () => {
                 this.ready = true;
                 if (this.rpc.user) {
@@ -105,9 +109,9 @@ class RPC {
 
             this.rpc
                 .login({
-                    clientId: this.id
+                    clientId: this.id,
                 })
-                .catch(err => {
+                .catch((err) => {
                     Logger.error(
                         "discord-rpc",
                         `Failed to connect to Rpc: ${err}`
@@ -130,9 +134,9 @@ class RPC {
             buttons: [
                 {
                     label: "Download App",
-                    url: homepage
-                }
-            ]
+                    url: homepage,
+                },
+            ],
         };
     }
 }

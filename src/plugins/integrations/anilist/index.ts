@@ -187,7 +187,7 @@ export const Status = [
     "COMPLETED",
     "DROPPED",
     "PAUSED",
-    "REPEATING"
+    "REPEATING",
 ] as const;
 export type StatusType = typeof Status[number];
 
@@ -200,7 +200,7 @@ export class MyAnimeListManager {
 
     constructor() {
         this.auth = new Auth({
-            id: secrets.client_id
+            id: secrets.client_id,
         });
     }
 
@@ -247,7 +247,7 @@ export class MyAnimeListManager {
                         }
                     }
                 }
-            `
+            `,
         });
         const user: UserInfoEntity | null =
             (res && JSON.parse(res)?.data?.Viewer) || null;
@@ -305,8 +305,8 @@ export class MyAnimeListManager {
                 type: "ANIME",
                 status: status || Status,
                 page,
-                perpage
-            }
+                perpage,
+            },
         });
         return <AnimeListEntity[]>(
             ((res && JSON.parse(res)?.data?.Page?.mediaList) || [])
@@ -334,8 +334,8 @@ export class MyAnimeListManager {
             `,
             variables: {
                 userId: this.cachedUser?.id || (await this.userInfo())?.id,
-                mediaId: id
-            }
+                mediaId: id,
+            },
         });
         return <GetAnimeEntity | null>(
             ((res && JSON.parse(res)?.data?.MediaList) || null)
@@ -361,8 +361,8 @@ export class MyAnimeListManager {
                 }
             `,
             variables: {
-                mediaId: id
-            }
+                mediaId: id,
+            },
         });
         return <GetAnimeGenericEntity | null>(
             ((res && JSON.parse(res)?.data?.Media) || null)
@@ -390,8 +390,8 @@ export class MyAnimeListManager {
             `,
             variables: {
                 mediaId: id,
-                ...body
-            }
+                ...body,
+            },
         });
         return <GetAnimeEntity | null>(
             ((res && JSON.parse(res)?.data?.SaveMediaListEntry) || null)
@@ -420,8 +420,8 @@ export class MyAnimeListManager {
                 search: title,
                 type: "ANIME",
                 page: 0,
-                perPage: 20
-            }
+                perPage: 20,
+            },
         });
         return <AnimeSearchEntity[]>(
             ((res && JSON.parse(res)?.data?.Page?.media) || [])
@@ -480,8 +480,8 @@ export class MyAnimeListManager {
                 type: "MANGA",
                 status: status || Status,
                 page,
-                perpage
-            }
+                perpage,
+            },
         });
         return <MangaListEntity[]>(
             ((res && JSON.parse(res)?.data?.Page?.mediaList) || [])
@@ -511,8 +511,8 @@ export class MyAnimeListManager {
             `,
             variables: {
                 userId: this.cachedUser?.id || (await this.userInfo())?.id,
-                mediaId: id
-            }
+                mediaId: id,
+            },
         });
         return <GetMangaEntity | null>(
             ((res && JSON.parse(res)?.data?.MediaList) || null)
@@ -539,8 +539,8 @@ export class MyAnimeListManager {
                 }
             `,
             variables: {
-                mediaId: id
-            }
+                mediaId: id,
+            },
         });
         return <GetMangaGenericEntity | null>(
             ((res && JSON.parse(res)?.data?.Media) || null)
@@ -568,8 +568,8 @@ export class MyAnimeListManager {
             `,
             variables: {
                 mediaId: id,
-                ...body
-            }
+                ...body,
+            },
         });
         return <GetMangaEntity | null>(
             ((res && JSON.parse(res)?.data?.SaveMediaListEntry) || null)
@@ -598,8 +598,8 @@ export class MyAnimeListManager {
                 search: title,
                 type: "MANGA",
                 page: 0,
-                perPage: 20
-            }
+                perPage: 20,
+            },
         });
         return <MangaSearchEntity[]>(
             ((res && JSON.parse(res)?.data?.Page?.media) || [])
@@ -615,9 +615,9 @@ export class MyAnimeListManager {
                 headers: {
                     Authorization: `${this.auth.token.token_type} ${this.auth.token.access_token}`,
                     "Content-Type": "application/json",
-                    Accept: "application/json"
+                    Accept: "application/json",
                 },
-                responseType: "text"
+                responseType: "text",
             });
 
             const parsed = JSON.parse(res);
@@ -629,7 +629,7 @@ export class MyAnimeListManager {
             }
 
             return res;
-        } catch (err) {
+        } catch (err: any) {
             throw err;
         }
     }

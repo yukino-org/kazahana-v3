@@ -142,7 +142,7 @@ export default defineComponent({
 
                 this.sources.data = data;
                 this.sources.state = "resolved";
-            } catch (err) {
+            } catch (err: any) {
                 this.sources.state = "failed";
                 this.$logger.emit(
                     "error",

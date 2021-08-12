@@ -8,7 +8,7 @@ const getParams = (url: URL) => Object.fromEntries(url.searchParams);
 
 const getContentType = (headers: Record<string, any>) => {
     const contentTypeKey = Object.keys(headers).find(
-        x => x.toLowerCase() === "content-type"
+        (x) => x.toLowerCase() === "content-type"
     );
     return <string | null>(contentTypeKey ? headers[contentTypeKey] : null);
 };
@@ -17,7 +17,7 @@ const getBody = (body: any, contentType: ReturnType<typeof getContentType>) => {
     if (contentType?.includes("application/x-www-form-urlencoded")) {
         try {
             body = qs.parse(body);
-        } catch (err) {}
+        } catch (err: any) {}
     }
 
     return body;
@@ -27,7 +27,7 @@ const getData = (responseType: RequesterOptions["responseType"], data: any) => {
     if (responseType === "text" && typeof data === "object") {
         try {
             data = JSON.stringify(data);
-        } catch (err) {}
+        } catch (err: any) {}
     }
 
     return data;
@@ -42,7 +42,7 @@ export const requester: Requester = {
             params: getParams(parsed),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout
+            connectTimeout: options.timeout,
         });
         return getData(options.responseType, res.data);
     },
@@ -55,7 +55,7 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout
+            connectTimeout: options.timeout,
         });
         return getData(options.responseType, res.data);
     },
@@ -68,7 +68,7 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout
+            connectTimeout: options.timeout,
         });
         return getData(options.responseType, res.data);
     },
@@ -81,10 +81,10 @@ export const requester: Requester = {
             data: getBody(body, getContentType(options.headers)),
             headers: options.headers,
             responseType: getValidResponseType(options.responseType),
-            connectTimeout: options.timeout
+            connectTimeout: options.timeout,
         });
         return getData(options.responseType, res.data);
-    }
+    },
 };
 
 function getValidResponseType(
