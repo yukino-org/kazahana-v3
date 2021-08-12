@@ -30,10 +30,10 @@ class ListReader extends StatefulWidget {
   final void Function() nextChapter;
 
   @override
-  ListReaderState createState() => ListReaderState();
+  _ListReaderState createState() => _ListReaderState();
 }
 
-class ListReaderState extends State<ListReader> {
+class _ListReaderState extends State<ListReader> {
   final Widget loader = const CircularProgressIndicator();
 
   late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>

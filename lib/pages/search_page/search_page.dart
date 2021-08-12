@@ -50,17 +50,6 @@ class CurrentPlugin {
   String toString() => '${type.toString}-${plugin.name}';
 }
 
-class Page extends StatefulWidget {
-  const Page({
-    final Key? key,
-  }) : super(
-          key: key,
-        );
-
-  @override
-  State<Page> createState() => PageState();
-}
-
 class SearchInfo extends base_model.BaseSearchInfo {
   SearchInfo({
     required final String title,
@@ -78,7 +67,18 @@ class SearchInfo extends base_model.BaseSearchInfo {
   final PluginTypes pluginType;
 }
 
-class PageState extends State<Page> {
+class Page extends StatefulWidget {
+  const Page({
+    final Key? key,
+  }) : super(
+          key: key,
+        );
+
+  @override
+  _PageState createState() => _PageState();
+}
+
+class _PageState extends State<Page> {
   LoadState state = LoadState.waiting;
   List<String> animePlugins = extractor.Extractors.anime.keys.toList();
   List<String> mangaPlugins = extractor.Extractors.manga.keys.toList();

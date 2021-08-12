@@ -28,10 +28,10 @@ class Page extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<Page> createState() => PageState();
+  _PageState createState() => _PageState();
 }
 
-class PageState extends State<Page> with SingleTickerProviderStateMixin {
+class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   anime_model.AnimeInfo? info;
 
   anime_model.EpisodeInfo? episode;

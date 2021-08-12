@@ -26,10 +26,10 @@ class BottomBar extends StatefulWidget {
   final int initialIndex;
 
   @override
-  State<BottomBar> createState() => BottomBarState();
+  _BottomBarState createState() => _BottomBarState();
 }
 
-class BottomBarState extends State<BottomBar> {
+class _BottomBarState extends State<BottomBar> {
   late int currentIndex = widget.initialIndex;
 
   @override

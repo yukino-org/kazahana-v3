@@ -14,10 +14,10 @@ class OrientedWidget extends StatefulWidget {
   final Widget child;
 
   @override
-  State<OrientedWidget> createState() => OrientedWidgetState();
+  _OrientedWidgetState createState() => _OrientedWidgetState();
 }
 
-class OrientedWidgetState extends State<OrientedWidget> {
+class _OrientedWidgetState extends State<OrientedWidget> {
   @override
   void initState() {
     super.initState();

@@ -12,10 +12,10 @@ class FullScreenWidget extends StatefulWidget {
   final Widget child;
 
   @override
-  FullScreenState createState() => FullScreenState();
+  _FullScreenState createState() => _FullScreenState();
 }
 
-class FullScreenState extends State<FullScreenWidget> {
+class _FullScreenState extends State<FullScreenWidget> {
   final Duration interval = const Duration(seconds: 5);
   Timer? currentTimer;
   late bool isOnFullscreen;

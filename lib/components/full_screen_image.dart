@@ -9,11 +9,11 @@ class FullScreenInteractiveImage extends StatefulWidget {
   final Widget child;
 
   @override
-  FullScreenInteractiveImageState createState() =>
-      FullScreenInteractiveImageState();
+  _FullScreenInteractiveImageState createState() =>
+      _FullScreenInteractiveImageState();
 }
 
-class FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
+class _FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
     with SingleTickerProviderStateMixin {
   final Duration duration = const Duration(milliseconds: 100);
 

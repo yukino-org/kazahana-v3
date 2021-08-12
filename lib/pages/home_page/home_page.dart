@@ -8,10 +8,10 @@ class Page extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<Page> createState() => PageState();
+  _PageState createState() => _PageState();
 }
 
-class PageState extends State<Page> {
+class _PageState extends State<Page> {
   @override
   Widget build(final BuildContext context) => Container(
         padding: EdgeInsets.symmetric(

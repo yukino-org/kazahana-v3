@@ -15,10 +15,10 @@ class Page extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<Page> createState() => PageState();
+  _PageState createState() => _PageState();
 }
 
-class PageState extends State<Page> {
+class _PageState extends State<Page> {
   late int currentIndex;
   late PageController controller;
 

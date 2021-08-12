@@ -54,10 +54,10 @@ class PageReader extends StatefulWidget {
   final void Function() nextChapter;
 
   @override
-  PageReaderState createState() => PageReaderState();
+  _PageReaderState createState() => _PageReaderState();
 }
 
-class PageReaderState extends State<PageReader>
+class _PageReaderState extends State<PageReader>
     with SingleTickerProviderStateMixin {
   final Duration animationDuration = const Duration(milliseconds: 300);
 

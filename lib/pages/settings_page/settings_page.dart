@@ -34,10 +34,10 @@ class Page extends StatefulWidget {
         );
 
   @override
-  State<Page> createState() => PageState();
+  _PageState createState() => _PageState();
 }
 
-class PageState extends State<Page> {
+class _PageState extends State<Page> {
   final Duration animationDuration = const Duration(milliseconds: 200);
   Pages currentPage = Pages.home;
   final List<SettingsCategory> categories = <SettingsCategory>[

@@ -29,10 +29,10 @@ class MainApp extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  MainAppState createState() => MainAppState();
+  _MainAppState createState() => _MainAppState();
 }
 
-class MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> {
   bool useSystemPreferredTheme = true;
   bool useDarkMode = true;
 

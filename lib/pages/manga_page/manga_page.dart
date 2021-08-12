@@ -31,10 +31,10 @@ class Page extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<Page> createState() => PageState();
+  _PageState createState() => _PageState();
 }
 
-class PageState extends State<Page> with SingleTickerProviderStateMixin {
+class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   manga_model.MangaInfo? info;
 
   manga_model.ChapterInfo? chapter;
