@@ -3,8 +3,8 @@ import 'package:yukino_app/core/extractor/manga/model.dart';
 import 'package:yukino_app/core/models/languages.dart';
 import '../tester.dart' as tester;
 
-void main() => tester.getSources(
-      MangaDex(),
+void main() => tester.getChapter(
+      MangaDexOrg(),
       ChapterInfo(
         volume: '7',
         chapter: '39',

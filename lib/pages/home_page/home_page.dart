@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/utils.dart' as utils;
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
@@ -15,8 +15,8 @@ class PageState extends State<Page> {
   @override
   Widget build(final BuildContext context) => Container(
         padding: EdgeInsets.symmetric(
-          vertical: utils.remToPx(1),
-          horizontal: utils.remToPx(1.25),
+          vertical: remToPx(1),
+          horizontal: remToPx(1.25),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

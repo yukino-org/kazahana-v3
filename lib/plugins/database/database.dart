@@ -1,9 +1,20 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import './schemas/cached_result/cached_result.dart' as cached_result_schema;
 import './schemas/settings/settings.dart' as settings_schema;
 
+abstract class TypeIds {
+  static const int settings = 1;
+  static const int mangaDirections = 2;
+  static const int mangaSwipeDirections = 3;
+  static const int mangaMode = 4;
+  static const int cachedResult = 5;
+}
+
 abstract class DataStoreBoxNames {
-  static const String main = 'main_box';
+  static const String settings = 'settings_box';
+  static const String cachedAnimeInfo = 'cached_anime_box';
+  static const String cachedMangaInfo = 'cached_manga_box';
 }
 
 abstract class DataStoreKeys {
@@ -11,7 +22,18 @@ abstract class DataStoreKeys {
 }
 
 abstract class DataBox {
-  static Box<dynamic> get main => Hive.box(DataStoreBoxNames.main);
+  static Box<settings_schema.SettingsSchema> get settings =>
+      Hive.box<settings_schema.SettingsSchema>(DataStoreBoxNames.settings);
+
+  static Box<cached_result_schema.CachedResultSchema> get animeInfo =>
+      Hive.box<cached_result_schema.CachedResultSchema>(
+        DataStoreBoxNames.cachedAnimeInfo,
+      );
+
+  static Box<cached_result_schema.CachedResultSchema> get mangaInfo =>
+      Hive.box<cached_result_schema.CachedResultSchema>(
+        DataStoreBoxNames.cachedMangaInfo,
+      );
 }
 
 abstract class DataStore {
@@ -22,12 +44,27 @@ abstract class DataStore {
     Hive.registerAdapter(settings_schema.MangaDirectionsAdapter());
     Hive.registerAdapter(settings_schema.MangaSwipeDirectionsAdapter());
     Hive.registerAdapter(settings_schema.MangaModeAdapter());
+    await Hive.openBox<settings_schema.SettingsSchema>(
+      DataStoreBoxNames.settings,
+    );
 
-    await Hive.openBox(DataStoreBoxNames.main);
+    Hive.registerAdapter(cached_result_schema.CachedResultSchemaAdapter());
+    await Hive.openBox<cached_result_schema.CachedResultSchema>(
+      DataStoreBoxNames.cachedAnimeInfo,
+    );
+    await Hive.openBox<cached_result_schema.CachedResultSchema>(
+      DataStoreBoxNames.cachedMangaInfo,
+    );
   }
 
-  static settings_schema.SettingsSchema getSettings() => DataBox.main.get(
-        DataStoreKeys.settings,
-        defaultValue: settings_schema.SettingsSchema(),
-      ) as settings_schema.SettingsSchema;
+  static settings_schema.SettingsSchema get settings {
+    final settings_schema.SettingsSchema defaultValue =
+        settings_schema.SettingsSchema();
+
+    return DataBox.settings.get(
+          DataStoreKeys.settings,
+          defaultValue: defaultValue,
+        ) ??
+        defaultValue;
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import './model.dart';
-import '../../../utils.dart' as utils;
+import '../../../../plugins/helpers/utils/http.dart';
 import '../model.dart' show getQuality, Qualities;
 
 class SbPlayOrg extends SourceRetriever {
@@ -11,7 +11,7 @@ class SbPlayOrg extends SourceRetriever {
   final String baseURL = 'https://sbplay.org';
 
   late final Map<String, String> defaultHeaders = <String, String>{
-    'User-Agent': utils.Http.userAgent,
+    'User-Agent': HttpUtils.userAgent,
   };
 
   @override
@@ -23,10 +23,10 @@ class SbPlayOrg extends SourceRetriever {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(url.replaceFirst('embed-', 'd/'))),
+            Uri.parse(HttpUtils.tryEncodeURL(url.replaceFirst('embed-', 'd/'))),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final List<RetrievedSource> sources = <RetrievedSource>[];
       for (final RegExpMatch match
@@ -45,13 +45,13 @@ class SbPlayOrg extends SourceRetriever {
           final http.Response res = await http
               .get(
                 Uri.parse(
-                  utils.Fns.tryEncodeURL(
+                  HttpUtils.tryEncodeURL(
                     '$baseURL/dl?op=download_orig&id=$code&mode=$mode&hash=$hash',
                   ),
                 ),
                 headers: defaultHeaders,
               )
-              .timeout(utils.Http.timeout);
+              .timeout(HttpUtils.timeout);
 
           final String? src =
               RegExp(r'<a href="(.*?)">Direct Download Link<\/a>')

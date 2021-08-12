@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../components/network_image_fallback.dart';
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/model.dart' as base_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/manga_page.dart' as manga_page;
-import '../../core/utils.dart' as utils;
+import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/stateful_holder.dart';
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 
@@ -64,7 +67,7 @@ class SearchInfo extends base_model.BaseSearchInfo {
     required final String url,
     required final this.plugin,
     required final this.pluginType,
-    final String? thumbnail,
+    final base_model.ImageInfo? thumbnail,
   }) : super(
           title: title,
           url: url,
@@ -76,7 +79,7 @@ class SearchInfo extends base_model.BaseSearchInfo {
 }
 
 class PageState extends State<Page> {
-  utils.LoadState state = utils.LoadState.waiting;
+  LoadState state = LoadState.waiting;
   List<String> animePlugins = extractor.Extractors.anime.keys.toList();
   List<String> mangaPlugins = extractor.Extractors.manga.keys.toList();
   CurrentPlugin currentPlugin = CurrentPlugin(
@@ -85,14 +88,31 @@ class PageState extends State<Page> {
   );
   List<SearchInfo> results = <SearchInfo>[];
 
+  late Widget placeholderImage;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future<void>.delayed(Duration.zero, () {
+      placeholderImage = Image.asset(
+        Assets.placeholderImage(
+          dark: isDarkContext(
+            context,
+          ),
+        ),
+      );
+    });
+  }
+
   Future<List<SearchInfo>> search(final String terms) async {
     final List<SearchInfo> results = <SearchInfo>[];
-
     final List<base_model.BaseSearchInfo> searches =
         await currentPlugin.plugin.search(
       terms,
       locale: Translator.t.code,
     );
+
     results.addAll(
       searches.map(
         (final base_model.BaseSearchInfo x) => SearchInfo(
@@ -142,7 +162,7 @@ class PageState extends State<Page> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: utils.remToPx(1),
+                  horizontal: remToPx(1),
                 ),
                 child: Text(
                   Translator.t.selectPlugin(),
@@ -154,7 +174,7 @@ class PageState extends State<Page> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: utils.remToPx(1),
+                  horizontal: remToPx(1),
                 ),
                 child: Text(
                   Translator.t.anime(),
@@ -180,7 +200,7 @@ class PageState extends State<Page> {
                   .toList(),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: utils.remToPx(1),
+                  horizontal: remToPx(1),
                 ),
                 child: Text(
                   Translator.t.manga(),
@@ -212,8 +232,8 @@ class PageState extends State<Page> {
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: utils.remToPx(0.6),
-                        vertical: utils.remToPx(0.3),
+                        horizontal: remToPx(0.6),
+                        vertical: remToPx(0.3),
                       ),
                       child: Text(
                         Translator.t.close(),
@@ -247,8 +267,8 @@ class PageState extends State<Page> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(
-              vertical: utils.remToPx(1),
-              horizontal: utils.remToPx(1.25),
+              vertical: remToPx(1),
+              horizontal: remToPx(1.25),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,37 +288,36 @@ class PageState extends State<Page> {
                   ),
                   onSubmitted: (final String terms) async {
                     setState(() {
-                      state = utils.LoadState.resolving;
+                      state = LoadState.resolving;
                     });
 
                     try {
                       final List<SearchInfo> res = await search(terms);
                       setState(() {
                         results = res;
-                        state = utils.LoadState.resolved;
+                        state = LoadState.resolved;
                       });
                     } catch (e) {
                       setState(() {
-                        state = utils.LoadState.failed;
+                        state = LoadState.failed;
                       });
                     }
                   },
                 ),
                 SizedBox(
-                  height: utils.remToPx(1.25),
+                  height: remToPx(1.25),
                 ),
                 Visibility(
-                  visible:
-                      (state == utils.LoadState.resolved && results.isEmpty) ||
-                          state == utils.LoadState.waiting ||
-                          state == utils.LoadState.failed,
+                  visible: (state == LoadState.resolved && results.isEmpty) ||
+                      state == LoadState.waiting ||
+                      state == LoadState.failed,
                   child: Align(
                     child: Text(
-                      state == utils.LoadState.waiting
+                      state == LoadState.waiting
                           ? Translator.t.enterToSearch()
-                          : state == utils.LoadState.resolved
+                          : state == LoadState.resolved
                               ? Translator.t.noResultsFound()
-                              : state == utils.LoadState.failed
+                              : state == LoadState.failed
                                   ? Translator.t.failedToGetResults()
                                   : '',
                       style: TextStyle(
@@ -312,17 +331,16 @@ class PageState extends State<Page> {
                   ),
                 ),
                 Visibility(
-                  visible: state == utils.LoadState.resolving,
+                  visible: state == LoadState.resolving,
                   child: Container(
                     margin: EdgeInsets.only(
-                      top: utils.remToPx(1.5),
+                      top: remToPx(1.5),
                     ),
                     child: const Center(child: CircularProgressIndicator()),
                   ),
                 ),
                 Visibility(
-                  visible:
-                      state == utils.LoadState.resolved && results.isNotEmpty,
+                  visible: state == LoadState.resolved && results.isNotEmpty,
                   child: Column(
                     children: results
                         .map(
@@ -341,28 +359,26 @@ class PageState extends State<Page> {
                                 );
                               },
                               child: Padding(
-                                padding: EdgeInsets.all(utils.remToPx(0.5)),
+                                padding: EdgeInsets.all(remToPx(0.5)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     SizedBox(
-                                      width: utils.remToPx(4),
+                                      width: remToPx(4),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(
-                                          utils.remToPx(0.25),
+                                          remToPx(0.25),
                                         ),
                                         child: x.thumbnail != null
-                                            ? Image.network(x.thumbnail!)
-                                            : Image.asset(
-                                                utils.Assets.placeholderImage(
-                                                  utils.Fns.isDarkContext(
-                                                    context,
-                                                  ),
-                                                ),
-                                              ),
+                                            ? FallbackableNetworkImage(
+                                                url: x.thumbnail!.url,
+                                                headers: x.thumbnail!.headers,
+                                                placeholder: placeholderImage,
+                                              )
+                                            : placeholderImage,
                                       ),
                                     ),
-                                    SizedBox(width: utils.remToPx(0.75)),
+                                    SizedBox(width: remToPx(0.75)),
                                     Expanded(
                                       flex: 3,
                                       child: Column(

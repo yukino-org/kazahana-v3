@@ -7,11 +7,20 @@ import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/languages.dart';
-import '../../core/utils.dart' as utils;
+import '../../plugins/config.dart' as config;
+import '../../plugins/database/database.dart' show DataBox;
+import '../../plugins/database/schemas/cached_result/cached_result.dart'
+    as cached_result;
+import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 
-enum Pages { home, player }
+enum Pages {
+  home,
+  player,
+}
 
 class Page extends StatefulWidget {
   const Page({
@@ -75,17 +84,44 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
   }
 
-  void getInfo() => extractor.Extractors.anime[args.plugin]!
-      .getInfo(
-        args.src,
-        locale:
-            locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
-      )
-      .then(
-        (final anime_model.AnimeInfo x) => setState(() {
-          info = x;
-        }),
-      );
+  Future<void> getInfo({
+    final bool removeCache = false,
+  }) async {
+    final int nowMs = DateTime.now().millisecondsSinceEpoch;
+    final String cacheKey = '${args.plugin}-${args.src}';
+
+    if (removeCache) {
+      await DataBox.animeInfo.delete(cacheKey);
+    }
+
+    final cached_result.CachedResultSchema? cachedAnime =
+        removeCache ? null : DataBox.animeInfo.get(cacheKey);
+
+    if (cachedAnime != null &&
+        nowMs - cachedAnime.cachedTime <
+            config.cachedAnimeInfoExpireTime.inMilliseconds) {
+      try {
+        info = anime_model.AnimeInfo.fromJson(cachedAnime.info);
+        setState(() {});
+        return;
+      } catch (_) {
+        rethrow;
+      }
+    }
+
+    info = await extractor.Extractors.anime[args.plugin]!.getInfo(
+      args.src,
+      locale: locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
+    );
+    await DataBox.animeInfo.put(
+      cacheKey,
+      cached_result.CachedResultSchema(
+        info: info!.toJson(),
+        cachedTime: nowMs,
+      ),
+    );
+    setState(() {});
+  }
 
   void setEpisode(
     final int? index,
@@ -112,22 +148,23 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
   ) {
     final Widget image = info!.thumbnail != null
         ? Image.network(
-            info!.thumbnail!,
-            width: utils.remToPx(7),
+            info!.thumbnail!.url,
+            headers: info!.thumbnail!.headers,
+            width: remToPx(7),
           )
         : Image.asset(
-            utils.Assets.placeholderImage(
-              utils.Fns.isDarkContext(context),
+            Assets.placeholderImage(
+              dark: isDarkContext(context),
             ),
-            width: utils.remToPx(7),
+            width: remToPx(7),
           );
 
     final Widget left = ClipRRect(
-      borderRadius: BorderRadius.circular(utils.remToPx(0.5)),
+      borderRadius: BorderRadius.circular(remToPx(0.5)),
       child: SizedBox(
-        width: constraints.maxWidth > utils.ResponsiveSizes.md
+        width: constraints.maxWidth > ResponsiveSizes.md
             ? (30 / 100) * constraints.maxWidth
-            : utils.remToPx(8),
+            : remToPx(8),
         child: image,
       ),
     );
@@ -153,7 +190,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
       ],
     );
 
-    if (constraints.maxWidth > utils.ResponsiveSizes.md) {
+    if (constraints.maxWidth > ResponsiveSizes.md) {
       return Row(
         children: <Widget>[
           left,
@@ -165,7 +202,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
         children: <Widget>[
           left,
           SizedBox(
-            height: utils.remToPx(1),
+            height: remToPx(1),
           ),
           right,
         ],
@@ -179,7 +216,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
 
     return Column(
-      children: utils.Fns.chunkList<Widget>(children, count, filler)
+      children: ListUtils.chunk<Widget>(children, count, filler)
           .map(
             (final List<Widget> x) => Row(
               children: x,
@@ -230,7 +267,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                               locale = val;
                               info = null;
                             });
-                            getInfo();
+                            getInfo(removeCache: true);
                           }
                           Navigator.of(context).pop();
                         },
@@ -246,8 +283,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: utils.remToPx(0.6),
-                        vertical: utils.remToPx(0.3),
+                        horizontal: remToPx(0.6),
+                        vertical: remToPx(0.3),
                       ),
                       child: Text(
                         Translator.t.close(),
@@ -276,6 +313,18 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
       backgroundColor:
           Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
       elevation: 0,
+      actions: <Widget>[
+        IconButton(
+          onPressed: () {
+            setState(() {
+              info = null;
+            });
+            getInfo(removeCache: true);
+          },
+          tooltip: Translator.t.refetch(),
+          icon: const Icon(Icons.refresh),
+        ),
+      ],
     );
 
     return WillPopScope(
@@ -313,9 +362,9 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                         body: SingleChildScrollView(
                           child: Container(
                             padding: EdgeInsets.only(
-                              left: utils.remToPx(1.25),
-                              right: utils.remToPx(1.25),
-                              bottom: utils.remToPx(1),
+                              left: remToPx(1.25),
+                              right: remToPx(1.25),
+                              bottom: remToPx(1),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -328,7 +377,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                   constraints,
                                 ),
                                 SizedBox(
-                                  height: utils.remToPx(1.5),
+                                  height: remToPx(1.5),
                                 ),
                                 Text(
                                   Translator.t.episodes(),
@@ -345,7 +394,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                   ),
                                 ),
                                 getGridLayout(
-                                  constraints.maxWidth ~/ utils.remToPx(8),
+                                  constraints.maxWidth ~/ remToPx(8),
                                   info!.episodes
                                       .asMap()
                                       .map(
@@ -362,10 +411,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                                     BorderRadius.circular(4),
                                                 child: Padding(
                                                   padding: EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        utils.remToPx(0.4),
-                                                    vertical:
-                                                        utils.remToPx(0.3),
+                                                    horizontal: remToPx(0.4),
+                                                    vertical: remToPx(0.3),
                                                   ),
                                                   child: RichText(
                                                     text: TextSpan(

@@ -1,17 +1,17 @@
 import 'package:http/http.dart' as http;
 import './model.dart';
-import '../../../utils.dart' as utils;
+import '../../../../plugins/helpers/utils/http.dart';
 import '../model.dart' show getQuality, Qualities;
 
 class StreamTapeCom extends SourceRetriever {
   @override
-  final String name = 'StreamTap.com';
+  final String name = 'StreamTape.com';
 
   @override
   final String baseURL = 'https://streamtape.com';
 
   late final Map<String, String> defaultHeaders = <String, String>{
-    'User-Agent': utils.Http.userAgent,
+    'User-Agent': HttpUtils.userAgent,
   };
 
   @override
@@ -23,10 +23,10 @@ class StreamTapeCom extends SourceRetriever {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(url)),
+            Uri.parse(HttpUtils.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.extendedTimeout);
+          .timeout(HttpUtils.extendedTimeout);
       final List<RetrievedSource> sources = <RetrievedSource>[];
 
       final String? match = RegExp(

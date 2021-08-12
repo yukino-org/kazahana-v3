@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/manga/model.dart' as manga_model;
-import '../../core/utils.dart' as utils;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaDirections, MangaSwipeDirections, MangaMode;
+import '../../plugins/helpers/stateful_holder.dart';
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
 import '../settings_page/setting_radio.dart';
@@ -33,6 +34,7 @@ class LastTapDetail {
 
 class PageReader extends StatefulWidget {
   const PageReader({
+    required final this.plugin,
     required final this.info,
     required final this.chapter,
     required final this.pages,
@@ -42,6 +44,7 @@ class PageReader extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
+  final manga_model.MangaExtractor plugin;
   final manga_model.MangaInfo info;
   final manga_model.ChapterInfo chapter;
   final List<manga_model.PageInfo> pages;
@@ -78,6 +81,13 @@ class PageReaderState extends State<PageReader>
       MangaSwipeDirections.horizontal;
   bool isReversed = AppState.settings.current.mangaReaderDirection ==
       MangaDirections.rightToLeft;
+
+  late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>
+      images = <manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>{};
+
+  final Widget loader = const Center(
+    child: CircularProgressIndicator(),
+  );
 
   @override
   void initState() {
@@ -117,12 +127,21 @@ class PageReaderState extends State<PageReader>
     );
   }
 
+  Future<void> getPage(final manga_model.PageInfo page) async {
+    images[page]!.state = LoadState.resolving;
+    final manga_model.ImageInfo image = await widget.plugin.getPage(page);
+    setState(() {
+      images[page]!.value = image;
+      images[page]!.state = LoadState.resolved;
+    });
+  }
+
   void showOptions() {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(utils.remToPx(0.5)),
-          topRight: Radius.circular(utils.remToPx(0.5)),
+          topLeft: Radius.circular(remToPx(0.5)),
+          topRight: Radius.circular(remToPx(0.5)),
         ),
       ),
       context: context,
@@ -132,7 +151,7 @@ class PageReaderState extends State<PageReader>
           final StateSetter setState,
         ) =>
             Padding(
-          padding: EdgeInsets.symmetric(vertical: utils.remToPx(0.25)),
+          padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
           child: Wrap(
             children: <Widget>[
               Column(
@@ -295,13 +314,11 @@ class PageReaderState extends State<PageReader>
 
                   final bool useDoubleClick =
                       AppState.settings.current.doubleClickSwitchChapter;
-                  // ignore: avoid_bool_literals_in_conditional_expressions
-                  final bool satisfied = useDoubleClick
-                      ? lastTapDetail?.space == currentTap.space &&
+                  final bool satisfied = !useDoubleClick ||
+                      lastTapDetail?.space == currentTap.space &&
                           (currentTap.time.millisecondsSinceEpoch -
                                   lastTapDetail!.time.millisecondsSinceEpoch) <=
-                              kDoubleTapTimeout.inMilliseconds
-                      : true;
+                              kDoubleTapTimeout.inMilliseconds;
 
                   bool done = false;
                   if (currentTap.space == TapSpace.left) {
@@ -335,7 +352,7 @@ class PageReaderState extends State<PageReader>
                     );
                   }
                 },
-                child: PageView(
+                child: PageView.builder(
                   scrollDirection:
                       AppState.settings.current.mangaReaderSwipeDirection ==
                               MangaSwipeDirections.horizontal
@@ -354,87 +371,93 @@ class PageReaderState extends State<PageReader>
                       ? const NeverScrollableScrollPhysics()
                       : const PageScrollPhysics(),
                   controller: pageController,
-                  children: (isReversed
-                          ? widget.pages.reversed.toList()
-                          : widget.pages)
-                      .asMap()
-                      .map(
-                        (final int k, final manga_model.PageInfo x) =>
-                            MapEntry<int, Column>(
-                          k,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              Expanded(
-                                child: Image.network(
-                                  x.url,
-                                  headers: x.headers,
-                                  loadingBuilder: (
-                                    final BuildContext context,
-                                    final Widget child,
-                                    final ImageChunkEvent? loadingProgress,
-                                  ) {
-                                    if (loadingProgress == null) {
-                                      return InteractiveViewer(
-                                        transformationController:
-                                            interactiveController,
-                                        child: child,
-                                        onInteractionEnd:
-                                            (final ScaleEndDetails details) {
-                                          setState(() {
-                                            interactionOnProgress =
-                                                interactiveController.value
-                                                        .getMaxScaleOnAxis() !=
-                                                    1;
-                                          });
-                                        },
-                                      );
-                                    }
+                  itemCount: widget.pages.length,
+                  itemBuilder: (final BuildContext context, final int _index) {
+                    final int index =
+                        isReversed ? widget.pages.length - _index - 1 : _index;
+                    final manga_model.PageInfo page = widget.pages[index];
 
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
-                                      ),
-                                    );
+                    if (images[page] == null) {
+                      images[page] =
+                          StatefulHolder<manga_model.ImageInfo?>(null);
+                    }
+
+                    if (!images[page]!.hasValue) {
+                      if (!images[page]!.isResolving) {
+                        getPage(page);
+                      }
+
+                      return loader;
+                    }
+
+                    final manga_model.ImageInfo image = images[page]!.value!;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Expanded(
+                          child: Image.network(
+                            image.url,
+                            headers: image.headers,
+                            loadingBuilder: (
+                              final BuildContext context,
+                              final Widget child,
+                              final ImageChunkEvent? loadingProgress,
+                            ) {
+                              if (loadingProgress == null) {
+                                return InteractiveViewer(
+                                  transformationController:
+                                      interactiveController,
+                                  child: child,
+                                  onInteractionEnd:
+                                      (final ScaleEndDetails details) {
+                                    setState(() {
+                                      interactionOnProgress =
+                                          interactiveController.value
+                                                  .getMaxScaleOnAxis() !=
+                                              1;
+                                    });
                                   },
+                                );
+                              }
+
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
                                 ),
-                              ),
-                              SizedBox(
-                                height: utils.remToPx(0.5),
-                              ),
-                              ValueListenableBuilder<Widget?>(
-                                valueListenable: footerNotificationContent,
-                                builder: (
-                                  final BuildContext context,
-                                  final Widget? footerNotificationContent,
-                                  final Widget? child,
-                                ) =>
-                                    Align(
-                                  child: AnimatedSwitcher(
-                                    duration: animationDuration,
-                                    child: footerNotificationContent ?? child!,
-                                  ),
-                                ),
-                                child: Text(
-                                  '${isReversed ? widget.pages.length - k : k + 1}/${widget.pages.length}',
-                                ),
-                              ),
-                              SizedBox(
-                                height: utils.remToPx(0.3),
-                              ),
-                            ],
+                              );
+                            },
                           ),
                         ),
-                      )
-                      .values
-                      .toList(),
+                        SizedBox(
+                          height: remToPx(0.5),
+                        ),
+                        ValueListenableBuilder<Widget?>(
+                          valueListenable: footerNotificationContent,
+                          builder: (
+                            final BuildContext context,
+                            final Widget? footerNotificationContent,
+                            final Widget? child,
+                          ) =>
+                              Align(
+                            child: AnimatedSwitcher(
+                              duration: animationDuration,
+                              child: footerNotificationContent ?? child!,
+                            ),
+                          ),
+                          child: Text(
+                            '${index + 1}/${widget.pages.length}',
+                          ),
+                        ),
+                        SizedBox(
+                          height: remToPx(0.3),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
         bottomNavigationBar: ToggleableSlideWidget(
@@ -445,20 +468,20 @@ class PageReaderState extends State<PageReader>
           curve: Curves.easeInOut,
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: utils.remToPx(0.5),
-              vertical: utils.remToPx(1) +
-                  Theme.of(context).textTheme.subtitle2!.fontSize!,
+              horizontal: remToPx(0.5),
+              vertical:
+                  remToPx(1) + Theme.of(context).textTheme.subtitle2!.fontSize!,
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(utils.remToPx(0.25)),
+                  Radius.circular(remToPx(0.25)),
                 ),
                 color: Theme.of(context).cardColor,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: utils.remToPx(0.5),
+                  horizontal: remToPx(0.5),
                 ),
                 child: Row(
                   children: <Widget>[
@@ -482,9 +505,9 @@ class PageReaderState extends State<PageReader>
                           SliderTheme(
                             data: SliderThemeData(
                               thumbShape: RoundSliderThumbShape(
-                                enabledThumbRadius: utils.remToPx(0.3),
+                                enabledThumbRadius: remToPx(0.3),
                               ),
-                              trackHeight: utils.remToPx(0.15),
+                              trackHeight: remToPx(0.15),
                               showValueIndicator: ShowValueIndicator.always,
                             ),
                             child: Slider(

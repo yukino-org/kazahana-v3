@@ -34,13 +34,24 @@ void getInfo(final MangaExtractor client, final String url) {
   });
 }
 
-void getSources(final MangaExtractor client, final ChapterInfo chapter) {
-  test('Sources', () async {
+void getChapter(final MangaExtractor client, final ChapterInfo chapter) {
+  test('Chapter', () async {
     final List<PageInfo> res = await client.getChapter(chapter);
 
     // ignore: avoid_print
     print(const JsonEncoder.withIndent('  ').convert(res));
 
     expect(res.isEmpty, false);
+  });
+}
+
+void getPage(final MangaExtractor client, final PageInfo page) {
+  test('Page', () async {
+    final ImageInfo res = await client.getPage(page);
+
+    // ignore: avoid_print
+    print(const JsonEncoder.withIndent('  ').convert(res));
+
+    expect(res.url.isEmpty, false);
   });
 }

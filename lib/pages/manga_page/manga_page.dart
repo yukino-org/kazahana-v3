@@ -8,9 +8,14 @@ import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../core/models/languages.dart';
 import '../../core/models/manga_page.dart' as manga_page;
-import '../../core/utils.dart' as utils;
+import '../../plugins/config.dart' as config;
+import '../../plugins/database/database.dart' show DataBox;
+import '../../plugins/database/schemas/cached_result/cached_result.dart'
+    as cached_result;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
+import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
@@ -104,17 +109,44 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future<void> getInfo() async => extractor.Extractors.manga[args.plugin]!
-      .getInfo(
-        args.src,
-        locale:
-            locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
-      )
-      .then(
-        (final manga_model.MangaInfo x) => setState(() {
-          info = x;
-        }),
-      );
+  Future<void> getInfo({
+    final bool removeCache = false,
+  }) async {
+    final int nowMs = DateTime.now().millisecondsSinceEpoch;
+    final String cacheKey = '${args.plugin}-${args.src}';
+
+    if (removeCache) {
+      await DataBox.mangaInfo.delete(cacheKey);
+    }
+
+    final cached_result.CachedResultSchema? cachedAnime =
+        removeCache ? null : DataBox.mangaInfo.get(cacheKey);
+
+    if (cachedAnime != null &&
+        nowMs - cachedAnime.cachedTime <
+            config.cachedMangaInfoExpireTime.inMilliseconds) {
+      try {
+        info = manga_model.MangaInfo.fromJson(cachedAnime.info);
+        setState(() {});
+        return;
+      } catch (_) {
+        rethrow;
+      }
+    }
+
+    info = await extractor.Extractors.manga[args.plugin]!.getInfo(
+      args.src,
+      locale: locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
+    );
+    await DataBox.animeInfo.put(
+      cacheKey,
+      cached_result.CachedResultSchema(
+        info: info!.toJson(),
+        cachedTime: nowMs,
+      ),
+    );
+    setState(() {});
+  }
 
   void setChapter(
     final int? index,
@@ -140,18 +172,19 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
             (final BuildContext context, final BoxConstraints constraints) {
           final Widget image = info!.thumbnail != null
               ? Image.network(
-                  info!.thumbnail!,
-                  width: utils.remToPx(7),
+                  info!.thumbnail!.url,
+                  headers: info!.thumbnail!.headers,
+                  width: remToPx(7),
                 )
               : Image.asset(
-                  utils.Assets.placeholderImage(
-                    utils.Fns.isDarkContext(context),
+                  Assets.placeholderImage(
+                    dark: isDarkContext(context),
                   ),
-                  width: utils.remToPx(7),
+                  width: remToPx(7),
                 );
 
           final Widget left = ClipRRect(
-            borderRadius: BorderRadius.circular(utils.remToPx(0.5)),
+            borderRadius: BorderRadius.circular(remToPx(0.5)),
             child: image,
           );
 
@@ -176,7 +209,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
             ],
           );
 
-          if (constraints.maxWidth > utils.ResponsiveSizes.md) {
+          if (constraints.maxWidth > ResponsiveSizes.md) {
             return Row(
               children: <Widget>[
                 left,
@@ -188,7 +221,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
               children: <Widget>[
                 left,
                 SizedBox(
-                  height: utils.remToPx(1),
+                  height: remToPx(1),
                 ),
                 right,
               ],
@@ -201,14 +234,18 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
     final List<String> first = <String>[];
     final List<String> second = <String>[];
 
-    if (chapter.volume != null) {
-      first.add('${Translator.t.volume()} ${chapter.volume}');
-    }
-
     if (chapter.title != null) {
+      if (chapter.volume != null) {
+        first.add('${Translator.t.volume()} ${chapter.volume}');
+      }
+
       first.add('${Translator.t.chapter()} ${chapter.chapter}');
       second.add(chapter.title!);
     } else {
+      if (first.isEmpty) {
+        first.add('${Translator.t.volume()} ${chapter.volume ?? '?'}');
+      }
+
       second.add('${Translator.t.chapter()} ${chapter.chapter}');
     }
 
@@ -299,7 +336,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                               locale = val;
                               info = null;
                             });
-                            getInfo();
+                            getInfo(removeCache: true);
                           }
                           Navigator.of(context).pop();
                         },
@@ -315,8 +352,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: utils.remToPx(0.6),
-                        vertical: utils.remToPx(0.3),
+                        horizontal: remToPx(0.6),
+                        vertical: remToPx(0.3),
                       ),
                       child: Text(
                         Translator.t.close(),
@@ -345,6 +382,18 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
       backgroundColor:
           Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
       elevation: 0,
+      actions: <Widget>[
+        IconButton(
+          onPressed: () {
+            setState(() {
+              info = null;
+            });
+            getInfo(removeCache: true);
+          },
+          tooltip: Translator.t.refetch(),
+          icon: const Icon(Icons.refresh),
+        ),
+      ],
     );
 
     return WillPopScope(
@@ -375,9 +424,9 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                       body: SingleChildScrollView(
                         child: Container(
                           padding: EdgeInsets.only(
-                            left: utils.remToPx(1.25),
-                            right: utils.remToPx(1.25),
-                            bottom: utils.remToPx(1),
+                            left: remToPx(1.25),
+                            right: remToPx(1.25),
+                            bottom: remToPx(1),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -387,7 +436,7 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               getHero(),
                               SizedBox(
-                                height: utils.remToPx(1.5),
+                                height: remToPx(1.5),
                               ),
                               Text(
                                 Translator.t.chapters(),
@@ -418,8 +467,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                               BorderRadius.circular(4),
                                           child: Padding(
                                             padding: EdgeInsets.symmetric(
-                                              horizontal: utils.remToPx(0.4),
-                                              vertical: utils.remToPx(0.2),
+                                              horizontal: remToPx(0.4),
+                                              vertical: remToPx(0.2),
                                             ),
                                             child: Column(
                                               crossAxisAlignment:
@@ -475,6 +524,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                         key: ValueKey<String>(
                                           'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                         ),
+                                        plugin: extractor
+                                            .Extractors.manga[args.plugin]!,
                                         info: info!,
                                         chapter: chapter!,
                                         pages: pages[chapter]!,
@@ -486,6 +537,8 @@ class PageState extends State<Page> with SingleTickerProviderStateMixin {
                                         key: ValueKey<String>(
                                           'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                         ),
+                                        plugin: extractor
+                                            .Extractors.manga[args.plugin]!,
                                         info: info!,
                                         chapter: chapter!,
                                         pages: pages[chapter]!,

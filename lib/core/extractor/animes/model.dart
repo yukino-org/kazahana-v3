@@ -1,6 +1,8 @@
 import './sources/model.dart' show RetrievedSource;
-import '../../models/languages.dart' show LanguageCodes, LanguageName;
+import '../../models/languages.dart';
 import '../model.dart';
+
+export '../model.dart' show ImageInfo;
 
 enum Qualities {
   q_144p,
@@ -52,7 +54,7 @@ class SearchInfo extends BaseSearchInfo {
     required final String url,
     required final String title,
     required final this.locale,
-    final String? thumbnail,
+    final ImageInfo? thumbnail,
   }) : super(
           title: title,
           thumbnail: thumbnail,
@@ -61,10 +63,9 @@ class SearchInfo extends BaseSearchInfo {
 
   LanguageCodes locale;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'title': title,
-        'url': url,
-        'thumbnail': thumbnail,
+  @override
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        ...super.toJson(),
         'locale': locale.code,
       };
 }
@@ -76,11 +77,17 @@ class EpisodeInfo {
     required final this.locale,
   });
 
+  factory EpisodeInfo.fromJson(final Map<dynamic, dynamic> json) => EpisodeInfo(
+        episode: json['episode'] as String,
+        url: json['url'] as String,
+        locale: LanguageUtils.codeLangaugeMap[json['locale'] as String]!,
+      );
+
   String episode;
   String url;
   LanguageCodes locale;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'episode': episode,
         'url': url,
         'locale': locale.code,
@@ -89,27 +96,45 @@ class EpisodeInfo {
 
 class AnimeInfo {
   AnimeInfo({
-    required final this.url,
     required final this.title,
+    required final this.url,
     required final this.episodes,
     required final this.locale,
     required final this.availableLocales,
     final this.thumbnail,
   });
 
+  factory AnimeInfo.fromJson(final Map<dynamic, dynamic> json) => AnimeInfo(
+        title: json['title'] as String,
+        url: json['url'] as String,
+        episodes: (json['episodes'] as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map((final Map<dynamic, dynamic> x) => EpisodeInfo.fromJson(x))
+            .toList(),
+        thumbnail: json['thumbnail'] != null
+            ? ImageInfo.fromJson(json['thumbnail'] as Map<dynamic, dynamic>)
+            : null,
+        locale: LanguageUtils.codeLangaugeMap[json['locale'] as String]!,
+        availableLocales: (json['availableLocales'] as List<String>)
+            .map((final String x) => LanguageUtils.codeLangaugeMap[x]!)
+            .toList(),
+      );
+
   String title;
   String url;
   List<EpisodeInfo> episodes;
-  String? thumbnail;
+  ImageInfo? thumbnail;
   LanguageCodes locale;
   final List<LanguageCodes> availableLocales;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
         'url': url,
-        'thumbnail': thumbnail,
+        'thumbnail': thumbnail?.toJson(),
         'episodes': episodes.map((final EpisodeInfo x) => x.toJson()).toList(),
         'locale': locale.code,
+        'availableLocales':
+            availableLocales.map((final LanguageCodes x) => x.code).toList(),
       };
 }
 
@@ -137,7 +162,7 @@ class EpisodeSource {
   Map<String, String> headers;
   LanguageCodes locale;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'quality': quality.code,
         'url': url,
         'headers': headers,

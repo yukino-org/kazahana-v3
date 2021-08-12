@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import './model.dart';
 import './sources/model.dart';
 import './sources/sources.dart';
+import '../../../plugins/helpers/utils/http.dart';
 import '../../models/languages.dart' show LanguageCodes;
-import '../../utils.dart' as utils;
 
 const LanguageCodes _defaultLocale = LanguageCodes.en;
 
@@ -20,7 +20,7 @@ class GogoAnimePe implements AnimeExtractor {
   final String baseURL = 'https://gogoanime.pe';
 
   late final Map<String, String> defaultHeaders = <String, String>{
-    'User-Agent': utils.Http.userAgent,
+    'User-Agent': HttpUtils.userAgent,
     'Referer': baseURL,
   };
 
@@ -44,10 +44,10 @@ class GogoAnimePe implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
+            Uri.parse(HttpUtils.tryEncodeURL(searchURL(terms))),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       return document
@@ -63,7 +63,12 @@ class GogoAnimePe implements AnimeExtractor {
                 return SearchInfo(
                   title: title.text.trim(),
                   url: '$baseURL$url',
-                  thumbnail: thumbnail,
+                  thumbnail: thumbnail != null
+                      ? ImageInfo(
+                          url: thumbnail,
+                          headers: defaultHeaders,
+                        )
+                      : null,
                   locale: locale,
                 );
               }
@@ -84,10 +89,10 @@ class GogoAnimePe implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(url)),
+            Uri.parse(HttpUtils.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
 
@@ -105,7 +110,7 @@ class GogoAnimePe implements AnimeExtractor {
       final http.Response epRes = await http
           .get(
             Uri.parse(
-              utils.Fns.tryEncodeURL(
+              HttpUtils.tryEncodeURL(
                 episodeApiURL(
                   start: epStart,
                   end: epEnd,
@@ -115,7 +120,7 @@ class GogoAnimePe implements AnimeExtractor {
             ),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final List<EpisodeInfo> episodes = html
           .parse(epRes.body)
@@ -137,18 +142,24 @@ class GogoAnimePe implements AnimeExtractor {
           .whereType<EpisodeInfo>()
           .toList();
 
+      final String? thumbnail = document
+          .querySelector('.anime_info_body_bg img')
+          ?.attributes['src']
+          ?.trim();
       return AnimeInfo(
         title:
             document.querySelector('.anime_info_body_bg h1')?.text.trim() ?? '',
         url: url,
-        thumbnail: document
-            .querySelector('.anime_info_body_bg img')
-            ?.attributes['src']
-            ?.trim(),
+        thumbnail: thumbnail != null
+            ? ImageInfo(
+                url: thumbnail,
+                headers: defaultHeaders,
+              )
+            : null,
         episodes: episodes,
         locale: locale,
         availableLocales: <LanguageCodes>[
-          _defaultLocale,
+          defaultLocale,
         ],
       );
     } catch (e) {
@@ -161,10 +172,10 @@ class GogoAnimePe implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
+            Uri.parse(HttpUtils.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       final Iterable<String> links = document
@@ -174,7 +185,7 @@ class GogoAnimePe implements AnimeExtractor {
 
       final List<EpisodeSource> sources = <EpisodeSource>[];
       for (final String _src in links) {
-        final String src = utils.Fns.ensureProtocol(_src);
+        final String src = HttpUtils.ensureProtocol(_src);
         final SourceRetriever? retriever = SourceRetrievers.match(src);
         if (retriever != null) {
           try {

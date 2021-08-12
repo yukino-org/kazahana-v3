@@ -26,9 +26,36 @@ abstract class BaseSearchInfo {
   });
 
   final String title;
-  final String? thumbnail;
   final String url;
+  final ImageInfo? thumbnail;
+
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        'title': title,
+        'url': url,
+        'thumbnail': thumbnail?.toJson(),
+      };
 }
 
 abstract class BaseExtractorPlugin<T extends BaseSearchInfo>
     extends BaseExtractor implements BaseExtractorSearch<T> {}
+
+class ImageInfo {
+  ImageInfo({
+    required final this.url,
+    final this.headers = const <String, String>{},
+  });
+
+  factory ImageInfo.fromJson(final Map<dynamic, dynamic> json) => ImageInfo(
+        url: json['url'] as String,
+        headers:
+            (json['headers'] as Map<dynamic, dynamic>).cast<String, String>(),
+      );
+
+  final String url;
+  final Map<String, String> headers;
+
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        'url': url,
+        'headers': headers,
+      };
+}

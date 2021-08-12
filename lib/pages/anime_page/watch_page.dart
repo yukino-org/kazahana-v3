@@ -5,7 +5,9 @@ import './select_source.dart';
 import '../../components/player/player.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/models/player.dart' as player_model;
-import '../../core/utils.dart' as utils;
+import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/duration.dart';
+import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
 import '../settings_page/setting_dialog.dart';
@@ -250,8 +252,8 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(utils.remToPx(0.5)),
-          topRight: Radius.circular(utils.remToPx(0.5)),
+          topLeft: Radius.circular(remToPx(0.5)),
+          topRight: Radius.circular(remToPx(0.5)),
         ),
       ),
       context: context,
@@ -261,7 +263,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           final StateSetter setState,
         ) =>
             Padding(
-          padding: EdgeInsets.symmetric(vertical: utils.remToPx(0.25)),
+          padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
           child: SingleChildScrollView(
             child: Wrap(
               children: <Widget>[
@@ -319,7 +321,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                             data: SliderThemeData(
                                               thumbShape: RoundSliderThumbShape(
                                                 enabledThumbRadius:
-                                                    utils.remToPx(0.4),
+                                                    remToPx(0.4),
                                               ),
                                               showValueIndicator:
                                                   ShowValueIndicator.always,
@@ -394,7 +396,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                           SliderTheme(
                             data: SliderThemeData(
                               thumbShape: RoundSliderThumbShape(
-                                enabledThumbRadius: utils.remToPx(0.4),
+                                enabledThumbRadius: remToPx(0.4),
                               ),
                               showValueIndicator: ShowValueIndicator.always,
                             ),
@@ -437,7 +439,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                           SliderTheme(
                             data: SliderThemeData(
                               thumbShape: RoundSliderThumbShape(
-                                enabledThumbRadius: utils.remToPx(0.4),
+                                enabledThumbRadius: remToPx(0.4),
                               ),
                               showValueIndicator: ShowValueIndicator.always,
                             ),
@@ -510,7 +512,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       OutlinedButton(
         style: OutlinedButton.styleFrom(
           padding: EdgeInsets.symmetric(
-            horizontal: utils.remToPx(0.2),
+            horizontal: remToPx(0.2),
           ),
           side: BorderSide(
             color:
@@ -521,8 +523,8 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         onPressed: enabled ? onPressed : null,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: utils.remToPx(0.4),
-            vertical: utils.remToPx(0.2),
+            horizontal: remToPx(0.4),
+            vertical: remToPx(0.2),
           ),
           child: Opacity(
             opacity: enabled ? 1 : 0.5,
@@ -535,7 +537,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   color: Theme.of(context).textTheme.headline6?.color,
                 ),
                 SizedBox(
-                  width: utils.remToPx(0.2),
+                  width: remToPx(0.2),
                 ),
                 Text(
                   label,
@@ -556,12 +558,11 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final int maxPerWhenSm,
   ) {
     final Widget spacer = SizedBox(
-      width: utils.remToPx(0.4),
+      width: remToPx(0.4),
     );
 
-    if (constraints.maxWidth < utils.ResponsiveSizes.sm) {
-      final List<List<Widget>> rows =
-          utils.Fns.chunkList(children, maxPerWhenSm);
+    if (constraints.maxWidth < ResponsiveSizes.sm) {
+      final List<List<Widget>> rows = ListUtils.chunk(children, maxPerWhenSm);
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -569,7 +570,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             .map(
               (final List<Widget> x) => Flexible(
                 child: Row(
-                  children: utils.Fns.insertBetweenList(x, spacer),
+                  children: ListUtils.insertBetween(x, spacer),
                 ),
               ),
             )
@@ -578,7 +579,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
 
     return Row(
-      children: utils.Fns.insertBetweenList(children, spacer),
+      children: ListUtils.insertBetween(children, spacer),
     );
   }
 
@@ -616,7 +617,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             : Colors.transparent,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: utils.remToPx(0.7),
+                            horizontal: remToPx(0.7),
                           ),
                           child: Stack(
                             children: locked
@@ -625,7 +626,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                       alignment: Alignment.topRight,
                                       child: Padding(
                                         padding: EdgeInsets.only(
-                                          top: utils.remToPx(0.5),
+                                          top: remToPx(0.5),
                                         ),
                                         child: lock,
                                       ),
@@ -636,7 +637,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                       alignment: Alignment.topCenter,
                                       child: Padding(
                                         padding: EdgeInsets.only(
-                                          top: utils.remToPx(0.5),
+                                          top: remToPx(0.5),
                                         ),
                                         child: Row(
                                           crossAxisAlignment:
@@ -647,9 +648,9 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                   const Icon(Icons.arrow_back),
                                               onPressed: widget.onPop,
                                               padding: EdgeInsets.only(
-                                                right: utils.remToPx(1),
-                                                top: utils.remToPx(0.5),
-                                                bottom: utils.remToPx(0.5),
+                                                right: remToPx(1),
+                                                top: remToPx(0.5),
+                                                bottom: remToPx(0.5),
                                               ),
                                             ),
                                             widget.title,
@@ -676,7 +677,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                   shape: const CircleBorder(),
                                                   clipBehavior: Clip.hardEdge,
                                                   child: IconButton(
-                                                    iconSize: utils.remToPx(2),
+                                                    iconSize: remToPx(2),
                                                     onPressed: () {
                                                       if (player?.ready ??
                                                           false) {
@@ -719,8 +720,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                       clipBehavior:
                                                           Clip.hardEdge,
                                                       child: IconButton(
-                                                        iconSize:
-                                                            utils.remToPx(3),
+                                                        iconSize: remToPx(3),
                                                         onPressed: () {
                                                           if (player != null &&
                                                               player!.ready) {
@@ -747,7 +747,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                   shape: const CircleBorder(),
                                                   clipBehavior: Clip.hardEdge,
                                                   child: IconButton(
-                                                    iconSize: utils.remToPx(2),
+                                                    iconSize: remToPx(2),
                                                     onPressed: () {
                                                       if (player?.ready ??
                                                           false) {
@@ -864,12 +864,10 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                 children: <Widget>[
                                                   Container(
                                                     constraints: BoxConstraints(
-                                                      minWidth:
-                                                          utils.remToPx(1.8),
+                                                      minWidth: remToPx(1.8),
                                                     ),
                                                     child: Text(
-                                                      utils.Fns
-                                                          .prettyShortDuration(
+                                                      DurationUtils.pretty(
                                                         duration.current,
                                                       ),
                                                       textAlign:
@@ -882,16 +880,15 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                         thumbShape:
                                                             RoundSliderThumbShape(
                                                           enabledThumbRadius:
-                                                              utils
-                                                                  .remToPx(0.3),
+                                                              remToPx(0.3),
                                                         ),
                                                         showValueIndicator:
                                                             ShowValueIndicator
                                                                 .always,
                                                       ),
                                                       child: Slider(
-                                                        label: utils.Fns
-                                                            .prettyShortDuration(
+                                                        label: DurationUtils
+                                                            .pretty(
                                                           duration.current,
                                                         ),
                                                         value: duration
@@ -941,12 +938,10 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                   ),
                                                   ConstrainedBox(
                                                     constraints: BoxConstraints(
-                                                      minWidth:
-                                                          utils.remToPx(1.8),
+                                                      minWidth: remToPx(1.8),
                                                     ),
                                                     child: Text(
-                                                      utils.Fns
-                                                          .prettyShortDuration(
+                                                      DurationUtils.pretty(
                                                         duration.total,
                                                       ),
                                                       textAlign:

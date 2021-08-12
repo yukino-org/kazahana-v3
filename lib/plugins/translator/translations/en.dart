@@ -182,4 +182,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String sources() => 'Sources';
+
+  @override
+  String refetch() => 'Refetch';
 }

@@ -5,9 +5,9 @@ import './setting_switch.dart';
 import '../../core/models/languages.dart' show LanguageName;
 import '../../core/models/player.dart' show Player;
 import '../../core/models/translations.dart' show TranslationSentences;
-import '../../core/utils.dart' as utils;
 import '../../plugins/database/database.dart';
 import '../../plugins/database/schemas/settings/settings.dart';
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
 
@@ -58,7 +58,7 @@ class PageState extends State<Page> {
     ),
   ];
 
-  final SettingsSchema settings = DataStore.getSettings();
+  final SettingsSchema settings = DataStore.settings;
 
   Future<void> saveSettings() async {
     await settings.save();
@@ -71,7 +71,7 @@ class PageState extends State<Page> {
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: utils.remToPx(0.25),
+              height: remToPx(0.25),
             ),
             ...children,
           ],
@@ -186,7 +186,7 @@ class PageState extends State<Page> {
               ) =>
                   Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: utils.remToPx(0.5),
+                  horizontal: remToPx(0.5),
                 ),
                 child: Row(
                   children: <Widget>[
@@ -204,7 +204,7 @@ class PageState extends State<Page> {
                           SliderTheme(
                             data: SliderThemeData(
                               thumbShape: RoundSliderThumbShape(
-                                enabledThumbRadius: utils.remToPx(0.4),
+                                enabledThumbRadius: remToPx(0.4),
                               ),
                               showValueIndicator: ShowValueIndicator.always,
                             ),
@@ -256,7 +256,7 @@ class PageState extends State<Page> {
                   SliderTheme(
                     data: SliderThemeData(
                       thumbShape: RoundSliderThumbShape(
-                        enabledThumbRadius: utils.remToPx(0.4),
+                        enabledThumbRadius: remToPx(0.4),
                       ),
                       showValueIndicator: ShowValueIndicator.always,
                     ),
@@ -297,7 +297,7 @@ class PageState extends State<Page> {
                   SliderTheme(
                     data: SliderThemeData(
                       thumbShape: RoundSliderThumbShape(
-                        enabledThumbRadius: utils.remToPx(0.4),
+                        enabledThumbRadius: remToPx(0.4),
                       ),
                       showValueIndicator: ShowValueIndicator.always,
                     ),

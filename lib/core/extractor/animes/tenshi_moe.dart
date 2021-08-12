@@ -2,8 +2,8 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
 import './model.dart';
+import '../../../plugins/helpers/utils/http.dart';
 import '../../models/languages.dart' show LanguageCodes;
-import '../../utils.dart' as utils;
 
 const LanguageCodes _defaultLocale = LanguageCodes.en;
 
@@ -18,7 +18,7 @@ class TenshiMoe implements AnimeExtractor {
   final String baseURL = 'https://tenshi.moe';
 
   late final Map<String, String> defaultHeaders = <String, String>{
-    'User-Agent': utils.Http.userAgent,
+    'User-Agent': HttpUtils.userAgent,
     'Referer': baseURL,
   };
 
@@ -31,12 +31,12 @@ class TenshiMoe implements AnimeExtractor {
   }) async {
     try {
       final http.Response res = await http.get(
-        Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
+        Uri.parse(HttpUtils.tryEncodeURL(searchURL(terms))),
         headers: <String, String>{
           ...defaultHeaders,
           'cookie': 'loop-view=thumb;',
         },
-      ).timeout(utils.Http.timeout);
+      ).timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       return document
@@ -54,7 +54,12 @@ class TenshiMoe implements AnimeExtractor {
                 return SearchInfo(
                   title: title,
                   url: url,
-                  thumbnail: thumbnail,
+                  thumbnail: thumbnail != null
+                      ? ImageInfo(
+                          url: thumbnail,
+                          headers: defaultHeaders,
+                        )
+                      : null,
                   locale: locale,
                 );
               }
@@ -75,10 +80,10 @@ class TenshiMoe implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(url)),
+            Uri.parse(HttpUtils.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       final String? estimated = document
@@ -104,19 +109,21 @@ class TenshiMoe implements AnimeExtractor {
         },
       );
 
+      final String? thumbnail =
+          document.querySelector('img.cover-image')?.attributes['src']?.trim();
       return AnimeInfo(
-        title: document.querySelector('.desc h2.title')?.text.trim() ??
-            document.querySelector('.desc .sub-title')?.text.trim() ??
-            '',
+        title: document.querySelector('.entry-header')?.text.trim() ?? '',
         url: url,
-        thumbnail: document
-            .querySelector('.row .thumb img')
-            ?.attributes['src']
-            ?.trim(),
+        thumbnail: thumbnail != null
+            ? ImageInfo(
+                url: thumbnail,
+                headers: defaultHeaders,
+              )
+            : null,
         episodes: episodes,
         locale: locale,
         availableLocales: <LanguageCodes>[
-          _defaultLocale,
+          defaultLocale,
         ],
       );
     } catch (e) {
@@ -129,10 +136,10 @@ class TenshiMoe implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
+            Uri.parse(HttpUtils.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final String? iframe =
           RegExp('<iframe src="(.*?)"').firstMatch(res.body)?[1];
@@ -146,10 +153,10 @@ class TenshiMoe implements AnimeExtractor {
       };
       final http.Response ifRes = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(iframe)),
+            Uri.parse(HttpUtils.tryEncodeURL(iframe)),
             headers: epHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(ifRes.body);
       return document

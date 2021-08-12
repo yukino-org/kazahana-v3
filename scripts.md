@@ -22,5 +22,5 @@ flutter packages pub run build_runner build
 
 ```bash
 flutter test -r expanded ./test/extractors/anime/<extractor_name>/<search|info|sources>.dart
-flutter test -r expanded ./test/extractors/manga/<extractor_name>/<search|info|chapter>.dart
+flutter test -r expanded ./test/extractors/manga/<extractor_name>/<search|info|chapter|page_info>.dart
 ```

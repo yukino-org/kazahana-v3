@@ -2,8 +2,8 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
 import './model.dart';
+import '../../../plugins/helpers/utils/http.dart';
 import '../../models/languages.dart' show LanguageCodes;
-import '../../utils.dart' as utils;
 
 const LanguageCodes _defaultLocale = LanguageCodes.en;
 
@@ -18,7 +18,7 @@ class AnimePradiseOrg implements AnimeExtractor {
   final String baseURL = 'https://animeparadise.org';
 
   late final Map<String, String> defaultHeaders = <String, String>{
-    'User-Agent': utils.Http.userAgent,
+    'User-Agent': HttpUtils.userAgent,
     'Referer': baseURL,
   };
 
@@ -32,10 +32,11 @@ class AnimePradiseOrg implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(searchURL(terms))),
+            Uri.parse(HttpUtils.tryEncodeURL(searchURL(terms))),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
+
       final dom.Document document = html.parse(res.body);
       return document
           .querySelectorAll('.media')
@@ -55,7 +56,12 @@ class AnimePradiseOrg implements AnimeExtractor {
                 return SearchInfo(
                   title: '$title ${tags.join(' ')}'.trim(),
                   url: '$baseURL/$url',
-                  thumbnail: thumbnail,
+                  thumbnail: thumbnail != null
+                      ? ImageInfo(
+                          url: thumbnail,
+                          headers: defaultHeaders,
+                        )
+                      : null,
                   locale: locale,
                 );
               }
@@ -76,10 +82,10 @@ class AnimePradiseOrg implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(url)),
+            Uri.parse(HttpUtils.tryEncodeURL(url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       final List<EpisodeInfo> episodes = document
@@ -105,19 +111,25 @@ class AnimePradiseOrg implements AnimeExtractor {
           .map((final dom.Element x) => '(${x.text.trim()})')
           .toList();
 
+      final String? thumbnail = document
+          .querySelector('.column.is-one-fifth img')
+          ?.attributes['src']
+          ?.trim();
       return AnimeInfo(
         title:
             '${document.querySelector('.column strong')?.text.trim()} ${tags.join(' ')}'
                 .trim(),
         url: url,
-        thumbnail: document
-            .querySelector('.column.is-one-fifth img')
-            ?.attributes['src']
-            ?.trim(),
+        thumbnail: thumbnail != null
+            ? ImageInfo(
+                url: thumbnail,
+                headers: defaultHeaders,
+              )
+            : null,
         episodes: episodes,
         locale: locale,
         availableLocales: <LanguageCodes>[
-          _defaultLocale,
+          defaultLocale,
         ],
       );
     } catch (e) {
@@ -130,10 +142,10 @@ class AnimePradiseOrg implements AnimeExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(episode.url)),
+            Uri.parse(HttpUtils.tryEncodeURL(episode.url)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final dom.Document document = html.parse(res.body);
       return document

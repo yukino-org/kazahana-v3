@@ -10,8 +10,7 @@ abstract class AppState {
   static final Eventer<bool> uiStyleNotifier = Eventer<bool>();
 
   static Future<void> initialize() async {
-    final settings_schema.SettingsSchema settings =
-        database.DataStore.getSettings();
+    final settings_schema.SettingsSchema settings = database.DataStore.settings;
     AppState.settings.initialize(settings);
 
     SystemChrome.setSystemUIChangeCallback((final bool isOnFullscreen) async {

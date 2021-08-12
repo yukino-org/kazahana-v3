@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/utils.dart' as utils;
+import '../../plugins/helpers/ui.dart';
 import '../../plugins/translator/translator.dart';
 
 class SettingRadio<T extends Object> extends StatelessWidget {
@@ -119,8 +119,8 @@ class SettingRadio<T extends Object> extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: utils.remToPx(0.6),
-                                vertical: utils.remToPx(0.3),
+                                horizontal: remToPx(0.6),
+                                vertical: remToPx(0.3),
                               ),
                               child: Text(
                                 Translator.t.close(),

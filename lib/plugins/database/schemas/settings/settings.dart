@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import '../../../../core/models/player.dart';
+import '../../database.dart';
 
 part 'settings.g.dart';
 
@@ -18,7 +19,7 @@ const bool _autoNext = false;
 const bool _autoPlay = false;
 const bool _doubleClickSwitchChapter = true;
 
-@HiveType(typeId: 1)
+@HiveType(typeId: TypeIds.settings)
 class SettingsSchema extends HiveObject {
   SettingsSchema({
     final this.useSystemPreferredTheme = _useSystemPreferredTheme,
@@ -76,7 +77,7 @@ class SettingsSchema extends HiveObject {
   bool doubleClickSwitchChapter;
 }
 
-@HiveType(typeId: 2)
+@HiveType(typeId: TypeIds.mangaDirections)
 enum MangaDirections {
   @HiveField(0)
   leftToRight,
@@ -85,7 +86,7 @@ enum MangaDirections {
   rightToLeft,
 }
 
-@HiveType(typeId: 3)
+@HiveType(typeId: TypeIds.mangaSwipeDirections)
 enum MangaSwipeDirections {
   @HiveField(0)
   horizontal,
@@ -94,7 +95,7 @@ enum MangaSwipeDirections {
   vertical,
 }
 
-@HiveType(typeId: 4)
+@HiveType(typeId: TypeIds.mangaMode)
 enum MangaMode {
   @HiveField(0)
   page,

@@ -2,20 +2,45 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import './model.dart';
+import '../../../plugins/helpers/utils/http.dart';
 import '../../models/languages.dart';
-import '../../utils.dart' as utils;
 
-enum DataQuality { original, compressed }
+enum DataQuality {
+  original,
+  compressed,
+}
 
 final Map<DataQuality, String> dataQualityValues = <DataQuality, String>{
   DataQuality.original: 'data',
   DataQuality.compressed: 'data-saver',
 };
 
+class MangaDexOrgChapterMeta {
+  MangaDexOrgChapterMeta({
+    required final this.id,
+    required final this.files,
+  });
+
+  factory MangaDexOrgChapterMeta.fromJson(final Map<dynamic, dynamic> json) =>
+      MangaDexOrgChapterMeta(
+        id: json['id'] as String,
+        files: (jsonDecode(json['files'] as String) as List<dynamic>)
+            .cast<String>(),
+      );
+
+  final String id;
+  final List<String> files;
+
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        'id': id,
+        'files': jsonEncode(files),
+      };
+}
+
 const LanguageCodes _defaultLocale = LanguageCodes.en;
 const int _limit = 500;
 
-class MangaDex extends MangaExtractor {
+class MangaDexOrg extends MangaExtractor {
   @override
   final String name = 'Mangadex.org';
 
@@ -74,19 +99,19 @@ class MangaDex extends MangaExtractor {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(searchApiURL(terms))),
+            Uri.parse(HttpUtils.tryEncodeURL(searchApiURL(terms))),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
+          .timeout(HttpUtils.timeout);
 
       final List<SearchInfo> searches = <SearchInfo>[];
-      for (final Map<String, dynamic> x
+      for (final Map<dynamic, dynamic> x
           in (json.decode(res.body)['results'] as List<dynamic>)
-              .cast<Map<String, dynamic>>()) {
+              .cast<Map<dynamic, dynamic>>()) {
         final String? coverArt = (x['relationships'] as List<dynamic>)
-            .cast<Map<String, dynamic>>()
+            .cast<Map<dynamic, dynamic>>()
             .firstWhereOrNull(
-              (final Map<String, dynamic> x) => x['type'] == 'cover_art',
+              (final Map<dynamic, dynamic> x) => x['type'] == 'cover_art',
             )?['id'] as String?;
 
         searches.add(
@@ -115,7 +140,7 @@ class MangaDex extends MangaExtractor {
     final LanguageCodes locale = _defaultLocale,
   }) async {
     final String? id = extractIdFromURL(url);
-    if (id == null) {
+    if (id is! String) {
       throw AssertionError('Failed to parse id from URL');
     }
 
@@ -128,7 +153,7 @@ class MangaDex extends MangaExtractor {
         final http.Response res = await http
             .get(
               Uri.parse(
-                utils.Fns.tryEncodeURL(
+                HttpUtils.tryEncodeURL(
                   mangaFeedApiURL(
                     id,
                     offset: offset,
@@ -138,16 +163,16 @@ class MangaDex extends MangaExtractor {
               ),
               headers: defaultHeaders,
             )
-            .timeout(utils.Http.timeout);
+            .timeout(HttpUtils.timeout);
 
-        final List<Map<String, dynamic>> results =
+        final List<Map<dynamic, dynamic>> results =
             (json.decode(res.body)['results'] as List<dynamic>)
-                .cast<Map<String, dynamic>>();
-        for (final Map<String, dynamic> x in results) {
+                .cast<Map<dynamic, dynamic>>();
+        for (final Map<dynamic, dynamic> x in results) {
           final String? title = x['data']['attributes']['title'] as String?;
           chapters.add(
             ChapterInfo(
-              title: title != null && title.isNotEmpty ? title : null,
+              title: title?.isNotEmpty ?? false ? title : null,
               volume: x['data']['attributes']['volume'] as String,
               chapter: x['data']['attributes']['chapter'] as String,
               url: chapterApiURL(
@@ -156,10 +181,11 @@ class MangaDex extends MangaExtractor {
                 x['data']['attributes']['hash'] as String,
               ),
               locale: locale,
-              other: <String, dynamic>{
-                'id': x['data']['id'],
-                'files': x['data']['attributes']['data'],
-              },
+              other: MangaDexOrgChapterMeta(
+                id: x['data']['id'] as String,
+                files: (x['data']['attributes']['data'] as List<dynamic>)
+                    .cast<String>(),
+              ).toJson(),
             ),
           );
         }
@@ -175,16 +201,16 @@ class MangaDex extends MangaExtractor {
       final String mangaURL = mangaApiURL(id);
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(mangaURL)),
+            Uri.parse(HttpUtils.tryEncodeURL(mangaURL)),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
-      final Map<String, dynamic> parsed =
-          json.decode(res.body) as Map<String, dynamic>;
+          .timeout(HttpUtils.timeout);
+      final Map<dynamic, dynamic> parsed =
+          json.decode(res.body) as Map<dynamic, dynamic>;
       final String? coverArt = (parsed['relationships'] as List<dynamic>)
-          .cast<Map<String, dynamic>>()
+          .cast<Map<dynamic, dynamic>>()
           .firstWhereOrNull(
-            (final Map<String, dynamic> x) => x['type'] == 'cover_art',
+            (final Map<dynamic, dynamic> x) => x['type'] == 'cover_art',
           )?['id'] as String?;
 
       return MangaInfo(
@@ -205,26 +231,23 @@ class MangaDex extends MangaExtractor {
 
   @override
   Future<List<PageInfo>> getChapter(final ChapterInfo chapter) async {
+    final MangaDexOrgChapterMeta meta =
+        MangaDexOrgChapterMeta.fromJson(chapter.other);
+
     final http.Response serverRes = await http
         .get(
-          Uri.parse(
-            utils.Fns.tryEncodeURL(
-              mangaServerApiURL(
-                chapter.other['id'] as String,
-              ),
-            ),
-          ),
+          Uri.parse(HttpUtils.tryEncodeURL(mangaServerApiURL(meta.id))),
           headers: defaultHeaders,
         )
-        .timeout(utils.Http.timeout);
+        .timeout(HttpUtils.timeout);
+
     final String chapterURL = chapter.url.replaceFirst(
       '<serverURL>',
       json.decode(serverRes.body)['baseUrl'] as String,
     );
 
     final List<PageInfo> pages = <PageInfo>[];
-    for (final String x
-        in (chapter.other['files'] as List<dynamic>).cast<String>()) {
+    for (final String x in meta.files) {
       pages.add(
         PageInfo(
           url: pageSourceURL(chapterURL, x),
@@ -236,22 +259,31 @@ class MangaDex extends MangaExtractor {
     return pages;
   }
 
-  Future<String?> getCoverImageURL(
+  @override
+  Future<ImageInfo> getPage(final PageInfo page) async => ImageInfo(
+        url: page.url,
+        headers: defaultHeaders,
+      );
+
+  Future<ImageInfo?> getCoverImageURL(
     final String mangaID,
     final String coverID,
   ) async {
     try {
       final http.Response res = await http
           .get(
-            Uri.parse(utils.Fns.tryEncodeURL(coverAPIURL(coverID))),
+            Uri.parse(HttpUtils.tryEncodeURL(coverAPIURL(coverID))),
             headers: defaultHeaders,
           )
-          .timeout(utils.Http.timeout);
-      final Map<String, dynamic> parsed =
-          json.decode(res.body) as Map<String, dynamic>;
-      return coverURL(
-        mangaID,
-        parsed['data']['attributes']['fileName'] as String,
+          .timeout(HttpUtils.timeout);
+      final Map<dynamic, dynamic> parsed =
+          json.decode(res.body) as Map<dynamic, dynamic>;
+      return ImageInfo(
+        url: coverURL(
+          mangaID,
+          parsed['data']['attributes']['fileName'] as String,
+        ),
+        headers: defaultHeaders,
       );
     } catch (e) {
       return null;
@@ -263,16 +295,16 @@ class MangaDex extends MangaExtractor {
   ) async {
     final http.Response res = await http
         .get(
-          Uri.parse(utils.Fns.tryEncodeURL(mangaChapterOverviewURL(mangaID))),
+          Uri.parse(HttpUtils.tryEncodeURL(mangaChapterOverviewURL(mangaID))),
           headers: defaultHeaders,
         )
-        .timeout(utils.Http.timeout);
+        .timeout(HttpUtils.timeout);
 
     final List<LanguageCodes> locales = <LanguageCodes>[];
 
-    for (final Map<String, dynamic> x
+    for (final Map<dynamic, dynamic> x
         in (json.decode(res.body)['results'] as List<dynamic>)
-            .cast<Map<String, dynamic>>()) {
+            .cast<Map<dynamic, dynamic>>()) {
       final String? code = RegExp(r'\w+').firstMatch(
         x['data']['attributes']['translatedLanguage'] as String,
       )?[0];

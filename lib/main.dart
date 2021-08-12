@@ -1,12 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import './core/utils.dart' as utils;
+import './core/models/languages.dart' show LanguageName;
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
+import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
 import './plugins/translator/translator.dart';
-import 'core/models/languages.dart' show LanguageName;
 
 Future<void> main() async {
   await DataStore.initialize();
@@ -68,11 +68,11 @@ class MainAppState extends State<MainApp> {
   Widget build(final BuildContext context) => MaterialApp(
         title: 'Yukino',
         navigatorKey: RouteManager.navigationKey,
-        navigatorObservers: <RouteKeeper>[
+        navigatorObservers: <NavigatorObserver>[
           RouteManager.keeper,
         ],
-        theme: utils.Palette.lightTheme,
-        darkTheme: utils.Palette.darkTheme,
+        theme: Palette.lightTheme,
+        darkTheme: Palette.darkTheme,
         themeMode: useSystemPreferredTheme
             ? ThemeMode.system
             : (useDarkMode ? ThemeMode.dark : ThemeMode.light),

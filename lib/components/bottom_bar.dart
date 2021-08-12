@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/utils.dart' as utils;
+import '../plugins/helpers/ui.dart';
 
 class BottomBarItem {
   BottomBarItem({
@@ -37,10 +37,10 @@ class BottomBarState extends State<BottomBar> {
         decoration: BoxDecoration(
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: utils.Fns.isDarkContext(context)
+              color: isDarkContext(context)
                   ? Colors.black.withOpacity(0.3)
                   : Colors.black.withOpacity(0.1),
-              blurRadius: utils.remToPx(0.5),
+              blurRadius: remToPx(0.5),
             ),
           ],
         ),
@@ -67,17 +67,17 @@ class BottomBarState extends State<BottomBar> {
                         radius: (MediaQuery.of(context).size.width /
                                 widget.items.length /
                                 2) -
-                            utils.remToPx(1),
+                            remToPx(1),
                         child: Padding(
-                          padding: EdgeInsets.all(utils.remToPx(0.25)),
+                          padding: EdgeInsets.all(remToPx(0.25)),
                           child: Column(
                             children: <Widget>[
                               Icon(
                                 x.icon,
-                                size: utils.remToPx(1.25),
+                                size: remToPx(1.25),
                                 color: color,
                               ),
-                              SizedBox(height: utils.remToPx(0.1)),
+                              SizedBox(height: remToPx(0.1)),
                               Text(
                                 x.name,
                                 style: TextStyle(

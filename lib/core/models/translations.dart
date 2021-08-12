@@ -61,4 +61,5 @@ abstract class TranslationSentences {
   String tapAgainToSwitchNextChapter();
   String selectSource();
   String sources();
+  String refetch();
 }
