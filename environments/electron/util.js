@@ -1,3 +1,4 @@
+const os = require("os");
 const path = require("path");
 const fs = require("fs");
 const cp = require("child_process");
@@ -19,15 +20,18 @@ async function registerLinuxProtocol(name, code, execPath) {
         `Exec=${execPath} %u`,
         "Type=Application",
         "Terminal=false",
-        `MimeType=x-scheme-handler/${code};`
+        `MimeType=x-scheme-handler/${code};`,
     ].join("\n");
 
-    const desktopFileDir = "/usr/share/applications",
+    const desktopFileDir = path.join(
+            os.homedir(),
+            "/.local/share/applications"
+        ),
         desktopFileName = `${code}.desktop`,
         desktopFilePath = path.join(desktopFileDir, desktopFileName);
 
     await fs.promises.mkdir(desktopFileDir, {
-        recursive: true
+        recursive: true,
     });
 
     await fs.promises.writeFile(desktopFilePath, desktopContent);
@@ -37,5 +41,5 @@ async function registerLinuxProtocol(name, code, execPath) {
 
 module.exports = {
     mergeObj,
-    registerLinuxProtocol
+    registerLinuxProtocol,
 };
