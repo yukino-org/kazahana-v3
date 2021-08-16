@@ -2,7 +2,7 @@
 name: Source Request
 about: Request for a source to be added.
 title: "[Source Request] <short title>"
-labels: anime-ext, enhancement
+labels: 'status: pending, type: enhancement'
 assignees: ''
 
 ---
