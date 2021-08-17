@@ -5379,10 +5379,10 @@ svg2png@4.1.1:
     pn "^1.0.0"
     yargs "^6.5.0"
 
-swiper@^6.7.5:
-  version "6.8.1"
-  resolved "https://registry.yarnpkg.com/swiper/-/swiper-6.8.1.tgz#79a48ee5c9105c16d55da035eb0245cc2f696f2b"
-  integrity sha512-Gc2rKe0XH3zoB0ogonlielduGM9DDQCJtXAeFeD2ujwzhEqw+5udwebCMNjhAcQ+xl9ygM5PnRoziAUol3Dx5w==
+swiper@^6.8.2:
+  version "6.8.2"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-6.8.2.tgz#1fe3e9b5ef5514d8d7ab2418c8a5ce75abafebec"
+  integrity sha512-VwBZ40NQ8vDzIZO9wApJTf4bDu/o3sgURMQ6fvJVSc9T63NoJV0KLC/mjkrl9GepGbmlCQNLR2tL0Kk/r8NSdw==
   dependencies:
     dom7 "^3.0.0"
     ssr-window "^3.0.0"
