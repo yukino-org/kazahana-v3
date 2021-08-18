@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import '../../components/network_image_fallback.dart';
 import '../../core/extractor/extractors.dart' as extractor;
@@ -147,6 +148,84 @@ class _PageState extends State<Page> {
       );
 
   Future<void> selectPlugins(final BuildContext context) async {
+    final List<Widget> left = <Widget>[
+      Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: remToPx(1),
+        ),
+        child: Text(
+          Translator.t.anime(),
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
+            color:
+                Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.7),
+          ),
+        ),
+      ),
+      ...animePlugins
+          .map(
+            (final String x) => getPluginWidget(
+              CurrentPlugin(
+                type: PluginTypes.anime,
+                plugin: extractor.Extractors.anime[x]!,
+              ),
+            ),
+          )
+          .toList(),
+    ];
+
+    final List<Widget> right = <Widget>[
+      Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: remToPx(1),
+        ),
+        child: Text(
+          Translator.t.manga(),
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
+            color:
+                Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.7),
+          ),
+        ),
+      ),
+      ...mangaPlugins
+          .map(
+            (final String x) => getPluginWidget(
+              CurrentPlugin(
+                type: PluginTypes.manga,
+                plugin: extractor.Extractors.manga[x]!,
+              ),
+            ),
+          )
+          .toList(),
+    ];
+
+    final List<Widget> plugins =
+        Platform.isLinux || Platform.isMacOS || Platform.isWindows
+            ? <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: left,
+                      ),
+                    ),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: right,
+                      ),
+                    ),
+                  ],
+                )
+              ]
+            : <Widget>[
+                ...left,
+                ...right,
+              ];
+
     await showDialog(
       context: context,
       builder: (final BuildContext context) => Dialog(
@@ -172,58 +251,7 @@ class _PageState extends State<Page> {
               const SizedBox(
                 height: 6,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: remToPx(1),
-                ),
-                child: Text(
-                  Translator.t.anime(),
-                  style: TextStyle(
-                    fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        ?.color
-                        ?.withOpacity(0.7),
-                  ),
-                ),
-              ),
-              ...animePlugins
-                  .map(
-                    (final String x) => getPluginWidget(
-                      CurrentPlugin(
-                        type: PluginTypes.anime,
-                        plugin: extractor.Extractors.anime[x]!,
-                      ),
-                    ),
-                  )
-                  .toList(),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: remToPx(1),
-                ),
-                child: Text(
-                  Translator.t.manga(),
-                  style: TextStyle(
-                    fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        ?.color
-                        ?.withOpacity(0.7),
-                  ),
-                ),
-              ),
-              ...mangaPlugins
-                  .map(
-                    (final String x) => getPluginWidget(
-                      CurrentPlugin(
-                        type: PluginTypes.manga,
-                        plugin: extractor.Extractors.manga[x]!,
-                      ),
-                    ),
-                  )
-                  .toList(),
+              ...plugins,
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(

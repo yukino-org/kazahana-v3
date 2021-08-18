@@ -8,6 +8,7 @@ environment:
 dependencies:
   better_player: ^0.0.72
   cupertino_icons: ^1.0.2
+  dart_vlc: ^0.1.4
   encrypt: ^5.0.0
   flutter:
     sdk: flutter
@@ -15,6 +16,7 @@ dependencies:
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   http: ^0.13.3
+  shelf: ^1.2.0
 
 dev_dependencies:
   build_runner: ^2.0.5

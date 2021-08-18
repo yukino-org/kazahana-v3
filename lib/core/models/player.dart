@@ -28,7 +28,7 @@ abstract class Player extends Eventer<PlayerEvents> {
   final PlayerSource source;
   bool ready = false;
 
-  Future<void> initialize();
+  Future<void> load();
   Future<void> play();
   Future<void> pause();
   Future<void> seek(final Duration position);

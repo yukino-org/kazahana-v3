@@ -453,6 +453,7 @@ class _PageState extends State<Page> {
             title: Text(
               Translator.t.settings(),
             ),
+            backgroundColor: Theme.of(context).primaryColor,
           ),
           body: SafeArea(
             child: SingleChildScrollView(

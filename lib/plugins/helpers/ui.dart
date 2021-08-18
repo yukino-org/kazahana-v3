@@ -61,6 +61,15 @@ abstract class Palette {
     ),
     fontFamily: 'Poppins',
     visualDensity: VisualDensity.adaptivePlatformDensity,
+    tooltipTheme: TooltipThemeData(
+      decoration: BoxDecoration(
+        color: Palette.gray[700],
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+      ),
+      textStyle: const TextStyle(
+        color: Colors.white,
+      ),
+    ),
   );
 }
 

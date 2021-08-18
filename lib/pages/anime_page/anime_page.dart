@@ -144,8 +144,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
   Widget getHero(
     final BuildContext context,
-    final BoxConstraints constraints,
   ) {
+    final double width = MediaQuery.of(context).size.width;
+
     final Widget image = info!.thumbnail != null
         ? Image.network(
             info!.thumbnail!.url,
@@ -162,9 +163,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     final Widget left = ClipRRect(
       borderRadius: BorderRadius.circular(remToPx(0.5)),
       child: SizedBox(
-        width: constraints.maxWidth > ResponsiveSizes.md
-            ? (30 / 100) * constraints.maxWidth
-            : remToPx(8),
+        width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(8),
         child: image,
       ),
     );
@@ -190,11 +189,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       ],
     );
 
-    if (constraints.maxWidth > ResponsiveSizes.md) {
+    if (width > ResponsiveSizes.md) {
       return Row(
         children: <Widget>[
           left,
-          right,
+          SizedBox(
+            width: remToPx(1),
+          ),
+          Flexible(child: right),
         ],
       );
     } else {
@@ -327,230 +329,221 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       ],
     );
 
+    final bool isLarge = MediaQuery.of(context).size.width > ResponsiveSizes.md;
+
     return WillPopScope(
       child: SafeArea(
         child: info != null
-            ? LayoutBuilder(
-                builder: (
-                  final BuildContext context,
-                  final BoxConstraints constraints,
-                ) =>
-                    PageView(
-                  controller: controller,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    NotificationListener<ScrollNotification>(
-                      onNotification: (final ScrollNotification notification) {
-                        if (notification is UserScrollNotification) {
-                          showFloatingButton.value = notification.direction !=
-                                  ScrollDirection.reverse &&
-                              lastScrollDirection != ScrollDirection.reverse;
+            ? PageView(
+                controller: controller,
+                physics: const NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  NotificationListener<ScrollNotification>(
+                    onNotification: (final ScrollNotification notification) {
+                      if (notification is UserScrollNotification) {
+                        showFloatingButton.value =
+                            notification.direction != ScrollDirection.reverse &&
+                                lastScrollDirection != ScrollDirection.reverse;
 
-                          if (notification.direction ==
-                                  ScrollDirection.forward ||
-                              notification.direction ==
-                                  ScrollDirection.reverse) {
-                            lastScrollDirection = notification.direction;
-                          }
+                        if (notification.direction == ScrollDirection.forward ||
+                            notification.direction == ScrollDirection.reverse) {
+                          lastScrollDirection = notification.direction;
                         }
+                      }
 
-                        return false;
-                      },
-                      child: Scaffold(
-                        extendBodyBehindAppBar: true,
-                        appBar: appBar,
-                        body: SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              left: remToPx(1.25),
-                              right: remToPx(1.25),
-                              bottom: remToPx(1),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                SizedBox(
-                                  height: appBar.preferredSize.height,
+                      return false;
+                    },
+                    child: Scaffold(
+                      extendBodyBehindAppBar: true,
+                      appBar: appBar,
+                      body: SingleChildScrollView(
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            left: remToPx(isLarge ? 3 : 1.25),
+                            right: remToPx(isLarge ? 3 : 1.25),
+                            top: remToPx(isLarge ? 1 : 0),
+                            bottom: remToPx(1),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              SizedBox(
+                                height: appBar.preferredSize.height,
+                              ),
+                              getHero(
+                                context,
+                              ),
+                              SizedBox(
+                                height: remToPx(1.5),
+                              ),
+                              Text(
+                                Translator.t.episodes(),
+                                style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.fontSize,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color
+                                      ?.withOpacity(0.7),
                                 ),
-                                getHero(
-                                  context,
-                                  constraints,
-                                ),
-                                SizedBox(
-                                  height: remToPx(1.5),
-                                ),
-                                Text(
-                                  Translator.t.episodes(),
-                                  style: TextStyle(
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.fontSize,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.color
-                                        ?.withOpacity(0.7),
-                                  ),
-                                ),
-                                getGridLayout(
-                                  constraints.maxWidth ~/ remToPx(8),
-                                  info!.episodes
-                                      .asMap()
-                                      .map(
-                                        (
-                                          final int k,
-                                          final anime_model.EpisodeInfo x,
-                                        ) =>
-                                            MapEntry<int, Widget>(
-                                          k,
-                                          Expanded(
-                                            child: Card(
-                                              child: InkWell(
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: remToPx(0.4),
-                                                    vertical: remToPx(0.3),
-                                                  ),
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                      children: <InlineSpan>[
-                                                        TextSpan(
-                                                          text:
-                                                              '${Translator.t.episode()} ',
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .subtitle2,
-                                                        ),
-                                                        TextSpan(
-                                                          text:
-                                                              x.episode.padLeft(
-                                                            2,
-                                                            '0',
-                                                          ),
-                                                          style: Theme.of(
-                                                            context,
-                                                          )
-                                                              .textTheme
-                                                              .subtitle2
-                                                              ?.copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
+                              ),
+                              getGridLayout(
+                                MediaQuery.of(context).size.width ~/ remToPx(8),
+                                info!.episodes
+                                    .asMap()
+                                    .map(
+                                      (
+                                        final int k,
+                                        final anime_model.EpisodeInfo x,
+                                      ) =>
+                                          MapEntry<int, Widget>(
+                                        k,
+                                        Expanded(
+                                          child: Card(
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: remToPx(0.4),
+                                                  vertical: remToPx(0.3),
                                                 ),
-                                                onTap: () {
-                                                  setEpisode(k);
-                                                  goToPage(Pages.player);
-                                                },
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    children: <InlineSpan>[
+                                                      TextSpan(
+                                                        text:
+                                                            '${Translator.t.episode()} ',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .subtitle2,
+                                                      ),
+                                                      TextSpan(
+                                                        text: x.episode.padLeft(
+                                                          2,
+                                                          '0',
+                                                        ),
+                                                        style: Theme.of(
+                                                          context,
+                                                        )
+                                                            .textTheme
+                                                            .subtitle2
+                                                            ?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
                                               ),
+                                              onTap: () {
+                                                setEpisode(k);
+                                                goToPage(Pages.player);
+                                              },
                                             ),
                                           ),
                                         ),
-                                      )
-                                      .values
-                                      .toList(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        floatingActionButton: ValueListenableBuilder<bool>(
-                          valueListenable: showFloatingButton,
-                          builder: (
-                            final BuildContext context,
-                            final bool showFloatingButton,
-                            final Widget? child,
-                          ) =>
-                              ToggleableSlideWidget(
-                            controller: floatingButtonController,
-                            visible: showFloatingButton,
-                            curve: Curves.easeInOut,
-                            offsetBegin: const Offset(0, 0),
-                            offsetEnd: const Offset(0, 1.5),
-                            child: child!,
-                          ),
-                          child: FloatingActionButton.extended(
-                            icon: const Icon(Icons.language),
-                            label: Text(Translator.t.language()),
-                            onPressed: () {
-                              showLanguageDialog();
-                            },
+                                      ),
+                                    )
+                                    .values
+                                    .toList(),
+                              ),
+                            ],
                           ),
                         ),
                       ),
+                      floatingActionButton: ValueListenableBuilder<bool>(
+                        valueListenable: showFloatingButton,
+                        builder: (
+                          final BuildContext context,
+                          final bool showFloatingButton,
+                          final Widget? child,
+                        ) =>
+                            ToggleableSlideWidget(
+                          controller: floatingButtonController,
+                          visible: showFloatingButton,
+                          curve: Curves.easeInOut,
+                          offsetBegin: const Offset(0, 0),
+                          offsetEnd: const Offset(0, 1.5),
+                          child: child!,
+                        ),
+                        child: FloatingActionButton.extended(
+                          icon: const Icon(Icons.language),
+                          label: Text(Translator.t.language()),
+                          onPressed: () {
+                            showLanguageDialog();
+                          },
+                        ),
+                      ),
                     ),
-                    if (episode != null)
-                      sources[episode] != null
-                          ? sources[episode]!.isNotEmpty
-                              ? FullScreenWidget(
-                                  child: WatchPage(
-                                    key: ValueKey<String>(
-                                      'Episode-$currentEpisodeIndex',
-                                    ),
-                                    sources: sources[episode]!,
-                                    title: Flexible(
-                                      fit: FlexFit.tight,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            info!.title,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline6,
-                                          ),
-                                          Text(
-                                            '${Translator.t.episode()} ${episode!.episode} of ${info!.episodes.length}',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    previousEpisodeEnabled:
-                                        currentEpisodeIndex! - 1 >= 0,
-                                    previousEpisode: () {
-                                      if (currentEpisodeIndex! - 1 >= 0) {
-                                        setEpisode(currentEpisodeIndex! - 1);
-                                      }
-                                    },
-                                    nextEpisodeEnabled:
-                                        currentEpisodeIndex! + 1 <
-                                            info!.episodes.length,
-                                    nextEpisode: () {
-                                      if (currentEpisodeIndex! + 1 <
-                                          info!.episodes.length) {
-                                        setEpisode(currentEpisodeIndex! + 1);
-                                      }
-                                    },
-                                    onPop: () {
-                                      setEpisode(null);
-                                      goToPage(Pages.home);
-                                    },
+                  ),
+                  if (episode != null)
+                    sources[episode] != null
+                        ? sources[episode]!.isNotEmpty
+                            ? FullScreenWidget(
+                                child: WatchPage(
+                                  key: ValueKey<String>(
+                                    'Episode-$currentEpisodeIndex',
                                   ),
-                                )
-                              : Material(
-                                  type: MaterialType.transparency,
-                                  child: Center(
-                                    child: Text(
-                                      Translator.t.noValidSources(),
+                                  sources: sources[episode]!,
+                                  title: Flexible(
+                                    fit: FlexFit.tight,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          info!.title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
+                                        ),
+                                        Text(
+                                          '${Translator.t.episode()} ${episode!.episode} of ${info!.episodes.length}',
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                )
-                          : loader
-                    else
-                      const SizedBox.shrink(),
-                  ],
-                ),
+                                  previousEpisodeEnabled:
+                                      currentEpisodeIndex! - 1 >= 0,
+                                  previousEpisode: () {
+                                    if (currentEpisodeIndex! - 1 >= 0) {
+                                      setEpisode(currentEpisodeIndex! - 1);
+                                    }
+                                  },
+                                  nextEpisodeEnabled: currentEpisodeIndex! + 1 <
+                                      info!.episodes.length,
+                                  nextEpisode: () {
+                                    if (currentEpisodeIndex! + 1 <
+                                        info!.episodes.length) {
+                                      setEpisode(currentEpisodeIndex! + 1);
+                                    }
+                                  },
+                                  onPop: () {
+                                    setEpisode(null);
+                                    goToPage(Pages.home);
+                                  },
+                                ),
+                              )
+                            : Material(
+                                type: MaterialType.transparency,
+                                child: Center(
+                                  child: Text(
+                                    Translator.t.noValidSources(),
+                                  ),
+                                ),
+                              )
+                        : loader
+                  else
+                    const SizedBox.shrink(),
+                ],
               )
             : loader,
       ),

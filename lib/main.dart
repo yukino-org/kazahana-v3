@@ -1,8 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import './components/player/player.dart' as player show initialize;
 import './core/models/languages.dart' show LanguageName;
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
+import './plugins/helpers/local_proxy.dart';
 import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
@@ -20,6 +22,12 @@ Future<void> main() async {
         : Translator.getSupportedLocale(),
   );
 
+  await player.initialize();
+
+  if (LocalProxy.isSupported) {
+    await LocalProxy.initialize();
+  }
+
   runApp(const MainApp());
 }
 
@@ -33,8 +41,9 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool useSystemPreferredTheme = true;
-  bool useDarkMode = true;
+  bool useSystemPreferredTheme =
+      AppState.settings.current.useSystemPreferredTheme;
+  bool useDarkMode = AppState.settings.current.useDarkMode;
 
   @override
   void initState() {

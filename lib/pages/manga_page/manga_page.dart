@@ -167,68 +167,67 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     }
   }
 
-  Widget getHero() => LayoutBuilder(
-        builder:
-            (final BuildContext context, final BoxConstraints constraints) {
-          final Widget image = info!.thumbnail != null
-              ? Image.network(
-                  info!.thumbnail!.url,
-                  headers: info!.thumbnail!.headers,
-                  width: remToPx(7),
-                )
-              : Image.asset(
-                  Assets.placeholderImage(
-                    dark: isDarkContext(context),
-                  ),
-                  width: remToPx(7),
-                );
+  Widget getHero(final BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
 
-          final Widget left = ClipRRect(
-            borderRadius: BorderRadius.circular(remToPx(0.5)),
-            child: image,
+    final Widget image = info!.thumbnail != null
+        ? Image.network(
+            info!.thumbnail!.url,
+            headers: info!.thumbnail!.headers,
+            width: remToPx(7),
+          )
+        : Image.asset(
+            Assets.placeholderImage(
+              dark: isDarkContext(context),
+            ),
+            width: remToPx(7),
           );
 
-          final Widget right = Column(
-            children: <Widget>[
-              Text(
-                info!.title,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.headline4?.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                args.plugin,
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          );
+    final Widget left = ClipRRect(
+      borderRadius: BorderRadius.circular(remToPx(0.5)),
+      child: image,
+    );
 
-          if (constraints.maxWidth > ResponsiveSizes.md) {
-            return Row(
-              children: <Widget>[
-                left,
-                right,
-              ],
-            );
-          } else {
-            return Column(
-              children: <Widget>[
-                left,
-                SizedBox(
-                  height: remToPx(1),
-                ),
-                right,
-              ],
-            );
-          }
-        },
+    final Widget right = Column(
+      children: <Widget>[
+        Text(
+          info!.title,
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.headline4?.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        Text(
+          args.plugin,
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+
+    if (width > ResponsiveSizes.md) {
+      return Row(
+        children: <Widget>[
+          left,
+          right,
+        ],
       );
+    } else {
+      return Column(
+        children: <Widget>[
+          left,
+          SizedBox(
+            height: remToPx(1),
+          ),
+          right,
+        ],
+      );
+    }
+  }
 
   List<Widget> getChapterCard(final manga_model.ChapterInfo chapter) {
     final List<String> first = <String>[];
@@ -434,7 +433,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               SizedBox(
                                 height: appBar.preferredSize.height,
                               ),
-                              getHero(),
+                              getHero(context),
                               SizedBox(
                                 height: remToPx(1.5),
                               ),

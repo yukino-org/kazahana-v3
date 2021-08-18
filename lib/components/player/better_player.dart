@@ -1,6 +1,9 @@
+import 'dart:io' show Platform;
 import 'package:better_player/better_player.dart' as better_player;
 import 'package:flutter/material.dart';
-import '../../../core/models/player.dart' as model;
+import '../../core/models/player.dart' as model;
+
+bool isSupported() => Platform.isAndroid || Platform.isIOS;
 
 class VideoPlayer extends model.Player {
   VideoPlayer(final model.PlayerSource source) : super(source);
@@ -10,7 +13,7 @@ class VideoPlayer extends model.Player {
   late better_player.BetterPlayerController _controller;
 
   @override
-  Future<void> initialize() async {
+  Future<void> load() async {
     _configuration = const better_player.BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
