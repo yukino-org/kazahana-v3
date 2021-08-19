@@ -1,0 +1,20 @@
+import { join } from "path";
+import { writeFile } from "fs/promises";
+import png2ico from "png-to-ico";
+import { config } from "../../config";
+import { Logger } from "../../logger";
+
+const logger = new Logger("windows:icons");
+
+export const generate = async () => {
+    const started = Date.now();
+
+    logger.log(`Icon path: ${config.windows.icon}`);
+
+    const path = join(config.windows.project, `/runner/resources/app_icon.ico`);
+    const ico = await png2ico(config.windows.icon);
+    await writeFile(path, ico);
+    logger.log(`Generated ${path}`);
+
+    logger.log(`Completed in ${Date.now() - started}ms`);
+}
