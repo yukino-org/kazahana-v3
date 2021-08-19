@@ -1,12 +1,12 @@
 import { join } from "path";
-import { existsSync } from "fs";
+import { stat } from "fs/promises";
 import { spawn } from "../../spawn";
 import { config } from "../../config";
 import { Logger } from "../../logger";
 
 const logger = new Logger("test:sources:anime");
 
-const start = () => {
+const start = async () => {
     const [plugin, method] = process.argv.slice(2);
     
     if (!plugin) {
@@ -23,7 +23,7 @@ const start = () => {
     const path = join(config.base, `/test/extractors/anime/${plugin}/${method}.dart`);
     logger.log(`Path: ${path}`);
 
-    const exists = existsSync(path);
+    const exists = await stat(path).then(() => true).catch(() => false);
     if (!exists) {
         return logger.error(`Missing file: ${path}`);
     }
