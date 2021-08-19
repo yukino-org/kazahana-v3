@@ -1,36 +1,14 @@
 import 'package:flutter/material.dart';
+import './bar_item.dart';
 import '../plugins/helpers/ui.dart';
 
-class BottomBarItem {
-  BottomBarItem({
-    required final this.name,
-    required final this.icon,
-    required final this.onPressed,
-    required final this.isActive,
-  });
-
-  final String name;
-  final IconData icon;
-  final void Function() onPressed;
-  bool isActive;
-}
-
-class BottomBar extends StatefulWidget {
+class BottomBar extends StatelessWidget {
   const BottomBar({
     required final this.items,
     final Key? key,
-    final this.initialIndex = 0,
   }) : super(key: key);
 
-  final List<BottomBarItem> items;
-  final int initialIndex;
-
-  @override
-  _BottomBarState createState() => _BottomBarState();
-}
-
-class _BottomBarState extends State<BottomBar> {
-  late int currentIndex = widget.initialIndex;
+  final List<BarItem> items;
 
   @override
   Widget build(final BuildContext context) => Container(
@@ -50,7 +28,7 @@ class _BottomBarState extends State<BottomBar> {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: widget.items.map((final BottomBarItem x) {
+                children: items.map((final BarItem x) {
                   final Color? color = x.isActive
                       ? Theme.of(context).primaryColor
                       : Theme.of(context)
@@ -65,7 +43,7 @@ class _BottomBarState extends State<BottomBar> {
                       child: InkResponse(
                         onTap: x.onPressed,
                         radius: (MediaQuery.of(context).size.width /
-                                widget.items.length /
+                                items.length /
                                 2) -
                             remToPx(1),
                         child: Padding(

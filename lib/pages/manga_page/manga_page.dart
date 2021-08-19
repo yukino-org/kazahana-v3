@@ -16,6 +16,7 @@ import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
@@ -185,7 +186,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
     final Widget left = ClipRRect(
       borderRadius: BorderRadius.circular(remToPx(0.5)),
-      child: image,
+      child: SizedBox(
+        width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(8),
+        child: image,
+      ),
     );
 
     final Widget right = Column(
@@ -213,7 +217,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       return Row(
         children: <Widget>[
           left,
-          right,
+          SizedBox(
+            width: remToPx(1),
+          ),
+          Flexible(child: right),
         ],
       );
     } else {
@@ -395,6 +402,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       ],
     );
 
+    final bool isLarge = MediaQuery.of(context).size.width > ResponsiveSizes.md;
+
     return WillPopScope(
       child: SafeArea(
         child: info != null
@@ -423,9 +432,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                       body: SingleChildScrollView(
                         child: Container(
                           padding: EdgeInsets.only(
-                            left: remToPx(1.25),
-                            right: remToPx(1.25),
-                            bottom: remToPx(1),
+                            left: remToPx(isLarge ? 3 : 1.25),
+                            right: remToPx(isLarge ? 3 : 1.25),
+                            top: remToPx(isLarge ? 1 : 0),
+                            bottom: remToPx(isLarge ? 2 : 1),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -451,7 +461,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                       ?.withOpacity(0.7),
                                 ),
                               ),
-                              ...info!.chapters
+                              ...ListUtils.tryArrange(
+                                info!.chapters,
+                                (final manga_model.ChapterInfo x) => x.chapter,
+                              )
                                   .asMap()
                                   .map(
                                     (

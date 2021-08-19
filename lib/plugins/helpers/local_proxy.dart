@@ -6,8 +6,6 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 import './querystring.dart';
 
 abstract class LocalProxy {
-  static bool isSupported =
-      Platform.isLinux || Platform.isMacOS || Platform.isWindows;
   static bool ready = false;
   static HttpServer? server;
 

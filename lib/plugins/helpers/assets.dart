@@ -1,8 +1,13 @@
 abstract class Assets {
+  static const String yukinoIcon = 'assets/images/yukino-icon.png';
+
+  static const String lightPlaceHolderImage =
+      'assets/images/light-placeholder-image.png';
+  static const String darkPlaceHolderImage =
+      'assets/images/dark-placeholder-image.png';
+
   static String placeholderImage({
     required final bool dark,
   }) =>
-      dark
-          ? 'assets/images/dark-placeholder-image.png'
-          : 'assets/images/light-placeholder-image.png';
+      dark ? darkPlaceHolderImage : lightPlaceHolderImage;
 }

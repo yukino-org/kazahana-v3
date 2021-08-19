@@ -8,10 +8,14 @@ import '../../core/models/manga_page.dart' as manga_page;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 
-enum PluginTypes { anime, manga }
+enum PluginTypes {
+  anime,
+  manga,
+}
 
 extension PluginRoutes on PluginTypes {
   String route() {
@@ -284,6 +288,27 @@ class _PageState extends State<Page> {
     );
   }
 
+  List<Widget> getGridded(
+    final BuildContext context,
+    final List<Widget> children,
+  ) {
+    if (MediaQuery.of(context).size.width > ResponsiveSizes.lg) {
+      const Widget filler = Expanded(
+        child: SizedBox.shrink(),
+      );
+
+      return ListUtils.chunk<Widget>(children, 2, filler)
+          .map(
+            (final List<Widget> x) => Row(
+              children: x.map((final Widget x) => Expanded(child: x)).toList(),
+            ),
+          )
+          .toList();
+    }
+
+    return children;
+  }
+
   @override
   Widget build(final BuildContext context) => Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -370,81 +395,84 @@ class _PageState extends State<Page> {
                 Visibility(
                   visible: state == LoadState.resolved && results.isNotEmpty,
                   child: Column(
-                    children: results
-                        .map(
-                          (final SearchInfo x) => Card(
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(4),
-                              onTap: () {
-                                Navigator.of(context).pushNamed(
-                                  ParsedRouteInfo(
-                                    x.pluginType.route(),
-                                    x.pluginType.params(
-                                      src: x.url,
-                                      plugin: x.plugin,
-                                    ),
-                                  ).toString(),
-                                );
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.all(remToPx(0.5)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: remToPx(4),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          remToPx(0.25),
+                    children: getGridded(
+                      context,
+                      results
+                          .map(
+                            (final SearchInfo x) => Card(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(4),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                    ParsedRouteInfo(
+                                      x.pluginType.route(),
+                                      x.pluginType.params(
+                                        src: x.url,
+                                        plugin: x.plugin,
+                                      ),
+                                    ).toString(),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.all(remToPx(0.5)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width: remToPx(4),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            remToPx(0.25),
+                                          ),
+                                          child: x.thumbnail != null
+                                              ? FallbackableNetworkImage(
+                                                  url: x.thumbnail!.url,
+                                                  headers: x.thumbnail!.headers,
+                                                  placeholder: placeholderImage,
+                                                )
+                                              : placeholderImage,
                                         ),
-                                        child: x.thumbnail != null
-                                            ? FallbackableNetworkImage(
-                                                url: x.thumbnail!.url,
-                                                headers: x.thumbnail!.headers,
-                                                placeholder: placeholderImage,
-                                              )
-                                            : placeholderImage,
                                       ),
-                                    ),
-                                    SizedBox(width: remToPx(0.75)),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            x.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6
-                                                  ?.fontSize,
+                                      SizedBox(width: remToPx(0.75)),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              x.title,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6
+                                                    ?.fontSize,
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            x.plugin,
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1
-                                                  ?.fontSize,
+                                            Text(
+                                              x.plugin,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1
+                                                    ?.fontSize,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
+                          )
+                          .toList(),
+                    ),
                   ),
                 )
               ],

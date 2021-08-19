@@ -35,4 +35,38 @@ abstract class ListUtils {
     }
     return inserted;
   }
+
+  static List<T> tryArrange<T extends Object>(
+    final List<T> elements,
+    final dynamic Function(T) getter,
+  ) {
+    double? prevVal, nextVal;
+
+    for (final T x in elements) {
+      if (prevVal != null && nextVal != null && prevVal != nextVal) break;
+
+      final dynamic val = getter(x);
+      double? current;
+
+      if (val is int) {
+        current = val.toDouble();
+      } else if (val is double) {
+        current = val;
+      } else if (val is String) {
+        current = double.tryParse(val);
+      }
+
+      if (current != null) {
+        if (prevVal == null) {
+          prevVal = current;
+        } else {
+          nextVal = current;
+        }
+      }
+    }
+
+    return prevVal != null && nextVal != null && prevVal > nextVal
+        ? elements.reversed.toList()
+        : elements;
+  }
 }

@@ -1,6 +1,9 @@
+import 'dart:io' show Platform;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:window_size/window_size.dart' as window;
 import './components/player/player.dart' as player show initialize;
+import './config.dart';
 import './core/models/languages.dart' show LanguageName;
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
@@ -24,8 +27,11 @@ Future<void> main() async {
 
   await player.initialize();
 
-  if (LocalProxy.isSupported) {
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
     await LocalProxy.initialize();
+
+    final PackageInfo pkg = await Config.pkg();
+    window.setWindowTitle('${Config.productName} v${pkg.version}');
   }
 
   runApp(const MainApp());

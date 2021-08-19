@@ -362,7 +362,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                             left: remToPx(isLarge ? 3 : 1.25),
                             right: remToPx(isLarge ? 3 : 1.25),
                             top: remToPx(isLarge ? 1 : 0),
-                            bottom: remToPx(1),
+                            bottom: remToPx(isLarge ? 2 : 1),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -392,7 +392,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               getGridLayout(
                                 MediaQuery.of(context).size.width ~/ remToPx(8),
-                                info!.episodes
+                                ListUtils.tryArrange(
+                                  info!.episodes,
+                                  (final anime_model.EpisodeInfo x) =>
+                                      x.episode,
+                                )
                                     .asMap()
                                     .map(
                                       (
