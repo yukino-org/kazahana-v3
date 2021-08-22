@@ -47,28 +47,28 @@ export const constants = {
             skipIntroLength: 85,
             defaultSeekLength: 10,
             defaultVolume: 100,
-            videoPlayerGestures: "enabled"
-        }
+            videoPlayerGestures: "enabled",
+        },
     },
     assets: {
         images: {
             lightPlaceholder: `${publicBase}/images/light-placeholder-image.png`,
             darkPlaceholder: `${publicBase}/images/dark-placeholder-image.png`,
             myAnimeListLogo: `${publicBase}/images/myanimelist-logo.png`,
-            aniListLogo: `${publicBase}/images/anilist-logo.png`
-        }
+            aniListLogo: `${publicBase}/images/anilist-logo.png`,
+        },
     },
     links: {
-        website: "https://zyrouge.github.io/yukino-app",
-        discordInvite: "https://zyrouge.github.io/yukino-app/discord.html",
+        website: "https://yukino-app.github.io",
+        discordInvite: "https://yukino-app.github.io/discord.html",
         patreon: "https://patreon.com/zyrouge",
-        github: "https://github.com/zyrouge/yukino-app/",
-        guides: "https://zyrouge.github.io/yukino-app/guides/index.html"
+        github: "https://github.com/yukino-app/yukino/",
+        guides: "https://yukino-app.github.io/guides/index.html",
     },
     github: {
         owner: "zyrouge",
-        repo: "yukino-app"
-    }
+        repo: "yukino-app",
+    },
 };
 
 export const util = {
@@ -86,13 +86,13 @@ export const util = {
     createStateController<T>() {
         return <StateController<T>>{
             state: "waiting",
-            data: null
+            data: null,
         };
     },
     createStateControllerNoNull<T>(data: T) {
         return <StateControllerNoNull<T>>{
             state: "waiting",
-            data
+            data,
         };
     },
     parseMs: (ms: number) => {
@@ -107,7 +107,7 @@ export const util = {
             days: Math.trunc(days),
             hours: Math.trunc(hours),
             mins: Math.trunc(mins),
-            secs: Math.trunc(secs)
+            secs: Math.trunc(secs),
         };
     },
     isDarkTheme() {
@@ -133,7 +133,7 @@ export const util = {
             year: "numeric",
             hour: "numeric",
             minute: "numeric",
-            timeZoneName: "short"
+            timeZoneName: "short",
         });
     },
     async generatePkceChallenge() {
@@ -151,13 +151,14 @@ export const util = {
 
         return {
             code_verifier: verifier,
-            code_challenge: challenge
+            code_challenge: challenge,
         };
     },
     randomText(length: number) {
-        const allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(
-            ""
-        );
+        const allowed =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(
+                ""
+            );
 
         return Array(length)
             .fill("")
@@ -205,8 +206,8 @@ export const util = {
             offsetX:
                 ((event.touches[0].clientX - x) / width) * target.offsetWidth,
             offsetY:
-                ((event.touches[0].clientY - y) / height) * target.offsetHeight
+                ((event.touches[0].clientY - y) / height) * target.offsetHeight,
         };
     },
-    mergeObject: MergeObject
+    mergeObject: MergeObject,
 };

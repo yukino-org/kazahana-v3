@@ -24,6 +24,7 @@
                 type="text"
                 placeholder="Type in anime's name..."
                 @keyup="!!void handleKey($event)"
+                v-model="terms"
             />
 
             <button
