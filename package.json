@@ -3,7 +3,7 @@
     "private": true,
     "productName": "Yukino",
     "appId": "io.github.zyrouge.yukino",
-    "version": "0.0.32-beta.0",
+    "version": "0.0.33-beta.0",
     "description": "Yukino lets you read manga or stream anime ad-free from multiple sources.",
     "author": {
         "name": "ZYROUGE",
@@ -59,7 +59,7 @@
         "got": "^11.8.2",
         "lodash.merge": "^4.6.2",
         "qs": "^6.10.1",
-        "swiper": "^6.7.5",
+        "swiper": "^6.8.3",
         "vue": "3.1.2",
         "vue-router": "4"
     },
