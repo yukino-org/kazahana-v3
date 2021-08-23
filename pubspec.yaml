@@ -19,7 +19,13 @@ dependencies:
   hive_flutter: ^1.1.0
   http: ^0.13.3
   package_info_plus: ^1.0.5
+  path: ^1.8.0
+  path_provider: ^2.0.2
   shelf: ^1.2.0
+  window_manager:
+    git:
+      url: git://github.com/zyrouge/window_manager.git
+      ref: windows-fullscreen
   window_size:
     git:
       url: git://github.com/google/flutter-desktop-embedding.git
@@ -48,6 +54,3 @@ flutter:
           weight: 800
         - asset: assets/fonts/Poppins-SemiBold.ttf
           weight: 600
-
-flutter_icons:
-  #  image_path: "assets/images/icon-128x128.png"

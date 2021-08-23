@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './select_source.dart';
 import '../../components/player/player.dart';
+import '../../config.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
+import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/player.dart' as player_model;
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/duration.dart';
@@ -24,20 +27,22 @@ class VideoDuration {
 
 class WatchPage extends StatefulWidget {
   const WatchPage({
-    required final this.sources,
     required final this.title,
+    required final this.episode,
+    required final this.plugin,
+    required final this.totalEpisodes,
     required final this.onPop,
     required final this.previousEpisodeEnabled,
     required final this.previousEpisode,
     required final this.nextEpisodeEnabled,
     required final this.nextEpisode,
     final Key? key,
-    final this.initialIndex,
   }) : super(key: key);
 
-  final int? initialIndex;
-  final List<anime_model.EpisodeSource> sources;
-  final Widget title;
+  final String title;
+  final anime_model.EpisodeInfo episode;
+  final String plugin;
+  final int totalEpisodes;
   final void Function() onPop;
   final bool previousEpisodeEnabled;
   final void Function() previousEpisode;
@@ -49,6 +54,7 @@ class WatchPage extends StatefulWidget {
 }
 
 class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
+  List<anime_model.EpisodeSource>? sources;
   int? currentIndex;
   player_model.Player? player;
   Widget? playerChild;
@@ -79,12 +85,14 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     child: CircularProgressIndicator(),
   );
 
+  Timer? _mouseOverlayTimer;
+
   @override
   void initState() {
     super.initState();
 
     Future<void>.delayed(Duration.zero, () {
-      showSelectSources();
+      getSources();
     });
 
     playPauseController = AnimationController(
@@ -128,6 +136,9 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     isPlaying.dispose();
     duration.dispose();
     volume.dispose();
+    playPauseController.dispose();
+    overlayController.dispose();
+    _mouseOverlayTimer?.cancel();
 
     if (player != null) {
       playerChild = null;
@@ -137,6 +148,19 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _updateLandscape(true);
 
     super.dispose();
+  }
+
+  Future<void> getSources() async {
+    sources = await extractor.Extractors.anime[widget.plugin]!
+        .getSources(widget.episode);
+
+    if (mounted) {
+      setState(() {});
+
+      if (sources!.isNotEmpty) {
+        await showSelectSources();
+      }
+    }
   }
 
   Future<void> setPlayer(final int index) async {
@@ -153,8 +177,8 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     player = createPlayer(
       player_model.PlayerSource(
-        url: widget.sources[currentIndex!].url,
-        headers: widget.sources[currentIndex!].headers,
+        url: sources![currentIndex!].url,
+        headers: sources![currentIndex!].headers,
       ),
     )..subscribe(_subscriber);
 
@@ -230,21 +254,30 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Future<void> showSelectSources() async {
-    final dynamic value = await showDialog(
+    final dynamic value = await showGeneralDialog(
       context: context,
-      builder: (final BuildContext context) => Dialog(
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      pageBuilder: (
+        final BuildContext context,
+        final Animation<double> a1,
+        final Animation<double> a2,
+      ) =>
+          Dialog(
         child: SelectSourceWidget(
-          sources: widget.sources,
-          selected: currentIndex != null ? widget.sources[currentIndex!] : null,
+          sources: sources!,
+          selected: currentIndex != null ? sources![currentIndex!] : null,
         ),
       ),
     );
 
     if (value is anime_model.EpisodeSource) {
-      final int index = widget.sources.indexOf(value);
+      final int index = sources!.indexOf(value);
       if (index >= 0) {
         setPlayer(index);
       }
+    } else {
+      widget.onPop();
     }
   }
 
@@ -292,10 +325,17 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                         icon: Icons.volume_up,
                         title: Translator.t.volume(),
                         subtitle: '$volume%',
-                        onTap: () {
-                          showDialog(
+                        onTap: () async {
+                          await showGeneralDialog(
                             context: context,
-                            builder: (final BuildContext context) =>
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            pageBuilder: (
+                              final BuildContext context,
+                              final Animation<double> a1,
+                              final Animation<double> a2,
+                            ) =>
                                 StatefulBuilder(
                               builder: (
                                 final BuildContext context,
@@ -584,6 +624,17 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     );
   }
 
+  void _updateMouseOverlay() {
+    if (!showControls) {
+      overlayController.forward();
+    }
+
+    _mouseOverlayTimer?.cancel();
+    _mouseOverlayTimer = Timer(MiscSettings.mouseOverlayDuration, () {
+      overlayController.reverse();
+    });
+  }
+
   @override
   Widget build(final BuildContext context) {
     final Widget lock = IconButton(
@@ -597,358 +648,424 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       ),
     );
 
+    // Material(
+    //                             type: MaterialType.transparency,
+    //                             child: Center(
+    //                               child: Text(
+    //                                 Translator.t.noValidSources(),
+    //                               ),
+    //                             ),
+    //                           )
+
     return Material(
       type: MaterialType.transparency,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        child: Stack(
-          children: <Widget>[
-            if (playerChild != null) playerChild! else loader,
-            FadeTransition(
-              opacity: overlayController,
-              child: showControls
-                  ? Container(
-                      color: !locked
-                          ? Colors.black.withOpacity(0.3)
-                          : Colors.transparent,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: remToPx(0.7),
-                        ),
-                        child: Stack(
-                          children: locked
-                              ? <Widget>[
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        top: remToPx(0.5),
-                                      ),
-                                      child: lock,
-                                    ),
-                                  ),
-                                ]
-                              : <Widget>[
-                                  Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        top: remToPx(0.5),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: const Icon(Icons.arrow_back),
-                                            onPressed: widget.onPop,
-                                            padding: EdgeInsets.only(
-                                              right: remToPx(1),
-                                              top: remToPx(0.5),
-                                              bottom: remToPx(0.5),
-                                            ),
-                                          ),
-                                          widget.title,
-                                          lock,
-                                          IconButton(
-                                            onPressed: () {
-                                              showOptions();
-                                            },
-                                            icon: const Icon(Icons.more_vert),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Align(
-                                    child: playerChild != null
-                                        ? Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: <Widget>[
-                                              Material(
-                                                type: MaterialType.transparency,
-                                                shape: const CircleBorder(),
-                                                clipBehavior: Clip.hardEdge,
-                                                child: IconButton(
-                                                  iconSize: remToPx(2),
-                                                  onPressed: () {
-                                                    if (player?.ready ??
-                                                        false) {
-                                                      final Duration amt =
-                                                          duration.value
-                                                                  .current -
-                                                              Duration(
-                                                                seconds:
-                                                                    seekDuration,
-                                                              );
-                                                      player!.seek(
-                                                        amt <= Duration.zero
-                                                            ? Duration.zero
-                                                            : amt,
-                                                      );
-                                                    }
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.fast_rewind,
-                                                  ),
-                                                ),
-                                              ),
-                                              ValueListenableBuilder<bool>(
-                                                valueListenable: isPlaying,
-                                                builder: (
-                                                  final BuildContext context,
-                                                  final bool isPlaying,
-                                                  final Widget? child,
-                                                ) {
-                                                  isPlaying
-                                                      ? playPauseController
-                                                          .forward()
-                                                      : playPauseController
-                                                          .reverse();
-                                                  return Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    shape: const CircleBorder(),
-                                                    clipBehavior: Clip.hardEdge,
-                                                    child: IconButton(
-                                                      iconSize: remToPx(3),
-                                                      onPressed: () {
-                                                        if (player != null &&
-                                                            player!.ready) {
-                                                          isPlaying
-                                                              ? player!.pause()
-                                                              : player!.play();
-                                                        }
-                                                      },
-                                                      icon: AnimatedIcon(
-                                                        icon: AnimatedIcons
-                                                            .play_pause,
-                                                        progress:
-                                                            playPauseController,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              Material(
-                                                type: MaterialType.transparency,
-                                                shape: const CircleBorder(),
-                                                clipBehavior: Clip.hardEdge,
-                                                child: IconButton(
-                                                  iconSize: remToPx(2),
-                                                  onPressed: () {
-                                                    if (player?.ready ??
-                                                        false) {
-                                                      final Duration amt =
-                                                          duration.value
-                                                                  .current +
-                                                              Duration(
-                                                                seconds:
-                                                                    seekDuration,
-                                                              );
-                                                      player!.seek(
-                                                        amt <
-                                                                duration
-                                                                    .value.total
-                                                            ? amt
-                                                            : duration
-                                                                .value.total,
-                                                      );
-                                                    }
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.fast_forward,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: <Widget>[
-                                        Flexible(
-                                          child: getLayoutedButton(
-                                            context,
-                                            <Widget>[
-                                              Expanded(
-                                                child: actionButton(
-                                                  icon: Icons.skip_previous,
-                                                  label:
-                                                      Translator.t.previous(),
-                                                  onPressed:
-                                                      widget.previousEpisode,
-                                                  enabled: widget
-                                                      .previousEpisodeEnabled,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: actionButton(
-                                                  icon: Icons.fast_forward,
-                                                  label:
-                                                      Translator.t.skipIntro(),
-                                                  onPressed: () {
-                                                    if (player?.ready ??
-                                                        false) {
-                                                      final Duration amt =
-                                                          duration.value
-                                                                  .current +
-                                                              Duration(
-                                                                seconds:
-                                                                    introDuration,
-                                                              );
-                                                      player!.seek(
-                                                        amt <
-                                                                duration
-                                                                    .value.total
-                                                            ? amt
-                                                            : duration
-                                                                .value.total,
-                                                      );
-                                                    }
-                                                  },
-                                                  enabled: playerChild != null,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: actionButton(
-                                                  icon: Icons.playlist_play,
-                                                  label: Translator.t.sources(),
-                                                  onPressed: showSelectSources,
-                                                  enabled: true,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: actionButton(
-                                                  icon: Icons.skip_next,
-                                                  label: Translator.t.next(),
-                                                  onPressed: widget.nextEpisode,
-                                                  enabled:
-                                                      widget.nextEpisodeEnabled,
-                                                ),
-                                              ),
-                                            ],
-                                            2,
-                                          ),
+      child: MouseRegion(
+        onEnter: (final PointerEnterEvent event) {
+          _updateMouseOverlay();
+        },
+        onHover: (final PointerHoverEvent event) {
+          _updateMouseOverlay();
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            showControls
+                ? overlayController.reverse()
+                : overlayController.forward();
+          },
+          child: Stack(
+            children: <Widget>[
+              if (playerChild != null)
+                playerChild!
+              else if (sources?.isEmpty ?? false)
+                Center(
+                  child: Text(
+                    Translator.t.noValidSources(),
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                )
+              else
+                loader,
+              FadeTransition(
+                opacity: overlayController,
+                child: showControls
+                    ? Container(
+                        color: !locked
+                            ? Colors.black.withOpacity(0.3)
+                            : Colors.transparent,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: remToPx(0.7),
+                          ),
+                          child: Stack(
+                            children: locked
+                                ? <Widget>[
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          top: remToPx(0.5),
                                         ),
-                                        if (playerChild != null)
-                                          ValueListenableBuilder<VideoDuration>(
-                                            valueListenable: duration,
-                                            builder: (
-                                              final BuildContext context,
-                                              final VideoDuration duration,
-                                              final Widget? child,
-                                            ) =>
-                                                Row(
-                                              children: <Widget>[
-                                                Container(
-                                                  constraints: BoxConstraints(
-                                                    minWidth: remToPx(1.8),
+                                        child: lock,
+                                      ),
+                                    ),
+                                  ]
+                                : <Widget>[
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          top: remToPx(0.5),
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            IconButton(
+                                              icon:
+                                                  const Icon(Icons.arrow_back),
+                                              onPressed: widget.onPop,
+                                              padding: EdgeInsets.only(
+                                                right: remToPx(1),
+                                                top: remToPx(0.5),
+                                                bottom: remToPx(0.5),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              fit: FlexFit.tight,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    widget.title,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline6,
                                                   ),
-                                                  child: Text(
-                                                    DurationUtils.pretty(
-                                                      duration.current,
+                                                  Text(
+                                                    '${Translator.t.episode()} ${widget.episode.episode} of ${widget.totalEpisodes}',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            lock,
+                                            IconButton(
+                                              onPressed: () {
+                                                showOptions();
+                                              },
+                                              icon: const Icon(Icons.more_vert),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      child: playerChild != null
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
+                                                Material(
+                                                  type:
+                                                      MaterialType.transparency,
+                                                  shape: const CircleBorder(),
+                                                  clipBehavior: Clip.hardEdge,
+                                                  child: IconButton(
+                                                    iconSize: remToPx(2),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current -
+                                                                Duration(
+                                                                  seconds:
+                                                                      seekDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <= Duration.zero
+                                                              ? Duration.zero
+                                                              : amt,
+                                                        );
+                                                      }
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.fast_rewind,
                                                     ),
-                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable: isPlaying,
+                                                  builder: (
+                                                    final BuildContext context,
+                                                    final bool isPlaying,
+                                                    final Widget? child,
+                                                  ) {
+                                                    isPlaying
+                                                        ? playPauseController
+                                                            .forward()
+                                                        : playPauseController
+                                                            .reverse();
+                                                    return Material(
+                                                      type: MaterialType
+                                                          .transparency,
+                                                      shape:
+                                                          const CircleBorder(),
+                                                      clipBehavior:
+                                                          Clip.hardEdge,
+                                                      child: IconButton(
+                                                        iconSize: remToPx(3),
+                                                        onPressed: () {
+                                                          if (player != null &&
+                                                              player!.ready) {
+                                                            isPlaying
+                                                                ? player!
+                                                                    .pause()
+                                                                : player!
+                                                                    .play();
+                                                          }
+                                                        },
+                                                        icon: AnimatedIcon(
+                                                          icon: AnimatedIcons
+                                                              .play_pause,
+                                                          progress:
+                                                              playPauseController,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                                Material(
+                                                  type:
+                                                      MaterialType.transparency,
+                                                  shape: const CircleBorder(),
+                                                  clipBehavior: Clip.hardEdge,
+                                                  child: IconButton(
+                                                    iconSize: remToPx(2),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current +
+                                                                Duration(
+                                                                  seconds:
+                                                                      seekDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <
+                                                                  duration.value
+                                                                      .total
+                                                              ? amt
+                                                              : duration
+                                                                  .value.total,
+                                                        );
+                                                      }
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.fast_forward,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: <Widget>[
+                                          Flexible(
+                                            child: getLayoutedButton(
+                                              context,
+                                              <Widget>[
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.skip_previous,
+                                                    label:
+                                                        Translator.t.previous(),
+                                                    onPressed:
+                                                        widget.previousEpisode,
+                                                    enabled: widget
+                                                        .previousEpisodeEnabled,
                                                   ),
                                                 ),
                                                 Expanded(
-                                                  child: SliderTheme(
-                                                    data: SliderThemeData(
-                                                      thumbShape:
-                                                          RoundSliderThumbShape(
-                                                        enabledThumbRadius:
-                                                            remToPx(0.3),
-                                                      ),
-                                                      showValueIndicator:
-                                                          ShowValueIndicator
-                                                              .always,
+                                                  child: actionButton(
+                                                    icon: Icons.fast_forward,
+                                                    label: Translator.t
+                                                        .skipIntro(),
+                                                    onPressed: () {
+                                                      if (player?.ready ??
+                                                          false) {
+                                                        final Duration amt =
+                                                            duration.value
+                                                                    .current +
+                                                                Duration(
+                                                                  seconds:
+                                                                      introDuration,
+                                                                );
+                                                        player!.seek(
+                                                          amt <
+                                                                  duration.value
+                                                                      .total
+                                                              ? amt
+                                                              : duration
+                                                                  .value.total,
+                                                        );
+                                                      }
+                                                    },
+                                                    enabled:
+                                                        playerChild != null,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.playlist_play,
+                                                    label:
+                                                        Translator.t.sources(),
+                                                    onPressed:
+                                                        showSelectSources,
+                                                    enabled:
+                                                        sources?.isNotEmpty ??
+                                                            false,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: actionButton(
+                                                    icon: Icons.skip_next,
+                                                    label: Translator.t.next(),
+                                                    onPressed:
+                                                        widget.nextEpisode,
+                                                    enabled: widget
+                                                        .nextEpisodeEnabled,
+                                                  ),
+                                                ),
+                                              ],
+                                              2,
+                                            ),
+                                          ),
+                                          if (playerChild == null)
+                                            SizedBox(
+                                              height: remToPx(0.5),
+                                            )
+                                          else
+                                            ValueListenableBuilder<
+                                                VideoDuration>(
+                                              valueListenable: duration,
+                                              builder: (
+                                                final BuildContext context,
+                                                final VideoDuration duration,
+                                                final Widget? child,
+                                              ) =>
+                                                  Row(
+                                                children: <Widget>[
+                                                  Container(
+                                                    constraints: BoxConstraints(
+                                                      minWidth: remToPx(1.8),
                                                     ),
-                                                    child: Slider(
-                                                      label:
-                                                          DurationUtils.pretty(
+                                                    child: Text(
+                                                      DurationUtils.pretty(
                                                         duration.current,
                                                       ),
-                                                      value: duration
-                                                          .current.inSeconds
-                                                          .toDouble(),
-                                                      max: duration
-                                                          .total.inSeconds
-                                                          .toDouble(),
-                                                      onChanged: (
-                                                        final double value,
-                                                      ) {
-                                                        this.duration.value =
-                                                            VideoDuration(
-                                                          Duration(
-                                                            seconds:
-                                                                value.toInt(),
-                                                          ),
-                                                          duration.total,
-                                                        );
-                                                      },
-                                                      onChangeStart: (
-                                                        final double value,
-                                                      ) {
-                                                        if (player?.isPlaying ??
-                                                            false) {
-                                                          player!.pause();
-                                                          wasPausedBySlider =
-                                                              true;
-                                                        }
-                                                      },
-                                                      onChangeEnd: (
-                                                        final double value,
-                                                      ) async {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          await player!.seek(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: SliderTheme(
+                                                      data: SliderThemeData(
+                                                        thumbShape:
+                                                            RoundSliderThumbShape(
+                                                          enabledThumbRadius:
+                                                              remToPx(0.3),
+                                                        ),
+                                                        showValueIndicator:
+                                                            ShowValueIndicator
+                                                                .always,
+                                                      ),
+                                                      child: Slider(
+                                                        label: DurationUtils
+                                                            .pretty(
+                                                          duration.current,
+                                                        ),
+                                                        value: duration
+                                                            .current.inSeconds
+                                                            .toDouble(),
+                                                        max: duration
+                                                            .total.inSeconds
+                                                            .toDouble(),
+                                                        onChanged: (
+                                                          final double value,
+                                                        ) {
+                                                          this.duration.value =
+                                                              VideoDuration(
                                                             Duration(
                                                               seconds:
                                                                   value.toInt(),
                                                             ),
+                                                            duration.total,
                                                           );
-                                                        }
-                                                      },
+                                                        },
+                                                        onChangeStart: (
+                                                          final double value,
+                                                        ) {
+                                                          if (player
+                                                                  ?.isPlaying ??
+                                                              false) {
+                                                            player!.pause();
+                                                            wasPausedBySlider =
+                                                                true;
+                                                          }
+                                                        },
+                                                        onChangeEnd: (
+                                                          final double value,
+                                                        ) async {
+                                                          if (player?.ready ??
+                                                              false) {
+                                                            await player!.seek(
+                                                              Duration(
+                                                                seconds: value
+                                                                    .toInt(),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                ConstrainedBox(
-                                                  constraints: BoxConstraints(
-                                                    minWidth: remToPx(1.8),
-                                                  ),
-                                                  child: Text(
-                                                    DurationUtils.pretty(
-                                                      duration.total,
+                                                  ConstrainedBox(
+                                                    constraints: BoxConstraints(
+                                                      minWidth: remToPx(1.8),
                                                     ),
-                                                    textAlign: TextAlign.center,
+                                                    child: Text(
+                                                      DurationUtils.pretty(
+                                                        duration.total,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        else
-                                          const SizedBox.shrink(),
-                                      ],
+                                                ],
+                                              ),
+                                            )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                          ),
                         ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
-        onTap: () {
-          showControls
-              ? overlayController.reverse()
-              : overlayController.forward();
-        },
       ),
     );
   }

@@ -1,3 +1,4 @@
+import '../../../plugins/helpers/utils/list.dart';
 import '../../models/languages.dart';
 import '../model.dart';
 
@@ -92,6 +93,11 @@ class MangaInfo {
   final ImageInfo? thumbnail;
   final LanguageCodes locale;
   final List<LanguageCodes> availableLocales;
+
+  List<ChapterInfo> get sortedChapters => ListUtils.tryArrange(
+        chapters,
+        (final ChapterInfo x) => x.chapter,
+      );
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,

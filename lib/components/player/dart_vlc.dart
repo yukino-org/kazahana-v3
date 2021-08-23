@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:dart_vlc/dart_vlc.dart' as dart_vlc;
 import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
-import '../../plugins/helpers/local_proxy.dart';
+import '../../plugins/helpers/local_server/routes/proxy.dart'
+    show getProxiedURL;
 
 Future<void> initialize() async {
   dart_vlc.DartVLC.initialize();
@@ -55,7 +56,7 @@ class VideoPlayer extends model.Player {
         dart_vlc.Playlist(
           medias: <dart_vlc.Media>[
             dart_vlc.Media.network(
-              LocalProxy.constructProxiedURL(source.url, source.headers),
+              getProxiedURL(source.url, source.headers),
             ),
           ],
         ),

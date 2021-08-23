@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './watch_page.dart';
+import '../../../config.dart';
 import '../../components/full_screen.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/languages.dart';
-import '../../plugins/config.dart' as config;
 import '../../plugins/database/database.dart' show DataBox;
 import '../../plugins/database/schemas/cached_result/cached_result.dart'
     as cached_result;
@@ -38,8 +38,6 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   int? currentEpisodeIndex;
 
   late PageController controller;
-  Map<anime_model.EpisodeInfo, List<anime_model.EpisodeSource>> sources =
-      <anime_model.EpisodeInfo, List<anime_model.EpisodeSource>>{};
 
   ScrollDirection? lastScrollDirection;
   final ValueNotifier<bool> showFloatingButton = ValueNotifier<bool>(true);
@@ -99,20 +97,23 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
     if (cachedAnime != null &&
         nowMs - cachedAnime.cachedTime <
-            config.cachedAnimeInfoExpireTime.inMilliseconds) {
+            MiscSettings.cachedAnimeInfoExpireTime.inMilliseconds) {
       try {
-        info = anime_model.AnimeInfo.fromJson(cachedAnime.info);
-        setState(() {});
+        if (mounted) {
+          setState(() {
+            info = anime_model.AnimeInfo.fromJson(cachedAnime.info);
+          });
+        }
+
         return;
-      } catch (_) {
-        rethrow;
-      }
+      } catch (_) {}
     }
 
     info = await extractor.Extractors.anime[args.plugin]!.getInfo(
       args.src,
       locale: locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
     );
+
     await DataBox.animeInfo.put(
       cacheKey,
       cached_result.CachedResultSchema(
@@ -120,7 +121,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         cachedTime: nowMs,
       ),
     );
-    setState(() {});
+    
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void setEpisode(
@@ -128,18 +132,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   ) {
     setState(() {
       currentEpisodeIndex = index;
-      episode = index != null ? info!.episodes[index] : null;
+      episode = index != null ? info!.sortedEpisodes[index] : null;
     });
-
-    if (episode != null && sources[episode] == null) {
-      extractor.Extractors.anime[args.plugin]!
-          .getSources(episode!)
-          .then((final List<anime_model.EpisodeSource> x) {
-        setState(() {
-          sources[episode!] = x;
-        });
-      });
-    }
   }
 
   Widget getHero(
@@ -228,10 +222,17 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
   }
 
-  void showLanguageDialog() {
-    showDialog(
+  Future<void> showLanguageDialog() async {
+    await showGeneralDialog(
       context: context,
-      builder: (final BuildContext context) => Dialog(
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      pageBuilder: (
+        final BuildContext context,
+        final Animation<double> a1,
+        final Animation<double> a2,
+      ) =>
+          Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
@@ -392,11 +393,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               getGridLayout(
                                 MediaQuery.of(context).size.width ~/ remToPx(8),
-                                ListUtils.tryArrange(
-                                  info!.episodes,
-                                  (final anime_model.EpisodeInfo x) =>
-                                      x.episode,
-                                )
+                                info!.sortedEpisodes
                                     .asMap()
                                     .map(
                                       (
@@ -488,63 +485,35 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   if (episode != null)
-                    sources[episode] != null
-                        ? sources[episode]!.isNotEmpty
-                            ? FullScreenWidget(
-                                child: WatchPage(
-                                  key: ValueKey<String>(
-                                    'Episode-$currentEpisodeIndex',
-                                  ),
-                                  sources: sources[episode]!,
-                                  title: Flexible(
-                                    fit: FlexFit.tight,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          info!.title,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
-                                        ),
-                                        Text(
-                                          '${Translator.t.episode()} ${episode!.episode} of ${info!.episodes.length}',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  previousEpisodeEnabled:
-                                      currentEpisodeIndex! - 1 >= 0,
-                                  previousEpisode: () {
-                                    if (currentEpisodeIndex! - 1 >= 0) {
-                                      setEpisode(currentEpisodeIndex! - 1);
-                                    }
-                                  },
-                                  nextEpisodeEnabled: currentEpisodeIndex! + 1 <
-                                      info!.episodes.length,
-                                  nextEpisode: () {
-                                    if (currentEpisodeIndex! + 1 <
-                                        info!.episodes.length) {
-                                      setEpisode(currentEpisodeIndex! + 1);
-                                    }
-                                  },
-                                  onPop: () {
-                                    setEpisode(null);
-                                    goToPage(Pages.home);
-                                  },
-                                ),
-                              )
-                            : Material(
-                                type: MaterialType.transparency,
-                                child: Center(
-                                  child: Text(
-                                    Translator.t.noValidSources(),
-                                  ),
-                                ),
-                              )
-                        : loader
+                    FullScreenWidget(
+                      child: WatchPage(
+                        key: ValueKey<String>(
+                          'Episode-$currentEpisodeIndex',
+                        ),
+                        title: info!.title,
+                        plugin: args.plugin,
+                        episode: episode!,
+                        totalEpisodes: info!.episodes.length,
+                        previousEpisodeEnabled: currentEpisodeIndex! - 1 >= 0,
+                        previousEpisode: () {
+                          if (currentEpisodeIndex! - 1 >= 0) {
+                            setEpisode(currentEpisodeIndex! - 1);
+                          }
+                        },
+                        nextEpisodeEnabled:
+                            currentEpisodeIndex! + 1 < info!.episodes.length,
+                        nextEpisode: () {
+                          if (currentEpisodeIndex! + 1 <
+                              info!.episodes.length) {
+                            setEpisode(currentEpisodeIndex! + 1);
+                          }
+                        },
+                        onPop: () {
+                          setEpisode(null);
+                          goToPage(Pages.home);
+                        },
+                      ),
+                    )
                   else
                     const SizedBox.shrink(),
                 ],

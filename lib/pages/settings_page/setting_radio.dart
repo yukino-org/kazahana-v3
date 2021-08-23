@@ -59,10 +59,18 @@ class SettingRadio<T extends Object> extends StatelessWidget {
               ],
             ),
           ),
-          onTap: () {
-            showDialog(
+          onTap: () async {
+            await showGeneralDialog(
               context: context,
-              builder: (final BuildContext context) => Dialog(
+              barrierDismissible: true,
+              barrierLabel:
+                  MaterialLocalizations.of(context).modalBarrierDismissLabel,
+              pageBuilder: (
+                final BuildContext context,
+                final Animation<double> a1,
+                final Animation<double> a2,
+              ) =>
+                  Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),

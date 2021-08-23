@@ -1,4 +1,5 @@
 import './sources/model.dart' show RetrievedSource;
+import '../../../plugins/helpers/utils/list.dart';
 import '../../models/languages.dart';
 import '../model.dart';
 
@@ -83,9 +84,9 @@ class EpisodeInfo {
         locale: LanguageUtils.codeLangaugeMap[json['locale'] as String]!,
       );
 
-  String episode;
-  String url;
-  LanguageCodes locale;
+  final String episode;
+  final String url;
+  final LanguageCodes locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'episode': episode,
@@ -120,12 +121,17 @@ class AnimeInfo {
             .toList(),
       );
 
-  String title;
-  String url;
-  List<EpisodeInfo> episodes;
-  ImageInfo? thumbnail;
-  LanguageCodes locale;
+  final String title;
+  final String url;
+  final List<EpisodeInfo> episodes;
+  final ImageInfo? thumbnail;
+  final LanguageCodes locale;
   final List<LanguageCodes> availableLocales;
+
+  List<EpisodeInfo> get sortedEpisodes => ListUtils.tryArrange(
+        episodes,
+        (final EpisodeInfo x) => x.episode,
+      );
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
@@ -157,10 +163,10 @@ class EpisodeSource {
         locale: locale,
       );
 
-  String url;
-  Quality quality;
-  Map<String, String> headers;
-  LanguageCodes locale;
+  final String url;
+  final Quality quality;
+  final Map<String, String> headers;
+  final LanguageCodes locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'quality': quality.code,

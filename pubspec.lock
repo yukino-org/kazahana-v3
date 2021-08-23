@@ -472,14 +472,14 @@ packages:
     source: hosted
     version: "1.0.3"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
@@ -798,6 +798,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.5"
+  window_manager:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: windows-fullscreen
+      resolved-ref: d603d214b8203958ce94a806e87e16361e601833
+      url: "git://github.com/zyrouge/window_manager.git"
+    source: git
+    version: "0.0.1"
   window_size:
     dependency: "direct main"
     description:

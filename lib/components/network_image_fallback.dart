@@ -34,15 +34,19 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage> {
       networkImage.resolve(const ImageConfiguration()).addListener(
             ImageStreamListener(
               (final ImageInfo image, final bool synchronousCall) {
-                setState(() {
-                  imageInfo = image;
-                  state = LoadState.resolved;
-                });
+                if (mounted) {
+                  setState(() {
+                    imageInfo = image;
+                    state = LoadState.resolved;
+                  });
+                }
               },
               onError: (final Object exception, final StackTrace? stackTrace) {
-                setState(() {
-                  state = LoadState.failed;
-                });
+                if (mounted) {
+                  setState(() {
+                    state = LoadState.failed;
+                  });
+                }
               },
             ),
           );

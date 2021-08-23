@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// TODO: have to fix this
+// import 'package:window_manager/window_manager.dart';
 import '../plugins/state.dart' show AppState;
 
 class FullScreenWidget extends StatefulWidget {
@@ -25,7 +28,13 @@ class _FullScreenState extends State<FullScreenWidget> {
     super.initState();
 
     AppState.uiStyleNotifier.subscribe(_onUiChange);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // TODO: needs some update
+      // WindowManager.instance.setFullScreen(true);
+    }
   }
 
   @override
@@ -34,7 +43,13 @@ class _FullScreenState extends State<FullScreenWidget> {
     currentTimer = null;
 
     AppState.uiStyleNotifier.unsubscribe(_onUiChange);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // TODO: needs some update
+      // WindowManager.instance.setFullScreen(false);
+    }
 
     super.dispose();
   }

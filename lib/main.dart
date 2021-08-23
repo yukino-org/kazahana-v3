@@ -7,13 +7,36 @@ import './config.dart';
 import './core/models/languages.dart' show LanguageName;
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
-import './plugins/helpers/local_proxy.dart';
+import './plugins/helpers/instance_manager.dart';
+import './plugins/helpers/local_server/server.dart';
+import './plugins/helpers/logger.dart';
+import './plugins/helpers/protocol_handler.dart';
 import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
 import './plugins/translator/translator.dart';
 
-Future<void> main() async {
+Future<void> main(final List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Config.initialize();
+  await Logger.initialize();
+
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    await LocalServer.initialize();
+    Logger.info('Local server serving at ${LocalServer.baseURL}');
+
+    window.setWindowTitle('${Config.name} v${Config.version}');
+  }
+
+  final InstanceInfo? primaryInstance = await InstanceManager.check();
+  if (primaryInstance != null &&
+      await InstanceManager.sendArguments(primaryInstance, args)) {
+    return;
+  }
+
+  await InstanceManager.register();
+  await ProtocolHandler.register();
   await DataStore.initialize();
   await AppState.initialize();
   Translator.setLanguage(
@@ -26,13 +49,6 @@ Future<void> main() async {
   );
 
   await player.initialize();
-
-  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
-    await LocalProxy.initialize();
-
-    final PackageInfo pkg = await Config.pkg();
-    window.setWindowTitle('${Config.productName} v${pkg.version}');
-  }
 
   runApp(const MainApp());
 }

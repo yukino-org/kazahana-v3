@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './list_reader.dart';
 import './page_reader.dart';
+import '../../../config.dart';
 import '../../components/full_screen.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../core/models/languages.dart';
 import '../../core/models/manga_page.dart' as manga_page;
-import '../../plugins/config.dart' as config;
 import '../../plugins/database/database.dart' show DataBox;
 import '../../plugins/database/schemas/cached_result/cached_result.dart'
     as cached_result;
@@ -16,7 +16,6 @@ import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
-import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
@@ -125,20 +124,22 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
     if (cachedAnime != null &&
         nowMs - cachedAnime.cachedTime <
-            config.cachedMangaInfoExpireTime.inMilliseconds) {
+            MiscSettings.cachedMangaInfoExpireTime.inMilliseconds) {
       try {
-        info = manga_model.MangaInfo.fromJson(cachedAnime.info);
-        setState(() {});
+        if (mounted) {
+          setState(() {
+            info = manga_model.MangaInfo.fromJson(cachedAnime.info);
+          });
+        }
         return;
-      } catch (_) {
-        rethrow;
-      }
+      } catch (_) {}
     }
 
     info = await extractor.Extractors.manga[args.plugin]!.getInfo(
       args.src,
       locale: locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
     );
+
     await DataBox.animeInfo.put(
       cacheKey,
       cached_result.CachedResultSchema(
@@ -146,7 +147,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         cachedTime: nowMs,
       ),
     );
-    setState(() {});
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void setChapter(
@@ -154,7 +158,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   ) {
     setState(() {
       currentChapterIndex = index;
-      chapter = index != null ? info!.chapters[index] : null;
+      chapter = index != null ? info!.sortedChapters[index] : null;
     });
 
     if (chapter != null && pages[chapter] == null) {
@@ -301,10 +305,17 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     goToPage(Pages.home);
   }
 
-  void showLanguageDialog() {
-    showDialog(
+  Future<void> showLanguageDialog() async {
+    await showGeneralDialog(
       context: context,
-      builder: (final BuildContext context) => Dialog(
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      pageBuilder: (
+        final BuildContext context,
+        final Animation<double> a1,
+        final Animation<double> a2,
+      ) =>
+          Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
@@ -461,10 +472,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                       ?.withOpacity(0.7),
                                 ),
                               ),
-                              ...ListUtils.tryArrange(
-                                info!.chapters,
-                                (final manga_model.ChapterInfo x) => x.chapter,
-                              )
+                              ...info!.sortedChapters
                                   .asMap()
                                   .map(
                                     (

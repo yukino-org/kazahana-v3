@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/services.dart' show SystemChrome;
 import './database/database.dart' as database;
 import './database/schemas/settings/settings.dart' as settings_schema;
@@ -13,8 +14,10 @@ abstract class AppState {
     final settings_schema.SettingsSchema settings = database.DataStore.settings;
     AppState.settings.initialize(settings);
 
-    SystemChrome.setSystemUIChangeCallback((final bool isOnFullscreen) async {
-      uiStyleNotifier.dispatch(isOnFullscreen);
-    });
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setSystemUIChangeCallback((final bool isOnFullscreen) async {
+        uiStyleNotifier.dispatch(isOnFullscreen);
+      });
+    }
   }
 }

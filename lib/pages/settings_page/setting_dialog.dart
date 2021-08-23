@@ -24,10 +24,18 @@ class SettingDialog extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         icon: icon,
-        onTap: () {
-          showDialog(
+        onTap: () async {
+          await showGeneralDialog(
             context: context,
-            builder: (final BuildContext context) => StatefulBuilder(
+            barrierDismissible: true,
+            barrierLabel:
+                MaterialLocalizations.of(context).modalBarrierDismissLabel,
+            pageBuilder: (
+              final BuildContext context,
+              final Animation<double> a1,
+              final Animation<double> a2,
+            ) =>
+                StatefulBuilder(
               builder: (
                 final BuildContext context,
                 final StateSetter setState,

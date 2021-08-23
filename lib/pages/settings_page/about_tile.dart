@@ -3,31 +3,10 @@ import '../../config.dart';
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
 
-class AboutTile extends StatefulWidget {
+class AboutTile extends StatelessWidget {
   const AboutTile({
     final Key? key,
   }) : super(key: key);
-
-  @override
-  _AboutTileState createState() => _AboutTileState();
-}
-
-class _AboutTileState extends State<AboutTile> {
-  PackageInfo pkgInfo = PackageInfo(
-    appName: '',
-    packageName: '',
-    version: '0.0.0',
-    buildNumber: '',
-  );
-
-  @override
-  void initState() {
-    super.initState();
-
-    Config.pkg().then((final PackageInfo info) {
-      pkgInfo = info;
-    });
-  }
 
   @override
   Widget build(final BuildContext context) {
@@ -51,7 +30,7 @@ class _AboutTileState extends State<AboutTile> {
               text: TextSpan(
                 children: <InlineSpan>[
                   TextSpan(
-                    text: Config.productName,
+                    text: Config.name,
                     style: Theme.of(context).textTheme.headline5?.merge(
                           TextStyle(
                             color: Theme.of(context).primaryColor,
@@ -60,7 +39,7 @@ class _AboutTileState extends State<AboutTile> {
                         ),
                   ),
                   TextSpan(
-                    text: '\nVersion: v${pkgInfo.version}',
+                    text: '\nVersion: v${Config.version}',
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ],
