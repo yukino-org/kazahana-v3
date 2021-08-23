@@ -21,12 +21,18 @@ const argsOpts: commandLineArgs.OptionDefinition[] = [
         type: String,
         multiple: false,
     },
+    {
+        name: "demo",
+        alias: "d",
+        type: Boolean,
+        multiple: false,
+    },
 ];
 
 const matchRegex = /version:(.*)/;
 
 const start = async () => {
-    const { increment, preid } = commandLineArgs(argsOpts);
+    const { increment, preid, demo } = commandLineArgs(argsOpts);
 
     if (!increment) {
         return logger.error(`Missing arg: increment`);
@@ -55,10 +61,12 @@ const start = async () => {
         return logger.error(`Invalid arguments where provided`);
     }
 
-    pubspec = pubspec.replace(matchRegex, `version: ${newVersion}`);
-    await writeFile(path, pubspec);
+    if (!demo) {
+        pubspec = pubspec.replace(matchRegex, `version: ${newVersion}`);
+        await writeFile(path, pubspec);
+    }
 
-    logger.log(`Bumped from ${previousVersion} to ${newVersion}`);
+    logger.log(`Bumped from ${previousVersion} to ${newVersion} ${demo && "(Demo)"}`);
 }
 
 start();
