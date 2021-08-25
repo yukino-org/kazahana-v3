@@ -802,18 +802,18 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: windows-fullscreen
-      resolved-ref: d603d214b8203958ce94a806e87e16361e601833
-      url: "git://github.com/zyrouge/window_manager.git"
+      ref: d58fbb436d9585f17b9a5d298751d27f197f57ef
+      resolved-ref: d58fbb436d9585f17b9a5d298751d27f197f57ef
+      url: "https://github.com/leanflutter/window_manager.git"
     source: git
     version: "0.0.1"
   window_size:
     dependency: "direct main"
     description:
       path: "plugins\\window_size"
-      ref: e48abe7c3e9ebfe0b81622167c5201d4e783bb81
-      resolved-ref: e48abe7c3e9ebfe0b81622167c5201d4e783bb81
-      url: "git://github.com/google/flutter-desktop-embedding.git"
+      ref: da98a3b5a0e2b9425fbcb2a3e4b4ba50754abf93
+      resolved-ref: da98a3b5a0e2b9425fbcb2a3e4b4ba50754abf93
+      url: "https://github.com/alexmercerind/flutter-desktop-embedding.git"
     source: git
     version: "0.1.0"
   xdg_directories:

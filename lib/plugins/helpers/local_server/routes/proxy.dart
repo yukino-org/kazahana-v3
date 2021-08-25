@@ -19,6 +19,7 @@ final ServerRoute route =
 
     req
       ..headers.addAll(request.url.queryParameters)
+      ..headers.addAll(request.headers)
       ..headers['Host'] = uri.authority;
 
     unawaited(

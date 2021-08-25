@@ -1,10 +1,11 @@
 import 'dart:io' show Platform;
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:window_size/window_size.dart' as window;
 import './components/player/player.dart' as player show initialize;
 import './config.dart';
 import './core/models/languages.dart' show LanguageName;
+import './plugins/app_lifecycle_observer.dart';
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
 import './plugins/helpers/instance_manager.dart';
@@ -18,6 +19,7 @@ import './plugins/translator/translator.dart';
 
 Future<void> main(final List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding.instance!.addObserver(appLifecycleObserver);
 
   await Config.initialize();
   await Logger.initialize();
@@ -72,6 +74,13 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     AppState.settings.subscribe(handleSettingsChange);
+
+    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+      WindowManager.instance.maximize();
+      WindowManager.instance.getSize().then((final Size size) {
+        AppState.maxSize = size;
+      });
+    }
   }
 
   @override
@@ -114,11 +123,7 @@ class _MainAppState extends State<MainApp> {
           }
 
           final RouteInfo? route =
-              RouteManager.routes.values.firstWhereOrNull((final RouteInfo x) {
-            if (x.alreadyHandled) return false;
-            if (x.matcher != null) return x.matcher!(settings);
-            return RouteManager.getOnlyRoute(settings.name!) == x.route;
-          });
+              RouteManager.tryGetRouteFromSettings(settings);
           if (route == null) {
             throw StateError('Invalid route: ${settings.name}');
           }

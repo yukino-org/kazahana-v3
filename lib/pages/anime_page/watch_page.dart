@@ -81,6 +81,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     100,
   );
 
+  final FocusNode dialogFocusNode = FocusNode();
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
@@ -138,6 +139,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     volume.dispose();
     playPauseController.dispose();
     overlayController.dispose();
+    dialogFocusNode.dispose();
     _mouseOverlayTimer?.cancel();
 
     if (player != null) {
@@ -256,18 +258,19 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Future<void> showSelectSources() async {
     final dynamic value = await showGeneralDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: currentIndex != null,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       pageBuilder: (
         final BuildContext context,
         final Animation<double> a1,
         final Animation<double> a2,
       ) =>
-          Dialog(
+          WillPopScope(
         child: SelectSourceWidget(
           sources: sources!,
           selected: currentIndex != null ? sources![currentIndex!] : null,
         ),
+        onWillPop: () async => false,
       ),
     );
 
@@ -276,7 +279,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       if (index >= 0) {
         setPlayer(index);
       }
-    } else {
+    } else if (currentIndex == null) {
       widget.onPop();
     }
   }

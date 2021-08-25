@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// TODO: have to fix this
-// import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:window_size/window_size.dart' as window_size;
 import '../plugins/state.dart' show AppState;
 
 class FullScreenWidget extends StatefulWidget {
@@ -21,7 +21,10 @@ class FullScreenWidget extends StatefulWidget {
 class _FullScreenState extends State<FullScreenWidget> {
   final Duration interval = const Duration(seconds: 5);
   Timer? currentTimer;
+
+  final FocusNode focusNode = FocusNode();
   late bool isOnFullscreen;
+  late Rect prevBounds;
 
   @override
   void initState() {
@@ -31,14 +34,14 @@ class _FullScreenState extends State<FullScreenWidget> {
 
     if (Platform.isAndroid || Platform.isIOS) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      // TODO: needs some update
-      // WindowManager.instance.setFullScreen(true);
+    } else {
+      _setFullScreen();
     }
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
     currentTimer?.cancel();
     currentTimer = null;
 
@@ -46,12 +49,38 @@ class _FullScreenState extends State<FullScreenWidget> {
 
     if (Platform.isAndroid || Platform.isIOS) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      // TODO: needs some update
-      // WindowManager.instance.setFullScreen(false);
+    } else {
+      _exitFullScreen();
     }
 
     super.dispose();
+  }
+
+  Future<void> _setFullScreen() async {
+    prevBounds = await WindowManager.instance.getBounds();
+
+    if (Platform.isLinux || Platform.isMacOS) {
+      WindowManager.instance.setFullScreen(true);
+    } else if (Platform.isWindows) {
+      window_size.enterFullscreen();
+    }
+  }
+
+  Future<void> _exitFullScreen() async {
+    if (Platform.isLinux || Platform.isMacOS) {
+      WindowManager.instance.setFullScreen(false);
+    } else if (Platform.isWindows) {
+      window_size.exitFullscreen();
+    }
+
+    await WindowManager.instance.setBounds(prevBounds);
+
+    final Size? maxSize = AppState.maxSize;
+    if (maxSize != null &&
+        maxSize.width == prevBounds.width &&
+        maxSize.height == prevBounds.height) {
+      WindowManager.instance.maximize();
+    }
   }
 
   void _onUiChange(final bool fullscreen) {
@@ -67,11 +96,22 @@ class _FullScreenState extends State<FullScreenWidget> {
     }
   }
 
+  void _onKey(final RawKeyEvent event) {
+    if (Platform.isWindows && event.logicalKey == LogicalKeyboardKey.escape) {
+      _exitFullScreen();
+    }
+  }
+
   @override
-  Widget build(final BuildContext context) => SizedBox.expand(
-        child: Container(
-          color: Colors.black,
-          child: widget.child,
+  Widget build(final BuildContext context) => RawKeyboardListener(
+        focusNode: focusNode,
+        autofocus: true,
+        onKey: _onKey,
+        child: SizedBox.expand(
+          child: Container(
+            color: Colors.black,
+            child: widget.child,
+          ),
         ),
       );
 }

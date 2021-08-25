@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../pages/anime_page/anime_page.dart' as anime_page;
 import '../pages/home_page/home_page.dart' as home_page;
@@ -135,6 +136,13 @@ abstract class RouteManager {
           settings.name?.startsWith(RouteNames.homeHandler) ?? false,
     ),
   };
+
+  static RouteInfo? tryGetRouteFromSettings(final RouteSettings settings) =>
+      RouteManager.routes.values.firstWhereOrNull((final RouteInfo x) {
+        if (x.alreadyHandled) return false;
+        if (x.matcher != null) return x.matcher!(settings);
+        return RouteManager.getOnlyRoute(settings.name!) == x.route;
+      });
 
   static List<RouteInfo> get labeledRoutes =>
       routes.values.where((final RouteInfo x) => x.isPublic).toList();
