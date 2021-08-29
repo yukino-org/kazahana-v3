@@ -8,6 +8,7 @@ import '../../config.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/player.dart' as player_model;
+import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/duration.dart';
 import '../../plugins/helpers/utils/list.dart';
@@ -53,7 +54,8 @@ class WatchPage extends StatefulWidget {
   WatchPageState createState() => WatchPageState();
 }
 
-class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
+class WatchPageState extends State<WatchPage>
+    with TickerProviderStateMixin, FullscreenMixin {
   List<anime_model.EpisodeSource>? sources;
   int? currentIndex;
   player_model.Player? player;
@@ -81,7 +83,6 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     100,
   );
 
-  final FocusNode dialogFocusNode = FocusNode();
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
@@ -91,8 +92,13 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    initFullscreen();
 
-    Future<void>.delayed(Duration.zero, () {
+    Future<void>.delayed(Duration.zero, () async {
+      if (AppState.settings.current.animeAutoFullscreen) {
+        enterFullscreen();
+      }
+
       getSources();
     });
 
@@ -134,12 +140,13 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    exitFullscreen();
+
     isPlaying.dispose();
     duration.dispose();
     volume.dispose();
     playPauseController.dispose();
     overlayController.dispose();
-    dialogFocusNode.dispose();
     _mouseOverlayTimer?.cancel();
 
     if (player != null) {
@@ -265,12 +272,9 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         final Animation<double> a1,
         final Animation<double> a2,
       ) =>
-          WillPopScope(
-        child: SelectSourceWidget(
-          sources: sources!,
-          selected: currentIndex != null ? sources![currentIndex!] : null,
-        ),
-        onWillPop: () async => false,
+          SelectSourceWidget(
+        sources: sources!,
+        selected: currentIndex != null ? sources![currentIndex!] : null,
       ),
     );
 
@@ -558,8 +562,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             horizontal: remToPx(0.2),
           ),
           side: BorderSide(
-            color:
-                Theme.of(context).textTheme.headline6!.color!.withOpacity(0.3),
+            color: Colors.white.withOpacity(0.3),
           ),
           backgroundColor: Colors.black.withOpacity(0.5),
         ),
@@ -577,7 +580,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 Icon(
                   icon,
                   size: Theme.of(context).textTheme.subtitle1?.fontSize,
-                  color: Theme.of(context).textTheme.headline6?.color,
+                  color: Colors.white,
                 ),
                 SizedBox(
                   width: remToPx(0.2),
@@ -586,7 +589,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   label,
                   style: TextStyle(
                     fontSize: Theme.of(context).textTheme.subtitle1?.fontSize,
-                    color: Theme.of(context).textTheme.headline6?.color,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -649,6 +652,29 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       icon: Icon(
         locked ? Icons.lock : Icons.lock_open,
       ),
+      color: Colors.white,
+    );
+
+    final Widget fullscreenBtn = ValueListenableBuilder<bool>(
+      valueListenable: isFullscreened,
+      builder: (
+        final BuildContext builder,
+        final bool isFullscreened,
+        final Widget? child,
+      ) =>
+          IconButton(
+        color: Colors.white,
+        onPressed: () {
+          if (isFullscreened) {
+            exitFullscreen();
+          } else {
+            enterFullscreen();
+          }
+        },
+        icon: Icon(
+          isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
+        ),
+      ),
     );
 
     // Material(
@@ -684,7 +710,10 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 Center(
                   child: Text(
                     Translator.t.noValidSources(),
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.subtitle1?.fontSize,
+                      color: Colors.white,
+                    ),
                   ),
                 )
               else
@@ -733,6 +762,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                 top: remToPx(0.5),
                                                 bottom: remToPx(0.5),
                                               ),
+                                              color: Colors.white,
                                             ),
                                             Flexible(
                                               fit: FlexFit.tight,
@@ -744,12 +774,20 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                     widget.title,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .headline6,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .headline6
+                                                              ?.fontSize,
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
                                                   Text(
                                                     '${Translator.t.episode()} ${widget.episode.episode} of ${widget.totalEpisodes}',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -760,6 +798,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                 showOptions();
                                               },
                                               icon: const Icon(Icons.more_vert),
+                                              color: Colors.white,
                                             ),
                                           ],
                                         ),
@@ -798,6 +837,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                     icon: const Icon(
                                                       Icons.fast_rewind,
                                                     ),
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                                 ValueListenableBuilder<bool>(
@@ -837,6 +877,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                           progress:
                                                               playPauseController,
                                                         ),
+                                                        color: Colors.white,
                                                       ),
                                                     );
                                                   },
@@ -871,6 +912,7 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                     icon: const Icon(
                                                       Icons.fast_forward,
                                                     ),
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                               ],
@@ -949,6 +991,8 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                         .nextEpisodeEnabled,
                                                   ),
                                                 ),
+                                                if (playerChild == null)
+                                                  fullscreenBtn,
                                               ],
                                               2,
                                             ),
@@ -978,6 +1022,9 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                       ),
                                                       textAlign:
                                                           TextAlign.center,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
                                                   Expanded(
@@ -1052,8 +1099,12 @@ class WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                       ),
                                                       textAlign:
                                                           TextAlign.center,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
+                                                  fullscreenBtn,
                                                 ],
                                               ),
                                             )

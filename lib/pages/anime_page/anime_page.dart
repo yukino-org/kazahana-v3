@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './watch_page.dart';
 import '../../../config.dart';
-import '../../components/full_screen.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
@@ -67,7 +66,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
     Future<void>.delayed(Duration.zero, () async {
       args = anime_page.PageArguments.fromJson(
-        RouteManager.parseRoute(ModalRoute.of(context)!.settings.name!).params,
+        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
       );
 
       getInfo();
@@ -190,7 +189,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           SizedBox(
             width: remToPx(1),
           ),
-          Flexible(child: right),
+          Expanded(child: right),
         ],
       );
     } else {
@@ -316,6 +315,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       backgroundColor:
           Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
       elevation: 0,
+      iconTheme: IconTheme.of(context).copyWith(
+        color: Theme.of(context).textTheme.headline6?.color,
+      ),
       actions: <Widget>[
         IconButton(
           onPressed: () {
@@ -485,43 +487,43 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   if (episode != null)
-                    FullScreenWidget(
-                      child: WatchPage(
-                        key: ValueKey<String>(
-                          'Episode-$currentEpisodeIndex',
-                        ),
-                        title: info!.title,
-                        plugin: args.plugin,
-                        episode: episode!,
-                        totalEpisodes: info!.episodes.length,
-                        previousEpisodeEnabled: currentEpisodeIndex! - 1 >= 0,
-                        previousEpisode: () {
-                          if (currentEpisodeIndex! - 1 >= 0) {
-                            setEpisode(currentEpisodeIndex! - 1);
-                          }
-                        },
-                        nextEpisodeEnabled:
-                            currentEpisodeIndex! + 1 < info!.episodes.length,
-                        nextEpisode: () {
-                          if (currentEpisodeIndex! + 1 <
-                              info!.episodes.length) {
-                            setEpisode(currentEpisodeIndex! + 1);
-                          }
-                        },
-                        onPop: () {
-                          setEpisode(null);
-                          goToPage(Pages.home);
-                        },
+                    WatchPage(
+                      key: ValueKey<String>(
+                        'Episode-$currentEpisodeIndex',
                       ),
+                      title: info!.title,
+                      plugin: args.plugin,
+                      episode: episode!,
+                      totalEpisodes: info!.episodes.length,
+                      previousEpisodeEnabled: currentEpisodeIndex! - 1 >= 0,
+                      previousEpisode: () {
+                        if (currentEpisodeIndex! - 1 >= 0) {
+                          setEpisode(currentEpisodeIndex! - 1);
+                        }
+                      },
+                      nextEpisodeEnabled:
+                          currentEpisodeIndex! + 1 < info!.episodes.length,
+                      nextEpisode: () {
+                        if (currentEpisodeIndex! + 1 < info!.episodes.length) {
+                          setEpisode(currentEpisodeIndex! + 1);
+                        }
+                      },
+                      onPop: () {
+                        setEpisode(null);
+                        goToPage(Pages.home);
+                      },
                     )
                   else
                     const SizedBox.shrink(),
                 ],
               )
-            : loader,
+            : Scaffold(
+                appBar: appBar,
+                body: loader,
+              ),
       ),
       onWillPop: () async {
-        if (controller.page!.toInt() != Pages.home.index) {
+        if (info != null && controller.page?.toInt() != Pages.home.index) {
           setEpisode(null);
           goToPage(Pages.home);
           return false;

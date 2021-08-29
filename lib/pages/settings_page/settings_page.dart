@@ -135,6 +135,9 @@ class _PageState extends State<Page> {
               Translator.t.settings(),
             ),
             backgroundColor: Theme.of(context).primaryColor,
+            iconTheme: IconTheme.of(context).copyWith(
+              color: Colors.white,
+            ),
           ),
           body: SafeArea(
             child: SingleChildScrollView(

@@ -6,6 +6,7 @@ import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaDirections, MangaSwipeDirections, MangaMode;
+import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
@@ -58,7 +59,7 @@ class PageReader extends StatefulWidget {
 }
 
 class _PageReaderState extends State<PageReader>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FullscreenMixin {
   final Duration animationDuration = const Duration(milliseconds: 300);
 
   late AnimationController overlayController;
@@ -93,6 +94,11 @@ class _PageReaderState extends State<PageReader>
   void initState() {
     super.initState();
 
+    initFullscreen();
+    if (AppState.settings.current.mangaAutoFullscreen) {
+      enterFullscreen();
+    }
+
     overlayController = AnimationController(
       vsync: this,
       duration: animationDuration,
@@ -110,6 +116,9 @@ class _PageReaderState extends State<PageReader>
 
   @override
   void dispose() {
+    exitFullscreen();
+
+    footerNotificationTimer?.cancel();
     footerNotificationContent.dispose();
 
     overlayController.dispose();
@@ -263,17 +272,39 @@ class _PageReaderState extends State<PageReader>
 
   @override
   Widget build(final BuildContext context) => Scaffold(
+        backgroundColor: Colors.black,
         extendBodyBehindAppBar: true,
         extendBody: true,
         appBar: ToggleableAppBar(
           controller: overlayController,
           visible: showOverlay,
           child: AppBar(
+            elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: widget.onPop,
             ),
             actions: <Widget>[
+              ValueListenableBuilder<bool>(
+                valueListenable: isFullscreened,
+                builder: (
+                  final BuildContext builder,
+                  final bool isFullscreened,
+                  final Widget? child,
+                ) =>
+                    IconButton(
+                  onPressed: () {
+                    if (isFullscreened) {
+                      exitFullscreen();
+                    } else {
+                      enterFullscreen();
+                    }
+                  },
+                  icon: Icon(
+                    isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
+                  ),
+                ),
+              ),
               IconButton(
                 onPressed: () {
                   showOptions();
@@ -295,12 +326,16 @@ class _PageReaderState extends State<PageReader>
                 ),
               ],
             ),
-            backgroundColor: Theme.of(context).cardColor,
           ),
         ),
         body: widget.pages.isEmpty
             ? Center(
-                child: Text(Translator.t.noPagesFound()),
+                child: Text(
+                  Translator.t.noPagesFound(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               )
             : GestureDetector(
                 onTapUp: (final TapUpDetails details) async {
@@ -348,6 +383,9 @@ class _PageReaderState extends State<PageReader>
                             ? Translator.t.tapAgainToSwitchPreviousChapter()
                             : Translator.t.tapAgainToSwitchNextChapter(),
                         key: UniqueKey(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     );
                   }
@@ -450,6 +488,9 @@ class _PageReaderState extends State<PageReader>
                           ),
                           child: Text(
                             '${index + 1}/${widget.pages.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         SizedBox(

@@ -300,11 +300,9 @@ class _PageState extends State<Page> {
     final List<Widget> children,
   ) {
     if (MediaQuery.of(context).size.width > ResponsiveSizes.lg) {
-      const Widget filler = Expanded(
-        child: SizedBox.shrink(),
-      );
+      const Widget filler = SizedBox.shrink();
 
-      return ListUtils.chunk<Widget>(children, 2, filler)
+      return ListUtils.chunk(children, 2, filler)
           .map(
             (final List<Widget> x) => Row(
               children: x.map((final Widget x) => Expanded(child: x)).toList(),

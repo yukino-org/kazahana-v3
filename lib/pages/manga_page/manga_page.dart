@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import './list_reader.dart';
 import './page_reader.dart';
 import '../../../config.dart';
-import '../../components/full_screen.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/manga/model.dart' as manga_model;
@@ -73,7 +72,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
     Future<void>.delayed(Duration.zero, () async {
       args = manga_page.PageArguments.fromJson(
-        RouteManager.parseRoute(ModalRoute.of(context)!.settings.name!).params,
+        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
       );
 
       getInfo();
@@ -224,7 +223,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           SizedBox(
             width: remToPx(1),
           ),
-          Flexible(child: right),
+          Expanded(child: right),
         ],
       );
     } else {
@@ -399,6 +398,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       backgroundColor:
           Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
       elevation: 0,
+      iconTheme: IconTheme.of(context).copyWith(
+        color: Theme.of(context).textTheme.headline6?.color,
+      ),
       actions: <Widget>[
         IconButton(
           onPressed: () {
@@ -538,35 +540,33 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                   if (chapter != null)
                     pages[chapter] != null
                         ? pages[chapter]!.isNotEmpty
-                            ? FullScreenWidget(
-                                child: mangaMode == MangaMode.page
-                                    ? PageReader(
-                                        key: ValueKey<String>(
-                                          'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                        ),
-                                        plugin: extractor
-                                            .Extractors.manga[args.plugin]!,
-                                        info: info!,
-                                        chapter: chapter!,
-                                        pages: pages[chapter]!,
-                                        previousChapter: _previousChapter,
-                                        nextChapter: _nextChapter,
-                                        onPop: _onPop,
-                                      )
-                                    : ListReader(
-                                        key: ValueKey<String>(
-                                          'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
-                                        ),
-                                        plugin: extractor
-                                            .Extractors.manga[args.plugin]!,
-                                        info: info!,
-                                        chapter: chapter!,
-                                        pages: pages[chapter]!,
-                                        previousChapter: _previousChapter,
-                                        nextChapter: _nextChapter,
-                                        onPop: _onPop,
-                                      ),
-                              )
+                            ? mangaMode == MangaMode.page
+                                ? PageReader(
+                                    key: ValueKey<String>(
+                                      'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                    ),
+                                    plugin: extractor
+                                        .Extractors.manga[args.plugin]!,
+                                    info: info!,
+                                    chapter: chapter!,
+                                    pages: pages[chapter]!,
+                                    previousChapter: _previousChapter,
+                                    nextChapter: _nextChapter,
+                                    onPop: _onPop,
+                                  )
+                                : ListReader(
+                                    key: ValueKey<String>(
+                                      'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
+                                    ),
+                                    plugin: extractor
+                                        .Extractors.manga[args.plugin]!,
+                                    info: info!,
+                                    chapter: chapter!,
+                                    pages: pages[chapter]!,
+                                    previousChapter: _previousChapter,
+                                    nextChapter: _nextChapter,
+                                    onPop: _onPop,
+                                  )
                             : Material(
                                 type: MaterialType.transparency,
                                 child: Center(
@@ -580,10 +580,13 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                     const SizedBox.shrink(),
                 ],
               )
-            : loader,
+            : Scaffold(
+                appBar: appBar,
+                body: loader,
+              ),
       ),
       onWillPop: () async {
-        if (controller.page!.toInt() != Pages.home.index) {
+        if (info != null && controller.page?.toInt() != Pages.home.index) {
           setState(() {
             setChapter(null);
           });

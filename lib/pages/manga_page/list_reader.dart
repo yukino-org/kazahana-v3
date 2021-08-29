@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../components/full_screen_image.dart';
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/database/schemas/settings/settings.dart' show MangaMode;
+import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
@@ -33,11 +34,28 @@ class ListReader extends StatefulWidget {
   _ListReaderState createState() => _ListReaderState();
 }
 
-class _ListReaderState extends State<ListReader> {
+class _ListReaderState extends State<ListReader> with FullscreenMixin {
   final Widget loader = const CircularProgressIndicator();
 
   late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>
       images = <manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>{};
+
+  @override
+  void initState() {
+    super.initState();
+
+    initFullscreen();
+    if (AppState.settings.current.mangaAutoFullscreen) {
+      enterFullscreen();
+    }
+  }
+
+  @override
+  void dispose() {
+    exitFullscreen();
+
+    super.dispose();
+  }
 
   Future<void> getPage(final manga_model.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
@@ -94,6 +112,7 @@ class _ListReaderState extends State<ListReader> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
+        backgroundColor: Colors.black,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -107,6 +126,26 @@ class _ListReaderState extends State<ListReader> {
             IconButton(
               onPressed: widget.nextChapter,
               icon: const Icon(Icons.last_page),
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: isFullscreened,
+              builder: (
+                final BuildContext builder,
+                final bool isFullscreened,
+                final Widget? child,
+              ) =>
+                  IconButton(
+                onPressed: () {
+                  if (isFullscreened) {
+                    exitFullscreen();
+                  } else {
+                    enterFullscreen();
+                  }
+                },
+                icon: Icon(
+                  isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
+                ),
+              ),
             ),
             IconButton(
               onPressed: () {
@@ -129,7 +168,6 @@ class _ListReaderState extends State<ListReader> {
               ),
             ],
           ),
-          backgroundColor: Theme.of(context).cardColor,
         ),
         body: widget.pages.isEmpty
             ? Center(
@@ -149,7 +187,12 @@ class _ListReaderState extends State<ListReader> {
                       getPage(page);
                     }
 
-                    return loader;
+                    return Padding(
+                      padding: EdgeInsets.all(remToPx(5)),
+                      child: Center(
+                        child: loader,
+                      ),
+                    );
                   }
 
                   final manga_model.ImageInfo image = images[page]!.value!;
@@ -164,7 +207,10 @@ class _ListReaderState extends State<ListReader> {
                       if (loadingProgress == null) {
                         return Stack(
                           children: <Widget>[
-                            child,
+                            Align(
+                              alignment: AlignmentDirectional.center,
+                              child: child,
+                            ),
                             Positioned.fill(
                               child: Material(
                                 color: Colors.transparent,
