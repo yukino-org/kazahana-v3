@@ -66,10 +66,10 @@ class _FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
 
   @override
   Widget build(final BuildContext context) => Scaffold(
+        backgroundColor: Colors.black,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor:
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+          backgroundColor: Colors.transparent,
           elevation: 0,
         ),
         body: Column(

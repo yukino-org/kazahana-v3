@@ -62,4 +62,6 @@ abstract class TranslationSentences {
   String selectSource();
   String sources();
   String refetch();
+  String anilist();
+  String authenticating();
 }

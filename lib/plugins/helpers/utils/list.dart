@@ -13,13 +13,10 @@ abstract class ListUtils {
     for (int i = 0; i < size; i += count) {
       final int end = i + count;
       final int extra = end > size ? end - size : 0;
-      final List<T> chunk = elements.sublist(i, end - extra);
-      if (filler != null) {
-        for (int i = 0; i < extra; i++) {
-          chunk.add(filler);
-        }
-      }
-      chunked.add(chunk);
+      chunked.add(<T>[
+        ...elements.sublist(i, end - extra),
+        if (filler != null) ...List<T>.filled(extra, filler),
+      ]);
     }
     return chunked;
   }

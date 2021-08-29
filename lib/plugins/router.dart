@@ -50,7 +50,7 @@ class RouteInfo {
   final WidgetBuilder builder;
   final bool isPublic;
   final bool alreadyHandled;
-  final bool Function(RouteSettings settings)? matcher;
+  final bool Function(ParsedRouteInfo route)? matcher;
 }
 
 class RouteKeeper extends NavigatorObserver {
@@ -85,6 +85,17 @@ class RouteKeeper extends NavigatorObserver {
 
 class ParsedRouteInfo {
   ParsedRouteInfo(this.route, this.params);
+
+  factory ParsedRouteInfo.fromURI(final String uri) {
+    final List<String> split = uri.split('?');
+    return ParsedRouteInfo(
+      split[0],
+      RouteManager.parseURLParams(split.length > 1 ? split[1] : ''),
+    );
+  }
+
+  factory ParsedRouteInfo.fromSettings(final RouteSettings settings) =>
+      ParsedRouteInfo.fromURI(settings.name!);
 
   final String route;
   final Map<String, String> params;
@@ -132,30 +143,24 @@ abstract class RouteManager {
     RouteNames.homeHandler: RouteInfo(
       route: RouteNames.homeHandler,
       builder: (final BuildContext context) => const stacked_home_page.Page(),
-      matcher: (final RouteSettings settings) =>
-          settings.name?.startsWith(RouteNames.homeHandler) ?? false,
+      matcher: (final ParsedRouteInfo route) =>
+          route.route.startsWith(RouteNames.homeHandler),
     ),
   };
 
-  static RouteInfo? tryGetRouteFromSettings(final RouteSettings settings) =>
+  static RouteInfo? tryGetRouteFromParsedRouteInfo(
+    final ParsedRouteInfo route,
+  ) =>
       RouteManager.routes.values.firstWhereOrNull((final RouteInfo x) {
         if (x.alreadyHandled) return false;
-        if (x.matcher != null) return x.matcher!(settings);
-        return RouteManager.getOnlyRoute(settings.name!) == x.route;
+        if (x.matcher != null) return x.matcher!(route);
+        return RouteManager.getOnlyRoute(route.route) == x.route;
       });
 
   static List<RouteInfo> get labeledRoutes =>
       routes.values.where((final RouteInfo x) => x.isPublic).toList();
 
   static String getOnlyRoute(final String route) => route.split('?')[0];
-
-  static ParsedRouteInfo parseRoute(final String route) {
-    final List<String> split = route.split('?');
-    return ParsedRouteInfo(
-      split[0],
-      parseURLParams(split.length > 1 ? split[1] : ''),
-    );
-  }
 
   static Map<String, String> parseURLParams(final String queries) {
     final Map<String, String> params = <String, String>{};

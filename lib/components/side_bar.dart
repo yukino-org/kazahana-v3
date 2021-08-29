@@ -42,42 +42,50 @@ class _SideBarState extends State<SideBar> {
                       .asMap()
                       .map(
                         (final int i, final BarItem x) {
+                          final bool isHovered = currentIndex == i;
                           final Color? color = x.isActive
                               ? Theme.of(context).primaryColor
-                              : Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  ?.color
-                                  ?.withOpacity(currentIndex == i ? 0.5 : 0.7);
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      ?.color
+                                      ?.withOpacity(
+                                        isHovered ? 0.5 : 0.7,
+                                      )
+                                  : isHovered
+                                      ? Palette.gray[600]
+                                      : Palette.gray[500];
 
                           return MapEntry<int, Widget>(
-                              i,
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                onEnter: (final PointerEnterEvent event) {
-                                  setState(() {
-                                    currentIndex = i;
-                                  });
-                                },
-                                onExit: (final PointerExitEvent event) {
-                                  setState(() {
-                                    currentIndex = null;
-                                  });
-                                },
-                                child: GestureDetector(
-                                  onTap: x.onPressed,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: remToPx(0.25),
-                                    ),
-                                    child: Icon(
-                                      x.icon,
-                                      size: remToPx(1.25),
-                                      color: color,
-                                    ),
+                            i,
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              onEnter: (final PointerEnterEvent event) {
+                                setState(() {
+                                  currentIndex = i;
+                                });
+                              },
+                              onExit: (final PointerExitEvent event) {
+                                setState(() {
+                                  currentIndex = null;
+                                });
+                              },
+                              child: GestureDetector(
+                                onTap: x.onPressed,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: remToPx(0.25),
+                                  ),
+                                  child: Icon(
+                                    x.icon,
+                                    size: remToPx(1.25),
+                                    color: color,
                                   ),
                                 ),
-                              ),);
+                              ),
+                            ),
+                          );
                         },
                       )
                       .values

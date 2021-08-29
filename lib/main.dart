@@ -1,7 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
-import 'package:window_size/window_size.dart' as window;
+import 'package:window_size/window_size.dart' show setWindowTitle;
 import './components/player/player.dart' as player show initialize;
 import './config.dart';
 import './core/models/languages.dart' show LanguageName;
@@ -12,6 +11,7 @@ import './plugins/helpers/instance_manager.dart';
 import './plugins/helpers/local_server/server.dart';
 import './plugins/helpers/logger.dart';
 import './plugins/helpers/protocol_handler.dart';
+import './plugins/helpers/screen.dart';
 import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
@@ -28,7 +28,7 @@ Future<void> main(final List<String> args) async {
     await LocalServer.initialize();
     Logger.info('Local server serving at ${LocalServer.baseURL}');
 
-    window.setWindowTitle('${Config.name} v${Config.version}');
+    setWindowTitle('${Config.name} v${Config.version}');
   }
 
   final InstanceInfo? primaryInstance = await InstanceManager.check();
@@ -41,6 +41,7 @@ Future<void> main(final List<String> args) async {
   await ProtocolHandler.register();
   await DataStore.initialize();
   await AppState.initialize();
+  await Screen.initialize();
   Translator.setLanguage(
     AppState.settings.current.locale != null &&
             Translator.isSupportedLocale(
@@ -74,13 +75,6 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     AppState.settings.subscribe(handleSettingsChange);
-
-    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
-      WindowManager.instance.maximize();
-      WindowManager.instance.getSize().then((final Size size) {
-        AppState.maxSize = size;
-      });
-    }
   }
 
   @override
@@ -122,15 +116,42 @@ class _MainAppState extends State<MainApp> {
             throw StateError('No route name was received');
           }
 
-          final RouteInfo? route =
-              RouteManager.tryGetRouteFromSettings(settings);
+          final RouteInfo? route = RouteManager.tryGetRouteFromParsedRouteInfo(
+            ParsedRouteInfo.fromSettings(settings),
+          );
           if (route == null) {
             throw StateError('Invalid route: ${settings.name}');
           }
 
-          return MaterialPageRoute<dynamic>(
-            builder: route.builder,
+          return PageRouteBuilder<dynamic>(
             settings: settings,
+            pageBuilder: (
+              final BuildContext context,
+              final Animation<double> a1,
+              final Animation<double> a2,
+            ) =>
+                route.builder(context),
+            transitionsBuilder: (
+              final BuildContext context,
+              final Animation<double> a1,
+              final Animation<double> a2,
+              final Widget child,
+            ) =>
+                SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.1),
+                end: const Offset(0, 0),
+              ).animate(
+                CurvedAnimation(
+                  parent: a1,
+                  curve: Curves.easeOutCubic,
+                ),
+              ),
+              child: FadeTransition(
+                opacity: a1,
+                child: child,
+              ),
+            ),
           );
         },
       );

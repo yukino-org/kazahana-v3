@@ -38,6 +38,9 @@ abstract class Palette {
     brightness: Brightness.light,
     primaryColor: Palette.indigo[500],
     primarySwatch: Palette.indigo,
+    backgroundColor: Colors.white,
+    scaffoldBackgroundColor: Colors.white,
+    cardColor: Palette.gray[100],
     fontFamily: 'Poppins',
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );

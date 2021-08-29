@@ -185,4 +185,10 @@ class Sentences extends TranslationSentences {
 
   @override
   String refetch() => 'Refetch';
+
+  @override
+  String anilist() => 'AniList';
+
+  @override
+  String authenticating() => 'Authenticating';
 }

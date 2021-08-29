@@ -18,6 +18,8 @@ const int _volume = Player.maxVolume;
 const bool _autoNext = false;
 const bool _autoPlay = false;
 const bool _doubleClickSwitchChapter = true;
+const bool _animeAutoFullscreen = true;
+const bool _mangaAutoFullscreen = true;
 
 @HiveType(typeId: TypeIds.settings)
 class SettingsSchema extends HiveObject {
@@ -35,6 +37,8 @@ class SettingsSchema extends HiveObject {
     final this.autoNext = _autoNext,
     final this.autoPlay = _autoPlay,
     final this.doubleClickSwitchChapter = _doubleClickSwitchChapter,
+    final this.animeAutoFullscreen = _animeAutoFullscreen,
+    final this.mangaAutoFullscreen = _mangaAutoFullscreen,
   });
 
   @HiveField(1, defaultValue: _useSystemPreferredTheme)
@@ -75,6 +79,12 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(13, defaultValue: _doubleClickSwitchChapter)
   bool doubleClickSwitchChapter;
+
+  @HiveField(14, defaultValue: _animeAutoFullscreen)
+  bool animeAutoFullscreen;
+
+  @HiveField(15, defaultValue: _mangaAutoFullscreen)
+  bool mangaAutoFullscreen;
 }
 
 @HiveType(typeId: TypeIds.mangaDirections)

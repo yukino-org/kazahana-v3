@@ -14,7 +14,7 @@ final ServerRoute route = ServerRoute(
     } catch (_) {}
 
     if (args is List<dynamic> && args.every((final dynamic x) => x is String)) {
-      await ProtocolHandler.handle(args as List<String>);
+      await ProtocolHandler.handle(args.cast<String>());
       return Response(200);
     }
 

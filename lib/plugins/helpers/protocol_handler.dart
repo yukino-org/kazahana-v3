@@ -1,46 +1,71 @@
 import 'dart:io';
-import 'package:path/path.dart' as p;
+import 'package:collection/collection.dart';
+import 'package:protocol_registry/protocol_registry.dart' as protocol_registry;
+import 'package:window_manager/window_manager.dart';
 import '../../config.dart';
+import '../router.dart';
 
 abstract class ProtocolHandler {
-  static Future<bool> _registerLinux() async {
-    final String content = '''
-[Desktop Entry]
-Name=${Config.name}
-Exec=${Platform.resolvedExecutable} %u
+  static Future<void> register() async {
+    final protocol_registry.ProtocolRegistryModel registry =
+        protocol_registry.getRegistry();
+
+    final protocol_registry.ProtocolScheme scheme =
+        protocol_registry.ProtocolScheme(
+      scheme: Config.protocol,
+      appName: Config.name,
+      appPath: Platform.resolvedExecutable,
+    );
+
+    if (Platform.isWindows) {
+      await registry.remove(scheme);
+      await registry.add(scheme);
+    } else if (Platform.isLinux &&
+        registry is protocol_registry.LinuxProtocolRegistry) {
+      final String entry = '''
+${registry.getEntry(scheme)}
 Type=Application
-Terminal=false
-MimeType=x-scheme-handler/${Config.protocol};
 '''
-        .trim();
+          .trim();
 
-    final String path = p.join(
-      Platform.environment['HOME']!,
-      '.local',
-      'share',
-      'applications',
-      '${Config.protocol}.desktop',
-    );
+      final String path = registry.getDesktopFilePath(scheme);
+      final File file = File(path);
 
-    final File file = File(path);
-    await file.create(recursive: true);
-    await file.writeAsString(content);
+      if (await file.exists() == false) {
+        await file.create(recursive: true);
+      }
 
-    await Process.run(
-      'xdg-mime',
-      <String>['default', path, 'x-scheme-handler/${Config.protocol}'],
-    );
-
-    return true;
-  }
-
-  static Future<bool> register() async {
-    if (Platform.isLinux) {
-      return _registerLinux();
+      await file.writeAsString(entry);
+      await registry.installDesktopFile(
+        registry.getDesktopFilePath(scheme),
+        scheme,
+      );
     }
-
-    return false;
   }
 
-  static Future<void> handle(final List<String> args) async {}
+  static Future<void> handle(final List<String> args) async {
+    final String protocolPrefix = '${Config.protocol}://';
+    String? url = args.firstOrNull;
+
+    if (url != null) {
+      if (url.startsWith(protocolPrefix)) {
+        url = url.substring(protocolPrefix.length);
+      }
+
+      if (!url.startsWith('/')) {
+        url = '/$url';
+      }
+
+      final RouteInfo? route = RouteManager.tryGetRouteFromParsedRouteInfo(
+        ParsedRouteInfo.fromURI(url),
+      );
+      if (route != null && RouteManager.navigationKey.currentState != null) {
+        RouteManager.navigationKey.currentState!.pushNamed(url);
+
+        if (Platform.isWindows || Platform.isLinux) {
+          WindowManager.instance.focus();
+        }
+      }
+    }
+  }
 }

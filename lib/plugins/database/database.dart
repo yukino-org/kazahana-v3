@@ -1,7 +1,10 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path/path.dart' as p;
 import './schemas/cached_result/cached_result.dart' as cached_result_schema;
+import './schemas/credentials/credentials.dart' as credentials_schema;
 import './schemas/settings/settings.dart' as settings_schema;
+import '../../config.dart';
 
 abstract class TypeIds {
   static const int settings = 1;
@@ -9,16 +12,19 @@ abstract class TypeIds {
   static const int mangaSwipeDirections = 3;
   static const int mangaMode = 4;
   static const int cachedResult = 5;
+  static const int credentials = 6;
 }
 
 abstract class DataStoreBoxNames {
   static const String settings = 'settings_box';
   static const String cachedAnimeInfo = 'cached_anime_box';
   static const String cachedMangaInfo = 'cached_manga_box';
+  static const String credentials = 'credentials_box';
 }
 
 abstract class DataStoreKeys {
   static const String settings = 'settings';
+  static const String credentials = 'credentials';
 }
 
 abstract class DataBox {
@@ -34,11 +40,16 @@ abstract class DataBox {
       Hive.box<cached_result_schema.CachedResultSchema>(
         DataStoreBoxNames.cachedMangaInfo,
       );
+
+  static Box<credentials_schema.CredentialsSchema> get credentials =>
+      Hive.box<credentials_schema.CredentialsSchema>(
+        DataStoreBoxNames.credentials,
+      );
 }
 
 abstract class DataStore {
   static Future<void> initialize() async {
-    await Hive.initFlutter();
+    await Hive.initFlutter(p.join(Config.code, 'data'));
 
     Hive.registerAdapter(settings_schema.SettingsSchemaAdapter());
     Hive.registerAdapter(settings_schema.MangaDirectionsAdapter());
@@ -55,6 +66,11 @@ abstract class DataStore {
     await Hive.openBox<cached_result_schema.CachedResultSchema>(
       DataStoreBoxNames.cachedMangaInfo,
     );
+
+    Hive.registerAdapter(credentials_schema.CredentialsSchemaAdapter());
+    await Hive.openBox<credentials_schema.CredentialsSchema>(
+      DataStoreBoxNames.credentials,
+    );
   }
 
   static settings_schema.SettingsSchema get settings {
@@ -63,6 +79,17 @@ abstract class DataStore {
 
     return DataBox.settings.get(
           DataStoreKeys.settings,
+          defaultValue: defaultValue,
+        ) ??
+        defaultValue;
+  }
+
+  static credentials_schema.CredentialsSchema get credentials {
+    final credentials_schema.CredentialsSchema defaultValue =
+        credentials_schema.CredentialsSchema();
+
+    return DataBox.credentials.get(
+          DataStoreKeys.credentials,
           defaultValue: defaultValue,
         ) ??
         defaultValue;

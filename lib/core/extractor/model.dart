@@ -1,10 +1,11 @@
 import '../models/languages.dart' show LanguageCodes;
 
-Map<String, T> mapName<T extends BaseExtractor>(final List<T> items) =>
-    items.asMap().map(
-          (final int key, final T value) =>
-              MapEntry<String, T>(value.name, value),
-        );
+Map<String, T> mapName<T extends BaseExtractor>(final List<T> items) => (items
+      ..sort((final T a, final T b) => a.name.compareTo(b.name)))
+    .asMap()
+    .map(
+      (final int key, final T value) => MapEntry<String, T>(value.name, value),
+    );
 
 abstract class BaseExtractor {
   String get name;
