@@ -75,7 +75,7 @@
         "cordova-res": "^0.15.3",
         "cross-env": "^7.0.3",
         "cross-spawn": "^7.0.3",
-        "electron": "^13.1.6",
+        "electron": "^14.0.0",
         "electron-builder": "^22.10.5",
         "electron-icon-builder": "^2.0.1",
         "eslint": "^7.30.0",
