@@ -1,136 +1,79 @@
-import './auth.dart';
+import 'dart:convert';
+import 'package:collection/collection.dart';
+import 'package:http/http.dart' as http;
+import './handlers/auth.dart';
 import '../../../plugins/database/database.dart';
 import '../../secrets/anilist.dart';
 
-class UserInfo {
-  UserInfo({
-    required final this.id,
-    required final this.name,
-    required final this.avatarMedium,
+export './handlers/auth.dart';
+export './handlers/status.dart';
+export './handlers/user_info.dart';
+
+class RequestBody {
+  RequestBody({
+    required final this.query,
+    required final this.variables,
   });
 
-  factory UserInfo.fromJson(final Map<dynamic, dynamic> json) => UserInfo(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        avatarMedium: json['avatar']['medium'] as String,
-      );
+  final dynamic query;
+  final dynamic variables;
 
-  int id;
-  String name;
-  String avatarMedium;
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        'query': query,
+        'variables': variables,
+      };
 }
 
-class Media {
-  Media({
-    required final this.id,
-    required final this.idMal,
-    required final this.titleUserPreferred,
-    required final this.type,
-    required final this.episodes,
-    required final this.coverImageMedium,
-    required final this.genres,
-    required final this.meanScore,
-    required final this.siteUrl,
-  });
-
-  factory Media.fromJson(final Map<dynamic, dynamic> json) => Media(
-        id: json['id'] as int,
-        idMal: json['idMal'] as int,
-        titleUserPreferred: json['titleUserPreferred'] as String,
-        type: json['type'] as String,
-        episodes: json['episodes'] as int,
-        coverImageMedium: json['coverImageMedium'] as String,
-        genres: json['genres'] as List<String>,
-        meanScore: json['meanScore'] as int,
-        siteUrl: json['siteUrl'] as String,
-      );
-
-  final int id;
-  final int idMal;
-  final String titleUserPreferred;
-  final String type;
-  final int? episodes;
-  final String coverImageMedium;
-  final List<String> genres;
-  final int meanScore;
-  final String siteUrl;
-}
-
-class AnimeList {
-  AnimeList({
-    required final this.userId,
-    required final this.status,
-    required final this.progress,
-    required final this.startedAt,
-    required final this.completedAt,
-    required final this.media,
-  });
-
-  factory AnimeList.fromJson(final Map<dynamic, dynamic> json) => AnimeList(
-        userId: json['userId'] as int,
-        status: json['status'] as String,
-        progress: json['progress'] as int,
-        startedAt: json['startedAt'] as DateTime,
-        completedAt: json['completedAt'] as DateTime,
-        media: Media.fromJson(json['media'] as Map<dynamic, dynamic>),
-      );
-
-  final int userId;
-  final String status;
-  final int progress;
-  final DateTime startedAt;
-  final DateTime completedAt;
-  final Media media;
-}
-
-class AnimeSearch {
-  AnimeSearch({
-    required final this.id,
-    required final this.idMal,
-    required final this.titleUserPreferred,
-    required final this.coverImageMedium,
-  });
-
-  final int id;
-  final int idMal;
-  final String titleUserPreferred;
-  final String coverImageMedium;
-}
-
-abstract class MyAnimeListManager {
+abstract class AnilistManager {
   static const String webURL = 'https://anilist.co';
   static const String baseURL = 'https://graphql.anilist.co';
 
   static final Auth auth = Auth(AnilistSecrets.clientId);
-  static UserInfo? cachedUser;
 
-  Future<void> initialize() async {
-    final Map<dynamic, dynamic>? token = DataStore.credentials.anilist;
+  static Future<void> initialize() async {
+    final Map<dynamic, dynamic>? _token = DataStore.credentials.anilist;
 
-    if (token != null) {
-      auth.token = TokenInfo.fromJson(token);
+    if (_token != null) {
+      final TokenInfo token = TokenInfo.fromJson(_token);
+      if (DateTime.now().isBefore(token.expiresAt)) {
+        auth.token = token;
+      } else {
+        await auth.deleteToken();
+      }
     }
   }
 
-  bool get isLoggedIn => auth.isValidToken();
+  static Future<void> authenticate(final TokenInfo token) async {
+    auth.authorize(token);
+    if (auth.token != null) {
+      await auth.saveToken();
+    }
+  }
 
-  // Future<void> authenticate(final TokenInfo token) async {
-  //     final res = await auth.authorize(token);
-  //     // if (this.auth.token) await this.storeToken();
-  //     return res;
-  // }
+  static Future<dynamic> request(final RequestBody body) async {
+    if (!auth.isValidToken()) throw StateError('Not logged in');
 
-  // async storeToken() {
-  //     if (!this.auth.token) return false;
+    final http.Response res = await http.post(
+      Uri.parse(baseURL),
+      body: json.encode(body.toJson()),
+      headers: <String, String>{
+        'Authorization': '${auth.token!.tokenType} ${auth.token!.accessToken}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
 
-  //     const store = await Store.getClient();
-  //     await store.set(StoreKeys.aniListToken, this.auth.token);
-  // }
+    final dynamic parsed = json.decode(res.body);
+    if ((parsed['errors'] as List<dynamic>?)?.firstWhereOrNull(
+          (final dynamic x) => x['message'] == 'Invalid token',
+        ) !=
+        null) {
+      await auth.deleteToken();
+      throw StateError('Login expired');
+    }
 
-  // async removeToken() {
-  //     const store = await Store.getClient();
-  //     await store.set(StoreKeys.aniListToken, null);
-  // }
+    return parsed;
+  }
 
   // async userInfo() {
   //     const res = await this.request({
@@ -535,4 +478,6 @@ abstract class MyAnimeListManager {
   //     this.auth.setToken(null);
   //     await this.removeToken();
   // }
+
+  bool get isLoggedIn => auth.isValidToken();
 }

@@ -139,47 +139,45 @@ class _PageState extends State<Page> {
               color: Colors.white,
             ),
           ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: AnimatedSwitcher(
-                switchOutCurve: Curves.easeInOut,
-                duration: animationDuration,
-                child: getPage(currentPage),
-                transitionBuilder:
-                    (final Widget child, final Animation<double> animation) {
-                  final Widget fade = FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
+          body: SingleChildScrollView(
+            child: AnimatedSwitcher(
+              switchOutCurve: Curves.easeInOut,
+              duration: animationDuration,
+              child: getPage(currentPage),
+              transitionBuilder:
+                  (final Widget child, final Animation<double> animation) {
+                final Widget fade = FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
 
-                  if (child.key == const ValueKey<Pages>(Pages.home)) {
-                    return fade;
-                  }
+                if (child.key == const ValueKey<Pages>(Pages.home)) {
+                  return fade;
+                }
 
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.1),
-                      end: const Offset(0, 0),
-                    ).animate(
-                      CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.easeOutCubic,
-                      ),
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.1),
+                    end: const Offset(0, 0),
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
                     ),
-                    child: fade,
-                  );
-                },
-                layoutBuilder: (
-                  final Widget? currentChild,
-                  final List<Widget> previousChildren,
-                ) =>
-                    Stack(
-                  alignment: Alignment.topLeft,
-                  children: <Widget>[
-                    ...previousChildren,
-                    if (currentChild != null) currentChild,
-                  ],
-                ),
+                  ),
+                  child: fade,
+                );
+              },
+              layoutBuilder: (
+                final Widget? currentChild,
+                final List<Widget> previousChildren,
+              ) =>
+                  Stack(
+                alignment: Alignment.topLeft,
+                children: <Widget>[
+                  ...previousChildren,
+                  if (currentChild != null) currentChild,
+                ],
               ),
             ),
           ),

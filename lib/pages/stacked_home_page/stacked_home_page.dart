@@ -5,6 +5,7 @@ import '../../components/bottom_bar.dart' as bottom_bar;
 import '../../components/side_bar.dart' as side_bar;
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
+import '../../plugins/state.dart';
 
 class StackPage {
   StackPage(this.index, this.r);
@@ -26,21 +27,24 @@ class _PageState extends State<Page> {
   late int currentIndex;
   late PageController controller;
 
-  final List<StackPage> stack = <RouteInfo>[
-    RouteManager.routes[RouteNames.home]!,
-    RouteManager.routes[RouteNames.search]!,
-  ]
+  final List<String> stackRoutes = <String>[
+    RouteNames.home,
+    RouteNames.search,
+    RouteNames.trackers,
+  ];
+
+  late final List<StackPage> stack = stackRoutes
       .asMap()
       .map(
-        (final int i, final RouteInfo x) =>
-            MapEntry<int, StackPage>(i, StackPage(i, x)),
+        (final int i, final String x) =>
+            MapEntry<int, StackPage>(i, StackPage(i, RouteManager.routes[x]!)),
       )
       .values
       .toList();
 
-  final List<RouteInfo> routes = <RouteInfo>[
-    RouteManager.routes[RouteNames.settings]!,
-  ];
+  late final List<RouteInfo> routes = RouteManager.labeledRoutes
+      .where((final RouteInfo x) => !stackRoutes.contains(x.route))
+      .toList();
 
   int? getIndexOfRoute(final String route) =>
       stack.indexWhere((final StackPage x) => x.r.route == route);
@@ -54,6 +58,13 @@ class _PageState extends State<Page> {
             : null) ??
         0;
     controller = PageController(initialPage: currentIndex);
+
+    Future<void>.delayed(Duration.zero, () {
+      if (AppState.afterInitialRoute != null) {
+        Navigator.of(context).pushNamed(AppState.afterInitialRoute!);
+        AppState.afterInitialRoute = null;
+      }
+    });
   }
 
   void goToPage(final int page) => controller.animateToPage(

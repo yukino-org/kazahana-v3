@@ -13,7 +13,7 @@ class Page extends StatefulWidget {
 
 class _PageState extends State<Page> {
   @override
-  Widget build(final BuildContext context) => Container(
+  Widget build(final BuildContext context) => Padding(
         padding: EdgeInsets.symmetric(
           vertical: remToPx(1),
           horizontal: remToPx(1.25),

@@ -64,4 +64,13 @@ abstract class TranslationSentences {
   String refetch();
   String anilist();
   String authenticating();
+  String successfullyAuthenticated();
+  String autoAnimeFullscreen();
+  String autoAnimeFullscreenDetail();
+  String autoMangaFullscreen();
+  String autoMangaFullscreenDetail();
+  String authenticationFailed();
+  String connections();
+  String logIn();
+  String view();
 }

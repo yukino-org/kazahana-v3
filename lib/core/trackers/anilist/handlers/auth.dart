@@ -1,4 +1,8 @@
-import '../../../plugins/helpers/pkce_challenge.dart';
+import '../../../../plugins/database/database.dart';
+import '../../../../plugins/database/schemas/credentials/credentials.dart'
+    as credentials_schema;
+import '../../../../plugins/helpers/pkce_challenge.dart';
+import '../../../../plugins/helpers/querystring.dart';
 
 class TokenInfo {
   TokenInfo({
@@ -6,6 +10,15 @@ class TokenInfo {
     required final this.tokenType,
     required final this.expiresIn,
   });
+
+  factory TokenInfo.fromURL(final String url) {
+    final QueryString queries = QueryString(url.split('#')[1]);
+    return TokenInfo(
+      accessToken: queries.get('access_token'),
+      tokenType: queries.get('token_type'),
+      expiresIn: int.parse(queries.get('expires_in')),
+    );
+  }
 
   factory TokenInfo.fromJson(final Map<dynamic, dynamic> json) => TokenInfo(
         accessToken: json['access_token'] as String,
@@ -17,7 +30,7 @@ class TokenInfo {
   final String tokenType;
   final int expiresIn;
 
-  Map<dynamic, dynamic> toJson(final TokenInfo token) => <dynamic, dynamic>{
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'access_token': accessToken,
         'token_type': tokenType,
         'expires_in': expiresIn,
@@ -44,6 +57,25 @@ class Auth {
     );
   }
 
+  Future<bool> saveToken() async {
+    if (token != null) {
+      final credentials_schema.CredentialsSchema creds = DataStore.credentials;
+      creds.anilist = token!.toJson();
+      creds.save();
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> deleteToken() async {
+    token = null;
+    final credentials_schema.CredentialsSchema creds = DataStore.credentials;
+    creds.anilist = null;
+    creds.save();
+    return true;
+  }
+
   String getOauthURL() {
     _pkce ??= PKCEChallenge.generate();
     return Uri.encodeFull(
@@ -52,5 +84,5 @@ class Auth {
   }
 
   bool isValidToken() =>
-      token != null && token!.expiresIn > DateTime.now().microsecondsSinceEpoch;
+      token != null && DateTime.now().isBefore(token!.expiresAt);
 }

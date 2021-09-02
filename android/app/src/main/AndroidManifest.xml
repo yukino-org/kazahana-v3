@@ -2,7 +2,7 @@
     package="io.github.yukino_app">
 
    <application
-        android:label="yukino_app"
+        android:label="Yukino"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity
@@ -34,11 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
-            <meta-data android:name="flutter_deeplinking_enabled" />
-            <intent-filter android:autoVerify="true">
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="yukino-app" />
             </intent-filter>
         </activity>

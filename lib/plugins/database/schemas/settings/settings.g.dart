@@ -152,13 +152,15 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       autoNext: fields[11] == null ? false : fields[11] as bool,
       autoPlay: fields[12] == null ? false : fields[12] as bool,
       doubleClickSwitchChapter: fields[13] == null ? true : fields[13] as bool,
+      animeAutoFullscreen: fields[14] == null ? true : fields[14] as bool,
+      mangaAutoFullscreen: fields[15] == null ? true : fields[15] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
@@ -184,7 +186,11 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..writeByte(12)
       ..write(obj.autoPlay)
       ..writeByte(13)
-      ..write(obj.doubleClickSwitchChapter);
+      ..write(obj.doubleClickSwitchChapter)
+      ..writeByte(14)
+      ..write(obj.animeAutoFullscreen)
+      ..writeByte(15)
+      ..write(obj.mangaAutoFullscreen);
   }
 
   @override

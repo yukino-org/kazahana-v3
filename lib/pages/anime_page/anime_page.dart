@@ -65,9 +65,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
 
     Future<void>.delayed(Duration.zero, () async {
-      args = anime_page.PageArguments.fromJson(
-        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-      );
+      if (mounted) {
+        args = anime_page.PageArguments.fromJson(
+          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+        );
+      }
 
       getInfo();
     });
@@ -144,21 +146,18 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         ? Image.network(
             info!.thumbnail!.url,
             headers: info!.thumbnail!.headers,
-            width: remToPx(7),
+            width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
           )
         : Image.asset(
             Assets.placeholderImage(
               dark: isDarkContext(context),
             ),
-            width: remToPx(7),
+            width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
           );
 
     final Widget left = ClipRRect(
       borderRadius: BorderRadius.circular(remToPx(0.5)),
-      child: SizedBox(
-        width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(8),
-        child: image,
-      ),
+      child: image,
     );
 
     final Widget right = Column(
@@ -360,7 +359,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                       extendBodyBehindAppBar: true,
                       appBar: appBar,
                       body: SingleChildScrollView(
-                        child: Container(
+                        child: Padding(
                           padding: EdgeInsets.only(
                             left: remToPx(isLarge ? 3 : 1.25),
                             right: remToPx(isLarge ? 3 : 1.25),

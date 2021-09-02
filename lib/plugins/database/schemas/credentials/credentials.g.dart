@@ -17,7 +17,7 @@ class CredentialsSchemaAdapter extends TypeAdapter<CredentialsSchema> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return CredentialsSchema(
-      anilist: (fields[1] as Map).cast<dynamic, dynamic>(),
+      anilist: (fields[1] as Map?)?.cast<dynamic, dynamic>(),
     );
   }
 

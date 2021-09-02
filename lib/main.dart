@@ -1,9 +1,10 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:window_size/window_size.dart' show setWindowTitle;
+import 'package:window_manager/window_manager.dart';
 import './components/player/player.dart' as player show initialize;
 import './config.dart';
 import './core/models/languages.dart' show LanguageName;
+import './core/trackers/trackers.dart';
 import './plugins/app_lifecycle_observer.dart';
 import './plugins/database/database.dart' show DataStore;
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
@@ -28,12 +29,13 @@ Future<void> main(final List<String> args) async {
     await LocalServer.initialize();
     Logger.info('Local server serving at ${LocalServer.baseURL}');
 
-    setWindowTitle('${Config.name} v${Config.version}');
+    WindowManager.instance.setTitle('${Config.name} v${Config.version}');
   }
 
   final InstanceInfo? primaryInstance = await InstanceManager.check();
   if (primaryInstance != null &&
       await InstanceManager.sendArguments(primaryInstance, args)) {
+    await WindowManager.instance.terminate();
     return;
   }
 
@@ -52,6 +54,9 @@ Future<void> main(final List<String> args) async {
   );
 
   await player.initialize();
+  await Trackers.initialize();
+
+  AppState.afterInitialRoute = ProtocolHandler.parse(args);
 
   runApp(const MainApp());
 }

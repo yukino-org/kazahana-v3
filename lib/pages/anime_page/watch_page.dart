@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -141,6 +142,8 @@ class WatchPageState extends State<WatchPage>
   @override
   void dispose() {
     exitFullscreen();
+    playerChild = null;
+    player?.destroy();
 
     isPlaying.dispose();
     duration.dispose();
@@ -148,11 +151,6 @@ class WatchPageState extends State<WatchPage>
     playPauseController.dispose();
     overlayController.dispose();
     _mouseOverlayTimer?.cancel();
-
-    if (player != null) {
-      playerChild = null;
-      player!.destroy();
-    }
 
     _updateLandscape(true);
 
@@ -252,14 +250,16 @@ class WatchPageState extends State<WatchPage>
   }
 
   void _updateLandscape([final bool reset = false]) {
-    SystemChrome.setPreferredOrientations(
-      !reset && AppState.settings.current.fullscreenVideoPlayer
-          ? <DeviceOrientation>[
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ]
-          : <DeviceOrientation>[],
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setPreferredOrientations(
+        !reset && AppState.settings.current.fullscreenVideoPlayer
+            ? <DeviceOrientation>[
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ]
+            : <DeviceOrientation>[],
+      );
+    }
   }
 
   Future<void> showSelectSources() async {
@@ -698,9 +698,7 @@ class WatchPageState extends State<WatchPage>
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            showControls
-                ? overlayController.reverse()
-                : overlayController.forward();
+            _updateMouseOverlay();
           },
           child: Stack(
             children: <Widget>[

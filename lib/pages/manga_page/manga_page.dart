@@ -71,9 +71,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     );
 
     Future<void>.delayed(Duration.zero, () async {
-      args = manga_page.PageArguments.fromJson(
-        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-      );
+      if (mounted) {
+        args = manga_page.PageArguments.fromJson(
+          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+        );
+      }
 
       getInfo();
     });

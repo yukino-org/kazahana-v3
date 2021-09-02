@@ -586,10 +586,12 @@ packages:
   protocol_registry:
     dependency: "direct main"
     description:
-      name: protocol_registry
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.2"
+      path: "."
+      ref: "885fc4bdaf6a60e5fd27013b876a9d6bec3addc2"
+      resolved-ref: "885fc4bdaf6a60e5fd27013b876a9d6bec3addc2"
+      url: "https://github.com/zyrouge/dart_protocol_registry.git"
+    source: git
+    version: "0.0.5"
   pub_semver:
     dependency: transitive
     description:
@@ -872,20 +874,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "40b60d52405f406ee2ad8e6da8c15f245cf59956"
+      ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
+      resolved-ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
       url: "https://github.com/leanflutter/window_manager.git"
     source: git
-    version: "0.0.2"
-  window_size:
-    dependency: "direct main"
-    description:
-      path: "plugins\\window_size"
-      ref: e48abe7c3e9ebfe0b81622167c5201d4e783bb81
-      resolved-ref: e48abe7c3e9ebfe0b81622167c5201d4e783bb81
-      url: "https://github.com/google/flutter-desktop-embedding.git"
-    source: git
-    version: "0.1.0"
+    version: "0.0.3"
   xdg_directories:
     dependency: transitive
     description:

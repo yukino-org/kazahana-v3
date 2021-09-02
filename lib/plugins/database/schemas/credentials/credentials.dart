@@ -10,5 +10,5 @@ class CredentialsSchema extends HiveObject {
   });
 
   @HiveField(1)
-  final Map<dynamic, dynamic>? anilist;
+  Map<dynamic, dynamic>? anilist;
 }

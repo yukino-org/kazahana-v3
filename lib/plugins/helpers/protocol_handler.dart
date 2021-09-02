@@ -7,9 +7,6 @@ import '../router.dart';
 
 abstract class ProtocolHandler {
   static Future<void> register() async {
-    final protocol_registry.ProtocolRegistryModel registry =
-        protocol_registry.getRegistry();
-
     final protocol_registry.ProtocolScheme scheme =
         protocol_registry.ProtocolScheme(
       scheme: Config.protocol,
@@ -18,10 +15,13 @@ abstract class ProtocolHandler {
     );
 
     if (Platform.isWindows) {
+      final protocol_registry.WindowsProtocolRegistry registry =
+          protocol_registry.WindowsProtocolRegistry();
       await registry.remove(scheme);
       await registry.add(scheme);
-    } else if (Platform.isLinux &&
-        registry is protocol_registry.LinuxProtocolRegistry) {
+    } else if (Platform.isLinux) {
+      final protocol_registry.LinuxProtocolRegistry registry =
+          protocol_registry.LinuxProtocolRegistry();
       final String entry = '''
 ${registry.getEntry(scheme)}
 Type=Application
@@ -43,8 +43,7 @@ Type=Application
     }
   }
 
-  static Future<void> handle(final List<String> args) async {
-    final String protocolPrefix = '${Config.protocol}://';
+  static String? parse(final List<String> args) {
     String? url = args.firstOrNull;
 
     if (url != null) {
@@ -56,16 +55,23 @@ Type=Application
         url = '/$url';
       }
 
-      final RouteInfo? route = RouteManager.tryGetRouteFromParsedRouteInfo(
-        ParsedRouteInfo.fromURI(url),
-      );
-      if (route != null && RouteManager.navigationKey.currentState != null) {
-        RouteManager.navigationKey.currentState!.pushNamed(url);
-
-        if (Platform.isWindows || Platform.isLinux) {
-          WindowManager.instance.focus();
-        }
-      }
+      return RouteManager.tryGetRouteFromParsedRouteInfo(
+                ParsedRouteInfo.fromURI(url),
+              ) !=
+              null
+          ? url
+          : null;
     }
   }
+
+  static void handle(final String route) {
+    RouteManager.navigationKey.currentState!.pushNamed(route);
+    if (Platform.isWindows || Platform.isLinux) {
+      WindowManager.instance
+        ..restore()
+        ..focus();
+    }
+  }
+
+  static String get protocolPrefix => '${Config.protocol}://';
 }

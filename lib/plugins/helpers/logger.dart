@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../../config.dart';
@@ -26,10 +26,7 @@ abstract class Logger {
   }
 
   static void _printIfDebug(final String msg) {
-    if (kDebugMode) {
-      // ignore: avoid_print
-      print(msg);
-    }
+    debugPrint(msg);
   }
 
   static Future<void> info(final String msg) async {

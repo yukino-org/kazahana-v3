@@ -26,11 +26,14 @@ export const generate = async () => {
     const started = Date.now();
 
     logger.log(`Icon path: ${config.ios.icon}`);
-    const img = await jimp.read(config.ios.icon);
+    const original = await jimp.read(config.ios.icon);
 
     for (const size of sizes) {
         const path = join(config.ios.project, `/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-${size[0]}x${size[0]}@${size[1]}x.png`);
         const px = size[0] * size[1];
+
+        const img = original.clone();
+        img.quality(100);
         img.resize(px, px);
         await img.writeAsync(path);
         logger.log(`Generated ${path}`);

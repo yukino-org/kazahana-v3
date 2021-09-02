@@ -26,7 +26,11 @@ List<Widget> getAnime(
         ),
       SettingDialog(
         title: Translator.t.volume(),
-        icon: Icons.volume_up,
+        icon: settings.volume == 0
+            ? Icons.volume_mute
+            : settings.volume > 50
+                ? Icons.volume_up
+                : Icons.volume_down,
         subtitle: '${settings.volume}%',
         builder: (
           final BuildContext context,
@@ -189,5 +193,21 @@ List<Widget> getAnime(
 
           await save();
         },
+      ),
+      Visibility(
+        visible: Platform.isLinux || Platform.isLinux || Platform.isWindows,
+        child: SettingSwitch(
+          title: Translator.t.autoAnimeFullscreen(),
+          icon: settings.animeAutoFullscreen
+              ? Icons.fullscreen
+              : Icons.fullscreen_exit,
+          desc: Translator.t.autoAnimeFullscreenDetail(),
+          value: settings.animeAutoFullscreen,
+          onChanged: (final bool val) async {
+            settings.animeAutoFullscreen = val;
+
+            await save();
+          },
+        ),
       ),
     ];

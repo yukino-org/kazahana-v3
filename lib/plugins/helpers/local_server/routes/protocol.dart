@@ -14,8 +14,11 @@ final ServerRoute route = ServerRoute(
     } catch (_) {}
 
     if (args is List<dynamic> && args.every((final dynamic x) => x is String)) {
-      await ProtocolHandler.handle(args.cast<String>());
-      return Response(200);
+      final String? route = ProtocolHandler.parse(args.cast<String>());
+      if (route != null) {
+        ProtocolHandler.handle(route);
+        return Response(200);
+      }
     }
 
     return Response(400, body: 'Bad request');

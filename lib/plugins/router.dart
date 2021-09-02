@@ -1,11 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../pages/anime_page/anime_page.dart' as anime_page;
+import '../pages/auth_page/anilist_page.dart' as anilist_auth_page;
 import '../pages/home_page/home_page.dart' as home_page;
 import '../pages/manga_page/manga_page.dart' as manga_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
+import '../pages/trackers_page/anilist_page/anilist_page.dart' as anilist_page;
+import '../pages/trackers_page/trackers_page.dart' as trackers_page;
 import '../plugins/helpers/stater.dart' show SubscriberManager;
 import '../plugins/translator/translator.dart';
 
@@ -15,9 +18,12 @@ abstract class RouteNames {
   static const String homeHandler = '/';
   static const String home = '/home';
   static const String search = '/search';
+  static const String trackers = '/connections';
   static const String settings = '/settings';
   static const String animePage = '/anime_page';
   static const String mangaPage = '/manga_page';
+  static const String anilistAuthPage = '/auth/anilist/callback';
+  static const String anilistPage = '/connections/anilist';
 }
 
 class RouteInfo {
@@ -87,7 +93,8 @@ class ParsedRouteInfo {
   ParsedRouteInfo(this.route, this.params);
 
   factory ParsedRouteInfo.fromURI(final String uri) {
-    final List<String> split = uri.split('?');
+    final List<String> split =
+        uri.replaceFirst(RegExp(r'\\/$'), '').split(RegExp('[?#]'));
     return ParsedRouteInfo(
       split[0],
       RouteManager.parseURLParams(split.length > 1 ? split[1] : ''),
@@ -108,8 +115,8 @@ abstract class RouteManager {
   static final GlobalKey<NavigatorState> navigationKey =
       GlobalKey<NavigatorState>();
   static final RouteKeeper keeper = RouteKeeper();
-  static final Map<String, RouteInfo> routes = <String, RouteInfo>{
-    RouteNames.home: RouteInfo(
+  static final Map<String, RouteInfo> routes = <RouteInfo>[
+    RouteInfo(
       name: Translator.t.home,
       route: RouteNames.home,
       icon: Icons.home,
@@ -117,7 +124,7 @@ abstract class RouteManager {
       isPublic: true,
       alreadyHandled: true,
     ),
-    RouteNames.search: RouteInfo(
+    RouteInfo(
       name: Translator.t.search,
       route: RouteNames.search,
       icon: Icons.search,
@@ -125,28 +132,51 @@ abstract class RouteManager {
       isPublic: true,
       alreadyHandled: true,
     ),
-    RouteNames.settings: RouteInfo(
+    RouteInfo(
+      name: Translator.t.connections,
+      route: RouteNames.trackers,
+      icon: Icons.insights,
+      builder: (final BuildContext context) => const trackers_page.Page(),
+      isPublic: true,
+      alreadyHandled: true,
+    ),
+    RouteInfo(
       name: Translator.t.settings,
       route: RouteNames.settings,
       icon: Icons.settings,
       builder: (final BuildContext context) => const settings_page.Page(),
       isPublic: true,
     ),
-    RouteNames.animePage: RouteInfo(
+    RouteInfo(
       route: RouteNames.animePage,
       builder: (final BuildContext context) => const anime_page.Page(),
     ),
-    RouteNames.mangaPage: RouteInfo(
+    RouteInfo(
       route: RouteNames.mangaPage,
       builder: (final BuildContext context) => const manga_page.Page(),
     ),
-    RouteNames.homeHandler: RouteInfo(
+    RouteInfo(
+      route: RouteNames.anilistAuthPage,
+      builder: (final BuildContext context) => const anilist_auth_page.Page(),
+    ),
+    RouteInfo(
+      route: RouteNames.anilistPage,
+      builder: (final BuildContext context) => const anilist_page.Page(),
+    ),
+    RouteInfo(
       route: RouteNames.homeHandler,
       builder: (final BuildContext context) => const stacked_home_page.Page(),
-      matcher: (final ParsedRouteInfo route) =>
-          route.route.startsWith(RouteNames.homeHandler),
+      matcher: (final ParsedRouteInfo route) => <String>[
+        RouteNames.homeHandler,
+        RouteNames.homeHandler,
+        RouteNames.search,
+        RouteNames.trackers,
+      ].contains(route.route),
     ),
-  };
+  ].asMap().map(
+        (final int k, final RouteInfo v) =>
+            MapEntry<String, RouteInfo>(v.route, v),
+      );
 
   static RouteInfo? tryGetRouteFromParsedRouteInfo(
     final ParsedRouteInfo route,
@@ -160,7 +190,8 @@ abstract class RouteManager {
   static List<RouteInfo> get labeledRoutes =>
       routes.values.where((final RouteInfo x) => x.isPublic).toList();
 
-  static String getOnlyRoute(final String route) => route.split('?')[0];
+  static String getOnlyRoute(final String route) =>
+      RegExp('[^#?]+').stringMatch(route) ?? '';
 
   static Map<String, String> parseURLParams(final String queries) {
     final Map<String, String> params = <String, String>{};

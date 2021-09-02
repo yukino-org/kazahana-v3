@@ -18,10 +18,13 @@ export const generate = async () => {
     const started = Date.now();
 
     logger.log(`Icon path: ${config.macos.icon}`);
-    const img = await jimp.read(config.macos.icon);
+    const original = await jimp.read(config.macos.icon);
 
     for (const size of sizes) {
         const path = join(config.macos.project, `/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_${size}.png`);
+        
+        const img = original.clone();
+        img.quality(100);
         img.resize(size, size);
         await img.writeAsync(path);
         logger.log(`Generated ${path}`);

@@ -1,5 +1,5 @@
 name: yukino_app
-description: A new Flutter project.
+description: Yukino
 version: 1.0.1-beta.0
 
 publish_to: none
@@ -21,18 +21,16 @@ dependencies:
   package_info_plus: ^1.0.5
   path: ^1.8.0
   path_provider: ^2.0.2
-  protocol_registry: ^0.0.2
+  protocol_registry:
+    git:
+      url: https://github.com/zyrouge/dart_protocol_registry.git
+      ref: 885fc4bdaf6a60e5fd27013b876a9d6bec3addc2
   shelf: ^1.2.0
   url_launcher: ^6.0.9
   window_manager:
     git:
       url: https://github.com/leanflutter/window_manager.git
-      ref: main
-  window_size:
-    git:
-      url: https://github.com/google/flutter-desktop-embedding.git
-      path: plugins/window_size
-      ref: e48abe7c3e9ebfe0b81622167c5201d4e783bb81
+      ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
 
 dev_dependencies:
   build_runner: ^2.0.5

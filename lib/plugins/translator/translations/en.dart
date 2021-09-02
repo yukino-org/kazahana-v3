@@ -191,4 +191,33 @@ class Sentences extends TranslationSentences {
 
   @override
   String authenticating() => 'Authenticating';
+
+  @override
+  String successfullyAuthenticated() => 'Successfully authenticated!';
+
+  @override
+  String autoAnimeFullscreen() => 'Auto Anime Fullscreen';
+
+  @override
+  String autoAnimeFullscreenDetail() =>
+      'Enter fullscreen by default when watching anime';
+
+  @override
+  String autoMangaFullscreen() => 'Auto Manga Fullscreen';
+
+  @override
+  String autoMangaFullscreenDetail() =>
+      'Enter fullscreen by default when reading manga';
+
+  @override
+  String authenticationFailed() => 'Authenticated failed!';
+
+  @override
+  String connections() => 'Connections';
+
+  @override
+  String logIn() => 'Log In';
+
+  @override
+  String view() => 'View';
 }

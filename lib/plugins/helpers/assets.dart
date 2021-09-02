@@ -6,6 +6,8 @@ abstract class Assets {
   static const String darkPlaceHolderImage =
       'assets/images/dark-placeholder-image.png';
 
+  static const String anilistLogo = 'assets/images/anilist-logo.png';
+
   static String placeholderImage({
     required final bool dark,
   }) =>

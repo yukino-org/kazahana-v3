@@ -100,13 +100,15 @@ class _PageState extends State<Page> {
     super.initState();
 
     Future<void>.delayed(Duration.zero, () {
-      placeholderImage = Image.asset(
-        Assets.placeholderImage(
-          dark: isDarkContext(
-            context,
+      if (mounted) {
+        placeholderImage = Image.asset(
+          Assets.placeholderImage(
+            dark: isDarkContext(
+              context,
+            ),
           ),
-        ),
-      );
+        );
+      }
     });
   }
 
@@ -323,7 +325,7 @@ class _PageState extends State<Page> {
           },
         ),
         body: SingleChildScrollView(
-          child: Container(
+          child: Padding(
             padding: EdgeInsets.symmetric(
               vertical: remToPx(1),
               horizontal: remToPx(1.25),
