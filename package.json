@@ -69,7 +69,7 @@
         "@types/lodash.merge": "^4.6.6",
         "@types/qs": "^6.9.7",
         "@vitejs/plugin-vue": "^1.2.4",
-        "@vue/compiler-sfc": "3.1.2",
+        "@vue/compiler-sfc": "3.2.8",
         "@zyrouge/git-compare": "^1.0.0",
         "autoprefixer": "^10.3.1",
         "cordova-res": "^0.15.3",
