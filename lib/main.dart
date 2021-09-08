@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import './components/player/player.dart' as player show initialize;
@@ -109,6 +109,7 @@ class _MainAppState extends State<MainApp> {
         navigatorKey: RouteManager.navigationKey,
         navigatorObservers: <NavigatorObserver>[
           RouteManager.keeper,
+          RouteManager.observer,
         ],
         theme: Palette.lightTheme,
         darkTheme: Palette.darkTheme,

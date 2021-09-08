@@ -73,4 +73,27 @@ abstract class TranslationSentences {
   String connections();
   String logIn();
   String view();
+  String logOut();
+  String nothingWasFoundHere();
+  String progress();
+  String finishedOf(final int progress, final int? total);
+  String startedOn();
+  String completedOn();
+  String edit();
+  String vols();
+  String editing();
+  String save();
+  String status();
+  String noOfEpisodes();
+  String noOfChapters();
+  String noOfVolumes();
+  String score();
+  String repeat();
+  String characters();
+  String play();
+  String computedAs();
+  String notThis();
+  String selectAnAnime();
+  String read();
+  String animeSyncPercent();
 }

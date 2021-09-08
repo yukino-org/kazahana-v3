@@ -12,11 +12,14 @@ class AboutTile extends StatelessWidget {
   Widget build(final BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
-    return Wrap(
+    return Column(
       children: <Widget>[
+        SizedBox(
+          height: remToPx(0.5),
+        ),
         Center(
           child: SizedBox(
-            height: width > ResponsiveSizes.md ? remToPx(7) : remToPx(5),
+            height: width > ResponsiveSizes.md ? remToPx(6) : remToPx(5),
             child: Image.asset(Assets.yukinoIcon),
           ),
         ),

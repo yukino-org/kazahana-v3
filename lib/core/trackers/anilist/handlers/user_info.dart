@@ -30,11 +30,11 @@ Future<UserInfo> getUserInfo({
   const String query = '''
 {
   Viewer {
-      id,
-      name,
-      avatar {
-          medium
-      }
+    id
+    name
+    avatar {
+      medium
+    }
   }
 }
   ''';
@@ -42,7 +42,6 @@ Future<UserInfo> getUserInfo({
   final dynamic res = await AnilistManager.request(
     RequestBody(
       query: query,
-      variables: null,
     ),
   );
 

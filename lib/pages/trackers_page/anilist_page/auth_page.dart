@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../core/trackers/anilist/handlers/auth.dart';
-import '../../plugins/helpers/assets.dart';
-import '../../plugins/helpers/stateful_holder.dart';
-import '../../plugins/helpers/ui.dart';
-import '../../plugins/translator/translator.dart';
+import '../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../core/trackers/anilist/handlers/auth.dart';
+import '../../../plugins/helpers/assets.dart';
+import '../../../plugins/helpers/stateful_holder.dart';
+import '../../../plugins/helpers/ui.dart';
+import '../../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
   const Page({
@@ -17,8 +17,8 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
-  final StatefulListenableHolder<String> status =
-      StatefulListenableHolder<String>(Translator.t.authenticating());
+  final StatefulHolder<String> status =
+      StatefulHolder<String>(Translator.t.authenticating());
 
   @override
   void initState() {
@@ -29,27 +29,28 @@ class _PageState extends State<Page> {
         final TokenInfo token =
             TokenInfo.fromURL(ModalRoute.of(context)!.settings.name!);
         await anilist.AnilistManager.authenticate(token);
-        status.resolve(Translator.t.successfullyAuthenticated());
 
-        Future<void>.delayed(const Duration(seconds: 5), () {
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
-        });
-      } catch (e) {
-        status.fail('${Translator.t.authenticationFailed()}\n${e.toString()}');
         if (mounted) {
-          setState(() {});
+          setState(() {
+            status.resolve(Translator.t.successfullyAuthenticated());
+          });
+
+          Future<void>.delayed(const Duration(seconds: 4), () {
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            status.fail(
+              '${Translator.t.authenticationFailed()}\n${e.toString()}',
+            );
+          });
         }
       }
     });
-  }
-
-  @override
-  void dispose() {
-    status.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -83,26 +84,18 @@ class _PageState extends State<Page> {
                   ),
                 ),
                 SizedBox(
-                  height: remToPx(3),
+                  height: remToPx(2),
                 ),
-                if (!status.hasFailed) ...<Widget>[
+                if (!status.hasEnded) ...<Widget>[
                   const CircularProgressIndicator(),
                   SizedBox(
                     height: remToPx(1),
                   ),
                 ],
-                ValueListenableBuilder<String>(
-                  valueListenable: status,
-                  builder: (
-                    final BuildContext context,
-                    final String state,
-                    final Widget? child,
-                  ) =>
-                      Text(
-                    state,
-                    style: Theme.of(context).textTheme.subtitle1,
-                    textAlign: TextAlign.center,
-                  ),
+                Text(
+                  status.value,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  textAlign: TextAlign.center,
                 ),
                 SizedBox(
                   height: remToPx(2),

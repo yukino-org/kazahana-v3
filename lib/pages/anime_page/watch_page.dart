@@ -9,6 +9,8 @@ import '../../config.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/player.dart' as player_model;
+import '../../core/models/tracker_provider.dart';
+import '../../core/trackers/providers.dart';
 import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/duration.dart';
@@ -38,6 +40,8 @@ class WatchPage extends StatefulWidget {
     required final this.previousEpisode,
     required final this.nextEpisodeEnabled,
     required final this.nextEpisode,
+    required final this.ignoreAutoFullscreen,
+    required final this.onIgnoreAutoFullscreenChange,
     final Key? key,
   }) : super(key: key);
 
@@ -50,6 +54,8 @@ class WatchPage extends StatefulWidget {
   final void Function() previousEpisode;
   final bool nextEpisodeEnabled;
   final void Function() nextEpisode;
+  final bool ignoreAutoFullscreen;
+  final void Function(bool ignoreAutoFullscreen) onIgnoreAutoFullscreenChange;
 
   @override
   WatchPageState createState() => WatchPageState();
@@ -89,14 +95,18 @@ class WatchPageState extends State<WatchPage>
   );
 
   Timer? _mouseOverlayTimer;
+  bool hasSynced = false;
+  bool ignoreExitFullscreen = false;
 
   @override
   void initState() {
     super.initState();
+
     initFullscreen();
 
     Future<void>.delayed(Duration.zero, () async {
-      if (AppState.settings.current.animeAutoFullscreen) {
+      if (AppState.settings.current.animeAutoFullscreen &&
+          !widget.ignoreAutoFullscreen) {
         enterFullscreen();
       }
 
@@ -141,7 +151,10 @@ class WatchPageState extends State<WatchPage>
 
   @override
   void dispose() {
-    exitFullscreen();
+    if (!ignoreExitFullscreen) {
+      exitFullscreen();
+    }
+
     playerChild = null;
     player?.destroy();
 
@@ -231,6 +244,7 @@ class WatchPageState extends State<WatchPage>
       case player_model.PlayerEvents.end:
         if (autoNext) {
           if (widget.nextEpisodeEnabled) {
+            ignoreExitFullscreen = true;
             widget.nextEpisode();
           }
         }
@@ -242,11 +256,38 @@ class WatchPageState extends State<WatchPage>
     }
   }
 
-  void _updateDuration() {
+  Future<void> _updateDuration() async {
     duration.value = VideoDuration(
       player?.duration ?? Duration.zero,
       player?.totalDuration ?? Duration.zero,
     );
+
+    if ((duration.value.current.inSeconds / duration.value.total.inSeconds) *
+            100 >
+        AppState.settings.current.animeTrackerWatchPercent) {
+      final int? episode = int.tryParse(widget.episode.episode);
+
+      if (episode != null && !hasSynced) {
+        hasSynced = true;
+
+        final AnimeProgress progress = AnimeProgress(episodes: episode);
+
+        for (final TrackerProvider<AnimeProgress, dynamic> provider
+            in animeProviders) {
+          if (provider.isEnabled(widget.title, widget.plugin)) {
+            final ResolvedTrackerItem<dynamic>? item =
+                await provider.getComputed(widget.title, widget.plugin);
+
+            if (item != null) {
+              await provider.updateComputed(
+                item,
+                progress,
+              );
+            }
+          }
+        }
+      }
+    }
   }
 
   void _updateLandscape([final bool reset = false]) {
@@ -666,8 +707,10 @@ class WatchPageState extends State<WatchPage>
         color: Colors.white,
         onPressed: () {
           if (isFullscreened) {
+            widget.onIgnoreAutoFullscreenChange(true);
             exitFullscreen();
           } else {
+            widget.onIgnoreAutoFullscreenChange(false);
             enterFullscreen();
           }
         },
@@ -932,8 +975,11 @@ class WatchPageState extends State<WatchPage>
                                                     icon: Icons.skip_previous,
                                                     label:
                                                         Translator.t.previous(),
-                                                    onPressed:
-                                                        widget.previousEpisode,
+                                                    onPressed: () {
+                                                      ignoreExitFullscreen =
+                                                          true;
+                                                      widget.previousEpisode();
+                                                    },
                                                     enabled: widget
                                                         .previousEpisodeEnabled,
                                                   ),
@@ -983,8 +1029,11 @@ class WatchPageState extends State<WatchPage>
                                                   child: actionButton(
                                                     icon: Icons.skip_next,
                                                     label: Translator.t.next(),
-                                                    onPressed:
-                                                        widget.nextEpisode,
+                                                    onPressed: () {
+                                                      ignoreExitFullscreen =
+                                                          true;
+                                                      widget.nextEpisode();
+                                                    },
                                                     enabled: widget
                                                         .nextEpisodeEnabled,
                                                   ),

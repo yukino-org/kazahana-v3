@@ -46,8 +46,9 @@ class _PageState extends State<Page> {
       .where((final RouteInfo x) => !stackRoutes.contains(x.route))
       .toList();
 
-  int? getIndexOfRoute(final String route) =>
-      stack.indexWhere((final StackPage x) => x.r.route == route);
+  int? getIndexOfRoute(final String route) => stack.indexWhere(
+        (final StackPage x) => x.r.route == RouteManager.getOnlyRoute(route),
+      );
 
   @override
   void initState() {

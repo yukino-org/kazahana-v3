@@ -45,30 +45,32 @@ class SettingDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
+                  padding: EdgeInsets.symmetric(
+                    vertical: remToPx(0.8),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 22,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: remToPx(1.1),
                         ),
                         child: Text(
                           dialogTitle ?? title,
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ),
-                      const SizedBox(
-                        height: 6,
+                      SizedBox(
+                        height: remToPx(0.3),
                       ),
                       builder(context, setState),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: remToPx(0.7),
+                          ),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(4),
                             child: Padding(

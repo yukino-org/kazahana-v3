@@ -1,3 +1,3 @@
 abstract class AnilistSecrets {
-  static const String clientId = '5861';
+  static const String clientId = '6444';
 }

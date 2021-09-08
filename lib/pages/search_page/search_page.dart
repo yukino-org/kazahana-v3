@@ -1,14 +1,17 @@
-import 'dart:io' show Platform;
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../../components/network_image_fallback.dart';
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/model.dart' as base_model;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/manga_page.dart' as manga_page;
+import '../../core/models/search_page.dart' as search_page;
+import '../../plugins/database/database.dart';
+import '../../plugins/database/schemas/preferences/preferences.dart'
+    as preferences_schema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
-import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 
@@ -48,8 +51,8 @@ class CurrentPlugin {
     required final this.plugin,
   });
 
-  final PluginTypes type;
-  final base_model.BaseExtractorPlugin<base_model.BaseSearchInfo> plugin;
+  PluginTypes type;
+  base_model.BaseExtractorPlugin<base_model.BaseSearchInfo> plugin;
 
   @override
   String toString() => '${type.toString}-${plugin.name}';
@@ -85,21 +88,61 @@ class Page extends StatefulWidget {
 
 class _PageState extends State<Page> {
   LoadState state = LoadState.waiting;
+  final preferences_schema.PreferencesSchema preferences =
+      DataStore.preferences;
+
   List<String> animePlugins = extractor.Extractors.anime.keys.toList();
   List<String> mangaPlugins = extractor.Extractors.manga.keys.toList();
-  CurrentPlugin currentPlugin = CurrentPlugin(
-    type: PluginTypes.anime,
-    plugin: extractor.Extractors.anime[extractor.Extractors.anime.keys.first]!,
-  );
+
   List<SearchInfo> results = <SearchInfo>[];
 
   late Widget placeholderImage;
+  late CurrentPlugin currentPlugin;
+  late search_page.PageArguments args;
+
+  final TextEditingController textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-    Future<void>.delayed(Duration.zero, () {
+    currentPlugin = CurrentPlugin(
+      type: PluginTypes.anime,
+      plugin:
+          extractor.Extractors.anime[extractor.Extractors.anime.keys.first]!,
+    );
+
+    if (preferences.lastSelectedSearchType != null) {
+      currentPlugin.type = PluginTypes.values.firstWhereOrNull(
+            (final PluginTypes x) =>
+                x.toString() == preferences.lastSelectedSearchType,
+          ) ??
+          currentPlugin.type;
+    }
+
+    if (preferences.lastSelectedSearchPlugin != null) {
+      bool matched = false;
+
+      for (final String x in animePlugins) {
+        if (preferences.lastSelectedSearchPlugin == x) {
+          currentPlugin.plugin = extractor.Extractors.anime[x]!;
+          matched = true;
+          break;
+        }
+      }
+
+      if (!matched) {
+        for (final String x in mangaPlugins) {
+          if (preferences.lastSelectedSearchPlugin == x) {
+            currentPlugin.plugin = extractor.Extractors.manga[x]!;
+            matched = true;
+            break;
+          }
+        }
+      }
+    }
+
+    Future<void>.delayed(Duration.zero, () async {
       if (mounted) {
         placeholderImage = Image.asset(
           Assets.placeholderImage(
@@ -108,15 +151,35 @@ class _PageState extends State<Page> {
             ),
           ),
         );
+
+        args = search_page.PageArguments.fromJson(
+          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+        );
+
+        if (args.terms != null) {
+          setState(() {
+            textController.text = args.terms!;
+          });
+
+          if (args.autoSearch == true) {
+            final List<SearchInfo> res = await search();
+            if (mounted) {
+              setState(() {
+                results = res;
+                state = LoadState.resolved;
+              });
+            }
+          }
+        }
       }
     });
   }
 
-  Future<List<SearchInfo>> search(final String terms) async {
+  Future<List<SearchInfo>> search() async {
     final List<SearchInfo> results = <SearchInfo>[];
     final List<base_model.BaseSearchInfo> searches =
         await currentPlugin.plugin.search(
-      terms,
+      textController.text,
       locale: Translator.t.code,
     );
 
@@ -142,13 +205,17 @@ class _PageState extends State<Page> {
           value: plugin.toString(),
           groupValue: currentPlugin.toString(),
           activeColor: Theme.of(context).primaryColor,
-          onChanged: (final String? val) {
-            setState(() {
-              if (val != null) {
+          onChanged: (final String? val) async {
+            if (val != null) {
+              setState(() {
                 currentPlugin = plugin;
+                preferences.lastSelectedSearchType = plugin.type.toString();
+                preferences.lastSelectedSearchPlugin = plugin.plugin.name;
                 Navigator.of(context).pop();
-              }
-            });
+              });
+
+              await preferences.save();
+            }
           },
         ),
       );
@@ -207,7 +274,7 @@ class _PageState extends State<Page> {
     ];
 
     final List<Widget> plugins =
-        Platform.isLinux || Platform.isMacOS || Platform.isWindows
+        MediaQuery.of(context).size.width > ResponsiveSizes.md
             ? <Widget>[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,75 +312,61 @@ class _PageState extends State<Page> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            vertical: 16,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: remToPx(1),
-                ),
-                child: Text(
-                  Translator.t.selectPlugin(),
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              ...plugins,
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: remToPx(0.6),
-                        vertical: remToPx(0.3),
-                      ),
-                      child: Text(
-                        Translator.t.close(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
+        child: StatefulBuilder(
+          builder: (final BuildContext context, final StateSetter setState) =>
+              SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              vertical: remToPx(0.8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: remToPx(1),
+                  ),
+                  child: Text(
+                    Translator.t.selectPlugin(),
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: remToPx(0.3),
+                ),
+                ...plugins,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: remToPx(0.7),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: remToPx(0.6),
+                          vertical: remToPx(0.3),
+                        ),
+                        child: Text(
+                          Translator.t.close(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  List<Widget> getGridded(
-    final BuildContext context,
-    final List<Widget> children,
-  ) {
-    if (MediaQuery.of(context).size.width > ResponsiveSizes.lg) {
-      const Widget filler = SizedBox.shrink();
-
-      return ListUtils.chunk(children, 2, filler)
-          .map(
-            (final List<Widget> x) => Row(
-              children: x.map((final Widget x) => Expanded(child: x)).toList(),
-            ),
-          )
-          .toList();
-    }
-
-    return children;
   }
 
   @override
@@ -335,13 +388,13 @@ class _PageState extends State<Page> {
               children: <Widget>[
                 Text(
                   Translator.t.search(),
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 TextField(
+                  controller: textController,
                   decoration: InputDecoration(
                     labelText:
                         Translator.t.searchInPlugin(currentPlugin.plugin.name),
@@ -352,7 +405,7 @@ class _PageState extends State<Page> {
                     });
 
                     try {
-                      final List<SearchInfo> res = await search(terms);
+                      final List<SearchInfo> res = await search();
                       setState(() {
                         results = res;
                         state = LoadState.resolved;
@@ -403,7 +456,7 @@ class _PageState extends State<Page> {
                   visible: state == LoadState.resolved && results.isNotEmpty,
                   child: Column(
                     children: getGridded(
-                      context,
+                      MediaQuery.of(context).size,
                       results
                           .map(
                             (final SearchInfo x) => Card(

@@ -210,4 +210,43 @@ List<Widget> getAnime(
           },
         ),
       ),
+      SettingDialog(
+        title: Translator.t.animeSyncPercent(),
+        icon: Icons.sync_alt,
+        subtitle: '${settings.animeTrackerWatchPercent}%',
+        builder: (
+          final BuildContext context,
+          final StateSetter setState,
+        ) =>
+            Wrap(
+          children: <Widget>[
+            SliderTheme(
+              data: SliderThemeData(
+                thumbShape: RoundSliderThumbShape(
+                  enabledThumbRadius: remToPx(0.4),
+                ),
+                showValueIndicator: ShowValueIndicator.always,
+              ),
+              child: Slider(
+                label: '${settings.animeTrackerWatchPercent}%',
+                value: settings.animeTrackerWatchPercent.toDouble(),
+                min: 1,
+                max: 100,
+                onChanged: (final double value) {
+                  setState(() {
+                    settings.animeTrackerWatchPercent = value.toInt();
+                  });
+                },
+                onChangeEnd: (final double value) async {
+                  setState(() {
+                    settings.animeTrackerWatchPercent = value.toInt();
+                  });
+
+                  await save();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     ];

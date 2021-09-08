@@ -1,33 +1,33 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cached_result.dart';
+part of 'cache.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CachedResultSchemaAdapter extends TypeAdapter<CachedResultSchema> {
+class CacheSchemaAdapter extends TypeAdapter<CacheSchema> {
   @override
-  final int typeId = 5;
+  final int typeId = 8;
 
   @override
-  CachedResultSchema read(BinaryReader reader) {
+  CacheSchema read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CachedResultSchema(
-      info: (fields[1] as Map).cast<dynamic, dynamic>(),
-      cachedTime: fields[2] as int,
+    return CacheSchema(
+      fields[1] as dynamic,
+      fields[2] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, CachedResultSchema obj) {
+  void write(BinaryWriter writer, CacheSchema obj) {
     writer
       ..writeByte(2)
       ..writeByte(1)
-      ..write(obj.info)
+      ..write(obj.value)
       ..writeByte(2)
       ..write(obj.cachedTime);
   }
@@ -38,7 +38,7 @@ class CachedResultSchemaAdapter extends TypeAdapter<CachedResultSchema> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CachedResultSchemaAdapter &&
+      other is CacheSchemaAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

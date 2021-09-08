@@ -220,4 +220,74 @@ class Sentences extends TranslationSentences {
 
   @override
   String view() => 'View';
+
+  @override
+  String logOut() => 'Log Out';
+
+  @override
+  String nothingWasFoundHere() => 'Nothing was found here.';
+
+  @override
+  String progress() => 'Progress';
+
+  @override
+  String finishedOf(final int progress, final int? total) =>
+      'Finished $progress of ${total ?? '?'}';
+
+  @override
+  String startedOn() => 'Started on';
+
+  @override
+  String completedOn() => 'Completed on';
+
+  @override
+  String edit() => 'Edit';
+
+  @override
+  String vols() => 'vols';
+
+  @override
+  String editing() => 'Editing';
+
+  @override
+  String save() => 'Save';
+
+  @override
+  String status() => 'Status';
+
+  @override
+  String noOfEpisodes() => 'No. of episodes';
+
+  @override
+  String noOfChapters() => 'No. of chapters';
+
+  @override
+  String noOfVolumes() => 'No. of volumes';
+
+  @override
+  String score() => 'Score';
+
+  @override
+  String repeat() => 'Repeat';
+
+  @override
+  String characters() => 'Characters';
+
+  @override
+  String play() => 'Play';
+
+  @override
+  String computedAs() => 'Computed as';
+
+  @override
+  String notThis() => 'Not this?';
+
+  @override
+  String selectAnAnime() => 'Select an anime!';
+
+  @override
+  String read() => 'Read';
+
+  @override
+  String animeSyncPercent() => 'Sync after Percentage';
 }

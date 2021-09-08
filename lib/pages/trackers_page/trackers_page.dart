@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../plugins/helpers/assets.dart';
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/router.dart';
-import '../../../plugins/translator/translator.dart';
+import '../../core/models/anilist_page.dart' as anilist_page;
+import '../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/string.dart';
+import '../../plugins/router.dart';
+import '../../plugins/translator/translator.dart';
 
 class TrackerRoute {
   TrackerRoute({
@@ -19,7 +21,7 @@ class TrackerRoute {
   final String image;
   final String route;
   final String loginURL;
-  final bool loggedIn;
+  final bool Function() loggedIn;
 }
 
 class Page extends StatefulWidget {
@@ -31,16 +33,45 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> {
+class _PageState extends State<Page> with RouteAware {
   final List<TrackerRoute> connections = <TrackerRoute>[
-    TrackerRoute(
-      name: Translator.t.anilist(),
-      image: Assets.anilistLogo,
-      route: RouteManager.routes[RouteNames.anilistPage]!.route,
-      loginURL: anilist.AnilistManager.auth.getOauthURL(),
-      loggedIn: anilist.AnilistManager.auth.isValidToken(),
-    )
+    ...anilist.MediaType.values.map(
+      (final anilist.MediaType type) => TrackerRoute(
+        name:
+            '${Translator.t.anilist()} - ${StringUtils.capitalize(type.type)}',
+        image: Assets.anilistLogo,
+        route: ParsedRouteInfo(
+          RouteManager.routes[RouteNames.anilistPage]!.route,
+          anilist_page.PageArguments(
+            type: type,
+          ).toJson(),
+        ).toString(),
+        loginURL: anilist.AnilistManager.auth.getOauthURL(),
+        loggedIn: anilist.AnilistManager.auth.isValidToken,
+      ),
+    ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future<void>.delayed(Duration.zero, () {
+      RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
+    });
+  }
+
+  @override
+  void dispose() {
+    RouteManager.observer.unsubscribe(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    setState(() {});
+  }
 
   @override
   Widget build(final BuildContext context) => Padding(
@@ -63,76 +94,87 @@ class _PageState extends State<Page> {
               height: remToPx(0.5),
             ),
             ...connections.map(
-              (final TrackerRoute tracker) => Card(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(4),
-                  onTap: () {
-                    if (tracker.loggedIn) {
-                      Navigator.of(context).pushNamed(tracker.route);
-                    } else {
-                      launch(tracker.loginURL);
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: remToPx(0.6),
-                      vertical: remToPx(0.5),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.9),
-                            borderRadius: BorderRadiusDirectional.circular(
-                              remToPx(0.2),
+              (final TrackerRoute tracker) {
+                final bool loggedIn = tracker.loggedIn();
+
+                return Card(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () {
+                      if (loggedIn) {
+                        Navigator.of(context).pushNamed(tracker.route);
+                      } else {
+                        launch(tracker.loginURL);
+                      }
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: remToPx(0.6),
+                        vertical: remToPx(0.5),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.9),
+                              borderRadius: BorderRadiusDirectional.circular(
+                                remToPx(0.2),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: remToPx(0.2),
+                              ),
+                              child: Image.asset(
+                                tracker.image,
+                                width: remToPx(2),
+                              ),
                             ),
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.2),
+                          SizedBox(
+                            width: remToPx(0.75),
+                          ),
+                          Expanded(
+                            child: Text(
+                              tracker.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                            child: Image.asset(
-                              tracker.image,
-                              width: remToPx(2),
-                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: remToPx(0.75),
-                        ),
-                        Expanded(
-                          child: Text(
-                            tracker.name,
-                            style:
-                                Theme.of(context).textTheme.headline6?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: remToPx(0.4),
-                            vertical: remToPx(0.2),
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(remToPx(0.2)),
-                          ),
-                          child: Text(
-                            tracker.loggedIn
-                                ? Translator.t.view()
-                                : Translator.t.logIn(),
-                            style:
-                                Theme.of(context).textTheme.bodyText1?.copyWith(
+                          if (MediaQuery.of(context).size.width >
+                              ResponsiveSizes.md)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: remToPx(0.4),
+                                vertical: remToPx(0.2),
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius:
+                                    BorderRadius.circular(remToPx(0.2)),
+                              ),
+                              child: Text(
+                                loggedIn
+                                    ? Translator.t.view()
+                                    : Translator.t.logIn(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.copyWith(
                                       color: Colors.white,
                                     ),
-                          ),
-                        ),
-                      ],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),

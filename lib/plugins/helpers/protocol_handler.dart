@@ -67,9 +67,7 @@ Type=Application
   static void handle(final String route) {
     RouteManager.navigationKey.currentState!.pushNamed(route);
     if (Platform.isWindows || Platform.isLinux) {
-      WindowManager.instance
-        ..restore()
-        ..focus();
+      WindowManager.instance.focus();
     }
   }
 

@@ -20,6 +20,7 @@ const bool _autoPlay = false;
 const bool _doubleClickSwitchChapter = true;
 const bool _animeAutoFullscreen = true;
 const bool _mangaAutoFullscreen = true;
+const int _animeTrackerWatchPercent = 80;
 
 @HiveType(typeId: TypeIds.settings)
 class SettingsSchema extends HiveObject {
@@ -39,6 +40,7 @@ class SettingsSchema extends HiveObject {
     final this.doubleClickSwitchChapter = _doubleClickSwitchChapter,
     final this.animeAutoFullscreen = _animeAutoFullscreen,
     final this.mangaAutoFullscreen = _mangaAutoFullscreen,
+    final this.animeTrackerWatchPercent = _animeTrackerWatchPercent,
   });
 
   @HiveField(1, defaultValue: _useSystemPreferredTheme)
@@ -85,6 +87,9 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(15, defaultValue: _mangaAutoFullscreen)
   bool mangaAutoFullscreen;
+
+  @HiveField(16, defaultValue: _animeTrackerWatchPercent)
+  int animeTrackerWatchPercent;
 }
 
 @HiveType(typeId: TypeIds.mangaDirections)

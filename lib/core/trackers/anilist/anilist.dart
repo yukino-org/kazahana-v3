@@ -6,21 +6,23 @@ import '../../../plugins/database/database.dart';
 import '../../secrets/anilist.dart';
 
 export './handlers/auth.dart';
-export './handlers/status.dart';
+export './handlers/character.dart';
+export './handlers/media.dart';
+export './handlers/media_list.dart';
 export './handlers/user_info.dart';
 
 class RequestBody {
   RequestBody({
     required final this.query,
-    required final this.variables,
+    final this.variables,
   });
 
-  final dynamic query;
-  final dynamic variables;
+  final String query;
+  final Map<dynamic, dynamic>? variables;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'query': query,
-        'variables': variables,
+        'variables': json.encode(variables),
       };
 }
 
@@ -63,11 +65,12 @@ abstract class AnilistManager {
       },
     );
 
-    final dynamic parsed = json.decode(res.body);
-    if ((parsed['errors'] as List<dynamic>?)?.firstWhereOrNull(
-          (final dynamic x) => x['message'] == 'Invalid token',
-        ) !=
-        null) {
+    final dynamic parsed = res.body.isNotEmpty ? json.decode(res.body) : null;
+    if (parsed is Map<dynamic, dynamic> &&
+        (parsed['errors'] as List<dynamic>?)?.firstWhereOrNull(
+              (final dynamic x) => x['message'] == 'Invalid token',
+            ) !=
+            null) {
       await auth.deleteToken();
       throw StateError('Login expired');
     }

@@ -1,13 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import '../pages/anime_page/anime_page.dart' as anime_page;
-import '../pages/auth_page/anilist_page.dart' as anilist_auth_page;
 import '../pages/home_page/home_page.dart' as home_page;
 import '../pages/manga_page/manga_page.dart' as manga_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
 import '../pages/trackers_page/anilist_page/anilist_page.dart' as anilist_page;
+import '../pages/trackers_page/anilist_page/auth_page.dart'
+    as anilist_auth_page;
 import '../pages/trackers_page/trackers_page.dart' as trackers_page;
 import '../plugins/helpers/stater.dart' show SubscriberManager;
 import '../plugins/translator/translator.dart';
@@ -22,7 +23,7 @@ abstract class RouteNames {
   static const String settings = '/settings';
   static const String animePage = '/anime_page';
   static const String mangaPage = '/manga_page';
-  static const String anilistAuthPage = '/auth/anilist/callback';
+  static const String anilistAuthPage = '/connections/anilist/auth';
   static const String anilistPage = '/connections/anilist';
 }
 
@@ -115,6 +116,9 @@ abstract class RouteManager {
   static final GlobalKey<NavigatorState> navigationKey =
       GlobalKey<NavigatorState>();
   static final RouteKeeper keeper = RouteKeeper();
+  static final RouteObserver<ModalRoute<void>> observer =
+      RouteObserver<ModalRoute<void>>();
+
   static final Map<String, RouteInfo> routes = <RouteInfo>[
     RouteInfo(
       name: Translator.t.home,

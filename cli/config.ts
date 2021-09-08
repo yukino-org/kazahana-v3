@@ -3,17 +3,16 @@ import { resolve, join } from "path";
 const root = resolve(__dirname, "..");
 
 const defaultIcon = join(root, "assets/images/yukino-icon.png");
-const skrinkedIcon = join(root, "assets/images/yukino-icon-shrinked.png");
 
 export const config = {
     base: root,
     android: {
         project: join(root, "android"),
-        icon: skrinkedIcon,
+        icon: defaultIcon,
     },
     ios: {
         project: join(root, "ios"),
-        icon: skrinkedIcon,
+        icon: defaultIcon,
     },
     macos: {
         project: join(root, "macos"),

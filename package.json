@@ -1,7 +1,7 @@
 {
   "name": "yukino-cli",
   "version": "0.0.0",
-  "description": "🔧 Yukino handy command-line interface",
+  "description": "🔧 Yukino's handy command-line interface",
   "private": true,
   "scripts": {
     "hive:generate": "ts-node ./cli/flutter-cli/hive-generate.ts",
@@ -9,17 +9,17 @@
     "test:sources:manga": "ts-node ./cli/tests/sources/manga.ts",
     "version:bump": "ts-node ./cli/others/version.ts",
     "android:icons": "ts-node ./cli/icons/android/run.ts",
-    "android:run": "ts-node ./cli/flutter-cli/run/android.ts",
-    "android:build": "ts-node ./cli/flutter-cli/build/android.ts",
+    "android:run": "npm run android:icons && ts-node ./cli/flutter-cli/run/android.ts",
+    "android:build": "npm run android:icons && ts-node ./cli/flutter-cli/build/android.ts",
     "ios:icons": "ts-node ./cli/icons/ios/run.ts",
-    "ios:run": "ts-node ./cli/flutter-cli/run/ios.ts",
+    "ios:run": "npm run ios:icons && ts-node ./cli/flutter-cli/run/ios.ts",
     "macos:icons": "ts-node ./cli/icons/macos/run.ts",
-    "macos:run": "ts-node ./cli/flutter-cli/run/macos.ts",
+    "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos.ts",
     "linux:icons": "ts-node ./cli/icons/linux/run.ts",
-    "linux:run": "ts-node ./cli/flutter-cli/run/linux.ts",
+    "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux.ts",
     "windows:icons": "ts-node ./cli/icons/windows/run.ts",
-    "windows:run": "ts-node ./cli/flutter-cli/run/windows.ts",
-    "windows:build": "ts-node ./cli/flutter-cli/build/windows/index.ts"
+    "windows:run": "npm run windows:icons && ts-node ./cli/flutter-cli/run/windows.ts",
+    "windows:build": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/index.ts"
   },
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "canvas": "^2.8.0",
     "command-line-args": "^5.2.0",
     "cross-spawn": "^7.0.3",
     "fs-extra": "^10.0.0",

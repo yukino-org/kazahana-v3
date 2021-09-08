@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './watch_page.dart';
-import '../../../config.dart';
 import '../../components/toggleable_slide_widget.dart';
+import '../../components/trackers_tile.dart';
+import '../../config.dart';
 import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/models/anime_page.dart' as anime_page;
 import '../../core/models/languages.dart';
+import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;
-import '../../plugins/database/schemas/cached_result/cached_result.dart'
-    as cached_result;
+import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/list.dart';
@@ -48,6 +49,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
   late anime_page.PageArguments args;
   LanguageCodes? locale;
+  bool ignoreAutoFullscreen = false;
 
   final Duration animationDuration = const Duration(milliseconds: 200);
 
@@ -87,14 +89,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     final bool removeCache = false,
   }) async {
     final int nowMs = DateTime.now().millisecondsSinceEpoch;
-    final String cacheKey = '${args.plugin}-${args.src}';
+    final String cacheKey = 'anime-${args.plugin}-${args.src}';
 
     if (removeCache) {
-      await DataBox.animeInfo.delete(cacheKey);
+      await DataBox.cache.delete(cacheKey);
     }
 
-    final cached_result.CachedResultSchema? cachedAnime =
-        removeCache ? null : DataBox.animeInfo.get(cacheKey);
+    final cache_schema.CacheSchema? cachedAnime =
+        removeCache ? null : DataBox.cache.get(cacheKey);
 
     if (cachedAnime != null &&
         nowMs - cachedAnime.cachedTime <
@@ -102,7 +104,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       try {
         if (mounted) {
           setState(() {
-            info = anime_model.AnimeInfo.fromJson(cachedAnime.info);
+            info = anime_model.AnimeInfo.fromJson(
+              cachedAnime.value as Map<dynamic, dynamic>,
+            );
           });
         }
 
@@ -115,11 +119,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       locale: locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
     );
 
-    await DataBox.animeInfo.put(
+    await DataBox.cache.put(
       cacheKey,
-      cached_result.CachedResultSchema(
-        info: info!.toJson(),
-        cachedTime: nowMs,
+      cache_schema.CacheSchema(
+        info!.toJson(),
+        nowMs,
       ),
     );
 
@@ -235,23 +239,23 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           borderRadius: BorderRadius.circular(4),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            vertical: 16,
+          padding: EdgeInsets.symmetric(
+            vertical: remToPx(0.8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
+                padding: EdgeInsets.symmetric(
+                  horizontal: remToPx(1.1),
                 ),
                 child: Text(
                   Translator.t.chooseLanguage(),
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
-              const SizedBox(
-                height: 6,
+              SizedBox(
+                height: remToPx(0.3),
               ),
               ...info!.availableLocales
                   .map(
@@ -279,7 +283,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: remToPx(0.7),
+                  ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
@@ -374,6 +380,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               getHero(
                                 context,
+                              ),
+                              SizedBox(
+                                height: remToPx(1.5),
+                              ),
+                              TrackersTile(
+                                title: info!.title,
+                                plugin: args.plugin,
+                                providers: animeProviders,
                               ),
                               SizedBox(
                                 height: remToPx(1.5),
@@ -506,6 +520,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                         if (currentEpisodeIndex! + 1 < info!.episodes.length) {
                           setEpisode(currentEpisodeIndex! + 1);
                         }
+                      },
+                      ignoreAutoFullscreen: ignoreAutoFullscreen,
+                      onIgnoreAutoFullscreenChange:
+                          (final bool _ignoreAutoFullscreen) {
+                        ignoreAutoFullscreen = _ignoreAutoFullscreen;
                       },
                       onPop: () {
                         setEpisode(null);

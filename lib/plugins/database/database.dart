@@ -1,8 +1,9 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as p;
-import './schemas/cached_result/cached_result.dart' as cached_result_schema;
+import './schemas/cache/cache.dart' as cache_schema;
 import './schemas/credentials/credentials.dart' as credentials_schema;
+import './schemas/preferences/preferences.dart' as preferences_schema;
 import './schemas/settings/settings.dart' as settings_schema;
 import '../../config.dart';
 
@@ -11,39 +12,41 @@ abstract class TypeIds {
   static const int mangaDirections = 2;
   static const int mangaSwipeDirections = 3;
   static const int mangaMode = 4;
-  static const int cachedResult = 5;
   static const int credentials = 6;
+  static const int preferences = 7;
+  static const int cache = 8;
 }
 
 abstract class DataStoreBoxNames {
   static const String settings = 'settings_box';
-  static const String cachedAnimeInfo = 'cached_anime_box';
-  static const String cachedMangaInfo = 'cached_manga_box';
   static const String credentials = 'credentials_box';
+  static const String preferences = 'preferences_box';
+  static const String cache = 'cache_box';
 }
 
 abstract class DataStoreKeys {
   static const String settings = 'settings';
   static const String credentials = 'credentials';
+  static const String preferences = 'preferences';
 }
 
 abstract class DataBox {
   static Box<settings_schema.SettingsSchema> get settings =>
       Hive.box<settings_schema.SettingsSchema>(DataStoreBoxNames.settings);
 
-  static Box<cached_result_schema.CachedResultSchema> get animeInfo =>
-      Hive.box<cached_result_schema.CachedResultSchema>(
-        DataStoreBoxNames.cachedAnimeInfo,
-      );
-
-  static Box<cached_result_schema.CachedResultSchema> get mangaInfo =>
-      Hive.box<cached_result_schema.CachedResultSchema>(
-        DataStoreBoxNames.cachedMangaInfo,
-      );
-
   static Box<credentials_schema.CredentialsSchema> get credentials =>
       Hive.box<credentials_schema.CredentialsSchema>(
         DataStoreBoxNames.credentials,
+      );
+
+  static Box<preferences_schema.PreferencesSchema> get preferences =>
+      Hive.box<preferences_schema.PreferencesSchema>(
+        DataStoreBoxNames.preferences,
+      );
+
+  static Box<cache_schema.CacheSchema> get cache =>
+      Hive.box<cache_schema.CacheSchema>(
+        DataStoreBoxNames.cache,
       );
 }
 
@@ -59,17 +62,19 @@ abstract class DataStore {
       DataStoreBoxNames.settings,
     );
 
-    Hive.registerAdapter(cached_result_schema.CachedResultSchemaAdapter());
-    await Hive.openBox<cached_result_schema.CachedResultSchema>(
-      DataStoreBoxNames.cachedAnimeInfo,
-    );
-    await Hive.openBox<cached_result_schema.CachedResultSchema>(
-      DataStoreBoxNames.cachedMangaInfo,
-    );
-
     Hive.registerAdapter(credentials_schema.CredentialsSchemaAdapter());
     await Hive.openBox<credentials_schema.CredentialsSchema>(
       DataStoreBoxNames.credentials,
+    );
+
+    Hive.registerAdapter(preferences_schema.PreferencesSchemaAdapter());
+    await Hive.openBox<preferences_schema.PreferencesSchema>(
+      DataStoreBoxNames.preferences,
+    );
+
+    Hive.registerAdapter(cache_schema.CacheSchemaAdapter());
+    await Hive.openBox<cache_schema.CacheSchema>(
+      DataStoreBoxNames.cache,
     );
   }
 
@@ -90,6 +95,17 @@ abstract class DataStore {
 
     return DataBox.credentials.get(
           DataStoreKeys.credentials,
+          defaultValue: defaultValue,
+        ) ??
+        defaultValue;
+  }
+
+  static preferences_schema.PreferencesSchema get preferences {
+    final preferences_schema.PreferencesSchema defaultValue =
+        preferences_schema.PreferencesSchema();
+
+    return DataBox.preferences.get(
+          DataStoreKeys.preferences,
           defaultValue: defaultValue,
         ) ??
         defaultValue;

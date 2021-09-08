@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../plugins/helpers/ui.dart';
 
 class SettingSwitch extends StatelessWidget {
   const SettingSwitch({
@@ -25,13 +26,13 @@ class SettingSwitch extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 SizedBox(
-                  width: 42,
+                  width: remToPx(2.1),
                   child: Icon(
                     icon,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: remToPx(0.8)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

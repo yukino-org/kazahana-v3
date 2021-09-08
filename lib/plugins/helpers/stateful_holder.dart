@@ -42,6 +42,7 @@ class StatefulHolder<T> {
   bool get hasResolved => state == LoadState.resolved;
   bool get hasFailed => state == LoadState.failed;
   bool get hasValue => state == LoadState.resolved && value is T;
+  bool get hasEnded => state == LoadState.resolved || state == LoadState.failed;
 }
 
 class StatefulListenableHolder<T> extends StatefulHolder<T>

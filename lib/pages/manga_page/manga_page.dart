@@ -4,13 +4,14 @@ import './list_reader.dart';
 import './page_reader.dart';
 import '../../../config.dart';
 import '../../components/toggleable_slide_widget.dart';
+import '../../components/trackers_tile.dart';
 import '../../core/extractor/extractors.dart' as extractor;
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../core/models/languages.dart';
 import '../../core/models/manga_page.dart' as manga_page;
+import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;
-import '../../plugins/database/schemas/cached_result/cached_result.dart'
-    as cached_result;
+import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../plugins/helpers/assets.dart';
@@ -53,6 +54,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
 
   late manga_page.PageArguments args;
   LanguageCodes? locale;
+  bool ignoreAutoFullscreen = false;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
   final Duration animationDuration = const Duration(milliseconds: 200);
@@ -114,22 +116,24 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     final bool removeCache = false,
   }) async {
     final int nowMs = DateTime.now().millisecondsSinceEpoch;
-    final String cacheKey = '${args.plugin}-${args.src}';
+    final String cacheKey = 'manga-${args.plugin}-${args.src}';
 
     if (removeCache) {
-      await DataBox.mangaInfo.delete(cacheKey);
+      await DataBox.cache.delete(cacheKey);
     }
 
-    final cached_result.CachedResultSchema? cachedAnime =
-        removeCache ? null : DataBox.mangaInfo.get(cacheKey);
+    final cache_schema.CacheSchema? cachedManga =
+        removeCache ? null : DataBox.cache.get(cacheKey);
 
-    if (cachedAnime != null &&
-        nowMs - cachedAnime.cachedTime <
+    if (cachedManga != null &&
+        nowMs - cachedManga.cachedTime <
             MiscSettings.cachedMangaInfoExpireTime.inMilliseconds) {
       try {
         if (mounted) {
           setState(() {
-            info = manga_model.MangaInfo.fromJson(cachedAnime.info);
+            info = manga_model.MangaInfo.fromJson(
+              cachedManga.value as Map<dynamic, dynamic>,
+            );
           });
         }
         return;
@@ -141,11 +145,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       locale: locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
     );
 
-    await DataBox.animeInfo.put(
+    await DataBox.cache.put(
       cacheKey,
-      cached_result.CachedResultSchema(
-        info: info!.toJson(),
-        cachedTime: nowMs,
+      cache_schema.CacheSchema(
+        info!.toJson(),
+        nowMs,
       ),
     );
 
@@ -321,23 +325,23 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           borderRadius: BorderRadius.circular(4),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            vertical: 16,
+          padding: EdgeInsets.symmetric(
+            vertical: remToPx(0.8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
+                padding: EdgeInsets.symmetric(
+                  horizontal: remToPx(1.1),
                 ),
                 child: Text(
                   Translator.t.chooseLanguage(),
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
-              const SizedBox(
-                height: 6,
+              SizedBox(
+                height: remToPx(0.3),
               ),
               ...info!.availableLocales
                   .map(
@@ -365,7 +369,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: remToPx(0.7),
+                  ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
@@ -462,6 +468,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               SizedBox(
                                 height: remToPx(1.5),
                               ),
+                              TrackersTile(
+                                title: info!.title,
+                                plugin: args.plugin,
+                                providers: mangaProviders,
+                              ),
+                              SizedBox(
+                                height: remToPx(1.5),
+                              ),
                               Text(
                                 Translator.t.chapters(),
                                 style: TextStyle(
@@ -554,6 +568,12 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     pages: pages[chapter]!,
                                     previousChapter: _previousChapter,
                                     nextChapter: _nextChapter,
+                                    ignoreAutoFullscreen: ignoreAutoFullscreen,
+                                    onIgnoreAutoFullscreenChange:
+                                        (final bool _ignoreAutoFullscreen) {
+                                      ignoreAutoFullscreen =
+                                          _ignoreAutoFullscreen;
+                                    },
                                     onPop: _onPop,
                                   )
                                 : ListReader(
@@ -567,6 +587,12 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     pages: pages[chapter]!,
                                     previousChapter: _previousChapter,
                                     nextChapter: _nextChapter,
+                                    ignoreAutoFullscreen: ignoreAutoFullscreen,
+                                    onIgnoreAutoFullscreenChange:
+                                        (final bool _ignoreAutoFullscreen) {
+                                      ignoreAutoFullscreen =
+                                          _ignoreAutoFullscreen;
+                                    },
                                     onPop: _onPop,
                                   )
                             : Material(

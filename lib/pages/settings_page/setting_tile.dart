@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../plugins/helpers/ui.dart';
 
 class SettingTile extends StatelessWidget {
   const SettingTile({
@@ -24,13 +25,13 @@ class SettingTile extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 SizedBox(
-                  width: 42,
+                  width: remToPx(2.1),
                   child: Icon(
                     icon,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: remToPx(0.8)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

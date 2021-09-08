@@ -1,10 +1,15 @@
+import 'dart:math';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import './utils/list.dart';
 
 abstract class ResponsiveSizes {
-  static int sm = 640;
-  static int md = 768;
-  static int lg = 1024;
-  static int xl = 1280;
+  static const int sm = 640;
+  static const int md = 768;
+  static const int lg = 1024;
+  static const int xl = 1280;
 }
 
 abstract class Palette {
@@ -80,3 +85,66 @@ double remToPx(final double rem) => rem * 20;
 
 bool isDarkContext(final BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark;
+
+class MiceScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => <PointerDeviceKind>{
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
+
+List<Widget> getGridded(
+  final Size size,
+  final List<Widget> children, {
+  final int breakpoint = ResponsiveSizes.lg,
+  final Widget? spacer,
+}) {
+  if (size.width > breakpoint) {
+    const Widget filler = SizedBox.shrink();
+
+    return ListUtils.chunk(children, 2, filler)
+        .map(
+          (final List<Widget> x) => Row(
+            children: <Widget>[
+              Expanded(child: x.first),
+              if (spacer != null) spacer,
+              Expanded(child: x.last),
+            ],
+          ),
+        )
+        .toList();
+  }
+
+  return children;
+}
+
+ScrollController createMultiplierScrollController({
+  final int multiplier = 80,
+  final bool enabled = true,
+}) {
+  final ScrollController controller = ScrollController();
+
+  if (enabled) {
+    controller.addListener(() {
+      final ScrollDirection scrollDirection =
+          controller.position.userScrollDirection;
+
+      if (scrollDirection != ScrollDirection.idle) {
+        double scrollEnd = controller.offset +
+            (scrollDirection == ScrollDirection.reverse
+                ? multiplier
+                : -multiplier);
+
+        scrollEnd = min(
+          controller.position.maxScrollExtent,
+          max(controller.position.minScrollExtent, scrollEnd),
+        );
+
+        controller.jumpTo(scrollEnd);
+      }
+    });
+  }
+
+  return controller;
+}

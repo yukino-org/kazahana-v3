@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './update_tracker.dart';
 import '../../components/full_screen_image.dart';
 import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/database/schemas/settings/settings.dart' show MangaMode;
@@ -18,6 +19,8 @@ class ListReader extends StatefulWidget {
     required final this.onPop,
     required final this.previousChapter,
     required final this.nextChapter,
+    required final this.ignoreAutoFullscreen,
+    required final this.onIgnoreAutoFullscreenChange,
     final Key? key,
   }) : super(key: key);
 
@@ -30,6 +33,9 @@ class ListReader extends StatefulWidget {
   final void Function() previousChapter;
   final void Function() nextChapter;
 
+  final bool ignoreAutoFullscreen;
+  final void Function(bool ignoreAutoFullscreen) onIgnoreAutoFullscreenChange;
+
   @override
   _ListReaderState createState() => _ListReaderState();
 }
@@ -40,19 +46,25 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
   late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>
       images = <manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>{};
 
+  bool hasSynced = false;
+  bool ignoreExitFullscreen = false;
+
   @override
   void initState() {
     super.initState();
 
     initFullscreen();
-    if (AppState.settings.current.mangaAutoFullscreen) {
+    if (AppState.settings.current.mangaAutoFullscreen &&
+        !widget.ignoreAutoFullscreen) {
       enterFullscreen();
     }
   }
 
   @override
   void dispose() {
-    exitFullscreen();
+    if (!ignoreExitFullscreen) {
+      exitFullscreen();
+    }
 
     super.dispose();
   }
@@ -110,6 +122,19 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
     );
   }
 
+  Future<void> _maybeUpdateTrackers(final int index) async {
+    if (!hasSynced && index == widget.pages.length - 1) {
+      hasSynced = true;
+
+      await updateTrackers(
+        widget.info.title,
+        widget.plugin.name,
+        widget.chapter.chapter,
+        widget.chapter.volume,
+      );
+    }
+  }
+
   @override
   Widget build(final BuildContext context) => Scaffold(
         backgroundColor: Colors.black,
@@ -120,11 +145,17 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
           ),
           actions: <Widget>[
             IconButton(
-              onPressed: widget.previousChapter,
+              onPressed: () {
+                ignoreExitFullscreen = true;
+                widget.previousChapter();
+              },
               icon: const Icon(Icons.first_page),
             ),
             IconButton(
-              onPressed: widget.nextChapter,
+              onPressed: () {
+                ignoreExitFullscreen = true;
+                widget.nextChapter();
+              },
               icon: const Icon(Icons.last_page),
             ),
             ValueListenableBuilder<bool>(
@@ -137,8 +168,10 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
                   IconButton(
                 onPressed: () {
                   if (isFullscreened) {
+                    widget.onIgnoreAutoFullscreenChange(true);
                     exitFullscreen();
                   } else {
+                    widget.onIgnoreAutoFullscreenChange(false);
                     enterFullscreen();
                   }
                 },
@@ -194,6 +227,8 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
                       ),
                     );
                   }
+
+                  _maybeUpdateTrackers(index);
 
                   final manga_model.ImageInfo image = images[page]!.value!;
                   return Image.network(

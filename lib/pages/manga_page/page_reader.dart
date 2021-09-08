@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import './update_tracker.dart';
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../core/extractor/manga/model.dart' as manga_model;
@@ -42,6 +43,8 @@ class PageReader extends StatefulWidget {
     required final this.onPop,
     required final this.previousChapter,
     required final this.nextChapter,
+    required final this.ignoreAutoFullscreen,
+    required final this.onIgnoreAutoFullscreenChange,
     final Key? key,
   }) : super(key: key);
 
@@ -53,6 +56,9 @@ class PageReader extends StatefulWidget {
   final void Function() onPop;
   final void Function() previousChapter;
   final void Function() nextChapter;
+
+  final bool ignoreAutoFullscreen;
+  final void Function(bool ignoreAutoFullscreen) onIgnoreAutoFullscreenChange;
 
   @override
   _PageReaderState createState() => _PageReaderState();
@@ -90,12 +96,16 @@ class _PageReaderState extends State<PageReader>
     child: CircularProgressIndicator(),
   );
 
+  bool hasSynced = false;
+  bool ignoreExitFullscreen = false;
+
   @override
   void initState() {
     super.initState();
 
     initFullscreen();
-    if (AppState.settings.current.mangaAutoFullscreen) {
+    if (AppState.settings.current.mangaAutoFullscreen &&
+        !widget.ignoreAutoFullscreen) {
       enterFullscreen();
     }
 
@@ -116,7 +126,9 @@ class _PageReaderState extends State<PageReader>
 
   @override
   void dispose() {
-    exitFullscreen();
+    if (!ignoreExitFullscreen) {
+      exitFullscreen();
+    }
 
     footerNotificationTimer?.cancel();
     footerNotificationContent.dispose();
@@ -134,6 +146,17 @@ class _PageReaderState extends State<PageReader>
       duration: animationDuration,
       curve: Curves.easeInOut,
     );
+
+    if (page == widget.pages.length - 1) {
+      hasSynced = true;
+
+      await updateTrackers(
+        widget.info.title,
+        widget.plugin.name,
+        widget.chapter.chapter,
+        widget.chapter.volume,
+      );
+    }
   }
 
   Future<void> getPage(final manga_model.PageInfo page) async {
@@ -239,6 +262,7 @@ class _PageReaderState extends State<PageReader>
       return true;
     } else {
       if (satisfied) {
+        ignoreExitFullscreen = true;
         widget.previousChapter();
         return true;
       }
@@ -252,6 +276,7 @@ class _PageReaderState extends State<PageReader>
       return true;
     } else {
       if (satisfied) {
+        ignoreExitFullscreen = true;
         widget.nextChapter();
         return true;
       }
@@ -295,8 +320,10 @@ class _PageReaderState extends State<PageReader>
                     IconButton(
                   onPressed: () {
                     if (isFullscreened) {
+                      widget.onIgnoreAutoFullscreenChange(true);
                       exitFullscreen();
                     } else {
+                      widget.onIgnoreAutoFullscreenChange(false);
                       enterFullscreen();
                     }
                   },
@@ -533,7 +560,10 @@ class _PageReaderState extends State<PageReader>
                         borderRadius: BorderRadius.circular(
                           Theme.of(context).textTheme.headline4!.fontSize!,
                         ),
-                        onTap: widget.previousChapter,
+                        onTap: () {
+                          ignoreExitFullscreen = true;
+                          widget.previousChapter();
+                        },
                         child: Icon(
                           Icons.first_page,
                           size: Theme.of(context).textTheme.headline4?.fontSize,
@@ -576,7 +606,10 @@ class _PageReaderState extends State<PageReader>
                         borderRadius: BorderRadius.circular(
                           Theme.of(context).textTheme.headline4!.fontSize!,
                         ),
-                        onTap: widget.nextChapter,
+                        onTap: () {
+                          ignoreExitFullscreen = true;
+                          widget.nextChapter();
+                        },
                         child: Icon(
                           Icons.last_page,
                           size: Theme.of(context).textTheme.headline4?.fontSize,

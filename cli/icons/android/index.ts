@@ -1,5 +1,6 @@
 import { join } from "path";
 import jimp from "jimp";
+import { getModified } from "../modified";
 import { config } from "../../config";
 import { Logger } from "../../logger";
 
@@ -16,7 +17,7 @@ export const generate = async () => {
     const started = Date.now();
 
     logger.log(`Icon path: ${config.android.icon}`);
-    const original = await jimp.read(config.android.icon);
+    const original = await jimp.read(await getModified(config.android.icon));
 
     for (const size of sizes) {
         const path = join(config.android.project, `/app/src/main/res/mipmap-${size[1]}/ic_launcher.png`);
