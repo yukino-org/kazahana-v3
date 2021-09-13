@@ -4,10 +4,17 @@ import 'package:html/parser.dart' as html;
 
 Map<String, String> _mapElementAttributes(
   final Map<Object, String> attributes,
-) =>
-    Map<String, String>.fromEntries(
-      attributes.entries.whereType<MapEntry<String, String>>(),
-    );
+) {
+  final Map<String, String> result = <String, String>{};
+
+  for (final MapEntry<Object, String> x in attributes.entries) {
+    if (x.key is String) {
+      result[x.key as String] = x.value;
+    }
+  }
+
+  return result;
+}
 
 class HtmlElement {
   HtmlElement({
