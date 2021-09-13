@@ -81,7 +81,7 @@ class MangaExtractorTest {
 
     final MangaInfo result = await extractor.getInfo(url, locale);
 
-    print(result.toJson());
+    print(encoder.convert(result.toJson()));
     timer.pass();
   }
 
