@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './select_source.dart';
 import '../../components/player/player.dart';
 import '../../config.dart';
-import '../../core/extractor/animes/model.dart' as anime_model;
-import '../../core/extractor/extractors.dart' as extractor;
+import '../../core/extensions.dart';
 import '../../core/models/player.dart' as player_model;
 import '../../core/models/tracker_provider.dart';
 import '../../core/trackers/providers.dart';
@@ -46,7 +46,7 @@ class WatchPage extends StatefulWidget {
   }) : super(key: key);
 
   final String title;
-  final anime_model.EpisodeInfo episode;
+  final extensions.EpisodeInfo episode;
   final String plugin;
   final int totalEpisodes;
   final void Function() onPop;
@@ -63,7 +63,7 @@ class WatchPage extends StatefulWidget {
 
 class WatchPageState extends State<WatchPage>
     with TickerProviderStateMixin, FullscreenMixin {
-  List<anime_model.EpisodeSource>? sources;
+  List<extensions.EpisodeSource>? sources;
   int? currentIndex;
   player_model.Player? player;
   Widget? playerChild;
@@ -171,7 +171,7 @@ class WatchPageState extends State<WatchPage>
   }
 
   Future<void> getSources() async {
-    sources = await extractor.Extractors.anime[widget.plugin]!
+    sources = await ExtensionsManager.animes[widget.plugin]!
         .getSources(widget.episode);
 
     if (mounted) {
@@ -319,7 +319,7 @@ class WatchPageState extends State<WatchPage>
       ),
     );
 
-    if (value is anime_model.EpisodeSource) {
+    if (value is extensions.EpisodeSource) {
       final int index = sources!.indexOf(value);
       if (index >= 0) {
         setPlayer(index);

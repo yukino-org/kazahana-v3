@@ -1,7 +1,7 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import './update_tracker.dart';
 import '../../components/full_screen_image.dart';
-import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/database/schemas/settings/settings.dart' show MangaMode;
 import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
@@ -24,10 +24,10 @@ class ListReader extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
-  final manga_model.MangaExtractor plugin;
-  final manga_model.MangaInfo info;
-  final manga_model.ChapterInfo chapter;
-  final List<manga_model.PageInfo> pages;
+  final extensions.MangaExtractor plugin;
+  final extensions.MangaInfo info;
+  final extensions.ChapterInfo chapter;
+  final List<extensions.PageInfo> pages;
 
   final void Function() onPop;
   final void Function() previousChapter;
@@ -43,8 +43,8 @@ class ListReader extends StatefulWidget {
 class _ListReaderState extends State<ListReader> with FullscreenMixin {
   final Widget loader = const CircularProgressIndicator();
 
-  late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>
-      images = <manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>{};
+  late final Map<extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>
+      images = <extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>{};
 
   bool hasSynced = false;
   bool ignoreExitFullscreen = false;
@@ -69,9 +69,9 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
     super.dispose();
   }
 
-  Future<void> getPage(final manga_model.PageInfo page) async {
+  Future<void> getPage(final extensions.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
-    final manga_model.ImageInfo image = await widget.plugin.getPage(page);
+    final extensions.ImageInfo image = await widget.plugin.getPage(page);
     setState(() {
       images[page]!.value = image;
       images[page]!.state = LoadState.resolved;
@@ -209,10 +209,10 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
             : ListView.builder(
                 itemCount: widget.pages.length,
                 itemBuilder: (final BuildContext context, final int index) {
-                  final manga_model.PageInfo page = widget.pages[index];
+                  final extensions.PageInfo page = widget.pages[index];
 
                   if (images[page] == null) {
-                    images[page] = StatefulHolder<manga_model.ImageInfo?>(null);
+                    images[page] = StatefulHolder<extensions.ImageInfo?>(null);
                   }
 
                   if (!images[page]!.hasValue) {
@@ -230,7 +230,7 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
 
                   _maybeUpdateTrackers(index);
 
-                  final manga_model.ImageInfo image = images[page]!.value!;
+                  final extensions.ImageInfo image = images[page]!.value!;
                   return Image.network(
                     image.url,
                     headers: image.headers,

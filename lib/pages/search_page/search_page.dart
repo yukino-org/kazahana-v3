@@ -1,11 +1,12 @@
 import 'package:collection/collection.dart';
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import '../../components/network_image_fallback.dart';
-import '../../core/extractor/extractors.dart' as extractor;
-import '../../core/extractor/model.dart' as base_model;
-import '../../core/models/anime_page.dart' as anime_page;
-import '../../core/models/manga_page.dart' as manga_page;
-import '../../core/models/search_page.dart' as search_page;
+import '../../core/extensions.dart';
+import '../../core/models/languages.dart';
+import '../../core/models/page_args/anime_page.dart' as anime_page;
+import '../../core/models/page_args/manga_page.dart' as manga_page;
+import '../../core/models/page_args/search_page.dart' as search_page;
 import '../../plugins/database/database.dart';
 import '../../plugins/database/schemas/preferences/preferences.dart'
     as preferences_schema;
@@ -52,23 +53,25 @@ class CurrentPlugin {
   });
 
   PluginTypes type;
-  base_model.BaseExtractorPlugin<base_model.BaseSearchInfo> plugin;
+  extensions.BaseExtractor plugin;
 
   @override
   String toString() => '${type.toString}-${plugin.name}';
 }
 
-class SearchInfo extends base_model.BaseSearchInfo {
+class SearchInfo extends extensions.SearchInfo {
   SearchInfo({
     required final String title,
     required final String url,
+    required final String locale,
     required final this.plugin,
     required final this.pluginType,
-    final base_model.ImageInfo? thumbnail,
+    final extensions.ImageInfo? thumbnail,
   }) : super(
           title: title,
           url: url,
           thumbnail: thumbnail,
+          locale: locale,
         );
 
   final String plugin;
@@ -91,8 +94,8 @@ class _PageState extends State<Page> {
   final preferences_schema.PreferencesSchema preferences =
       DataStore.preferences;
 
-  List<String> animePlugins = extractor.Extractors.anime.keys.toList();
-  List<String> mangaPlugins = extractor.Extractors.manga.keys.toList();
+  List<String> animePlugins = ExtensionsManager.animes.keys.toList();
+  List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
   List<SearchInfo> results = <SearchInfo>[];
 
@@ -108,8 +111,7 @@ class _PageState extends State<Page> {
 
     currentPlugin = CurrentPlugin(
       type: PluginTypes.anime,
-      plugin:
-          extractor.Extractors.anime[extractor.Extractors.anime.keys.first]!,
+      plugin: ExtensionsManager.animes[ExtensionsManager.animes.keys.first]!,
     );
 
     if (preferences.lastSelectedSearchType != null) {
@@ -125,7 +127,7 @@ class _PageState extends State<Page> {
 
       for (final String x in animePlugins) {
         if (preferences.lastSelectedSearchPlugin == x) {
-          currentPlugin.plugin = extractor.Extractors.anime[x]!;
+          currentPlugin.plugin = ExtensionsManager.animes[x]!;
           matched = true;
           break;
         }
@@ -134,7 +136,7 @@ class _PageState extends State<Page> {
       if (!matched) {
         for (final String x in mangaPlugins) {
           if (preferences.lastSelectedSearchPlugin == x) {
-            currentPlugin.plugin = extractor.Extractors.manga[x]!;
+            currentPlugin.plugin = ExtensionsManager.mangas[x]!;
             matched = true;
             break;
           }
@@ -177,18 +179,19 @@ class _PageState extends State<Page> {
 
   Future<List<SearchInfo>> search() async {
     final List<SearchInfo> results = <SearchInfo>[];
-    final List<base_model.BaseSearchInfo> searches =
+    final List<extensions.SearchInfo> searches =
         await currentPlugin.plugin.search(
       textController.text,
-      locale: Translator.t.code,
+      Translator.t.code.code,
     );
 
     results.addAll(
       searches.map(
-        (final base_model.BaseSearchInfo x) => SearchInfo(
+        (final extensions.SearchInfo x) => SearchInfo(
           title: x.title,
           url: x.url,
           thumbnail: x.thumbnail,
+          locale: x.locale,
           plugin: currentPlugin.plugin.name,
           pluginType: currentPlugin.type,
         ),
@@ -240,7 +243,7 @@ class _PageState extends State<Page> {
             (final String x) => getPluginWidget(
               CurrentPlugin(
                 type: PluginTypes.anime,
-                plugin: extractor.Extractors.anime[x]!,
+                plugin: ExtensionsManager.animes[x]!,
               ),
             ),
           )
@@ -266,7 +269,7 @@ class _PageState extends State<Page> {
             (final String x) => getPluginWidget(
               CurrentPlugin(
                 type: PluginTypes.manga,
-                plugin: extractor.Extractors.manga[x]!,
+                plugin: ExtensionsManager.mangas[x]!,
               ),
             ),
           )

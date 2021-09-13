@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import './update_tracker.dart';
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
-import '../../core/extractor/manga/model.dart' as manga_model;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaDirections, MangaSwipeDirections, MangaMode;
 import '../../plugins/helpers/screen.dart';
@@ -48,10 +48,10 @@ class PageReader extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
-  final manga_model.MangaExtractor plugin;
-  final manga_model.MangaInfo info;
-  final manga_model.ChapterInfo chapter;
-  final List<manga_model.PageInfo> pages;
+  final extensions.MangaExtractor plugin;
+  final extensions.MangaInfo info;
+  final extensions.ChapterInfo chapter;
+  final List<extensions.PageInfo> pages;
 
   final void Function() onPop;
   final void Function() previousChapter;
@@ -89,8 +89,8 @@ class _PageReaderState extends State<PageReader>
   bool isReversed = AppState.settings.current.mangaReaderDirection ==
       MangaDirections.rightToLeft;
 
-  late final Map<manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>
-      images = <manga_model.PageInfo, StatefulHolder<manga_model.ImageInfo?>>{};
+  late final Map<extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>
+      images = <extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>{};
 
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
@@ -159,9 +159,9 @@ class _PageReaderState extends State<PageReader>
     }
   }
 
-  Future<void> getPage(final manga_model.PageInfo page) async {
+  Future<void> getPage(final extensions.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
-    final manga_model.ImageInfo image = await widget.plugin.getPage(page);
+    final extensions.ImageInfo image = await widget.plugin.getPage(page);
     setState(() {
       images[page]!.value = image;
       images[page]!.state = LoadState.resolved;
@@ -440,11 +440,11 @@ class _PageReaderState extends State<PageReader>
                   itemBuilder: (final BuildContext context, final int _index) {
                     final int index =
                         isReversed ? widget.pages.length - _index - 1 : _index;
-                    final manga_model.PageInfo page = widget.pages[index];
+                    final extensions.PageInfo page = widget.pages[index];
 
                     if (images[page] == null) {
                       images[page] =
-                          StatefulHolder<manga_model.ImageInfo?>(null);
+                          StatefulHolder<extensions.ImageInfo?>(null);
                     }
 
                     if (!images[page]!.hasValue) {
@@ -455,7 +455,7 @@ class _PageReaderState extends State<PageReader>
                       return loader;
                     }
 
-                    final manga_model.ImageInfo image = images[page]!.value!;
+                    final extensions.ImageInfo image = images[page]!.value!;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[

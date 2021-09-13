@@ -1,7 +1,6 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
-import '../../core/extractor/animes/model.dart' as anime_model;
 import '../../plugins/helpers/ui.dart';
-import '../../plugins/helpers/utils/http.dart';
 import '../../plugins/translator/translator.dart';
 
 class SelectSourceWidget extends StatelessWidget {
@@ -11,8 +10,8 @@ class SelectSourceWidget extends StatelessWidget {
     final this.selected,
   }) : super(key: key);
 
-  final List<anime_model.EpisodeSource> sources;
-  final anime_model.EpisodeSource? selected;
+  final List<extensions.EpisodeSource> sources;
+  final extensions.EpisodeSource? selected;
 
   @override
   Widget build(final BuildContext context) => Dialog(
@@ -38,16 +37,16 @@ class SelectSourceWidget extends StatelessWidget {
               ),
               ...sources
                   .map(
-                    (final anime_model.EpisodeSource x) => Material(
+                    (final extensions.EpisodeSource x) => Material(
                       type: MaterialType.transparency,
-                      child: RadioListTile<anime_model.EpisodeSource>(
+                      child: RadioListTile<extensions.EpisodeSource>(
                         title: Text(
-                          '${HttpUtils.domainFromURL(x.url)} (${x.quality.code})',
+                          '${extensions.HttpUtils.domainFromURL(x.url)} (${x.quality.code})',
                         ),
                         value: x,
                         groupValue: selected,
                         activeColor: Theme.of(context).primaryColor,
-                        onChanged: (final anime_model.EpisodeSource? val) {
+                        onChanged: (final extensions.EpisodeSource? val) {
                           Navigator.of(context).pop(val);
                         },
                       ),

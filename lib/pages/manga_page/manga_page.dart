@@ -1,3 +1,4 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './list_reader.dart';
@@ -5,10 +6,9 @@ import './page_reader.dart';
 import '../../../config.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../components/trackers_tile.dart';
-import '../../core/extractor/extractors.dart' as extractor;
-import '../../core/extractor/manga/model.dart' as manga_model;
+import '../../core/extensions.dart';
 import '../../core/models/languages.dart';
-import '../../core/models/manga_page.dart' as manga_page;
+import '../../core/models/page_args/manga_page.dart' as manga_page;
 import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;
 import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
@@ -16,9 +16,17 @@ import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
+
+extension on extensions.MangaInfo {
+  List<extensions.ChapterInfo> get sortedChapters => ListUtils.tryArrange(
+        chapters,
+        (final extensions.ChapterInfo x) => x.chapter,
+      );
+}
 
 enum Pages {
   home,
@@ -35,12 +43,12 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> with SingleTickerProviderStateMixin {
-  manga_model.MangaInfo? info;
+  extensions.MangaInfo? info;
 
-  manga_model.ChapterInfo? chapter;
+  extensions.ChapterInfo? chapter;
   int? currentChapterIndex;
-  Map<manga_model.ChapterInfo, List<manga_model.PageInfo>> pages =
-      <manga_model.ChapterInfo, List<manga_model.PageInfo>>{};
+  Map<extensions.ChapterInfo, List<extensions.PageInfo>> pages =
+      <extensions.ChapterInfo, List<extensions.PageInfo>>{};
 
   late PageController controller;
 
@@ -131,7 +139,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       try {
         if (mounted) {
           setState(() {
-            info = manga_model.MangaInfo.fromJson(
+            info = extensions.MangaInfo.fromJson(
               cachedManga.value as Map<dynamic, dynamic>,
             );
           });
@@ -140,9 +148,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       } catch (_) {}
     }
 
-    info = await extractor.Extractors.manga[args.plugin]!.getInfo(
+    final extensions.MangaExtractor ext =
+        ExtensionsManager.mangas[args.plugin]!;
+    info = await ext.getInfo(
       args.src,
-      locale: locale ?? extractor.Extractors.manga[args.plugin]!.defaultLocale,
+      locale?.code ?? ext.defaultLocale,
     );
 
     await DataBox.cache.put(
@@ -167,9 +177,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     });
 
     if (chapter != null && pages[chapter] == null) {
-      extractor.Extractors.manga[args.plugin]!
+      ExtensionsManager.mangas[args.plugin]!
           .getChapter(chapter!)
-          .then((final List<manga_model.PageInfo> x) {
+          .then((final List<extensions.PageInfo> x) {
         setState(() {
           pages[chapter!] = x;
         });
@@ -245,7 +255,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     }
   }
 
-  List<Widget> getChapterCard(final manga_model.ChapterInfo chapter) {
+  List<Widget> getChapterCard(final extensions.ChapterInfo chapter) {
     final List<String> first = <String>[];
     final List<String> second = <String>[];
 
@@ -343,29 +353,36 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              ...info!.availableLocales
-                  .map(
-                    (final LanguageCodes x) => Material(
-                      type: MaterialType.transparency,
-                      child: RadioListTile<LanguageCodes>(
-                        title: Text(x.language),
-                        value: x,
-                        groupValue: info!.locale,
-                        activeColor: Theme.of(context).primaryColor,
-                        onChanged: (final LanguageCodes? val) {
-                          if (val != null && val != info!.locale) {
-                            setState(() {
-                              locale = val;
-                              info = null;
-                            });
-                            getInfo(removeCache: true);
-                          }
-                          Navigator.of(context).pop();
-                        },
-                      ),
+              ...info!.availableLocales.map(
+                (final String x) {
+                  final LanguageCodes groupVal =
+                      LanguageUtils.codeLangaugeMap[info!.locale] ??
+                          LanguageCodes.en;
+
+                  final LanguageCodes lang =
+                      LanguageUtils.codeLangaugeMap[x] ?? LanguageCodes.en;
+
+                  return Material(
+                    type: MaterialType.transparency,
+                    child: RadioListTile<LanguageCodes>(
+                      title: Text(lang.language),
+                      value: lang,
+                      groupValue: groupVal,
+                      activeColor: Theme.of(context).primaryColor,
+                      onChanged: (final LanguageCodes? val) {
+                        if (val != null && val != groupVal) {
+                          setState(() {
+                            locale = val;
+                            info = null;
+                          });
+                          getInfo(removeCache: true);
+                        }
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  )
-                  .toList(),
+                  );
+                },
+              ).toList(),
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
@@ -495,7 +512,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                   .map(
                                     (
                                       final int k,
-                                      final manga_model.ChapterInfo x,
+                                      final extensions.ChapterInfo x,
                                     ) =>
                                         MapEntry<int, Widget>(
                                       k,
@@ -561,8 +578,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     key: ValueKey<String>(
                                       'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                     ),
-                                    plugin: extractor
-                                        .Extractors.manga[args.plugin]!,
+                                    plugin:
+                                        ExtensionsManager.mangas[args.plugin]!,
                                     info: info!,
                                     chapter: chapter!,
                                     pages: pages[chapter]!,
@@ -580,8 +597,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     key: ValueKey<String>(
                                       'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                     ),
-                                    plugin: extractor
-                                        .Extractors.manga[args.plugin]!,
+                                    plugin:
+                                        ExtensionsManager.mangas[args.plugin]!,
                                     info: info!,
                                     chapter: chapter!,
                                     pages: pages[chapter]!,

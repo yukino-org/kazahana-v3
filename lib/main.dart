@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import './components/player/player.dart' as player show initialize;
 import './config.dart';
+import './core/extensions.dart';
 import './core/models/languages.dart' show LanguageName;
 import './core/trackers/trackers.dart';
 import './plugins/app_lifecycle_observer.dart';
@@ -54,6 +55,7 @@ Future<void> main(final List<String> args) async {
   );
 
   await player.initialize();
+  await ExtensionsManager.initialize();
   await Trackers.initialize();
 
   AppState.afterInitialRoute = ProtocolHandler.parse(args);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import './edit_modal.dart';
-import '../../../core/models/search_page.dart' as search_page;
+import '../../../core/models/page_args/search_page.dart' as search_page;
 import '../../../core/trackers/anilist/anilist.dart' as anilist;
 import '../../../plugins/helpers/ui.dart';
 import '../../../plugins/helpers/utils/string.dart';

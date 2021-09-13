@@ -1,13 +1,13 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './watch_page.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../components/trackers_tile.dart';
 import '../../config.dart';
-import '../../core/extractor/animes/model.dart' as anime_model;
-import '../../core/extractor/extractors.dart' as extractor;
-import '../../core/models/anime_page.dart' as anime_page;
+import '../../core/extensions.dart';
 import '../../core/models/languages.dart';
+import '../../core/models/page_args/anime_page.dart' as anime_page;
 import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;
 import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
@@ -16,6 +16,13 @@ import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
+
+extension on extensions.AnimeInfo {
+  List<extensions.EpisodeInfo> get sortedEpisodes => ListUtils.tryArrange(
+        episodes,
+        (final extensions.EpisodeInfo x) => x.episode,
+      );
+}
 
 enum Pages {
   home,
@@ -32,9 +39,9 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> with SingleTickerProviderStateMixin {
-  anime_model.AnimeInfo? info;
+  extensions.AnimeInfo? info;
 
-  anime_model.EpisodeInfo? episode;
+  extensions.EpisodeInfo? episode;
   int? currentEpisodeIndex;
 
   late PageController controller;
@@ -104,7 +111,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       try {
         if (mounted) {
           setState(() {
-            info = anime_model.AnimeInfo.fromJson(
+            info = extensions.AnimeInfo.fromJson(
               cachedAnime.value as Map<dynamic, dynamic>,
             );
           });
@@ -114,9 +121,11 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       } catch (_) {}
     }
 
-    info = await extractor.Extractors.anime[args.plugin]!.getInfo(
+    final extensions.AnimeExtractor ext =
+        ExtensionsManager.animes[args.plugin]!;
+    info = await ext.getInfo(
       args.src,
-      locale: locale ?? extractor.Extractors.anime[args.plugin]!.defaultLocale,
+      locale?.code ?? ext.defaultLocale,
     );
 
     await DataBox.cache.put(
@@ -257,29 +266,36 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              ...info!.availableLocales
-                  .map(
-                    (final LanguageCodes x) => Material(
-                      type: MaterialType.transparency,
-                      child: RadioListTile<LanguageCodes>(
-                        title: Text(x.language),
-                        value: x,
-                        groupValue: info!.locale,
-                        activeColor: Theme.of(context).primaryColor,
-                        onChanged: (final LanguageCodes? val) {
-                          if (val != null && val != info!.locale) {
-                            setState(() {
-                              locale = val;
-                              info = null;
-                            });
-                            getInfo(removeCache: true);
-                          }
-                          Navigator.of(context).pop();
-                        },
-                      ),
+              ...info!.availableLocales.map(
+                (final String x) {
+                  final LanguageCodes groupVal =
+                      LanguageUtils.codeLangaugeMap[info!.locale] ??
+                          LanguageCodes.en;
+
+                  final LanguageCodes lang =
+                      LanguageUtils.codeLangaugeMap[x] ?? LanguageCodes.en;
+
+                  return Material(
+                    type: MaterialType.transparency,
+                    child: RadioListTile<LanguageCodes>(
+                      title: Text(lang.language),
+                      value: lang,
+                      groupValue: groupVal,
+                      activeColor: Theme.of(context).primaryColor,
+                      onChanged: (final LanguageCodes? val) {
+                        if (val != null && val != groupVal) {
+                          setState(() {
+                            locale = val;
+                            info = null;
+                          });
+                          getInfo(removeCache: true);
+                        }
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  )
-                  .toList(),
+                  );
+                },
+              ).toList(),
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
@@ -413,7 +429,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     .map(
                                       (
                                         final int k,
-                                        final anime_model.EpisodeInfo x,
+                                        final extensions.EpisodeInfo x,
                                       ) =>
                                           MapEntry<int, Widget>(
                                         k,

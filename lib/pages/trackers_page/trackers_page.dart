@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../core/models/anilist_page.dart' as anilist_page;
+import '../../core/models/page_args/anilist_page.dart' as anilist_page;
 import '../../core/trackers/anilist/anilist.dart' as anilist;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
