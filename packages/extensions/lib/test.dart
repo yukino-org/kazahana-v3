@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, avoid_private_typedef_functions
 
+import 'dart:convert';
 import './extensions.dart';
 
 class TestTimer {
@@ -14,6 +15,8 @@ class TestTimer {
   }
 }
 
+const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+
 class AnimeExtractorTest {
   AnimeExtractorTest(this.extractor);
 
@@ -25,7 +28,7 @@ class AnimeExtractorTest {
     final List<SearchInfo> result = await extractor.search(terms, locale);
 
     for (final SearchInfo x in result) {
-      print(x.toJson());
+      print(encoder.convert(x.toJson()));
     }
 
     print('\nTotal results: ${result.length}');
@@ -37,7 +40,7 @@ class AnimeExtractorTest {
 
     final AnimeInfo result = await extractor.getInfo(url, locale);
 
-    print(result.toJson());
+    print(encoder.convert(result.toJson()));
     timer.pass();
   }
 
@@ -47,7 +50,7 @@ class AnimeExtractorTest {
     final List<EpisodeSource> result = await extractor.getSources(episode);
 
     for (final EpisodeSource x in result) {
-      print(x.toJson());
+      print(encoder.convert(x.toJson()));
     }
 
     print('\nTotal results: ${result.length}');
@@ -66,7 +69,7 @@ class MangaExtractorTest {
     final List<SearchInfo> result = await extractor.search(terms, locale);
 
     for (final SearchInfo x in result) {
-      print(x.toJson());
+      print(encoder.convert(x.toJson()));
     }
 
     print('\nTotal results: ${result.length}');
@@ -88,7 +91,7 @@ class MangaExtractorTest {
     final List<PageInfo> result = await extractor.getChapter(chapter);
 
     for (final PageInfo x in result) {
-      print(x.toJson());
+      print(encoder.convert(x.toJson()));
     }
 
     print('\nTotal results: ${result.length}');
@@ -100,7 +103,7 @@ class MangaExtractorTest {
 
     final ImageInfo result = await extractor.getPage(page);
 
-    print(result.toJson());
+    print(encoder.convert(result.toJson()));
     timer.pass();
   }
 }
