@@ -6,6 +6,7 @@ import './helpers/fuzzy.dart' as helpers;
 import './helpers/html.dart' as helpers;
 import './helpers/list.dart' as helpers;
 import './helpers/regexp.dart' as helpers;
+import './helpers/string.dart' as helpers;
 import '../utils/http.dart';
 
 Future<Hetu> createHetu() async {
@@ -29,6 +30,10 @@ Future<Hetu> createHetu() async {
       'mapList': helpers.mapList,
       'filterList': helpers.filterList,
       'findList': helpers.findList,
+      'regexReplaceAll': helpers.regexReplaceAll,
+      'regexReplaceFirst': helpers.regexReplaceFirst,
+      'replaceAllString': helpers.replaceAllString,
+      'replaceFirstString': helpers.replaceFirstString,
     },
   );
 

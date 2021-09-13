@@ -50,3 +50,17 @@ List<RegExpMatchResult> regexMatchAll(final String regex, final String text) =>
         .allMatches(text)
         .map((final RegExpMatch x) => RegExpMatchResult.fromRegExpMatch(x))
         .toList();
+
+String regexReplaceFirst(
+  final String data,
+  final String from,
+  final String to,
+) =>
+    data.replaceFirst(RegExp(from), to);
+
+String regexReplaceAll(
+  final String data,
+  final String from,
+  final String to,
+) =>
+    data.replaceAll(RegExp(from), to);
