@@ -1,10 +1,8 @@
-import 'package:hetu_script/hetu_script.dart';
 import 'package:http/http.dart' as http;
 import '../../utils/http.dart';
 
-Future<void> fetch(
+Future<Map<dynamic, dynamic>> fetch(
   final Map<dynamic, dynamic> data,
-  final HTFunction cb,
 ) async {
   final String url = HttpUtils.tryEncodeURL(data['url'] as String);
   final Map<String, String> headers =
@@ -53,13 +51,9 @@ Future<void> fetch(
       throw AssertionError('Unknown "method": ${data['method']}');
   }
 
-  cb.call(
-    positionalArgs: <dynamic>[
-      <dynamic, dynamic>{
-        'body': res.body,
-        'status': res.statusCode,
-        'headers': res.headers,
-      },
-    ],
-  );
+  return <dynamic, dynamic>{
+    'body': res.body,
+    'status': res.statusCode,
+    'headers': res.headers,
+  };
 }

@@ -8,3 +8,7 @@
 * Added more helper methods
     * regexReplaceAll
     * regexReplaceFirst
+
+## 0.0.3
+
+* Using `Future` instead of callbacks

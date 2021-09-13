@@ -70,81 +70,46 @@ abstract class ExtensionUtils {
       id: ext.id,
       defaultLocale: defaultLocale,
       search: (final String terms, final String locale) async {
-        final Completer<List<SearchInfo>> future =
-            Completer<List<SearchInfo>>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'search',
           positionalArgs: <dynamic>[
             terms,
             locale,
-            (final String? err, final List<dynamic>? results) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                results!
-                    .map(
-                      (final dynamic x) =>
-                          SearchInfo.fromJson(x as Map<dynamic, dynamic>),
-                    )
-                    .toList(),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return (result as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map(
+              (final Map<dynamic, dynamic> x) => SearchInfo.fromJson(x),
+            )
+            .toList();
       },
       getInfo: (final String url, final String locale) async {
-        final Completer<AnimeInfo> future = Completer<AnimeInfo>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'getInfo',
           positionalArgs: <dynamic>[
             url,
             locale,
-            (final String? err, final dynamic result) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                AnimeInfo.fromJson(result as Map<dynamic, dynamic>),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
       },
       getSources: (final EpisodeInfo episode) async {
-        final Completer<List<EpisodeSource>> future =
-            Completer<List<EpisodeSource>>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'getSources',
           positionalArgs: <dynamic>[
             episode.toJson(),
-            (final String? err, final List<dynamic>? results) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                results!
-                    .map(
-                      (final dynamic x) =>
-                          EpisodeSource.fromJson(x as Map<dynamic, dynamic>),
-                    )
-                    .toList(),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return (result as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map(
+              (final Map<dynamic, dynamic> x) => EpisodeSource.fromJson(x),
+            )
+            .toList();
       },
     );
   }
@@ -163,101 +128,56 @@ abstract class ExtensionUtils {
       id: ext.id,
       defaultLocale: defaultLocale,
       search: (final String terms, final String locale) async {
-        final Completer<List<SearchInfo>> future =
-            Completer<List<SearchInfo>>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'search',
           positionalArgs: <dynamic>[
             terms,
             locale,
-            (final String? err, final List<dynamic>? results) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                results!
-                    .map(
-                      (final dynamic x) =>
-                          SearchInfo.fromJson(x as Map<dynamic, dynamic>),
-                    )
-                    .toList(),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return (result as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map(
+              (final Map<dynamic, dynamic> x) => SearchInfo.fromJson(x),
+            )
+            .toList();
       },
       getInfo: (final String url, final String locale) async {
-        final Completer<MangaInfo> future = Completer<MangaInfo>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'getInfo',
           positionalArgs: <dynamic>[
             url,
             locale,
-            (final String? err, final dynamic result) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                MangaInfo.fromJson(result as Map<dynamic, dynamic>),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
       },
       getChapter: (final ChapterInfo chapter) async {
-        final Completer<List<PageInfo>> future = Completer<List<PageInfo>>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'getChapter',
           positionalArgs: <dynamic>[
             chapter.toJson(),
-            (final String? err, final List<dynamic>? results) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                results!
-                    .map(
-                      (final dynamic x) =>
-                          PageInfo.fromJson(x as Map<dynamic, dynamic>),
-                    )
-                    .toList(),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return (result as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map(
+              (final Map<dynamic, dynamic> x) => PageInfo.fromJson(x),
+            )
+            .toList();
       },
       getPage: (final PageInfo page) async {
-        final Completer<ImageInfo> future = Completer<ImageInfo>();
-
-        runner.invoke(
+        final dynamic result = await runner.invoke(
           'getPage',
           positionalArgs: <dynamic>[
             page.toJson(),
-            (final String? err, final dynamic result) {
-              if (err != null) {
-                return future.completeError(err);
-              }
-
-              return future.complete(
-                ImageInfo.fromJson(result as Map<dynamic, dynamic>),
-              );
-            },
           ],
         );
 
-        return future.future;
+        return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
       },
     );
   }

@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:hetu_script/hetu_script.dart';
 import './helpers/crypto.dart' as helpers;
 import './helpers/fetch.dart' as helpers;
+import './helpers/future.dart' as helpers;
 import './helpers/fuzzy.dart' as helpers;
 import './helpers/html.dart' as helpers;
 import './helpers/list.dart' as helpers;
 import './helpers/regexp.dart' as helpers;
+import './helpers/throw_err.dart' as helpers;
 import '../utils/http.dart';
 
 Future<Hetu> createHetu() async {
@@ -31,6 +33,8 @@ Future<Hetu> createHetu() async {
       'findList': helpers.findList,
       'regexReplaceAll': helpers.regexReplaceAll,
       'regexReplaceFirst': helpers.regexReplaceFirst,
+      'resolveFuture': helpers.resolveFuture,
+      'throwError': helpers.throwError,
     },
   );
 
