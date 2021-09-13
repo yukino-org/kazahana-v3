@@ -1,3 +1,4 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Added anime/manga models
+* Added extensions transpiler/loader
