@@ -8,5 +8,3 @@
 * Added more helper methods
     * regexReplaceAll
     * regexReplaceFirst
-    * replaceAllString
-    * replaceFirstString
