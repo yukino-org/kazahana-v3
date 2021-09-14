@@ -2,6 +2,7 @@ library extensions;
 
 import 'dart:async';
 import 'package:hetu_script/hetu_script.dart';
+import 'package:http/http.dart' as http;
 import './hetu/hetu.dart';
 import './models/anime.dart';
 import './models/base.dart';
@@ -21,43 +22,122 @@ extension ExtensionTypeUtils on ExtensionType {
   String get type => toString().split('.').last;
 }
 
-class Extension {
-  Extension({
+class BaseExtension {
+  BaseExtension({
     required final this.name,
     required final this.id,
     required final this.version,
     required final this.type,
-    required final this.code,
   });
 
-  factory Extension.fromJson(final Map<dynamic, dynamic> json) => Extension(
+  factory BaseExtension.fromJson(final Map<dynamic, dynamic> json) =>
+      BaseExtension(
         name: json['name'] as String,
         id: json['id'] as String,
         version: json['version'] as int,
         type: ExtensionType.values.firstWhere(
           (final ExtensionType type) => type.type == (json['type'] as String),
         ),
-        code: json['code'] as String,
       );
 
   final String name;
   final String id;
   final int version;
   final ExtensionType type;
-  final String code;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
         'id': id,
         'version': version,
         'type': type.type,
+      };
+}
+
+class ResolvableExtension extends BaseExtension {
+  ResolvableExtension({
+    required final String name,
+    required final String id,
+    required final int version,
+    required final ExtensionType type,
+    required final this.source,
+  }) : super(
+          name: name,
+          id: id,
+          version: version,
+          type: type,
+        );
+
+  factory ResolvableExtension.fromJson(final Map<dynamic, dynamic> json) {
+    final BaseExtension base = BaseExtension.fromJson(json);
+
+    return ResolvableExtension(
+      name: base.name,
+      id: base.id,
+      version: base.version,
+      type: base.type,
+      source: json['source'] as String,
+    );
+  }
+
+  final String source;
+
+  Future<ResolvedExtension> resolve() async {
+    final http.Response res = await http.get(Uri.parse(source));
+
+    return ResolvedExtension(
+      name: name,
+      id: id,
+      version: version,
+      type: type,
+      code: res.body,
+    );
+  }
+
+  @override
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        ...super.toJson(),
+        'source': source,
+      };
+}
+
+class ResolvedExtension extends BaseExtension {
+  ResolvedExtension({
+    required final String name,
+    required final String id,
+    required final int version,
+    required final ExtensionType type,
+    required final this.code,
+  }) : super(
+          name: name,
+          id: id,
+          version: version,
+          type: type,
+        );
+
+  factory ResolvedExtension.fromJson(final Map<dynamic, dynamic> json) {
+    final BaseExtension base = BaseExtension.fromJson(json);
+
+    return ResolvedExtension(
+      name: base.name,
+      id: base.id,
+      version: base.version,
+      type: base.type,
+      code: json['code'] as String,
+    );
+  }
+
+  final String code;
+
+  @override
+  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
+        ...super.toJson(),
         'code': code,
       };
 }
 
 abstract class ExtensionUtils {
   static Future<AnimeExtractor> transpileToAnimeExtractor(
-    final Extension ext,
+    final ResolvedExtension ext,
   ) async {
     final Hetu runner = await createHetu();
 
@@ -115,7 +195,7 @@ abstract class ExtensionUtils {
   }
 
   static Future<MangaExtractor> transpileToMangaExtractor(
-    final Extension ext,
+    final ResolvedExtension ext,
   ) async {
     final Hetu runner = await createHetu();
 

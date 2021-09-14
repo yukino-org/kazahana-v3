@@ -17,6 +17,9 @@ abstract class Config {
   static String get code => pkg.appName;
 
   static String get version => pkg.version;
+
+  static const String storeURL =
+      'https://raw.githubusercontent.com/yukino-app/extensions-store/dist/extensions.json';
 }
 
 abstract class MiscSettings {
