@@ -159,7 +159,7 @@ query (
   }
 }
 
-const int _perPage = 100;
+const int _perPage = 50;
 
 Future<List<MediaList>> getMediaList(
   final MediaType type,

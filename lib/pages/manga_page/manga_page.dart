@@ -60,7 +60,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     child: CircularProgressIndicator(),
   );
 
+  late extensions.MangaExtractor extractor;
   late manga_page.PageArguments args;
+
   LanguageCodes? locale;
   bool ignoreAutoFullscreen = false;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
@@ -85,6 +87,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         args = manga_page.PageArguments.fromJson(
           ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
         );
+
+        extractor = ExtensionsManager.mangas[args.plugin]!;
       }
 
       getInfo();
@@ -124,7 +128,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     final bool removeCache = false,
   }) async {
     final int nowMs = DateTime.now().millisecondsSinceEpoch;
-    final String cacheKey = 'manga-${args.plugin}-${args.src}';
+    final String cacheKey = 'manga-${extractor.id}-${args.src}';
 
     if (removeCache) {
       await DataBox.cache.delete(cacheKey);
@@ -148,11 +152,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       } catch (_) {}
     }
 
-    final extensions.MangaExtractor ext =
-        ExtensionsManager.mangas[args.plugin]!;
-    info = await ext.getInfo(
+    info = await extractor.getInfo(
       args.src,
-      locale?.code ?? ext.defaultLocale,
+      locale?.code ?? extractor.defaultLocale,
     );
 
     await DataBox.cache.put(
@@ -177,9 +179,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     });
 
     if (chapter != null && pages[chapter] == null) {
-      ExtensionsManager.mangas[args.plugin]!
-          .getChapter(chapter!)
-          .then((final List<extensions.PageInfo> x) {
+      extractor.getChapter(chapter!).then((final List<extensions.PageInfo> x) {
         setState(() {
           pages[chapter!] = x;
         });
@@ -222,7 +222,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           textAlign: TextAlign.center,
         ),
         Text(
-          args.plugin,
+          extractor.name,
           style: TextStyle(
             color: Theme.of(context).primaryColor,
             fontSize: Theme.of(context).textTheme.headline6?.fontSize,
@@ -487,7 +487,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               TrackersTile(
                                 title: info!.title,
-                                plugin: args.plugin,
+                                plugin: extractor.id,
                                 providers: mangaProviders,
                               ),
                               SizedBox(
@@ -578,8 +578,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     key: ValueKey<String>(
                                       'Pager-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                     ),
-                                    plugin:
-                                        ExtensionsManager.mangas[args.plugin]!,
+                                    extractor: extractor,
                                     info: info!,
                                     chapter: chapter!,
                                     pages: pages[chapter]!,
@@ -597,8 +596,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                                     key: ValueKey<String>(
                                       'Listu-${chapter!.volume ?? '?'}-${chapter!.chapter}',
                                     ),
-                                    plugin:
-                                        ExtensionsManager.mangas[args.plugin]!,
+                                    extractor: extractor,
                                     info: info!,
                                     chapter: chapter!,
                                     pages: pages[chapter]!,

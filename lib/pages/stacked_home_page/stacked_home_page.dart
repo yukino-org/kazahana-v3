@@ -30,7 +30,7 @@ class _PageState extends State<Page> {
   final List<String> stackRoutes = <String>[
     RouteNames.home,
     RouteNames.search,
-    RouteNames.trackers,
+    RouteNames.store,
   ];
 
   late final List<StackPage> stack = stackRoutes
@@ -79,7 +79,7 @@ class _PageState extends State<Page> {
       return Stack(
         children: <Widget>[
           Positioned.fill(
-            left: remToPx(2),
+            left: remToPx(3),
             child: body,
           ),
           Align(

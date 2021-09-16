@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/tracker_provider.dart';
 import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../pages/trackers_page/anilist_page/detailed_item.dart';
+import '../../../pages/store_page/trackers_page/anilist_page/detailed_item.dart';
 import '../../../plugins/database/database.dart' show DataBox;
 import '../../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../../plugins/helpers/assets.dart';

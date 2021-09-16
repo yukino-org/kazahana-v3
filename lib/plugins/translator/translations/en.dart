@@ -290,4 +290,40 @@ class Sentences extends TranslationSentences {
 
   @override
   String animeSyncPercent() => 'Sync after Percentage';
+
+  @override
+  String extensions() => 'Extensions';
+
+  @override
+  String install() => 'Install';
+
+  @override
+  String uninstall() => 'Uninstall';
+
+  @override
+  String installing() => 'Installing';
+
+  @override
+  String uninstalling() => 'Uninstalling';
+
+  @override
+  String installed() => 'Installed';
+
+  @override
+  String by() => 'By';
+
+  @override
+  String cancel() => 'Cancel';
+
+  @override
+  String version() => 'Version';
+
+  @override
+  String topAnimes() => 'Top Animes';
+
+  @override
+  String recentlyUpdated() => 'Recently updated';
+
+  @override
+  String recommendedBy(final String by) => 'Recommended by $by';
 }

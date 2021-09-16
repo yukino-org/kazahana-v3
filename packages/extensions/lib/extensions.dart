@@ -28,6 +28,7 @@ class BaseExtension {
     required final this.id,
     required final this.version,
     required final this.type,
+    required final this.image,
   });
 
   factory BaseExtension.fromJson(final Map<dynamic, dynamic> json) =>
@@ -38,18 +39,21 @@ class BaseExtension {
         type: ExtensionType.values.firstWhere(
           (final ExtensionType type) => type.type == (json['type'] as String),
         ),
+        image: json['image'] as String,
       );
 
   final String name;
   final String id;
   final int version;
   final ExtensionType type;
+  final String image;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
         'id': id,
         'version': version,
         'type': type.type,
+        'image': image,
       };
 }
 
@@ -59,12 +63,14 @@ class ResolvableExtension extends BaseExtension {
     required final String id,
     required final int version,
     required final ExtensionType type,
+    required final String image,
     required final this.source,
   }) : super(
           name: name,
           id: id,
           version: version,
           type: type,
+          image: image,
         );
 
   factory ResolvableExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -75,6 +81,7 @@ class ResolvableExtension extends BaseExtension {
       id: base.id,
       version: base.version,
       type: base.type,
+      image: base.image,
       source: json['source'] as String,
     );
   }
@@ -89,6 +96,7 @@ class ResolvableExtension extends BaseExtension {
       id: id,
       version: version,
       type: type,
+      image: image,
       code: res.body,
     );
   }
@@ -106,12 +114,14 @@ class ResolvedExtension extends BaseExtension {
     required final String id,
     required final int version,
     required final ExtensionType type,
+    required final String image,
     required final this.code,
   }) : super(
           name: name,
           id: id,
           version: version,
           type: type,
+          image: image,
         );
 
   factory ResolvedExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -122,6 +132,7 @@ class ResolvedExtension extends BaseExtension {
       id: base.id,
       version: base.version,
       type: base.type,
+      image: base.image,
       code: json['code'] as String,
     );
   }

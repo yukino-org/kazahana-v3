@@ -1,9 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import './detailed_item.dart';
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/translator/translator.dart';
+import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/translator/translator.dart';
 
 class MediaList extends StatefulWidget {
   const MediaList({
@@ -60,7 +60,7 @@ class _MediaListState extends State<MediaList> {
             )
           : ListView(
               children: getGridded(
-                MediaQuery.of(context).size,
+                MediaQuery.of(context).size.width.toInt(),
                 mediaList!
                     .asMap()
                     .map(

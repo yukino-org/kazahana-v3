@@ -55,6 +55,8 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
   );
 
   late anime_page.PageArguments args;
+  late extensions.AnimeExtractor extractor;
+
   LanguageCodes? locale;
   bool ignoreAutoFullscreen = false;
 
@@ -78,6 +80,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         args = anime_page.PageArguments.fromJson(
           ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
         );
+
+        // TODO: Error handling
+        extractor = ExtensionsManager.animes[args.plugin]!;
       }
 
       getInfo();
@@ -96,7 +101,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     final bool removeCache = false,
   }) async {
     final int nowMs = DateTime.now().millisecondsSinceEpoch;
-    final String cacheKey = 'anime-${args.plugin}-${args.src}';
+    final String cacheKey = 'anime-${extractor.id}-${args.src}';
 
     if (removeCache) {
       await DataBox.cache.delete(cacheKey);
@@ -121,11 +126,9 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       } catch (_) {}
     }
 
-    final extensions.AnimeExtractor ext =
-        ExtensionsManager.animes[args.plugin]!;
-    info = await ext.getInfo(
+    info = await extractor.getInfo(
       args.src,
-      locale?.code ?? ext.defaultLocale,
+      locale?.code ?? extractor.defaultLocale,
     );
 
     await DataBox.cache.put(
@@ -184,7 +187,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
           textAlign: TextAlign.center,
         ),
         Text(
-          args.plugin,
+          extractor.name,
           style: TextStyle(
             color: Theme.of(context).primaryColor,
             fontSize: Theme.of(context).textTheme.headline6?.fontSize,
@@ -402,7 +405,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                               ),
                               TrackersTile(
                                 title: info!.title,
-                                plugin: args.plugin,
+                                plugin: extractor.id,
                                 providers: animeProviders,
                               ),
                               SizedBox(
@@ -521,7 +524,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                         'Episode-$currentEpisodeIndex',
                       ),
                       title: info!.title,
-                      plugin: args.plugin,
+                      extractor: extractor,
                       episode: episode!,
                       totalEpisodes: info!.episodes.length,
                       previousEpisodeEnabled: currentEpisodeIndex! - 1 >= 0,

@@ -12,7 +12,7 @@ import '../settings_page/setting_radio.dart';
 
 class ListReader extends StatefulWidget {
   const ListReader({
-    required final this.plugin,
+    required final this.extractor,
     required final this.info,
     required final this.chapter,
     required final this.pages,
@@ -24,7 +24,7 @@ class ListReader extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
-  final extensions.MangaExtractor plugin;
+  final extensions.MangaExtractor extractor;
   final extensions.MangaInfo info;
   final extensions.ChapterInfo chapter;
   final List<extensions.PageInfo> pages;
@@ -71,7 +71,7 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
 
   Future<void> getPage(final extensions.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
-    final extensions.ImageInfo image = await widget.plugin.getPage(page);
+    final extensions.ImageInfo image = await widget.extractor.getPage(page);
     setState(() {
       images[page]!.value = image;
       images[page]!.state = LoadState.resolved;
@@ -128,7 +128,7 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
 
       await updateTrackers(
         widget.info.title,
-        widget.plugin.name,
+        widget.extractor.id,
         widget.chapter.chapter,
         widget.chapter.volume,
       );

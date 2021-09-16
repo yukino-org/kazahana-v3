@@ -96,4 +96,16 @@ abstract class TranslationSentences {
   String selectAnAnime();
   String read();
   String animeSyncPercent();
+  String extensions();
+  String install();
+  String uninstall();
+  String installing();
+  String uninstalling();
+  String installed();
+  String by();
+  String cancel();
+  String version();
+  String topAnimes();
+  String recentlyUpdated();
+  String recommendedBy(final String by);
 }

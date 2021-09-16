@@ -1,11 +1,12 @@
 import 'dart:math';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './utils/list.dart';
 
 abstract class ResponsiveSizes {
+  static const int xs = 480;
   static const int sm = 640;
   static const int md = 768;
   static const int lg = 1024;
@@ -95,25 +96,44 @@ class MiceScrollBehavior extends MaterialScrollBehavior {
 }
 
 List<Widget> getGridded(
-  final Size size,
+  final int size,
   final List<Widget> children, {
-  final int breakpoint = ResponsiveSizes.lg,
+  final Map<int, int> breakpoint = const <int, int>{
+    ResponsiveSizes.lg: 2,
+  },
   final Widget? spacer,
+  final MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+  final CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
 }) {
-  if (size.width > breakpoint) {
+  final MapEntry<int, int>? point = (breakpoint.entries.toList()
+        ..sort(
+          (final MapEntry<int, int> a, final MapEntry<int, int> b) =>
+              b.key.compareTo(a.key),
+        ))
+      .firstWhereOrNull((final MapEntry<int, int> x) => size > x.key);
+
+  if (point != null && point.value > 1) {
     const Widget filler = SizedBox.shrink();
 
-    return ListUtils.chunk(children, 2, filler)
-        .map(
-          (final List<Widget> x) => Row(
-            children: <Widget>[
-              Expanded(child: x.first),
-              if (spacer != null) spacer,
-              Expanded(child: x.last),
-            ],
-          ),
-        )
-        .toList();
+    return ListUtils.chunk(children, point.value, filler).map(
+      (final List<Widget> x) {
+        final List<Widget> children = <Widget>[];
+
+        for (int i = 0; i < x.length; i++) {
+          children.add(Expanded(child: x[i]));
+
+          if (spacer != null && i != 0 && i < x.length) {
+            children.add(spacer);
+          }
+        }
+
+        return Row(
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          children: children,
+        );
+      },
+    ).toList();
   }
 
   return children;

@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import './select_source.dart';
 import '../../components/player/player.dart';
 import '../../config.dart';
-import '../../core/extensions.dart';
 import '../../core/models/player.dart' as player_model;
 import '../../core/models/tracker_provider.dart';
 import '../../core/trackers/providers.dart';
@@ -33,7 +32,7 @@ class WatchPage extends StatefulWidget {
   const WatchPage({
     required final this.title,
     required final this.episode,
-    required final this.plugin,
+    required final this.extractor,
     required final this.totalEpisodes,
     required final this.onPop,
     required final this.previousEpisodeEnabled,
@@ -47,7 +46,7 @@ class WatchPage extends StatefulWidget {
 
   final String title;
   final extensions.EpisodeInfo episode;
-  final String plugin;
+  final extensions.AnimeExtractor extractor;
   final int totalEpisodes;
   final void Function() onPop;
   final bool previousEpisodeEnabled;
@@ -171,8 +170,7 @@ class WatchPageState extends State<WatchPage>
   }
 
   Future<void> getSources() async {
-    sources = await ExtensionsManager.animes[widget.plugin]!
-        .getSources(widget.episode);
+    sources = await widget.extractor.getSources(widget.episode);
 
     if (mounted) {
       setState(() {});
@@ -274,9 +272,9 @@ class WatchPageState extends State<WatchPage>
 
         for (final TrackerProvider<AnimeProgress, dynamic> provider
             in animeProviders) {
-          if (provider.isEnabled(widget.title, widget.plugin)) {
+          if (provider.isEnabled(widget.title, widget.extractor.id)) {
             final ResolvedTrackerItem<dynamic>? item =
-                await provider.getComputed(widget.title, widget.plugin);
+                await provider.getComputed(widget.title, widget.extractor.id);
 
             if (item != null) {
               await provider.updateComputed(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import './edit_modal.dart';
-import '../../../core/models/page_args/search_page.dart' as search_page;
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/helpers/utils/string.dart';
-import '../../../plugins/router.dart';
-import '../../../plugins/translator/translator.dart';
+import '../../../../core/models/page_args/search_page.dart' as search_page;
+import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/helpers/utils/string.dart';
+import '../../../../plugins/router.dart';
+import '../../../../plugins/translator/translator.dart';
 
 class DetailedItem extends StatefulWidget {
   const DetailedItem({
@@ -83,9 +83,11 @@ class _DetailedItemState extends State<DetailedItem> {
         elevation: 5,
         backgroundColor:
             largeAndDark ? Colors.white : Theme.of(context).primaryColor,
-        padding: EdgeInsets.symmetric(
-          horizontal: remToPx(0.5),
-          vertical: remToPx(0.5),
+        padding: EdgeInsets.only(
+          top: remToPx(0.5),
+          left: remToPx(0.5),
+          right: remToPx(0.5),
+          bottom: remToPx(0.6),
         ),
       ),
       onPressed: widget.onPlay ?? pushToSearchPage,
@@ -228,7 +230,7 @@ class _DetailedItemState extends State<DetailedItem> {
                                           ?.copyWith(
                                         color: isDarkContext(context)
                                             ? Theme.of(context).primaryColor
-                                            : Colors.white.withOpacity(0.6),
+                                            : Colors.white.withOpacity(0.8),
                                         fontWeight: FontWeight.bold,
                                         shadows: <Shadow>[
                                           if (isDarkContext(context))
@@ -433,7 +435,7 @@ class _DetailedItemState extends State<DetailedItem> {
                       height: remToPx(0.5),
                     ),
                     ...getGridded(
-                      size,
+                      size.width.toInt(),
                       widget.media.media.characters
                           .map(
                             (final anilist.Character x) => Card(
@@ -489,7 +491,9 @@ class _DetailedItemState extends State<DetailedItem> {
                             ),
                           )
                           .toList(),
-                      breakpoint: ResponsiveSizes.md,
+                      breakpoint: <int, int>{
+                        ResponsiveSizes.md: 2,
+                      },
                     ),
                     SizedBox(
                       height: remToPx(3),

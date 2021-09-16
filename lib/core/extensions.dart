@@ -34,19 +34,31 @@ abstract class ExtensionsManager {
   }
 
   static Future<void> uninstall(
-    final extensions.ResolvedExtension resolved,
+    final extensions.BaseExtension ext,
   ) async {
-    final String path = await _getExtensionPath(resolved);
+    final String path = await _getExtensionPath(ext);
     final File file = File(path);
 
     await file.delete();
-    await _removeExtension(resolved);
+    await _removeExtension(ext);
+  }
+
+  static bool isInstalled(
+    final extensions.BaseExtension ext,
+  ) {
+    switch (ext.type) {
+      case extensions.ExtensionType.anime:
+        return animes.containsKey(ext.id);
+
+      case extensions.ExtensionType.manga:
+        return mangas.containsKey(ext.id);
+    }
   }
 
   static Future<void> _loadStore() async {
     final http.Response res = await http.get(Uri.parse(Config.storeURL));
 
-    store = (json.decode(res.body) as List<dynamic>)
+    store = (json.decode(res.body)['extensions'] as List<dynamic>)
         .cast<Map<dynamic, dynamic>>()
         .map(
           (final Map<dynamic, dynamic> x) =>
@@ -109,7 +121,7 @@ abstract class ExtensionsManager {
   }
 
   static Future<void> _removeExtension(
-    final extensions.ResolvedExtension ext,
+    final extensions.BaseExtension ext,
   ) async {
     switch (ext.type) {
       case extensions.ExtensionType.anime:

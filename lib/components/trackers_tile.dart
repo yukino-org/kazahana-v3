@@ -187,7 +187,7 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
                                   height: remToPx(1),
                                 ),
                                 ...getGridded(
-                                  MediaQuery.of(context).size,
+                                  MediaQuery.of(context).size.width.toInt(),
                                   searches.value!
                                       .map(
                                         (final ResolvableTrackerItem x) => Card(

@@ -6,10 +6,11 @@ import '../pages/manga_page/manga_page.dart' as manga_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
-import '../pages/trackers_page/anilist_page/anilist_page.dart' as anilist_page;
-import '../pages/trackers_page/anilist_page/auth_page.dart'
+import '../pages/store_page/store_page.dart' as store_page;
+import '../pages/store_page/trackers_page/anilist_page/anilist_page.dart'
+    as anilist_page;
+import '../pages/store_page/trackers_page/anilist_page/auth_page.dart'
     as anilist_auth_page;
-import '../pages/trackers_page/trackers_page.dart' as trackers_page;
 import '../plugins/helpers/stater.dart' show SubscriberManager;
 import '../plugins/translator/translator.dart';
 
@@ -19,7 +20,7 @@ abstract class RouteNames {
   static const String homeHandler = '/';
   static const String home = '/home';
   static const String search = '/search';
-  static const String trackers = '/connections';
+  static const String store = '/store';
   static const String settings = '/settings';
   static const String animePage = '/anime_page';
   static const String mangaPage = '/manga_page';
@@ -137,10 +138,10 @@ abstract class RouteManager {
       alreadyHandled: true,
     ),
     RouteInfo(
-      name: Translator.t.connections,
-      route: RouteNames.trackers,
+      name: Translator.t.extensions,
+      route: RouteNames.store,
       icon: Icons.insights,
-      builder: (final BuildContext context) => const trackers_page.Page(),
+      builder: (final BuildContext context) => const store_page.Page(),
       isPublic: true,
       alreadyHandled: true,
     ),
@@ -174,7 +175,7 @@ abstract class RouteManager {
         RouteNames.homeHandler,
         RouteNames.homeHandler,
         RouteNames.search,
-        RouteNames.trackers,
+        RouteNames.store,
       ].contains(route.route),
     ),
   ].asMap().map(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/helpers/utils/string.dart';
-import '../../../plugins/translator/translator.dart';
-import '../../settings_page/setting_dialog.dart';
-import '../../settings_page/setting_radio.dart';
+import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/helpers/utils/string.dart';
+import '../../../../plugins/translator/translator.dart';
+import '../../../settings_page/setting_dialog.dart';
+import '../../../settings_page/setting_radio.dart';
 
 class EditModal extends StatefulWidget {
   const EditModal({

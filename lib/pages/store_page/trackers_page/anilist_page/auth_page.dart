@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../core/trackers/anilist/handlers/auth.dart';
-import '../../../plugins/helpers/assets.dart';
-import '../../../plugins/helpers/stateful_holder.dart';
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/translator/translator.dart';
+import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../core/trackers/anilist/handlers/auth.dart';
+import '../../../../plugins/helpers/assets.dart';
+import '../../../../plugins/helpers/stateful_holder.dart';
+import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
   const Page({

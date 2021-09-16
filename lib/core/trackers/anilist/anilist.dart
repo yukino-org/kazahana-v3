@@ -9,6 +9,7 @@ export './handlers/auth.dart';
 export './handlers/character.dart';
 export './handlers/media.dart';
 export './handlers/media_list.dart';
+export './handlers/recommendations.dart';
 export './handlers/user_info.dart';
 
 class RequestBody {

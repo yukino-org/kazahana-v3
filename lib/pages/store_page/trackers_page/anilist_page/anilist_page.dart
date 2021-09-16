@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import './media_list.dart';
-import '../../../core/models/page_args/anilist_page.dart' as anilist_page;
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../plugins/helpers/stateful_holder.dart';
-import '../../../plugins/helpers/ui.dart';
-import '../../../plugins/helpers/utils/string.dart';
-import '../../../plugins/router.dart';
-import '../../../plugins/translator/translator.dart';
+import '../../../../core/models/page_args/anilist_page.dart' as anilist_page;
+import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../plugins/helpers/stateful_holder.dart';
+import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/helpers/utils/string.dart';
+import '../../../../plugins/router.dart';
+import '../../../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
   const Page({
@@ -180,7 +180,6 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                     child: getProfile(user.value!),
                   ),
                 ),
-                // SizedBox(height: remToPx(1)),
                 SliverAppBar(
                   pinned: true,
                   floating: true,

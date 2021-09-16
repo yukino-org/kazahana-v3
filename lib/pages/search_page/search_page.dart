@@ -1,3 +1,5 @@
+import 'dart:ui';
+import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
@@ -13,21 +15,17 @@ import '../../plugins/database/schemas/preferences/preferences.dart'
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
+import '../../plugins/helpers/utils/string.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
 
-enum PluginTypes {
-  anime,
-  manga,
-}
-
-extension PluginRoutes on PluginTypes {
+extension PluginRoutes on extensions.ExtensionType {
   String route() {
     switch (this) {
-      case PluginTypes.anime:
+      case extensions.ExtensionType.anime:
         return RouteNames.animePage;
 
-      case PluginTypes.manga:
+      case extensions.ExtensionType.manga:
         return RouteNames.mangaPage;
     }
   }
@@ -37,10 +35,10 @@ extension PluginRoutes on PluginTypes {
     required final String src,
   }) {
     switch (this) {
-      case PluginTypes.anime:
+      case extensions.ExtensionType.anime:
         return anime_page.PageArguments(src: src, plugin: plugin).toJson();
 
-      case PluginTypes.manga:
+      case extensions.ExtensionType.manga:
         return manga_page.PageArguments(src: src, plugin: plugin).toJson();
     }
   }
@@ -52,11 +50,8 @@ class CurrentPlugin {
     required final this.plugin,
   });
 
-  PluginTypes type;
+  extensions.ExtensionType type;
   extensions.BaseExtractor plugin;
-
-  @override
-  String toString() => '${type.toString}-${plugin.name}';
 }
 
 class SearchInfo extends extensions.SearchInfo {
@@ -64,7 +59,8 @@ class SearchInfo extends extensions.SearchInfo {
     required final String title,
     required final String url,
     required final String locale,
-    required final this.plugin,
+    required final this.pluginName,
+    required final this.pluginId,
     required final this.pluginType,
     final extensions.ImageInfo? thumbnail,
   }) : super(
@@ -74,8 +70,9 @@ class SearchInfo extends extensions.SearchInfo {
           locale: locale,
         );
 
-  final String plugin;
-  final PluginTypes pluginType;
+  final String pluginName;
+  final String pluginId;
+  final extensions.ExtensionType pluginType;
 }
 
 class Page extends StatefulWidget {
@@ -97,49 +94,47 @@ class _PageState extends State<Page> {
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
+  CurrentPlugin? currentPlugin;
   List<SearchInfo> results = <SearchInfo>[];
 
+  extensions.ExtensionType popupPluginType = extensions.ExtensionType.anime;
+
   late Widget placeholderImage;
-  late CurrentPlugin currentPlugin;
   late search_page.PageArguments args;
 
   final TextEditingController textController = TextEditingController();
+  final Duration animationDuration = const Duration(milliseconds: 300);
 
   @override
   void initState() {
     super.initState();
 
-    currentPlugin = CurrentPlugin(
-      type: PluginTypes.anime,
-      plugin: ExtensionsManager.animes[ExtensionsManager.animes.keys.first]!,
-    );
+    if (preferences.lastSelectedSearchType != null &&
+        preferences.lastSelectedSearchPlugin != null) {
+      final extensions.ExtensionType? type =
+          extensions.ExtensionType.values.firstWhereOrNull(
+        (final extensions.ExtensionType x) =>
+            x.type == preferences.lastSelectedSearchType,
+      );
 
-    if (preferences.lastSelectedSearchType != null) {
-      currentPlugin.type = PluginTypes.values.firstWhereOrNull(
-            (final PluginTypes x) =>
-                x.toString() == preferences.lastSelectedSearchType,
-          ) ??
-          currentPlugin.type;
-    }
+      if (type != null) {
+        extensions.BaseExtractor? ext;
 
-    if (preferences.lastSelectedSearchPlugin != null) {
-      bool matched = false;
-
-      for (final String x in animePlugins) {
-        if (preferences.lastSelectedSearchPlugin == x) {
-          currentPlugin.plugin = ExtensionsManager.animes[x]!;
-          matched = true;
-          break;
-        }
-      }
-
-      if (!matched) {
-        for (final String x in mangaPlugins) {
-          if (preferences.lastSelectedSearchPlugin == x) {
-            currentPlugin.plugin = ExtensionsManager.mangas[x]!;
-            matched = true;
+        switch (type) {
+          case extensions.ExtensionType.anime:
+            ext =
+                ExtensionsManager.animes[preferences.lastSelectedSearchPlugin];
             break;
-          }
+
+          case extensions.ExtensionType.manga:
+            ext =
+                ExtensionsManager.mangas[preferences.lastSelectedSearchPlugin];
+            break;
+        }
+
+        if (ext != null) {
+          currentPlugin = CurrentPlugin(type: type, plugin: ext);
+          popupPluginType = type;
         }
       }
     }
@@ -180,7 +175,7 @@ class _PageState extends State<Page> {
   Future<List<SearchInfo>> search() async {
     final List<SearchInfo> results = <SearchInfo>[];
     final List<extensions.SearchInfo> searches =
-        await currentPlugin.plugin.search(
+        await currentPlugin!.plugin.search(
       textController.text,
       Translator.t.code.code,
     );
@@ -192,8 +187,9 @@ class _PageState extends State<Page> {
           url: x.url,
           thumbnail: x.thumbnail,
           locale: x.locale,
-          plugin: currentPlugin.plugin.name,
-          pluginType: currentPlugin.type,
+          pluginId: currentPlugin!.plugin.id,
+          pluginName: currentPlugin!.plugin.name,
+          pluginType: currentPlugin!.type,
         ),
       ),
     );
@@ -205,15 +201,15 @@ class _PageState extends State<Page> {
         type: MaterialType.transparency,
         child: RadioListTile<String>(
           title: Text(plugin.plugin.name),
-          value: plugin.toString(),
-          groupValue: currentPlugin.toString(),
+          value: plugin.plugin.id,
+          groupValue: currentPlugin?.plugin.id,
           activeColor: Theme.of(context).primaryColor,
           onChanged: (final String? val) async {
             if (val != null) {
               setState(() {
                 currentPlugin = plugin;
-                preferences.lastSelectedSearchType = plugin.type.toString();
-                preferences.lastSelectedSearchPlugin = plugin.plugin.name;
+                preferences.lastSelectedSearchType = plugin.type.type;
+                preferences.lastSelectedSearchPlugin = plugin.plugin.id;
                 Navigator.of(context).pop();
               });
 
@@ -223,101 +219,72 @@ class _PageState extends State<Page> {
         ),
       );
 
-  Future<void> selectPlugins(final BuildContext context) async {
-    final List<Widget> left = <Widget>[
-      Padding(
+  Widget getPluginPage(
+    final extensions.ExtensionType type,
+    final StateSetter setState,
+  ) {
+    Widget content = Center(
+      child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: remToPx(1),
+          horizontal: remToPx(2),
         ),
         child: Text(
-          Translator.t.anime(),
-          style: TextStyle(
-            fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
-            color:
-                Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.7),
-          ),
+          Translator.t.nothingWasFoundHere(),
+          style: Theme.of(context).textTheme.caption,
         ),
       ),
-      ...animePlugins
-          .map(
-            (final String x) => getPluginWidget(
-              CurrentPlugin(
-                type: PluginTypes.anime,
-                plugin: ExtensionsManager.animes[x]!,
-              ),
-            ),
-          )
-          .toList(),
-    ];
+    );
 
-    final List<Widget> right = <Widget>[
-      Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: remToPx(1),
-        ),
-        child: Text(
-          Translator.t.manga(),
-          style: TextStyle(
-            fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
-            color:
-                Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.7),
-          ),
-        ),
-      ),
-      ...mangaPlugins
-          .map(
-            (final String x) => getPluginWidget(
-              CurrentPlugin(
-                type: PluginTypes.manga,
-                plugin: ExtensionsManager.mangas[x]!,
-              ),
-            ),
-          )
-          .toList(),
-    ];
-
-    final List<Widget> plugins =
-        MediaQuery.of(context).size.width > ResponsiveSizes.md
-            ? <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: left,
-                      ),
+    switch (type) {
+      case extensions.ExtensionType.anime:
+        if (ExtensionsManager.animes.isNotEmpty) {
+          content = Column(
+            children: ExtensionsManager.animes.values
+                .map(
+                  (final extensions.AnimeExtractor x) => getPluginWidget(
+                    CurrentPlugin(
+                      type: extensions.ExtensionType.anime,
+                      plugin: x,
                     ),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: right,
-                      ),
-                    ),
-                  ],
+                  ),
                 )
-              ]
-            : <Widget>[
-                ...left,
-                ...right,
-              ];
+                .toList(),
+          );
+        }
+        break;
 
-    await showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      pageBuilder: (
-        final BuildContext context,
-        final Animation<double> a1,
-        final Animation<double> a2,
-      ) =>
-          Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: StatefulBuilder(
-          builder: (final BuildContext context, final StateSetter setState) =>
-              SingleChildScrollView(
+      case extensions.ExtensionType.manga:
+        if (ExtensionsManager.mangas.isNotEmpty) {
+          content = Column(
+            children: ExtensionsManager.mangas.values
+                .map(
+                  (final extensions.MangaExtractor x) => getPluginWidget(
+                    CurrentPlugin(
+                      type: extensions.ExtensionType.manga,
+                      plugin: x,
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        }
+        break;
+    }
+
+    return Padding(
+      key: ValueKey<extensions.ExtensionType>(type),
+      padding: MediaQuery.of(context).viewInsets +
+          EdgeInsets.symmetric(horizontal: remToPx(2), vertical: remToPx(1.2)),
+      child: Material(
+        type: MaterialType.card,
+        elevation: 24,
+        borderRadius: BorderRadius.circular(4),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Theme.of(context).dialogBackgroundColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               vertical: remToPx(0.8),
             ),
@@ -328,45 +295,135 @@ class _PageState extends State<Page> {
                   padding: EdgeInsets.symmetric(
                     horizontal: remToPx(1),
                   ),
-                  child: Text(
-                    Translator.t.selectPlugin(),
-                    style: Theme.of(context).textTheme.headline6,
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        Translator.t.selectPlugin(),
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      const Expanded(
+                        child: SizedBox.shrink(),
+                      ),
+                      ...<extensions.ExtensionType>[
+                        extensions.ExtensionType.anime,
+                        extensions.ExtensionType.manga,
+                      ].map(
+                        (final extensions.ExtensionType x) {
+                          final bool isCurrent = x == popupPluginType;
+
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: remToPx(0.1),
+                            ),
+                            child: TextButton(
+                              clipBehavior: Clip.antiAlias,
+                              onPressed: () {
+                                setState(() {
+                                  popupPluginType = x;
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: Colors.transparent,
+                                side: BorderSide.none,
+                              ),
+                              child: AnimatedContainer(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: remToPx(0.5),
+                                  vertical: remToPx(0.2),
+                                ),
+                                color: isCurrent
+                                    ? Theme.of(context).primaryColor
+                                    : Colors.transparent,
+                                duration: animationDuration,
+                                child: AnimatedDefaultTextStyle(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                        color: isCurrent ? Colors.white : null,
+                                      ),
+                                  duration: animationDuration,
+                                  child: Text(
+                                    StringUtils.capitalize(x.type),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ],
                   ),
                 ),
                 SizedBox(
                   height: remToPx(0.3),
                 ),
-                ...plugins,
+                content,
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: remToPx(0.7),
                     ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: remToPx(0.6),
-                          vertical: remToPx(0.3),
-                        ),
-                        child: Text(
-                          Translator.t.close(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).primaryColor,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: remToPx(0.6),
+                            vertical: remToPx(0.3),
+                          ),
+                          child: Text(
+                            Translator.t.close(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
                         ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
                     ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> selectPlugins(final BuildContext context) async {
+    await showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      pageBuilder: (
+        final BuildContext context,
+        final Animation<double> a1,
+        final Animation<double> a2,
+      ) =>
+          StatefulBuilder(
+        builder: (final BuildContext context, final StateSetter setState) =>
+            PageTransitionSwitcher(
+          duration: animationDuration,
+          transitionBuilder: (
+            final Widget child,
+            final Animation<double> animation,
+            final Animation<double> secondaryAnimation,
+          ) =>
+              FadeThroughTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            fillColor: Colors.transparent,
+            child: child,
+          ),
+          child: getPluginPage(popupPluginType, setState),
         ),
       ),
     );
@@ -399,8 +456,11 @@ class _PageState extends State<Page> {
                 TextField(
                   controller: textController,
                   decoration: InputDecoration(
-                    labelText:
-                        Translator.t.searchInPlugin(currentPlugin.plugin.name),
+                    labelText: currentPlugin != null
+                        ? Translator.t
+                            .searchInPlugin(currentPlugin!.plugin.name)
+                        : Translator.t.selectPlugin(),
+                    enabled: currentPlugin != null,
                   ),
                   onSubmitted: (final String terms) async {
                     setState(() {
@@ -459,7 +519,7 @@ class _PageState extends State<Page> {
                   visible: state == LoadState.resolved && results.isNotEmpty,
                   child: Column(
                     children: getGridded(
-                      MediaQuery.of(context).size,
+                      MediaQuery.of(context).size.width.toInt(),
                       results
                           .map(
                             (final SearchInfo x) => Card(
@@ -471,7 +531,7 @@ class _PageState extends State<Page> {
                                       x.pluginType.route(),
                                       x.pluginType.params(
                                         src: x.url,
-                                        plugin: x.plugin,
+                                        plugin: x.pluginId,
                                       ),
                                     ).toString(),
                                   );
@@ -514,7 +574,7 @@ class _PageState extends State<Page> {
                                               ),
                                             ),
                                             Text(
-                                              x.plugin,
+                                              x.pluginName,
                                               style: TextStyle(
                                                 color: Theme.of(context)
                                                     .primaryColor,

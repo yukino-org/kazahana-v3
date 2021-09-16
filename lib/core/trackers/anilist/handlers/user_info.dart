@@ -28,7 +28,7 @@ Future<UserInfo> getUserInfo({
   }
 
   const String query = '''
-{
+query {
   Viewer {
     id
     name
