@@ -1,0 +1,3 @@
+import { increment } from "./";
+
+increment();

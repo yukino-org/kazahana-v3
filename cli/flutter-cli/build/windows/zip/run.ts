@@ -1,0 +1,3 @@
+import { zip } from "./";
+
+zip();

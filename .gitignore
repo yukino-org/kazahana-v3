@@ -28,3 +28,4 @@ app.*.map.json
 /android/app/release
 node_modules/
 package-lock.json
+installer.g.iss

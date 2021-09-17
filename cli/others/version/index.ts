@@ -2,8 +2,8 @@ import { join } from "path";
 import { readFile, writeFile } from "fs/promises";
 import commandLineArgs from "command-line-args";
 import semver from "semver";
-import { config } from "../config";
-import { Logger } from "../logger";
+import { config } from "../../config";
+import { Logger } from "../../logger";
 
 const logger = new Logger("version");
 
@@ -29,9 +29,9 @@ const argsOpts: commandLineArgs.OptionDefinition[] = [
     },
 ];
 
-const matchRegex = /version:(.*)/;
+export const matchRegex = /version:(.*)/;
 
-const start = async () => {
+export const increment = async () => {
     const { increment, preid, demo } = commandLineArgs(argsOpts);
 
     if (!increment) {
@@ -68,5 +68,3 @@ const start = async () => {
 
     logger.log(`Bumped from ${previousVersion} to ${newVersion} ${demo && "(Demo)"}`);
 }
-
-start();
