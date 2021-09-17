@@ -73,7 +73,7 @@ class _MediaListState extends State<MediaList> {
                         OpenContainer(
                           transitionType: ContainerTransitionType.fadeThrough,
                           openColor: Theme.of(context).scaffoldBackgroundColor,
-                          closedColor: Theme.of(context).cardColor,
+                          closedColor: Colors.transparent,
                           closedElevation: 0,
                           transitionDuration: animationDuration,
                           onClosed: (final dynamic result) {

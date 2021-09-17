@@ -109,35 +109,7 @@ class _PageState extends State<Page> {
   void initState() {
     super.initState();
 
-    if (preferences.lastSelectedSearchType != null &&
-        preferences.lastSelectedSearchPlugin != null) {
-      final extensions.ExtensionType? type =
-          extensions.ExtensionType.values.firstWhereOrNull(
-        (final extensions.ExtensionType x) =>
-            x.type == preferences.lastSelectedSearchType,
-      );
-
-      if (type != null) {
-        extensions.BaseExtractor? ext;
-
-        switch (type) {
-          case extensions.ExtensionType.anime:
-            ext =
-                ExtensionsManager.animes[preferences.lastSelectedSearchPlugin];
-            break;
-
-          case extensions.ExtensionType.manga:
-            ext =
-                ExtensionsManager.mangas[preferences.lastSelectedSearchPlugin];
-            break;
-        }
-
-        if (ext != null) {
-          currentPlugin = CurrentPlugin(type: type, plugin: ext);
-          popupPluginType = type;
-        }
-      }
-    }
+    _setCurrentPreferredPlugin();
 
     Future<void>.delayed(Duration.zero, () async {
       if (mounted) {
@@ -152,6 +124,12 @@ class _PageState extends State<Page> {
         args = search_page.PageArguments.fromJson(
           ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
         );
+
+        if (args.pluginType != null) {
+          setState(() {
+            _setCurrentPreferredPlugin(args.pluginType!.type);
+          });
+        }
 
         if (args.terms != null) {
           setState(() {
@@ -170,6 +148,39 @@ class _PageState extends State<Page> {
         }
       }
     });
+  }
+
+  void _setCurrentPreferredPlugin([final String? _pluginType]) {
+    final String? pluginType =
+        _pluginType ?? preferences.lastSelectedSearchType;
+
+    if (preferences.lastSelectedSearchType != null && pluginType != null) {
+      final extensions.ExtensionType? type =
+          extensions.ExtensionType.values.firstWhereOrNull(
+        (final extensions.ExtensionType x) => x.type == pluginType,
+      );
+
+      if (type != null) {
+        extensions.BaseExtractor? ext;
+
+        switch (type) {
+          case extensions.ExtensionType.anime:
+            ext = ExtensionsManager
+                .animes[preferences.lastSelectedSearchPlugins[pluginType]];
+            break;
+
+          case extensions.ExtensionType.manga:
+            ext = ExtensionsManager
+                .mangas[preferences.lastSelectedSearchPlugins[pluginType]];
+            break;
+        }
+
+        if (ext != null) {
+          currentPlugin = CurrentPlugin(type: type, plugin: ext);
+          popupPluginType = type;
+        }
+      }
+    }
   }
 
   Future<List<SearchInfo>> search() async {
@@ -209,7 +220,8 @@ class _PageState extends State<Page> {
               setState(() {
                 currentPlugin = plugin;
                 preferences.lastSelectedSearchType = plugin.type.type;
-                preferences.lastSelectedSearchPlugin = plugin.plugin.id;
+                preferences.lastSelectedSearchPlugins[
+                    preferences.lastSelectedSearchType!] = plugin.plugin.id;
                 Navigator.of(context).pop();
               });
 

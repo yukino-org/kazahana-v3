@@ -326,4 +326,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String recommendedBy(final String by) => 'Recommended by $by';
+
+  @override
+  String seasonalAnimes() => 'Seasonal Animes';
 }

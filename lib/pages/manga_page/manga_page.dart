@@ -556,7 +556,7 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
                           controller: floatingButtonController,
                           visible: showFloatingButton,
                           curve: Curves.easeInOut,
-                          offsetBegin: const Offset(0, 0),
+                          offsetBegin: Offset.zero,
                           offsetEnd: const Offset(0, 1.5),
                           child: child!,
                         ),

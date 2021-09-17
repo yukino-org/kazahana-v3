@@ -39,8 +39,10 @@ You can download the latest version of app from the [releases](https://github.co
 ## Technology
 
 -   [Dart](https://dart.dev/) (Language)
--   [Flutter](https://flutter.dev/) (SDK)
--   [Pub](https://pub.dev/) (Package manager)
+-   [Flutter](https://flutter.dev/) (UI Framework)
+-   [Pub](https://pub.dev/) (Package Manager)
+-   [Typescript](https://typescriptlang.org/) (Language)
+-   [NPM](https://npmjs.com/) (Package Manager)
 
 ## Code structure
 

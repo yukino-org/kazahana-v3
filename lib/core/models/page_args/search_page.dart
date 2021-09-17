@@ -1,17 +1,28 @@
+import 'package:collection/collection.dart';
+import 'package:extensions/extensions.dart' as extensions;
+
 class PageArguments {
   PageArguments({
     required final this.terms,
     required final this.autoSearch,
+    final this.pluginType,
   });
 
   factory PageArguments.fromJson(final Map<String, String> json) =>
       PageArguments(
         terms: json['terms'],
         autoSearch: json['autoSearch'] == 'true',
+        pluginType: json['pluginType'] != null
+            ? extensions.ExtensionType.values.firstWhereOrNull(
+                (final extensions.ExtensionType x) =>
+                    x.type == json['pluginType'],
+              )
+            : null,
       );
 
   String? terms;
   bool? autoSearch;
+  extensions.ExtensionType? pluginType;
 
   Map<String, String> toJson() {
     final Map<String, String> json = <String, String>{};
@@ -22,6 +33,10 @@ class PageArguments {
 
     if (autoSearch != null) {
       json['autoSearch'] = autoSearch.toString();
+    }
+
+    if (pluginType != null) {
+      json['pluginType'] = pluginType!.type;
     }
 
     return json;

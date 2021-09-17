@@ -110,7 +110,9 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
                       AppState.settings.current.mangaReaderMode = val;
                       await AppState.settings.current.save();
                       AppState.settings.modify(AppState.settings.current);
-                      Navigator.of(context).pop();
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
                     },
                   ),
                 ],

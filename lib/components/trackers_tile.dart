@@ -212,7 +212,9 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
                                                 item.resolve(resolved);
                                               });
 
-                                              Navigator.of(context).pop();
+                                              if (mounted) {
+                                                Navigator.of(context).pop();
+                                              }
                                             },
                                             child: Padding(
                                               padding:

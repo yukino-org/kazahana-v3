@@ -24,10 +24,9 @@ List<Map<dynamic, dynamic>> Function(String, int) createFuzzy(
   );
 
   return (final String search, final int limit) {
-    final List<Result<Map<dynamic, dynamic>>> result =
-        client.search(search, limit);
+    final List<Result<Map<dynamic, dynamic>>> result = client.search(search);
 
-    return result
+    final List<Map<dynamic, dynamic>> results = result
         .map(
           (final Result<Map<dynamic, dynamic>> x) => <dynamic, dynamic>{
             ...x.item,
@@ -35,5 +34,9 @@ List<Map<dynamic, dynamic>> Function(String, int) createFuzzy(
           },
         )
         .toList();
+
+    return limit >= 0 && limit <= results.length
+        ? results.sublist(0, limit)
+        : results;
   };
 }

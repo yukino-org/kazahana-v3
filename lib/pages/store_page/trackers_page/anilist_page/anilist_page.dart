@@ -116,7 +116,10 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       ),
       onPressed: () async {
         await anilist.AnilistManager.auth.deleteToken();
-        Navigator.of(context).pop();
+
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       },
       child: Text(
         Translator.t.logOut(),

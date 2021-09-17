@@ -40,65 +40,66 @@ class _PageState extends State<Page> {
   @override
   Widget build(final BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: _cache.hasResolved
-            ? <Widget>[
-                Text(
-                  _cache.value!.seasonName,
-                  style: Theme.of(context).textTheme.headline5?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+        children: <Widget>[
+          Text(
+            _cache.hasResolved
+                ? _cache.value!.seasonName
+                : Translator.t.seasonalAnimes(),
+            style: Theme.of(context).textTheme.headline5?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(
-                  height: remToPx(0.3),
-                ),
-                HorizontalEntityList(
-                  animationDuration: animationDuration,
-                  fastAnimationDuration: fastAnimationDuration,
-                  entities: _cache.value!.seasonEntities,
-                  active: (final int i) => seasonAnimeHoverIndex == i,
-                  onHover: (final int i, final bool hovered) {
-                    setState(() {
-                      seasonAnimeHoverIndex = hovered ? i : null;
-                    });
-                  },
-                  onTap: (final int i) {
-                    // TODO: push
-                  },
-                ),
-                SizedBox(
-                  height: remToPx(1.5),
-                ),
-                Text(
-                  Translator.t.recentlyUpdated(),
-                  style: Theme.of(context).textTheme.headline5?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                SizedBox(
-                  height: remToPx(0.3),
-                ),
-                HorizontalEntityList(
-                  animationDuration: animationDuration,
-                  fastAnimationDuration: fastAnimationDuration,
-                  entities: _cache.value!.recentlyUpdated,
-                  active: (final int i) => recentlyUpdatedHoverIndex == i,
-                  onHover: (final int i, final bool hovered) {
-                    setState(() {
-                      recentlyUpdatedHoverIndex = hovered ? i : null;
-                    });
-                  },
-                  onTap: (final int i) {
-                    // TODO: push
-                  },
-                ),
-              ]
-            : <Widget>[
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.85,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+          ),
+          if (_cache.hasResolved) ...<Widget>[
+            SizedBox(
+              height: remToPx(0.3),
+            ),
+            HorizontalEntityList(
+              animationDuration: animationDuration,
+              fastAnimationDuration: fastAnimationDuration,
+              entities: _cache.value!.seasonEntities,
+              active: (final int i) => seasonAnimeHoverIndex == i,
+              onHover: (final int i, final bool hovered) {
+                setState(() {
+                  seasonAnimeHoverIndex = hovered ? i : null;
+                });
+              },
+              onTap: (final int i) {
+                // TODO: push
+              },
+            ),
+            SizedBox(
+              height: remToPx(1.5),
+            ),
+            Text(
+              Translator.t.recentlyUpdated(),
+              style: Theme.of(context).textTheme.headline5?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
-              ],
+            ),
+            SizedBox(
+              height: remToPx(0.3),
+            ),
+            HorizontalEntityList(
+              animationDuration: animationDuration,
+              fastAnimationDuration: fastAnimationDuration,
+              entities: _cache.value!.recentlyUpdated,
+              active: (final int i) => recentlyUpdatedHoverIndex == i,
+              onHover: (final int i, final bool hovered) {
+                setState(() {
+                  recentlyUpdatedHoverIndex = hovered ? i : null;
+                });
+              },
+              onTap: (final int i) {
+                // TODO: push
+              },
+            ),
+          ] else
+            SizedBox(
+              height: remToPx(8),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+        ],
       );
 }

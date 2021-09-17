@@ -148,7 +148,7 @@ class _MainAppState extends State<MainApp> {
                 SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(0, 0.1),
-                end: const Offset(0, 0),
+                end: Offset.zero,
               ).animate(
                 CurvedAnimation(
                   parent: a1,

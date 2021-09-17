@@ -24,8 +24,13 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
 
       try {
         if (cache != null) {
+          final anilist.UserInfo user = await anilist.getUserInfo();
+
           final anilist.MediaList mediaList = _cache[cache.value] ??
-              await anilist.MediaList.getFromMediaId(cache.value as int);
+              await anilist.MediaList.getFromMediaId(
+                cache.value as int,
+                user.id,
+              );
 
           return ResolvedTrackerItem<anilist.MediaList>(
             title: mediaList.media.titleUserPreferred,
@@ -38,8 +43,10 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
       final List<anilist.Media> media =
           await anilist.Media.search(title, mediaType, 0, 1);
       if (media.isNotEmpty) {
+        final anilist.UserInfo user = await anilist.getUserInfo();
+
         final anilist.MediaList mediaList =
-            await anilist.MediaList.getFromMediaId(media.first.id);
+            await anilist.MediaList.getFromMediaId(media.first.id, user.id);
 
         await DataBox.cache.put(
           'anilist-$title-$plugin',
@@ -86,8 +93,10 @@ Future<ResolvedTrackerItem<anilist.MediaList>> Function(
       final String plugin,
       final ResolvableTrackerItem item,
     ) async {
+      final anilist.UserInfo user = await anilist.getUserInfo();
+
       final anilist.MediaList mediaList =
-          await anilist.MediaList.getFromMediaId(int.parse(item.id));
+          await anilist.MediaList.getFromMediaId(int.parse(item.id), user.id);
 
       await DataBox.cache.put(
         'anilist-$title-$plugin',

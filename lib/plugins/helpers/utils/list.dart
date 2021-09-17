@@ -37,7 +37,8 @@ abstract class ListUtils {
     final List<T> elements,
     final dynamic Function(T) getter,
   ) {
-    double? prevVal, nextVal;
+    double? prevVal;
+    double? nextVal;
 
     for (final T x in elements) {
       if (prevVal != null && nextVal != null && prevVal != nextVal) break;

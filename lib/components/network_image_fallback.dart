@@ -31,7 +31,7 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage> {
 
     Future<void>.delayed(Duration.zero, () {
       networkImage = NetworkImage(widget.url);
-      networkImage.resolve(const ImageConfiguration()).addListener(
+      networkImage.resolve(ImageConfiguration.empty).addListener(
             ImageStreamListener(
               (final ImageInfo image, final bool synchronousCall) {
                 if (mounted) {

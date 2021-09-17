@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import './_fuzzy_date.dart';
 import '../anilist.dart';
 
@@ -41,6 +42,29 @@ class MediaList {
         completedAt:
             FuzzyDate.toDateTime(json['completedAt'] as Map<dynamic, dynamic>),
         media: Media.fromJson(json['media'] as Map<dynamic, dynamic>),
+      );
+
+  factory MediaList.partial({
+    required final int userId,
+    required final Media media,
+    final MediaListStatus status = MediaListStatus.planning,
+    final int progress = 0,
+    final int? progressVolumes,
+    final int repeat = 0,
+    final int? score,
+    final DateTime? startedAt,
+    final DateTime? completedAt,
+  }) =>
+      MediaList(
+        userId: userId,
+        status: status,
+        progress: progress,
+        progressVolumes: progressVolumes,
+        repeat: repeat,
+        score: score,
+        startedAt: startedAt,
+        completedAt: completedAt,
+        media: media,
       );
 
   final int userId;
@@ -135,12 +159,25 @@ mutation (
         FuzzyDate.toDateTime(json['completedAt'] as Map<dynamic, dynamic>);
   }
 
-  static Future<MediaList> getFromMediaId(final int id) async {
+  static Future<MediaList> getFromMediaId(
+    final int id,
+    final int userId,
+  ) async =>
+      (await tryGetFromMediaId(id, userId))!;
+
+  static Future<MediaList?> tryGetFromMediaId(
+    final int id,
+    final int userId,
+  ) async {
     const String query = '''
 query (
-  \$mediaId: Int
+  \$mediaId: Int,
+  \$userId: Int
 ) {
-  MediaList(mediaId: \$mediaId) ${MediaList.query}
+  MediaList(
+    mediaId: \$mediaId,
+    userId: \$userId
+  ) ${MediaList.query}
 }
     ''';
 
@@ -149,13 +186,21 @@ query (
         query: query,
         variables: <dynamic, dynamic>{
           'mediaId': id,
+          'userId': userId,
         },
       ),
     );
 
-    return MediaList.fromJson(
-      res['data']['MediaList'] as Map<dynamic, dynamic>,
-    );
+    return res['errors'] is List<dynamic> &&
+            (res['errors'] as List<dynamic>).firstWhereOrNull(
+                  (final dynamic x) => x['status'] == 404,
+                ) !=
+                null &&
+            res['data']['MediaList'] == null
+        ? null
+        : MediaList.fromJson(
+            res['data']['MediaList'] as Map<dynamic, dynamic>,
+          );
   }
 }
 

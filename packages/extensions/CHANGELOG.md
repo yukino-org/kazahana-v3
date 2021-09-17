@@ -12,3 +12,7 @@
 ## 0.0.3
 
 * Using `Future` instead of callbacks
+
+## 0.0.4
+
+* Fixed `sublist` range in `createFuzzy` 

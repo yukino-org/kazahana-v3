@@ -10,6 +10,8 @@ environment:
 dependencies:
   animations: ^2.0.1
   better_player: ^0.0.72
+  collection: ^1.15.0
+  crypto: ^3.0.1
   dart_vlc: ^0.1.4
   encrypt: ^5.0.0
   extensions:
@@ -21,6 +23,7 @@ dependencies:
   hetu_script: ^0.1.2+5
   hive: ^2.0.4
   hive_flutter: ^1.1.0
+  html: ^0.15.0
   http: ^0.13.3
   package_info_plus: ^1.0.5
   path: ^1.8.0

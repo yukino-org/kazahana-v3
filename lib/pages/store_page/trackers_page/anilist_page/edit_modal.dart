@@ -367,7 +367,10 @@ class _EditModalState extends State<EditModal> {
                     ),
                     onTap: () async {
                       await updateMedia();
-                      Navigator.of(context).pop();
+
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
                     },
                   ),
                   SizedBox(

@@ -1,19 +1,24 @@
 import '../anilist.dart';
 
 Future<List<Media>> getRecommended(
-  final int page, [
+  final int page, {
   final int perPage = 50,
-]) async {
+  final bool onList = true,
+}) async {
   const String query = '''
 query (
   \$page: Int,
-  \$perpage: Int
+  \$perpage: Int,
+  \$onlist: Boolean
 ) {
   Page (
     page: \$page,
     perPage: \$perpage
   ) {
-    recommendations (sort: RATING) {
+    recommendations (
+      sort: RATING,
+      onList: \$onlist
+    ) {
       media ${Media.query}
     }
   }
@@ -26,6 +31,7 @@ query (
       variables: <dynamic, dynamic>{
         'page': page,
         'perpage': perPage,
+        'onlist': onList,
       },
     ),
   );

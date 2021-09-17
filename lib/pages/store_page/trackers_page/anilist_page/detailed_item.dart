@@ -181,10 +181,7 @@ class _DetailedItemState extends State<DetailedItem> {
                           mainAxisAlignment: isLargest
                               ? MainAxisAlignment.start
                               : MainAxisAlignment.center,
-                          crossAxisAlignment:
-                              widget.media.media.bannerImage != null
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             ClipRRect(
                               borderRadius:
@@ -219,6 +216,10 @@ class _DetailedItemState extends State<DetailedItem> {
                                           ),
                                         ],
                                       ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: remToPx(0.1),
                                     ),
                                     Text(
                                       StringUtils.capitalize(
@@ -243,7 +244,7 @@ class _DetailedItemState extends State<DetailedItem> {
                                       ),
                                     ),
                                     SizedBox(
-                                      height: remToPx(1),
+                                      height: remToPx(0.8),
                                     ),
                                     playBtn,
                                   ],
