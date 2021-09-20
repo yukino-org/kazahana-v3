@@ -1,14 +1,14 @@
 import { join } from "path";
 import { existsSync } from "fs";
-import { spawn } from "../../spawn";
-import { config } from "../../config";
-import { Logger } from "../../logger";
+import { promisifyChildProcess, spawn } from "../../../spawn";
+import { config } from "../../../config";
+import { Logger } from "../../../logger";
 
 const logger = new Logger("test:sources:manga");
 
-const start = () => {
+export const test = async () => {
     const [plugin, method] = process.argv.slice(2);
-    
+
     if (!plugin) {
         return logger.error(`Missing arg: plugin`);
     }
@@ -20,7 +20,10 @@ const start = () => {
     logger.log(`Plugin: ${plugin}`);
     logger.log(`Method: ${method}`);
 
-    const path = join(config.base, `/test/extractors/manga/${plugin}/${method}.dart`);
+    const path = join(
+        config.base,
+        `/test/extractors/manga/${plugin}/${method}.dart`
+    );
     logger.log(`Path: ${path}`);
 
     const exists = existsSync(path);
@@ -29,7 +32,7 @@ const start = () => {
     }
 
     logger.log(" ");
-    spawn("flutter", ["test", "-r", "expanded", path], config.base);
-}
-
-start();
+    await promisifyChildProcess(
+        await spawn("flutter", ["test", "-r", "expanded", path], config.base)
+    );
+};

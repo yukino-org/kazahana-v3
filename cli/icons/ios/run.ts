@@ -1,3 +1,4 @@
+import { run } from "../../runner";
 import { generate } from "./";
 
-generate();
+run(generate);

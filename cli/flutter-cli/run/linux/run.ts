@@ -1,4 +1,4 @@
 import { run } from "../../../runner";
-import { build } from "./";
+import { debug } from "./";
 
-run(build);
+run(debug);

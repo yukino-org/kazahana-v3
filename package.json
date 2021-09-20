@@ -1,62 +1,62 @@
 {
-  "name": "yukino-cli",
-  "version": "0.0.0",
-  "description": "🔧 Yukino's handy command-line interface",
-  "private": true,
-  "scripts": {
-    "hive:generate": "ts-node ./cli/flutter-cli/hive-generate.ts",
-    "test:sources:anime": "ts-node ./cli/tests/sources/anime.ts",
-    "test:sources:manga": "ts-node ./cli/tests/sources/manga.ts",
-    "version:bump": "ts-node ./cli/others/version/run.ts",
-    "android:icons": "ts-node ./cli/icons/android/run.ts",
-    "android:run": "npm run android:icons && ts-node ./cli/flutter-cli/run/android.ts",
-    "android:build": "npm run android:icons && ts-node ./cli/flutter-cli/build/android/run.ts",
-    "ios:icons": "ts-node ./cli/icons/ios/run.ts",
-    "ios:run": "npm run ios:icons && ts-node ./cli/flutter-cli/run/ios.ts",
-    "macos:icons": "ts-node ./cli/icons/macos/run.ts",
-    "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos.ts",
-    "linux:icons": "ts-node ./cli/icons/linux/run.ts",
-    "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux.ts",
-    "linux:build": "npm run linux:icons && ts-node ./cli/flutter-cli/build/linux/run.ts",
-    "linux:build:appimage": "ts-node ./cli/flutter-cli/build/linux/appimage/run.ts",
-    "windows:icons": "ts-node ./cli/icons/windows/run.ts",
-    "windows:run": "npm run windows:icons && ts-node ./cli/flutter-cli/run/windows.ts",
-    "windows:build": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/run.ts",
-    "windows:build:installer": "ts-node ./cli/flutter-cli/build/windows/installer/run.ts",
-    "windows:build:zip": "ts-node ./cli/flutter-cli/build/windows/zip/run.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yukino-app/yukino.git"
-  },
-  "keywords": [],
-  "author": "Zyrouge",
-  "license": "GNU 3.0",
-  "bugs": {
-    "url": "https://github.com/yukino-app/yukino/issues"
-  },
-  "homepage": "https://github.com/yukino-app/yukino#readme",
-  "devDependencies": {
-    "@types/adm-zip": "^0.4.34",
-    "@types/command-line-args": "^5.2.0",
-    "@types/cross-spawn": "^6.0.2",
-    "@types/ejs": "^3.1.0",
-    "@types/fs-extra": "^9.0.12",
-    "@types/node": "^16.6.2",
-    "@types/semver": "^7.3.8",
-    "ts-node": "^10.2.1",
-    "typescript": "^4.3.5"
-  },
-  "dependencies": {
-    "adm-zip": "^0.5.6",
-    "canvas": "^2.8.0",
-    "command-line-args": "^5.2.0",
-    "cross-spawn": "^7.0.3",
-    "ejs": "^3.1.6",
-    "fs-extra": "^10.0.0",
-    "jimp": "^0.16.1",
-    "png-to-ico": "^2.1.2",
-    "readdirp": "^3.6.0",
-    "semver": "^7.3.5"
-  }
+    "name": "yukino-cli",
+    "version": "0.0.0",
+    "description": "🔧 Yukino's handy command-line interface",
+    "private": true,
+    "scripts": {
+        "hive:generate": "ts-node ./cli/flutter-cli/hive-generate/run.ts",
+        "test:sources:anime": "ts-node ./cli/tests/sources/anime/run.ts",
+        "test:sources:manga": "ts-node ./cli/tests/sources/manga/run.ts",
+        "version:bump": "ts-node ./cli/others/version/run.ts",
+        "android:icons": "ts-node ./cli/icons/android/run.ts",
+        "android:run": "npm run android:icons && ts-node ./cli/flutter-cli/run/android/run.ts",
+        "android:build": "npm run android:icons && ts-node ./cli/flutter-cli/build/android/run.ts",
+        "ios:icons": "ts-node ./cli/icons/ios/run.ts",
+        "ios:run": "npm run ios:icons && ts-node ./cli/flutter-cli/run/ios/run.ts",
+        "macos:icons": "ts-node ./cli/icons/macos/run.ts",
+        "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos/run.ts",
+        "linux:icons": "ts-node ./cli/icons/linux/run.ts",
+        "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux/run.ts",
+        "linux:build": "npm run linux:icons && ts-node ./cli/flutter-cli/build/linux/run.ts",
+        "linux:build:appimage": "ts-node ./cli/flutter-cli/build/linux/appimage/run.ts",
+        "windows:icons": "ts-node ./cli/icons/windows/run.ts",
+        "windows:run": "npm run windows:icons && ts-node ./cli/flutter-cli/run/windows/run.ts",
+        "windows:build": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/run.ts",
+        "windows:build:installer": "ts-node ./cli/flutter-cli/build/windows/installer/run.ts",
+        "windows:build:zip": "ts-node ./cli/flutter-cli/build/windows/zip/run.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yukino-app/yukino.git"
+    },
+    "keywords": [],
+    "author": "Zyrouge",
+    "license": "GNU 3.0",
+    "bugs": {
+        "url": "https://github.com/yukino-app/yukino/issues"
+    },
+    "homepage": "https://github.com/yukino-app/yukino#readme",
+    "devDependencies": {
+        "@types/adm-zip": "^0.4.34",
+        "@types/command-line-args": "^5.2.0",
+        "@types/cross-spawn": "^6.0.2",
+        "@types/ejs": "^3.1.0",
+        "@types/fs-extra": "^9.0.12",
+        "@types/node": "^16.6.2",
+        "@types/semver": "^7.3.8",
+        "ts-node": "^10.2.1",
+        "typescript": "^4.3.5"
+    },
+    "dependencies": {
+        "adm-zip": "^0.5.6",
+        "canvas": "^2.8.0",
+        "command-line-args": "^5.2.0",
+        "cross-spawn": "^7.0.3",
+        "ejs": "^3.1.6",
+        "fs-extra": "^10.0.0",
+        "jimp": "^0.16.1",
+        "png-to-ico": "^2.1.2",
+        "readdirp": "^3.6.0",
+        "semver": "^7.3.5"
+    }
 }

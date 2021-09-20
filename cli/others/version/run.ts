@@ -1,3 +1,4 @@
+import { run } from "../../runner";
 import { increment } from "./";
 
-increment();
+run(increment);
