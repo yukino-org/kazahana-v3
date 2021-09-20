@@ -21,9 +21,10 @@ jobs:
 
             - name: 🚧 Do prerequisites
               run: |
+                  flutter config --enable-windows-desktop
+                  flutter pub get
                   npm ci
                   npm run hive:generate
-                  flutter config --enable-windows-desktop
 
             - name: 🔨 Building binaries
               run: npm run windows:build
