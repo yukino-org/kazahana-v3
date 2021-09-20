@@ -1,5 +1,5 @@
-import { join, relative } from "path";
-import { readFile, rename, writeFile } from "fs-extra";
+import { dirname, join, relative } from "path";
+import { ensureDir, readFile, rename, writeFile } from "fs-extra";
 import readdirp from "readdirp";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
@@ -28,7 +28,7 @@ export const build = async () => {
         const key = match.slice(3, -3).trim();
         return context[key];
     });
-    console.log(rendered);
+
     await writeFile(builderGYml, rendered);
     logger.log(`Rendered ${builderGYml}`);
 
@@ -51,6 +51,7 @@ export const build = async () => {
     }
 
     const finalPath = join(config.linux.packed, outPath.basename);
+    await ensureDir(dirname(finalPath));
     await rename(outPath.fullPath, finalPath);
     logger.log(`AppImage created: ${finalPath}`);
 };
