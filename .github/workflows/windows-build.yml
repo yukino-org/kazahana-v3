@@ -17,8 +17,9 @@ jobs:
 
       - uses: subosito/flutter-action@v1.5.3
 
-      - name: 🚧 Generating necessary files
+      - name: 🚧 Do prerequisites
         run: |
+          npm ci
           npm run hive:generate
 
       - name: 🔨 Building binaries
@@ -30,12 +31,14 @@ jobs:
       - name: 📦 Packing as installer
         run: npm run windows:build:installer
 
-      - uses: actions/upload-artifact@v2
+      - name: 🚀 Upload zip
+        uses: actions/upload-artifact@v2
         with:
           name: windows-zip
           path: build/packed/*.zip
 
-      - uses: actions/upload-artifact@v2
+      - name: 🚀 Upload installer
+        uses: actions/upload-artifact@v2
         with:
           name: windows-installer
           path: build/packed/*.exe
