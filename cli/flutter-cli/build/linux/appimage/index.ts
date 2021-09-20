@@ -29,11 +29,24 @@ export const build = async () => {
         closeDelimiter: "}",
         delimiter: "%",
     });
+    console.log(rendered);
     await writeFile(builderGYml, rendered);
     logger.log(`Rendered ${builderGYml}`);
 
-    await promisifyChildProcess(await spawn("appimage-builder ", ["--recipe", `./${relative(config.base, builderGYml)}`, "--skip-tests"], config.base));
-    const outPath = (await readdirp.promise(config.base)).find(x => x.basename.endsWith(".AppImage"));
+    await promisifyChildProcess(
+        await spawn(
+            "appimage-builder ",
+            [
+                "--recipe",
+                `./${relative(config.base, builderGYml)}`,
+                "--skip-tests",
+            ],
+            config.base
+        )
+    );
+    const outPath = (await readdirp.promise(config.base)).find((x) =>
+        x.basename.endsWith(".AppImage")
+    );
     if (!outPath) {
         throw new Error("Failed to find generated appimage");
     }
@@ -41,4 +54,4 @@ export const build = async () => {
     const finalPath = join(config.linux.packed, outPath.basename);
     await rename(outPath.fullPath, finalPath);
     logger.log(`AppImage created: ${finalPath}`);
-}
+};
