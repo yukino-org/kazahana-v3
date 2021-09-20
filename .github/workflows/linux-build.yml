@@ -25,6 +25,7 @@ jobs:
                   sudo apt install -y ninja-build libgtk-3-dev python3-pip python3-setuptools desktop-file-utils libgdk-pixbuf2.0-dev strace fuse vlc libvlc-dev
                   sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
                   sudo chmod +x /usr/local/bin/appimagetool
+                  sudo pip3 install appimage-builder
                   flutter config --enable-linux-desktop
                   flutter pub get
                   npm ci
