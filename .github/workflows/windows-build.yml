@@ -38,10 +38,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windows-zip
-          path: build/packed/*.zip
+          path: build/packed/windows/*.zip
 
       - name: 🚀 Upload installer
         uses: actions/upload-artifact@v2
         with:
           name: windows-installer
-          path: build/packed/*.exe
+          path: build/packed/windows/*.exe
