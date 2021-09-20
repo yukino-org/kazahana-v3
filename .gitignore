@@ -27,7 +27,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 node_modules/
-package-lock.json
 installer.g.iss
 AppDir/
 appimage-builder-cache/
