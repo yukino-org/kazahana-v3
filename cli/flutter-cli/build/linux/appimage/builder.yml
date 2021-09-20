@@ -1,12 +1,12 @@
 version: 1
 AppDir:
-    path: { %- rootDir % }
+    path: "{{{ rootDir }}}"
     app_info:
         id: io.github.yukino-app
-        name: { %- appName % }
+        name: "{{{ appName }}}"
         icon: yukino_app
-        version: { %- version % }
-        exec: { %- primaryExe % }
+        version: "{{{ version }}}"
+        exec: "{{{ primaryExe }}}"
         exec_args: $@
     after_bundle:
         - rm -rf ./build/linux/x64/release/bundle/usr/share/icons

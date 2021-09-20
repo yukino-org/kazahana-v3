@@ -1,7 +1,6 @@
 import { join, relative } from "path";
-import { rename, writeFile } from "fs-extra";
+import { readFile, rename, writeFile } from "fs-extra";
 import readdirp from "readdirp";
-import ejs from "ejs";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
@@ -24,10 +23,10 @@ export const build = async () => {
         version: version,
     };
 
-    const rendered = await ejs.renderFile(builderYml, context, {
-        openDelimiter: "{",
-        closeDelimiter: "}",
-        delimiter: "%",
+    const template = (await readFile(builderYml)).toString();
+    const rendered = template.replace(/{{{.*?}}}/g, (match) => {
+        const key = match.slice(3, -3).trim();
+        return context[key];
     });
     console.log(rendered);
     await writeFile(builderGYml, rendered);
