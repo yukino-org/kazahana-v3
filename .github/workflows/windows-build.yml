@@ -1,47 +1,47 @@
 name: Windows (Zip & Installer)
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
+    build:
+        runs-on: windows-latest
 
-    steps:
-      - uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14.x
-          cache: npm
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14.x
+                  cache: npm
 
-      - uses: subosito/flutter-action@v1.5.3
-        with:
-          channel: beta
+            - uses: subosito/flutter-action@v1.5.3
+              with:
+                  channel: beta
 
-      - name: 🚧 Do prerequisites
-        run: |
-          npm ci
-          npm run hive:generate
-          flutter config --enable-windows-desktop
+            - name: 🚧 Do prerequisites
+              run: |
+                  npm ci
+                  npm run hive:generate
+                  flutter config --enable-windows-desktop
 
-      - name: 🔨 Building binaries
-        run: npm run windows:build
+            - name: 🔨 Building binaries
+              run: npm run windows:build
 
-      - name: 📦 Packing as zip
-        run: npm run windows:build:zip
+            - name: 📦 Packing as zip
+              run: npm run windows:build:zip
 
-      - name: 📦 Packing as installer
-        run: npm run windows:build:installer
+            - name: 📦 Packing as installer
+              run: npm run windows:build:installer
 
-      - name: 🚀 Upload zip
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-zip
-          path: build/packed/windows/*.zip
+            - name: 🚀 Upload zip
+              uses: actions/upload-artifact@v2
+              with:
+                  name: windows-zip
+                  path: build/packed/windows/*.zip
 
-      - name: 🚀 Upload installer
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-installer
-          path: build/packed/windows/*.exe
+            - name: 🚀 Upload installer
+              uses: actions/upload-artifact@v2
+              with:
+                  name: windows-installer
+                  path: build/packed/windows/*.exe

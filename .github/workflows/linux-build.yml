@@ -1,0 +1,41 @@
+name: Linux (AppImage)
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14.x
+                  cache: npm
+
+            - uses: subosito/flutter-action@v1.5.3
+              with:
+                  channel: beta
+
+            - name: 🚧 Do prerequisites
+              run: |
+                  sudo apt install -y python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
+                  sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+                  sudo chmod +x /usr/local/bin/appimagetool
+                  npm ci
+                  npm run hive:generate
+                  flutter config --enable-linux-desktop
+
+            - name: 🔨 Building binaries
+              run: npm run linux:build
+
+            - name: 📦 Packing as appimage
+              run: npm run linux:build:appimage
+
+            - name: 🚀 Upload appimage
+              uses: actions/upload-artifact@v2
+              with:
+                  name: linux-appimage
+                  path: build/packed/linux/*.AppImage
