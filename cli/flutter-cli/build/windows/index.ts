@@ -11,6 +11,7 @@ const logger = new Logger("build:windows");
 
 export const build = async () => {
     await promisifyChildProcess(await spawn("flutter", ["build", "windows"], config.base));
+    logger.log(`Generated binaries at ${buildDir}`);
 
     const dllDir = join(__dirname, "dlls");
     for (const file of await filesIn(dllDir)) {

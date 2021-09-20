@@ -1,4 +1,4 @@
-import { join, resolve } from "path";
+import { join } from "path";
 import { writeFile } from "fs-extra";
 import ejs from "ejs";
 import { spawn, promisifyChildProcess } from "../../../../spawn";

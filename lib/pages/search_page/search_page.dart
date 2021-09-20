@@ -10,8 +10,6 @@ import '../../core/models/page_args/anime_page.dart' as anime_page;
 import '../../core/models/page_args/manga_page.dart' as manga_page;
 import '../../core/models/page_args/search_page.dart' as search_page;
 import '../../plugins/database/database.dart';
-import '../../plugins/database/schemas/preferences/preferences.dart'
-    as preferences_schema;
 import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
@@ -88,8 +86,6 @@ class Page extends StatefulWidget {
 
 class _PageState extends State<Page> {
   LoadState state = LoadState.waiting;
-  final preferences_schema.PreferencesSchema preferences =
-      DataStore.preferences;
 
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
@@ -152,9 +148,10 @@ class _PageState extends State<Page> {
 
   void _setCurrentPreferredPlugin([final String? _pluginType]) {
     final String? pluginType =
-        _pluginType ?? preferences.lastSelectedSearchType;
+        _pluginType ?? DataStore.preferences.lastSelectedSearchType;
 
-    if (preferences.lastSelectedSearchType != null && pluginType != null) {
+    if (DataStore.preferences.lastSelectedSearchType != null &&
+        pluginType != null) {
       final extensions.ExtensionType? type =
           extensions.ExtensionType.values.firstWhereOrNull(
         (final extensions.ExtensionType x) => x.type == pluginType,
@@ -165,13 +162,13 @@ class _PageState extends State<Page> {
 
         switch (type) {
           case extensions.ExtensionType.anime:
-            ext = ExtensionsManager
-                .animes[preferences.lastSelectedSearchPlugins[pluginType]];
+            ext = ExtensionsManager.animes[
+                DataStore.preferences.lastSelectedSearchPlugins[pluginType]];
             break;
 
           case extensions.ExtensionType.manga:
-            ext = ExtensionsManager
-                .mangas[preferences.lastSelectedSearchPlugins[pluginType]];
+            ext = ExtensionsManager.mangas[
+                DataStore.preferences.lastSelectedSearchPlugins[pluginType]];
             break;
         }
 
@@ -219,13 +216,14 @@ class _PageState extends State<Page> {
             if (val != null) {
               setState(() {
                 currentPlugin = plugin;
-                preferences.lastSelectedSearchType = plugin.type.type;
-                preferences.lastSelectedSearchPlugins[
-                    preferences.lastSelectedSearchType!] = plugin.plugin.id;
+                DataStore.preferences.lastSelectedSearchType = plugin.type.type;
+                DataStore.preferences
+                        .lastSelectedSearchPlugins[plugin.type.type] =
+                    plugin.plugin.id;
                 Navigator.of(context).pop();
               });
 
-              await preferences.save();
+              await DataStore.preferences.save();
             }
           },
         ),

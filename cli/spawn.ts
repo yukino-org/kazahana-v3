@@ -37,6 +37,7 @@ export const spawn = async (cmd: string, args: string[], cwd: string) => {
     return crossSpawn(cmd, args, {
         stdio: "inherit",
         env: process.env,
-        cwd: cwd
+        cwd: cwd,
+        shell: true
     });
 }

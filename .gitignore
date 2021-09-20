@@ -29,3 +29,6 @@ app.*.map.json
 node_modules/
 package-lock.json
 installer.g.iss
+AppDir/
+appimage-builder-cache/
+builder.g.yml

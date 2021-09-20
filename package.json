@@ -17,11 +17,13 @@
     "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos.ts",
     "linux:icons": "ts-node ./cli/icons/linux/run.ts",
     "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux.ts",
+    "linux:build": "npm run linux:icons && ts-node ./cli/flutter-cli/build/linux/run.ts",
+    "linux:build:appimage": "ts-node ./cli/flutter-cli/build/linux/appimage/run.ts",
     "windows:icons": "ts-node ./cli/icons/windows/run.ts",
     "windows:run": "npm run windows:icons && ts-node ./cli/flutter-cli/run/windows.ts",
     "windows:build": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/run.ts",
-    "windows:build:installer": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/installer/run.ts",
-    "windows:build:zip": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/zip/run.ts"
+    "windows:build:installer": "ts-node ./cli/flutter-cli/build/windows/installer/run.ts",
+    "windows:build:zip": "ts-node ./cli/flutter-cli/build/windows/zip/run.ts"
   },
   "repository": {
     "type": "git",
@@ -54,6 +56,7 @@
     "fs-extra": "^10.0.0",
     "jimp": "^0.16.1",
     "png-to-ico": "^2.1.2",
+    "readdirp": "^3.6.0",
     "semver": "^7.3.5"
   }
 }

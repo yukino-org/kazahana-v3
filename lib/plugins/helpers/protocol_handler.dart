@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as p;
 import 'package:protocol_registry/protocol_registry.dart' as protocol_registry;
 import 'package:window_manager/window_manager.dart';
+import './assets.dart';
 import '../../config.dart';
 import '../router.dart';
 
@@ -20,11 +23,25 @@ abstract class ProtocolHandler {
       await registry.remove(scheme);
       await registry.add(scheme);
     } else if (Platform.isLinux) {
+      final File icon = File(
+        p.join(Platform.environment['HOME']!, '.icons/${Config.code}.png'),
+      );
+
+      if (await icon.exists() == false) {
+        await icon.create(recursive: true);
+
+        final ByteData image = await rootBundle.load(Assets.yukinoIcon);
+        await icon.writeAsBytes(
+          image.buffer.asUint8List(image.offsetInBytes, image.lengthInBytes),
+        );
+      }
+
       final protocol_registry.LinuxProtocolRegistry registry =
           protocol_registry.LinuxProtocolRegistry();
       final String entry = '''
 ${registry.getEntry(scheme)}
 Type=Application
+Icon=${Config.code}
 '''
           .trim();
 

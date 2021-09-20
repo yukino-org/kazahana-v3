@@ -1,0 +1,41 @@
+name: Windows (Zip & Installer)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: "npm"
+
+      - uses: subosito/flutter-action@v1.5.3
+
+      - name: 🚧 Generating necessary files
+        run: |
+          npm run hive:generate
+
+      - name: 🔨 Building binaries
+        run: npm run windows:build
+
+      - name: 📦 Packing as zip
+        run: npm run windows:build:zip
+
+      - name: 📦 Packing as installer
+        run: npm run windows:build:installer
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-zip
+          path: build/packed/*.zip
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-installer
+          path: build/packed/*.exe
