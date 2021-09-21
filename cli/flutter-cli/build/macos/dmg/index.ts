@@ -58,7 +58,7 @@ export const build = async () => {
                 "--app-drop-link 540 250",
                 "--hdiutil-quiet",
                 `"${out}"`,
-                `"${buildDir}""`,
+                `"${buildDir}"`,
             ],
             config.base
         )
