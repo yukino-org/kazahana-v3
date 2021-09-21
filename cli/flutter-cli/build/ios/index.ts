@@ -22,7 +22,7 @@ export const build = async () => {
     console.log(info.isFile());
 
     const zip = new AdmZip();
-    zip.addLocalFile(built);
+    zip.addLocalFolder(built, built.match(/[^\\/]+$/)![0]);
 
     const out = join(
         config.ios.packed,
