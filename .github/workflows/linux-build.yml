@@ -42,3 +42,4 @@ jobs:
               with:
                   name: linux-appimage
                   path: build/packed/linux/*.AppImage
+                  if-no-files-found: error

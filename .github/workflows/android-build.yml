@@ -37,3 +37,4 @@ jobs:
               with:
                   name: android-apk
                   path: build/packed/android/*.apk
+                  if-no-files-found: error

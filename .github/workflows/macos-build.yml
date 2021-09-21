@@ -38,3 +38,4 @@ jobs:
               with:
                   name: linux-appimage
                   path: build/packed/macos/*.dmg
+                  if-no-files-found: error

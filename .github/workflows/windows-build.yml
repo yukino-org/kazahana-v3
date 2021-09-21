@@ -40,9 +40,11 @@ jobs:
               with:
                   name: windows-zip
                   path: build/packed/windows/*.zip
+                  if-no-files-found: error
 
             - name: 🚀 Upload installer
               uses: actions/upload-artifact@v2
               with:
                   name: windows-installer
                   path: build/packed/windows/*.exe
+                  if-no-files-found: error

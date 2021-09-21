@@ -33,3 +33,4 @@ jobs:
               with:
                   name: ios-ipa
                   path: build/packed/ios/*.ipa
+                  if-no-files-found: error
