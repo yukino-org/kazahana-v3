@@ -14,6 +14,9 @@ const logger = new Logger("build:macos:dmg");
 export const build = async () => {
     const version = await getVersion();
 
+    console.log(
+        JSON.stringify(await (await import("readdirp")).promise(buildDir))
+    );
     await ensureDir(dirname(icns));
     await writeFile(
         icns,
@@ -52,7 +55,7 @@ export const build = async () => {
                 "--icon",
                 `"${config.code}.app"`,
                 "260",
-                "250",
+                "260",
                 "--hide-extension",
                 `"${config.code}.app"`,
                 "--app-drop-link 540 250",
