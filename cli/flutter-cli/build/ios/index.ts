@@ -5,21 +5,18 @@ import { config } from "../../../config";
 import { Logger } from "../../../logger";
 import { getVersion } from "../../../helpers/version";
 
-export const built = join(
-    config.base,
-    "build/app/outputs/flutter-apk/app-release.apk"
-);
+export const built = join(config.base, "build/ios/ipa/yukino_app.ipa");
 
-const logger = new Logger("build:android");
+const logger = new Logger("build:ios");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "apk"], config.base)
+        await spawn("flutter", ["build", "ipa"], config.base)
     );
 
     const out = join(
-        config.android.packed,
-        `${config.name} v${await getVersion()} Installer.apk`
+        config.ios.packed,
+        `${config.name} v${await getVersion()} Installer.ipa`
     );
     await ensureDir(dirname(out));
     await copyFile(built, out);
