@@ -13,6 +13,7 @@
         "android:build": "npm run android:icons && ts-node ./cli/flutter-cli/build/android/run.ts",
         "ios:icons": "ts-node ./cli/icons/ios/run.ts",
         "ios:run": "npm run ios:icons && ts-node ./cli/flutter-cli/run/ios/run.ts",
+        "ios:build": "npm run ios:icons && ts-node ./cli/flutter-cli/build/ios/run.ts",
         "macos:icons": "ts-node ./cli/icons/macos/run.ts",
         "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos/run.ts",
         "linux:icons": "ts-node ./cli/icons/linux/run.ts",
