@@ -1,5 +1,5 @@
 import { dirname, join } from "path";
-import { ensureDir, readFile, writeFile } from "fs-extra";
+import { ensureDir, readFile, writeFile, readdir } from "fs-extra";
 import * as png2icons from "png2icons";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
@@ -14,9 +14,7 @@ const logger = new Logger("build:macos:dmg");
 export const build = async () => {
     const version = await getVersion();
 
-    console.log(
-        JSON.stringify(await (await import("readdirp")).promise(buildDir))
-    );
+    console.log(JSON.stringify((await readdir(buildDir)).join(",")));
     await ensureDir(dirname(icns));
     await writeFile(
         icns,
