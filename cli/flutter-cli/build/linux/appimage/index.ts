@@ -1,6 +1,5 @@
-import { dirname, join, relative } from "path";
-import { ensureDir, readFile, rename, writeFile } from "fs-extra";
-import readdirp from "readdirp";
+import { basename, dirname, join, relative } from "path";
+import { ensureDir, readdir, readFile, rename, writeFile } from "fs-extra";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
@@ -43,15 +42,15 @@ export const build = async () => {
             config.base
         )
     );
-    const outPath = (await readdirp.promise(config.base)).find((x) =>
-        x.basename.endsWith(".AppImage")
+    const outPath = (await readdir(config.base)).find((x) =>
+        x.endsWith(".AppImage")
     );
     if (!outPath) {
         throw new Error("Failed to find generated appimage");
     }
 
-    const finalPath = join(config.linux.packed, outPath.basename);
+    const finalPath = join(config.linux.packed, basename(outPath));
     await ensureDir(dirname(finalPath));
-    await rename(outPath.fullPath, finalPath);
+    await rename(outPath, finalPath);
     logger.log(`AppImage created: ${finalPath}`);
 };

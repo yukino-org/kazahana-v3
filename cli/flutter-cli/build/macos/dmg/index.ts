@@ -1,5 +1,5 @@
-import { dirname, join } from "path";
-import { ensureDir, readFile, writeFile, readdir } from "fs-extra";
+import { basename, dirname, join } from "path";
+import { ensureDir, readFile, writeFile, readdir, rename } from "fs-extra";
 import * as png2icons from "png2icons";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
@@ -25,10 +25,7 @@ export const build = async () => {
     );
     logger.log(`Generated ${icns}`);
 
-    const out = join(
-        config.macos.packed,
-        `${config.name} v${version} Installer.dmg`
-    );
+    const outName = `${config.name} v${version} Installer.dmg`;
     await promisifyChildProcess(
         await spawn(
             "create-dmg",
@@ -57,12 +54,17 @@ export const build = async () => {
                 `"${config.name}.app"`,
                 "--app-drop-link 540 250",
                 "--hdiutil-quiet",
-                `"${out}"`,
+                `"${outName}"`,
                 `"${buildDir}"`,
             ],
             config.base
         )
     );
 
-    logger.log(`Dmg created: ${out}`);
+    console.log((await readdir(config.base)).join(","));
+
+    const finalPath = join(config.macos.packed, outName);
+    await ensureDir(dirname(finalPath));
+    await rename(join(config.base, outName), finalPath);
+    logger.log(`Dmg created: ${finalPath}`);
 };
