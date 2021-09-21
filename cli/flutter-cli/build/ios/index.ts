@@ -5,6 +5,7 @@ import { spawn, promisifyChildProcess } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 import { getVersion } from "../../../helpers/version";
+import { lstatSync } from "fs";
 
 export const built = join(config.base, "build/ios/iphoneos/Runner.app");
 
@@ -14,6 +15,11 @@ export const build = async () => {
     await promisifyChildProcess(
         await spawn("flutter", ["build", "ios", "--no-codesign"], config.base)
     );
+
+    const info = lstatSync(built);
+    console.log(lstatSync(built));
+    console.log(info.isDirectory());
+    console.log(info.isFile());
 
     const zip = new AdmZip();
     zip.addLocalFile(built);
