@@ -6,7 +6,10 @@ import { Logger } from "../../logger";
 
 const logger = new Logger("windows:icons");
 
-export const path = join(config.windows.project, `/runner/resources/app_icon.ico`);
+export const path = join(
+    config.windows.project,
+    `/runner/resources/app_icon.ico`
+);
 
 export const generate = async () => {
     const started = Date.now();
@@ -18,4 +21,4 @@ export const generate = async () => {
     logger.log(`Generated ${path}`);
 
     logger.log(`Completed in ${Date.now() - started}ms`);
-}
+};

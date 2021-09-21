@@ -20,7 +20,10 @@ export const generate = async () => {
     const original = await jimp.read(await getModified(config.android.icon));
 
     for (const size of sizes) {
-        const path = join(config.android.project, `/app/src/main/res/mipmap-${size[1]}/ic_launcher.png`);
+        const path = join(
+            config.android.project,
+            `/app/src/main/res/mipmap-${size[1]}/ic_launcher.png`
+        );
         const img = original.clone();
         img.quality(100);
         img.resize(size[0], size[0]);
@@ -29,4 +32,4 @@ export const generate = async () => {
     }
 
     logger.log(`Completed in ${Date.now() - started}ms`);
-}
+};

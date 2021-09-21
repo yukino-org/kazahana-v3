@@ -40,7 +40,7 @@ export const increment = async () => {
 
     const path = join(config.base, "pubspec.yaml");
     logger.log(`Path: ${path}`);
-    
+
     let pubspec = (await readFile(path)).toString();
 
     const parsedVersion = pubspec.match(matchRegex)?.[1];
@@ -66,5 +66,7 @@ export const increment = async () => {
         await writeFile(path, pubspec);
     }
 
-    logger.log(`Bumped from ${previousVersion} to ${newVersion} ${demo && "(Demo)"}`);
-}
+    logger.log(
+        `Bumped from ${previousVersion} to ${newVersion} ${demo && "(Demo)"}`
+    );
+};

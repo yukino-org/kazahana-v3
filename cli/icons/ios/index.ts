@@ -30,7 +30,10 @@ export const generate = async () => {
     const original = await jimp.read(await getModified(config.android.icon));
 
     for (const size of sizes) {
-        const path = join(config.ios.project, `/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-${size[0]}x${size[0]}@${size[1]}x.png`);
+        const path = join(
+            config.ios.project,
+            `/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-${size[0]}x${size[0]}@${size[1]}x.png`
+        );
         const px = size[0] * size[1];
 
         const img = original.clone();
@@ -41,4 +44,4 @@ export const generate = async () => {
     }
 
     logger.log(`Completed in ${Date.now() - started}ms`);
-}
+};

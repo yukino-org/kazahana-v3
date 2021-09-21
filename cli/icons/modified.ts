@@ -8,7 +8,10 @@ export interface GetModifiedOptions {
     imagePadding: number;
 }
 
-export const getModified = async (path: string, options: Partial<GetModifiedOptions> = {}): Promise<Buffer> => {
+export const getModified = async (
+    path: string,
+    options: Partial<GetModifiedOptions> = {}
+): Promise<Buffer> => {
     const {
         size = 1000,
         backgroundColor = "#FFF",
@@ -16,7 +19,7 @@ export const getModified = async (path: string, options: Partial<GetModifiedOpti
         borderPadding = 0,
         imagePadding = 160,
     } = options;
-    
+
     const image = canvas.createCanvas(size, size);
     const ctx = image.getContext("2d");
 
@@ -24,20 +27,50 @@ export const getModified = async (path: string, options: Partial<GetModifiedOpti
     ctx.beginPath();
     ctx.moveTo(borderPadding, borderPadding + borderRadius);
     ctx.lineTo(borderPadding, borderPadding + bgSize - borderRadius);
-    ctx.arcTo(borderPadding, borderPadding + bgSize, borderPadding + borderRadius, borderPadding + bgSize, borderRadius);
+    ctx.arcTo(
+        borderPadding,
+        borderPadding + bgSize,
+        borderPadding + borderRadius,
+        borderPadding + bgSize,
+        borderRadius
+    );
     ctx.lineTo(borderPadding + bgSize - borderRadius, borderPadding + bgSize);
-    ctx.arcTo(borderPadding + bgSize, borderPadding + bgSize, borderPadding + bgSize, borderPadding + bgSize - borderRadius, borderRadius);
+    ctx.arcTo(
+        borderPadding + bgSize,
+        borderPadding + bgSize,
+        borderPadding + bgSize,
+        borderPadding + bgSize - borderRadius,
+        borderRadius
+    );
     ctx.lineTo(borderPadding + bgSize, borderPadding + borderRadius);
-    ctx.arcTo(borderPadding + bgSize, borderPadding, borderPadding + bgSize - borderRadius, borderPadding, borderRadius);
+    ctx.arcTo(
+        borderPadding + bgSize,
+        borderPadding,
+        borderPadding + bgSize - borderRadius,
+        borderPadding,
+        borderRadius
+    );
     ctx.lineTo(borderPadding + borderRadius, borderPadding);
-    ctx.arcTo(borderPadding, borderPadding, borderPadding, borderPadding + borderRadius, borderRadius);
+    ctx.arcTo(
+        borderPadding,
+        borderPadding,
+        borderPadding,
+        borderPadding + borderRadius,
+        borderRadius
+    );
 
     ctx.fillStyle = backgroundColor;
     ctx.fill();
     ctx.closePath();
 
-    const iconSize = size - (imagePadding * 2);
-    ctx.drawImage(await canvas.loadImage(path), imagePadding, imagePadding, iconSize, iconSize);
+    const iconSize = size - imagePadding * 2;
+    ctx.drawImage(
+        await canvas.loadImage(path),
+        imagePadding,
+        imagePadding,
+        iconSize,
+        iconSize
+    );
 
     return image.toBuffer();
-}
+};

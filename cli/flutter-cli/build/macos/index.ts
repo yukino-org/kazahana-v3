@@ -8,6 +8,8 @@ export const buildDir = join(config.base, "build/windows/runner/Release");
 const logger = new Logger("build:macos");
 
 export const build = async () => {
-    await promisifyChildProcess(await spawn("flutter", ["build", "macos"], config.base));
+    await promisifyChildProcess(
+        await spawn("flutter", ["build", "macos"], config.base)
+    );
     logger.log(`Generated binaries at ${buildDir}`);
-}
+};

@@ -5,4 +5,4 @@ export const run = async (fn: () => Promise<void>) => {
         console.error(err);
         process.exit(1);
     }
-}
+};
