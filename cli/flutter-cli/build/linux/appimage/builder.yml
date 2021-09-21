@@ -4,7 +4,7 @@ AppDir:
     app_info:
         id: io.github.yukino-app
         name: "{{{ appName }}}"
-        icon: yukino_app
+        icon: "{{{ primaryExe }}}"
         version: "{{{ version }}}"
         exec: "{{{ primaryExe }}}"
         exec_args: $@

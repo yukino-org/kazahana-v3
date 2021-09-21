@@ -7,6 +7,7 @@ const buildDir = join(root, "build", "packed");
 
 export const config = {
     name: "Yukino",
+    code: "yukino_app",
     url: "https://yukino-app.github.io",
     base: root,
     android: {
@@ -34,4 +35,4 @@ export const config = {
         icon: defaultIcon,
         packed: join(buildDir, "windows"),
     },
-}
+};

@@ -5,7 +5,10 @@ import { Logger } from "../../logger";
 import { config } from "../../config";
 import { buildDir } from "../../flutter-cli/build/linux/appimage";
 
-export const path = join(buildDir, "usr/share/icons/hicolor/256x256/apps/yukino_app.png");
+export const path = join(
+    buildDir,
+    `usr/share/icons/hicolor/256x256/apps/${config.code}.png`
+);
 
 const logger = new Logger("linux:icons");
 const size = 256;
@@ -18,4 +21,4 @@ export const generate = async () => {
 
     await img.writeAsync(path);
     logger.log(`Generated ${path}`);
-}
+};

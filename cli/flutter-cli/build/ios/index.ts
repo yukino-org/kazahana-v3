@@ -16,11 +16,6 @@ export const build = async () => {
         await spawn("flutter", ["build", "ios", "--no-codesign"], config.base)
     );
 
-    const info = lstatSync(built);
-    console.log(lstatSync(built));
-    console.log(info.isDirectory());
-    console.log(info.isFile());
-
     const zip = new AdmZip();
     zip.addLocalFolder(built, built.match(/[^\\/]+$/)![0]);
 

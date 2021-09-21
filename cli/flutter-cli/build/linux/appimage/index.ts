@@ -8,7 +8,7 @@ import { config } from "../../../../config";
 
 export const buildDir = join(config.base, "build/linux/x64/release/bundle");
 
-const logger = new Logger("build:linux:builder");
+const logger = new Logger("build:linux:appimage");
 
 const builderYml = join(__dirname, "builder.yml");
 const builderGYml = join(__dirname, "builder.g.yml");
@@ -18,7 +18,7 @@ export const build = async () => {
 
     const context: Record<string, string> = {
         rootDir: `./${relative(config.base, buildDir)}`,
-        primaryExe: "yukino_app",
+        primaryExe: config.code,
         appName: config.name,
         version: version,
     };

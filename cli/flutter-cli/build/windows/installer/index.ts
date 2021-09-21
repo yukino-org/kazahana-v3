@@ -18,7 +18,7 @@ export const build = async () => {
 
     const context: Record<string, string> = {
         rootDir: buildDir,
-        primaryExe: "yukino_app.exe",
+        primaryExe: `${config.code}.exe`,
         outputDir: config.windows.packed,
         setupName: `${config.name} v${version} Setup`,
         appName: config.name,
@@ -35,6 +35,13 @@ export const build = async () => {
     await writeFile(installerGIss, rendered);
     logger.log(`Rendered ${installerIss}`);
 
-    await promisifyChildProcess(await spawn("iscc ", [installerGIss], config.base));
-    logger.log(`Installer created: ${join(context.outputDir, `${context.setupName}.exe`)}`);
-}
+    await promisifyChildProcess(
+        await spawn("iscc ", [installerGIss], config.base)
+    );
+    logger.log(
+        `Installer created: ${join(
+            context.outputDir,
+            `${context.setupName}.exe`
+        )}`
+    );
+};

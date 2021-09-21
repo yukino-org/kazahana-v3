@@ -4,15 +4,7 @@ import { config } from "../../config";
 import { Logger } from "../../logger";
 
 const logger = new Logger("macos:icons");
-const sizes: number[] = [
-    16,
-    32,
-    64,
-    128,
-    256,
-    512,
-    1024,
-];
+const sizes: number[] = [16, 32, 64, 128, 256, 512, 1024];
 
 export const generate = async () => {
     const started = Date.now();
@@ -21,8 +13,11 @@ export const generate = async () => {
     const original = await jimp.read(config.macos.icon);
 
     for (const size of sizes) {
-        const path = join(config.macos.project, `/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_${size}.png`);
-        
+        const path = join(
+            config.macos.project,
+            `/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_${size}.png`
+        );
+
         const img = original.clone();
         img.quality(100);
         img.resize(size, size);
@@ -31,4 +26,4 @@ export const generate = async () => {
     }
 
     logger.log(`Completed in ${Date.now() - started}ms`);
-}
+};

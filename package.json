@@ -16,6 +16,8 @@
         "ios:build": "npm run ios:icons && ts-node ./cli/flutter-cli/build/ios/run.ts",
         "macos:icons": "ts-node ./cli/icons/macos/run.ts",
         "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos/run.ts",
+        "macos:build": "npm run macos:icons && ts-node ./cli/flutter-cli/build/macos/run.ts",
+        "macos:build:dmg": "npm run macos:icons && ts-node ./cli/flutter-cli/build/macos/dmg/run.ts",
         "linux:icons": "ts-node ./cli/icons/linux/run.ts",
         "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux/run.ts",
         "linux:build": "npm run linux:icons && ts-node ./cli/flutter-cli/build/linux/run.ts",
@@ -57,6 +59,7 @@
         "fs-extra": "^10.0.0",
         "jimp": "^0.16.1",
         "png-to-ico": "^2.1.2",
+        "png2icons": "^2.0.1",
         "readdirp": "^3.6.0",
         "semver": "^7.3.5"
     }
