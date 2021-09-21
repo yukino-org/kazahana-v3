@@ -36,6 +36,6 @@ jobs:
             - name: 🚀 Upload dmg
               uses: actions/upload-artifact@v2
               with:
-                  name: linux-appimage
+                  name: macos-dmg
                   path: build/packed/macos/*.dmg
                   if-no-files-found: error
