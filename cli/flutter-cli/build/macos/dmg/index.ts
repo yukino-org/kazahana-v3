@@ -1,6 +1,6 @@
-import { join } from "path";
-import { readFile, writeFile } from "fs-extra";
-import png2icons from "png2icons";
+import { dirname, join } from "path";
+import { ensureDir, readFile, writeFile } from "fs-extra";
+import * as png2icons from "png2icons";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
@@ -14,6 +14,7 @@ const logger = new Logger("build:macos:dmg");
 export const build = async () => {
     const version = await getVersion();
 
+    await ensureDir(dirname(icns));
     await writeFile(
         icns,
         png2icons.createICNS(
@@ -22,6 +23,7 @@ export const build = async () => {
             256
         )
     );
+    logger.log(`Generated ${icns}`);
 
     const out = join(
         config.macos.packed,
