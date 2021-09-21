@@ -1,4 +1,4 @@
-name: Android (Apk)
+name: iOS (Ipa)
 
 on:
     workflow_dispatch:
