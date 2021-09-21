@@ -11,7 +11,7 @@ const logger = new Logger("build:ios");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "ipa"], config.base)
+        await spawn("flutter", ["build", "ipa", "--no-codesign"], config.base)
     );
 
     const out = join(
