@@ -27,10 +27,10 @@ jobs:
                   npm run hive:generate
 
             - name: 🔨 Building binaries
-              run: npm run linux:macos
+              run: npm run macos:build
 
             - name: 📦 Packing as dmg
-              run: npm run linux:macos:dmg
+              run: npm run macos:build:dmg
 
             - name: 🚀 Upload dmg
               uses: actions/upload-artifact@v2
