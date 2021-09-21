@@ -18,8 +18,7 @@ class PreferencesSchemaAdapter extends TypeAdapter<PreferencesSchema> {
     };
     return PreferencesSchema(
       lastSelectedSearchType: fields[2] as String?,
-      lastSelectedSearchPlugins:
-          fields[3] == null ? {} : (fields[3] as Map).cast<String, String>(),
+      lastSelectedSearchPlugins: (fields[3] as Map?)?.cast<String, String>(),
     );
   }
 

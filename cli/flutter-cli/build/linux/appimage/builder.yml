@@ -30,10 +30,6 @@ AppDir:
             - libgtk-3-0
             - vlc
         exclude: []
-#            - humanity-icon-theme
-#            - hicolor-icon-theme
-#            - adwaita-icon-theme
-#            - ubuntu-mono
     files:
         exclude:
             - usr/share/man

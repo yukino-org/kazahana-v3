@@ -157,18 +157,19 @@ class _PageState extends State<Page> {
         (final extensions.ExtensionType x) => x.type == pluginType,
       );
 
-      if (type != null) {
+      if (type != null &&
+          DataStore.preferences.lastSelectedSearchPlugins != null) {
         extensions.BaseExtractor? ext;
 
         switch (type) {
           case extensions.ExtensionType.anime:
             ext = ExtensionsManager.animes[
-                DataStore.preferences.lastSelectedSearchPlugins[pluginType]];
+                DataStore.preferences.lastSelectedSearchPlugins![pluginType]];
             break;
 
           case extensions.ExtensionType.manga:
             ext = ExtensionsManager.mangas[
-                DataStore.preferences.lastSelectedSearchPlugins[pluginType]];
+                DataStore.preferences.lastSelectedSearchPlugins![pluginType]];
             break;
         }
 
@@ -217,8 +218,10 @@ class _PageState extends State<Page> {
               setState(() {
                 currentPlugin = plugin;
                 DataStore.preferences.lastSelectedSearchType = plugin.type.type;
+                DataStore.preferences.lastSelectedSearchPlugins ??=
+                    <String, String>{};
                 DataStore.preferences
-                        .lastSelectedSearchPlugins[plugin.type.type] =
+                        .lastSelectedSearchPlugins![plugin.type.type] =
                     plugin.plugin.id;
                 Navigator.of(context).pop();
               });
