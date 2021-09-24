@@ -669,15 +669,22 @@ class WatchPageState extends State<WatchPage>
     );
   }
 
-  void _updateMouseOverlay() {
+  void _updateMouseOverlay({
+    final bool isTap = false,
+    final bool isMouse = false,
+  }) {
+    _mouseOverlayTimer?.cancel();
+
     if (!showControls) {
       overlayController.forward();
-    }
 
-    _mouseOverlayTimer?.cancel();
-    _mouseOverlayTimer = Timer(MiscSettings.mouseOverlayDuration, () {
+      _mouseOverlayTimer = Timer(MiscSettings.mouseOverlayDuration, () {
+        overlayController.reverse();
+      });
+    } else if (isTap) {
       overlayController.reverse();
-    });
+      return;
+    }
   }
 
   @override
@@ -702,6 +709,7 @@ class WatchPageState extends State<WatchPage>
         final Widget? child,
       ) =>
           IconButton(
+        padding: EdgeInsets.zero,
         color: Colors.white,
         onPressed: () {
           if (isFullscreened) {
@@ -731,15 +739,17 @@ class WatchPageState extends State<WatchPage>
       type: MaterialType.transparency,
       child: MouseRegion(
         onEnter: (final PointerEnterEvent event) {
-          _updateMouseOverlay();
+          _updateMouseOverlay(isMouse: true);
         },
         onHover: (final PointerHoverEvent event) {
-          _updateMouseOverlay();
+          if (event.kind == PointerDeviceKind.mouse) {
+            _updateMouseOverlay(isMouse: true);
+          }
         },
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            _updateMouseOverlay();
+            _updateMouseOverlay(isTap: true);
           },
           child: Stack(
             children: <Widget>[
@@ -1036,123 +1046,135 @@ class WatchPageState extends State<WatchPage>
                                                         .nextEpisodeEnabled,
                                                   ),
                                                 ),
-                                                if (playerChild == null)
-                                                  fullscreenBtn,
                                               ],
                                               2,
                                             ),
                                           ),
-                                          if (playerChild == null)
-                                            SizedBox(
-                                              height: remToPx(0.5),
-                                            )
-                                          else
-                                            ValueListenableBuilder<
-                                                VideoDuration>(
-                                              valueListenable: duration,
-                                              builder: (
-                                                final BuildContext context,
-                                                final VideoDuration duration,
-                                                final Widget? child,
-                                              ) =>
-                                                  Row(
-                                                children: <Widget>[
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                      minWidth: remToPx(1.8),
+                                          ValueListenableBuilder<VideoDuration>(
+                                            valueListenable: duration,
+                                            builder: (
+                                              final BuildContext context,
+                                              final VideoDuration duration,
+                                              final Widget? child,
+                                            ) =>
+                                                Row(
+                                              children: <Widget>[
+                                                Container(
+                                                  constraints: BoxConstraints(
+                                                    minWidth: remToPx(1.8),
+                                                  ),
+                                                  child: Text(
+                                                    DurationUtils.pretty(
+                                                      duration.current,
                                                     ),
-                                                    child: Text(
-                                                      DurationUtils.pretty(
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: SliderTheme(
+                                                    data: SliderThemeData(
+                                                      thumbShape:
+                                                          RoundSliderThumbShape(
+                                                        enabledThumbRadius:
+                                                            remToPx(0.3),
+                                                      ),
+                                                      showValueIndicator:
+                                                          ShowValueIndicator
+                                                              .always,
+                                                      thumbColor: playerChild ==
+                                                              null
+                                                          ? Colors.white
+                                                              .withOpacity(0.5)
+                                                          : null,
+                                                    ),
+                                                    child: Slider(
+                                                      label:
+                                                          DurationUtils.pretty(
                                                         duration.current,
                                                       ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                      ),
+                                                      value: duration
+                                                          .current.inSeconds
+                                                          .toDouble(),
+                                                      max: duration
+                                                          .total.inSeconds
+                                                          .toDouble(),
+                                                      onChanged: playerChild !=
+                                                              null
+                                                          ? (
+                                                              final double
+                                                                  value,
+                                                            ) {
+                                                              this
+                                                                      .duration
+                                                                      .value =
+                                                                  VideoDuration(
+                                                                Duration(
+                                                                  seconds: value
+                                                                      .toInt(),
+                                                                ),
+                                                                duration.total,
+                                                              );
+                                                            }
+                                                          : null,
+                                                      onChangeStart:
+                                                          playerChild != null
+                                                              ? (
+                                                                  final double
+                                                                      value,
+                                                                ) {
+                                                                  if (player
+                                                                          ?.isPlaying ??
+                                                                      false) {
+                                                                    player!
+                                                                        .pause();
+                                                                    wasPausedBySlider =
+                                                                        true;
+                                                                  }
+                                                                }
+                                                              : null,
+                                                      onChangeEnd:
+                                                          playerChild != null
+                                                              ? (
+                                                                  final double
+                                                                      value,
+                                                                ) async {
+                                                                  if (player
+                                                                          ?.ready ??
+                                                                      false) {
+                                                                    await player!
+                                                                        .seek(
+                                                                      Duration(
+                                                                        seconds:
+                                                                            value.toInt(),
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                }
+                                                              : null,
                                                     ),
                                                   ),
-                                                  Expanded(
-                                                    child: SliderTheme(
-                                                      data: SliderThemeData(
-                                                        thumbShape:
-                                                            RoundSliderThumbShape(
-                                                          enabledThumbRadius:
-                                                              remToPx(0.3),
-                                                        ),
-                                                        showValueIndicator:
-                                                            ShowValueIndicator
-                                                                .always,
-                                                      ),
-                                                      child: Slider(
-                                                        label: DurationUtils
-                                                            .pretty(
-                                                          duration.current,
-                                                        ),
-                                                        value: duration
-                                                            .current.inSeconds
-                                                            .toDouble(),
-                                                        max: duration
-                                                            .total.inSeconds
-                                                            .toDouble(),
-                                                        onChanged: (
-                                                          final double value,
-                                                        ) {
-                                                          this.duration.value =
-                                                              VideoDuration(
-                                                            Duration(
-                                                              seconds:
-                                                                  value.toInt(),
-                                                            ),
-                                                            duration.total,
-                                                          );
-                                                        },
-                                                        onChangeStart: (
-                                                          final double value,
-                                                        ) {
-                                                          if (player
-                                                                  ?.isPlaying ??
-                                                              false) {
-                                                            player!.pause();
-                                                            wasPausedBySlider =
-                                                                true;
-                                                          }
-                                                        },
-                                                        onChangeEnd: (
-                                                          final double value,
-                                                        ) async {
-                                                          if (player?.ready ??
-                                                              false) {
-                                                            await player!.seek(
-                                                              Duration(
-                                                                seconds: value
-                                                                    .toInt(),
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      ),
+                                                ),
+                                                ConstrainedBox(
+                                                  constraints: BoxConstraints(
+                                                    minWidth: remToPx(1.8),
+                                                  ),
+                                                  child: Text(
+                                                    DurationUtils.pretty(
+                                                      duration.total,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
                                                     ),
                                                   ),
-                                                  ConstrainedBox(
-                                                    constraints: BoxConstraints(
-                                                      minWidth: remToPx(1.8),
-                                                    ),
-                                                    child: Text(
-                                                      DurationUtils.pretty(
-                                                        duration.total,
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  fullscreenBtn,
-                                                ],
-                                              ),
-                                            )
+                                                ),
+                                                fullscreenBtn,
+                                              ],
+                                            ),
+                                          )
                                         ],
                                       ),
                                     ),

@@ -115,6 +115,8 @@ Future<ResolvedTrackerItem<anilist.MediaList>> Function(
       );
     };
 
+bool isLoggedIn() => anilist.AnilistManager.auth.isValidToken();
+
 bool isEnabled(final String title, final String plugin) =>
     !DataBox.cache.containsKey('anilist-anime-$title-$plugin-disabled');
 
@@ -201,6 +203,7 @@ final TrackerProvider<AnimeProgress, anilist.MediaList> anime =
       }
     }
   },
+  isLoggedIn: isLoggedIn,
   isEnabled: isEnabled,
   setEnabled: setEnabled,
   getDetailedPage: getDetailedPage,
@@ -260,6 +263,7 @@ final TrackerProvider<MangaProgress, anilist.MediaList> manga =
       }
     }
   },
+  isLoggedIn: isLoggedIn,
   isEnabled: isEnabled,
   setEnabled: setEnabled,
   getDetailedPage: getDetailedPage,

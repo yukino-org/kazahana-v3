@@ -62,6 +62,7 @@ class TrackerProvider<P extends BaseProgress, T extends Object> {
     required final this.getComputables,
     required final this.resolveComputed,
     required final this.updateComputed,
+    required final this.isLoggedIn,
     required final this.isEnabled,
     required final this.setEnabled,
     required final this.getDetailedPage,
@@ -81,10 +82,12 @@ class TrackerProvider<P extends BaseProgress, T extends Object> {
   ) resolveComputed;
   final Future<void> Function(ResolvedTrackerItem<dynamic> item, P progress)
       updateComputed;
+  final bool Function() isLoggedIn;
   final bool Function(String title, String plugin) isEnabled;
   final Future<void> Function(String title, String plugin, bool isEnabled)
       setEnabled;
-  final Widget Function(BuildContext context, ResolvedTrackerItem<dynamic> item) getDetailedPage;
+  final Widget Function(BuildContext context, ResolvedTrackerItem<dynamic> item)
+      getDetailedPage;
   final bool Function(
     ResolvedTrackerItem<T> current,
     ResolvedTrackerItem<dynamic> unknown,
