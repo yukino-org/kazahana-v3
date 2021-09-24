@@ -1,6 +1,9 @@
 name: Linux (AppImage)
 
 on:
+    push:
+        branches:
+            - stable
     workflow_dispatch:
 
 jobs:

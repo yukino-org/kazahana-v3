@@ -1,6 +1,9 @@
 name: iOS (Ipa)
 
 on:
+    push:
+        branches:
+            - stable
     workflow_dispatch:
 
 jobs:

@@ -1,6 +1,9 @@
 name: Android (Apk)
 
 on:
+    push:
+        branches:
+            - stable
     workflow_dispatch:
 
 jobs:
