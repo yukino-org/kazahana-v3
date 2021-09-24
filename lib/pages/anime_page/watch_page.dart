@@ -711,15 +711,6 @@ class WatchPageState extends State<WatchPage>
       color: Colors.white,
     );
 
-    // Material(
-    //                             type: MaterialType.transparency,
-    //                             child: Center(
-    //                               child: Text(
-    //                                 Translator.t.noValidSources(),
-    //                               ),
-    //                             ),
-    //                           )
-
     return Material(
       type: MaterialType.transparency,
       child: MouseRegion(

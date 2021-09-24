@@ -260,20 +260,14 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                 }
                               }
                             : null,
-                        // TODO: check on desktop
-                        icon: Padding(
-                          padding: EdgeInsets.only(
-                              // bottom: remToPx(0.1),
-                              ),
-                          child: Icon(
-                            <ExtensionState>[
-                              ExtensionState.install,
-                              ExtensionState.installing,
-                            ].contains(status)
-                                ? Icons.add
-                                : Icons.delete,
-                            size: Theme.of(context).textTheme.button?.fontSize,
-                          ),
+                        icon: Icon(
+                          <ExtensionState>[
+                            ExtensionState.install,
+                            ExtensionState.installing,
+                          ].contains(status)
+                              ? Icons.add
+                              : Icons.delete,
+                          size: Theme.of(context).textTheme.button?.fontSize,
                         ),
                         label: Text(
                           status == ExtensionState.install
@@ -288,10 +282,6 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                           side: BorderSide.none,
                           primary: Colors.white,
                           backgroundColor: Theme.of(context).primaryColor,
-                          // TODO: check padding on desktops
-                          // padding: EdgeInsets.symmetric(
-                          //   vertical: remToPx(0.6),
-                          // ),
                         ),
                       ),
                     ),

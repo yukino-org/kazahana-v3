@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-// Pending at https://github.com/flutter/flutter/issues/30735
+// TODO: Pending at https://github.com/flutter/flutter/issues/30735
 class _AppLifecycleObserver extends WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(final AppLifecycleState state) {
-    // Save window state in desktop
+    // TODO: Save window state in desktop
   }
 }
 
