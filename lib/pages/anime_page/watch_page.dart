@@ -311,9 +311,11 @@ class WatchPageState extends State<WatchPage>
         final Animation<double> a1,
         final Animation<double> a2,
       ) =>
-          SelectSourceWidget(
-        sources: sources!,
-        selected: currentIndex != null ? sources![currentIndex!] : null,
+          SafeArea(
+        child: SelectSourceWidget(
+          sources: sources!,
+          selected: currentIndex != null ? sources![currentIndex!] : null,
+        ),
       ),
     );
 
@@ -387,65 +389,73 @@ class WatchPageState extends State<WatchPage>
                                 final BuildContext context,
                                 final StateSetter setState,
                               ) =>
-                                  Dialog(
-                                child: Row(
-                                  children: <Widget>[
-                                    IconButton(
-                                      icon: const Icon(Icons.volume_mute),
-                                      onPressed: () {
-                                        player?.setVolume(
-                                          player_model.Player.minVolume,
-                                        );
-                                        volume = player_model.Player.minVolume;
-                                        setState(() {});
-                                      },
-                                    ),
-                                    Expanded(
-                                      child: Wrap(
-                                        children: <Widget>[
-                                          SliderTheme(
-                                            data: SliderThemeData(
-                                              thumbShape: RoundSliderThumbShape(
-                                                enabledThumbRadius:
-                                                    remToPx(0.4),
-                                              ),
-                                              showValueIndicator:
-                                                  ShowValueIndicator.always,
-                                            ),
-                                            child: Slider(
-                                              label: '$volume%',
-                                              value: volume.toDouble(),
-                                              min: player_model.Player.minVolume
-                                                  .toDouble(),
-                                              max: player_model.Player.maxVolume
-                                                  .toDouble(),
-                                              onChanged: (final double value) {
-                                                volume = value.toInt();
-                                                setState(() {});
-                                              },
-                                              onChangeEnd:
-                                                  (final double value) {
-                                                player?.setVolume(
-                                                  value.toInt(),
-                                                );
-                                                setState(() {});
-                                              },
-                                            ),
-                                          ),
-                                        ],
+                                  SafeArea(
+                                child: Dialog(
+                                  child: Row(
+                                    children: <Widget>[
+                                      IconButton(
+                                        icon: const Icon(Icons.volume_mute),
+                                        onPressed: () {
+                                          player?.setVolume(
+                                            player_model.Player.minVolume,
+                                          );
+                                          volume =
+                                              player_model.Player.minVolume;
+                                          setState(() {});
+                                        },
                                       ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.volume_up),
-                                      onPressed: () {
-                                        player?.setVolume(
-                                          player_model.Player.maxVolume,
-                                        );
-                                        volume = player_model.Player.maxVolume;
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ],
+                                      Expanded(
+                                        child: Wrap(
+                                          children: <Widget>[
+                                            SliderTheme(
+                                              data: SliderThemeData(
+                                                thumbShape:
+                                                    RoundSliderThumbShape(
+                                                  enabledThumbRadius:
+                                                      remToPx(0.4),
+                                                ),
+                                                showValueIndicator:
+                                                    ShowValueIndicator.always,
+                                              ),
+                                              child: Slider(
+                                                label: '$volume%',
+                                                value: volume.toDouble(),
+                                                min: player_model
+                                                    .Player.minVolume
+                                                    .toDouble(),
+                                                max: player_model
+                                                    .Player.maxVolume
+                                                    .toDouble(),
+                                                onChanged:
+                                                    (final double value) {
+                                                  volume = value.toInt();
+                                                  setState(() {});
+                                                },
+                                                onChangeEnd:
+                                                    (final double value) {
+                                                  player?.setVolume(
+                                                    value.toInt(),
+                                                  );
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.volume_up),
+                                        onPressed: () {
+                                          player?.setVolume(
+                                            player_model.Player.maxVolume,
+                                          );
+                                          volume =
+                                              player_model.Player.maxVolume;
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -699,31 +709,6 @@ class WatchPageState extends State<WatchPage>
         locked ? Icons.lock : Icons.lock_open,
       ),
       color: Colors.white,
-    );
-
-    final Widget fullscreenBtn = ValueListenableBuilder<bool>(
-      valueListenable: isFullscreened,
-      builder: (
-        final BuildContext builder,
-        final bool isFullscreened,
-        final Widget? child,
-      ) =>
-          IconButton(
-        padding: EdgeInsets.zero,
-        color: Colors.white,
-        onPressed: () {
-          if (isFullscreened) {
-            widget.onIgnoreAutoFullscreenChange(true);
-            exitFullscreen();
-          } else {
-            widget.onIgnoreAutoFullscreenChange(false);
-            enterFullscreen();
-          }
-        },
-        icon: Icon(
-          isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
-        ),
-      ),
     );
 
     // Material(
@@ -1171,7 +1156,45 @@ class WatchPageState extends State<WatchPage>
                                                     ),
                                                   ),
                                                 ),
-                                                fullscreenBtn,
+                                                SizedBox(
+                                                  width: remToPx(0.5),
+                                                ),
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable:
+                                                      isFullscreened,
+                                                  builder: (
+                                                    final BuildContext builder,
+                                                    final bool isFullscreened,
+                                                    final Widget? child,
+                                                  ) =>
+                                                      Material(
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        if (isFullscreened) {
+                                                          widget
+                                                              .onIgnoreAutoFullscreenChange(
+                                                            true,
+                                                          );
+                                                          exitFullscreen();
+                                                        } else {
+                                                          widget
+                                                              .onIgnoreAutoFullscreenChange(
+                                                            false,
+                                                          );
+                                                          enterFullscreen();
+                                                        }
+                                                      },
+                                                      child: Icon(
+                                                        isFullscreened
+                                                            ? Icons
+                                                                .fullscreen_exit
+                                                            : Icons.fullscreen,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           )

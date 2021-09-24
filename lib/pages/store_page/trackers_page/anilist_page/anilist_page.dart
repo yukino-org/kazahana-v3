@@ -108,24 +108,36 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       ],
     );
 
-    final Widget right = TextButton(
-      style: TextButton.styleFrom(
-        primary: Colors.white,
-        backgroundColor: Colors.red[400],
-        elevation: 2,
-      ),
-      onPressed: () async {
-        await anilist.AnilistManager.auth.deleteToken();
+    final Widget right = Material(
+      type: MaterialType.transparency,
+      elevation: 2,
+      color: Colors.white,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.red[400],
+          borderRadius: BorderRadius.circular(remToPx(0.2)),
+        ),
+        child: InkWell(
+          onTap: () async {
+            await anilist.AnilistManager.auth.deleteToken();
 
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-      },
-      child: Text(
-        Translator.t.logOut(),
-        style: Theme.of(context).textTheme.bodyText1?.copyWith(
-              color: Colors.white,
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: remToPx(0.5),
+              vertical: remToPx(0.2),
             ),
+            child: Text(
+              Translator.t.logOut(),
+              style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                    color: Colors.white,
+                  ),
+            ),
+          ),
+        ),
       ),
     );
 

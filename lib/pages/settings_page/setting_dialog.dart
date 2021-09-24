@@ -40,59 +40,61 @@ class SettingDialog extends StatelessWidget {
                 final BuildContext context,
                 final StateSetter setState,
               ) =>
-                  Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    vertical: remToPx(0.8),
+                  SafeArea(
+                child: Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: remToPx(1.1),
-                        ),
-                        child: Text(
-                          dialogTitle ?? title,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                      ),
-                      SizedBox(
-                        height: remToPx(0.3),
-                      ),
-                      builder(context, setState),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      vertical: remToPx(0.8),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: remToPx(0.7),
+                            horizontal: remToPx(1.1),
                           ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: remToPx(0.6),
-                                vertical: remToPx(0.3),
-                              ),
-                              child: Text(
-                                Translator.t.close(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
+                          child: Text(
+                            dialogTitle ?? title,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        SizedBox(
+                          height: remToPx(0.3),
+                        ),
+                        builder(context, setState),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: remToPx(0.7),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(4),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: remToPx(0.6),
+                                  vertical: remToPx(0.3),
+                                ),
+                                child: Text(
+                                  Translator.t.close(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
                               ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
                             ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -296,132 +296,135 @@ class _PageState extends State<Page> {
         break;
     }
 
-    return Padding(
+    return SafeArea(
       key: ValueKey<extensions.ExtensionType>(type),
-      padding: MediaQuery.of(context).viewInsets +
-          EdgeInsets.symmetric(
-            horizontal: remToPx(2),
-            vertical: remToPx(1.2),
-          ),
-      child: Material(
-        type: MaterialType.card,
-        elevation: 24,
-        borderRadius: BorderRadius.circular(4),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Theme.of(context).dialogBackgroundColor,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.width > ResponsiveSizes.md
-                  ? remToPx(0.8)
-                  : remToPx(0.6),
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets +
+            EdgeInsets.symmetric(
+              horizontal: remToPx(2),
+              vertical: remToPx(1.2),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: remToPx(1),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        Translator.t.selectPlugin(),
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      const Expanded(
-                        child: SizedBox.shrink(),
-                      ),
-                      ...<extensions.ExtensionType>[
-                        extensions.ExtensionType.anime,
-                        extensions.ExtensionType.manga,
-                      ].map(
-                        (final extensions.ExtensionType x) {
-                          final bool isCurrent = x == popupPluginType;
+        child: Material(
+          type: MaterialType.card,
+          elevation: 24,
+          borderRadius: BorderRadius.circular(4),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).dialogBackgroundColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width > ResponsiveSizes.md
+                    ? remToPx(0.8)
+                    : remToPx(0.6),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: remToPx(1),
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          Translator.t.selectPlugin(),
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        const Expanded(
+                          child: SizedBox.shrink(),
+                        ),
+                        ...<extensions.ExtensionType>[
+                          extensions.ExtensionType.anime,
+                          extensions.ExtensionType.manga,
+                        ].map(
+                          (final extensions.ExtensionType x) {
+                            final bool isCurrent = x == popupPluginType;
 
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.1),
-                            ),
-                            child: Material(
-                              type: MaterialType.transparency,
-                              child: InkWell(
-                                mouseCursor: SystemMouseCursors.click,
-                                onTap: () {
-                                  setState(() {
-                                    popupPluginType = x;
-                                  });
-                                },
-                                borderRadius: BorderRadius.circular(4),
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: isCurrent
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: remToPx(0.5),
-                                      vertical: remToPx(0.2),
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: remToPx(0.1),
+                              ),
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(
+                                  mouseCursor: SystemMouseCursors.click,
+                                  onTap: () {
+                                    setState(() {
+                                      popupPluginType = x;
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: isCurrent
+                                          ? Theme.of(context).primaryColor
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: Text(
-                                      StringUtils.capitalize(x.type),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            color:
-                                                isCurrent ? Colors.white : null,
-                                          ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: remToPx(0.5),
+                                        vertical: remToPx(0.2),
+                                      ),
+                                      child: Text(
+                                        StringUtils.capitalize(x.type),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .copyWith(
+                                              color: isCurrent
+                                                  ? Colors.white
+                                                  : null,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ).toList(),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: remToPx(0.3),
-                ),
-                content,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: remToPx(0.7),
+                            );
+                          },
+                        ).toList(),
+                      ],
                     ),
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: remToPx(0.6),
-                            vertical: remToPx(0.3),
-                          ),
-                          child: Text(
-                            Translator.t.close(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).primaryColor,
+                  ),
+                  SizedBox(
+                    height: remToPx(0.3),
+                  ),
+                  content,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: remToPx(0.7),
+                      ),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: remToPx(0.6),
+                              vertical: remToPx(0.3),
+                            ),
+                            child: Text(
+                              Translator.t.close(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).primaryColor,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

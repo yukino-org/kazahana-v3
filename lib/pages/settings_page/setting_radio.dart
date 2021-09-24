@@ -70,83 +70,85 @@ class SettingRadio<T extends Object> extends StatelessWidget {
                 final Animation<double> a1,
                 final Animation<double> a2,
               ) =>
-                  Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    vertical: remToPx(0.8),
+                  SafeArea(
+                child: Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: remToPx(1.1),
-                        ),
-                        child: Text(
-                          dialogTitle ?? title,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                      ),
-                      SizedBox(
-                        height: remToPx(0.3),
-                      ),
-                      ...labels
-                          .map(
-                            (final T x, final String name) =>
-                                MapEntry<T, Widget>(
-                              x,
-                              Material(
-                                type: MaterialType.transparency,
-                                child: RadioListTile<T>(
-                                  title: Text(name),
-                                  value: x,
-                                  groupValue: value,
-                                  activeColor: Theme.of(context).primaryColor,
-                                  onChanged: (final T? val) {
-                                    if (val != null &&
-                                        val is T &&
-                                        val != value) {
-                                      onChanged(val);
-                                    }
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ),
-                            ),
-                          )
-                          .values
-                          .toList(),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      vertical: remToPx(0.8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: remToPx(0.7),
+                            horizontal: remToPx(1.1),
                           ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: remToPx(0.6),
-                                vertical: remToPx(0.3),
-                              ),
-                              child: Text(
-                                Translator.t.close(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
+                          child: Text(
+                            dialogTitle ?? title,
+                            style: Theme.of(context).textTheme.headline6,
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: remToPx(0.3),
+                        ),
+                        ...labels
+                            .map(
+                              (final T x, final String name) =>
+                                  MapEntry<T, Widget>(
+                                x,
+                                Material(
+                                  type: MaterialType.transparency,
+                                  child: RadioListTile<T>(
+                                    title: Text(name),
+                                    value: x,
+                                    groupValue: value,
+                                    activeColor: Theme.of(context).primaryColor,
+                                    onChanged: (final T? val) {
+                                      if (val != null &&
+                                          val is T &&
+                                          val != value) {
+                                        onChanged(val);
+                                      }
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            )
+                            .values
+                            .toList(),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: remToPx(0.7),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(4),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: remToPx(0.6),
+                                  vertical: remToPx(0.3),
+                                ),
+                                child: Text(
+                                  Translator.t.close(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

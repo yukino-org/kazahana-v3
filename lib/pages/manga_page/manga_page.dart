@@ -330,87 +330,89 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
         final Animation<double> a1,
         final Animation<double> a2,
       ) =>
-          Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            vertical: remToPx(0.8),
+          SafeArea(
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: remToPx(1.1),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              vertical: remToPx(0.8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: remToPx(1.1),
+                  ),
+                  child: Text(
+                    Translator.t.chooseLanguage(),
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
                 ),
-                child: Text(
-                  Translator.t.chooseLanguage(),
-                  style: Theme.of(context).textTheme.headline6,
+                SizedBox(
+                  height: remToPx(0.3),
                 ),
-              ),
-              SizedBox(
-                height: remToPx(0.3),
-              ),
-              ...info!.availableLocales.map(
-                (final String x) {
-                  final LanguageCodes groupVal =
-                      LanguageUtils.codeLangaugeMap[info!.locale] ??
-                          LanguageCodes.en;
+                ...info!.availableLocales.map(
+                  (final String x) {
+                    final LanguageCodes groupVal =
+                        LanguageUtils.codeLangaugeMap[info!.locale] ??
+                            LanguageCodes.en;
 
-                  final LanguageCodes lang =
-                      LanguageUtils.codeLangaugeMap[x] ?? LanguageCodes.en;
+                    final LanguageCodes lang =
+                        LanguageUtils.codeLangaugeMap[x] ?? LanguageCodes.en;
 
-                  return Material(
-                    type: MaterialType.transparency,
-                    child: RadioListTile<LanguageCodes>(
-                      title: Text(lang.language),
-                      value: lang,
-                      groupValue: groupVal,
-                      activeColor: Theme.of(context).primaryColor,
-                      onChanged: (final LanguageCodes? val) {
-                        if (val != null && val != groupVal) {
-                          setState(() {
-                            locale = val;
-                            info = null;
-                          });
-                          getInfo(removeCache: true);
-                        }
+                    return Material(
+                      type: MaterialType.transparency,
+                      child: RadioListTile<LanguageCodes>(
+                        title: Text(lang.language),
+                        value: lang,
+                        groupValue: groupVal,
+                        activeColor: Theme.of(context).primaryColor,
+                        onChanged: (final LanguageCodes? val) {
+                          if (val != null && val != groupVal) {
+                            setState(() {
+                              locale = val;
+                              info = null;
+                            });
+                            getInfo(removeCache: true);
+                          }
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    );
+                  },
+                ).toList(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: remToPx(0.7),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: remToPx(0.6),
+                          vertical: remToPx(0.3),
+                        ),
+                        child: Text(
+                          Translator.t.close(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
                         Navigator.of(context).pop();
                       },
                     ),
-                  );
-                },
-              ).toList(),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: remToPx(0.7),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: remToPx(0.6),
-                        vertical: remToPx(0.3),
-                      ),
-                      child: Text(
-                        Translator.t.close(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

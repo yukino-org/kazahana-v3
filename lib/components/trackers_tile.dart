@@ -115,184 +115,192 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
                 final Animation<double> a1,
                 final Animation<double> a2,
               ) =>
-                  Dialog(
-                child: StatefulBuilder(
-                  builder: (
-                    final BuildContext context,
-                    final StateSetter setState,
-                  ) =>
-                      SafeArea(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: remToPx(1),
-                            bottom: remToPx(2),
-                            left: remToPx(1.5),
-                            right: remToPx(1.5),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  IconButton(
-                                    splashRadius: remToPx(1),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    icon: const Icon(Icons.arrow_back),
-                                  ),
-                                  SizedBox(width: remToPx(1)),
-                                  Text(
-                                    Translator.t.search(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              TextField(
-                                decoration: InputDecoration(
-                                  labelText: Translator.t
-                                      .searchInPlugin(widget.tracker.name),
+                  SafeArea(
+                child: Dialog(
+                  child: StatefulBuilder(
+                    builder: (
+                      final BuildContext context,
+                      final StateSetter setState,
+                    ) =>
+                        SafeArea(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: remToPx(1),
+                              bottom: remToPx(2),
+                              left: remToPx(1.5),
+                              right: remToPx(1.5),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    IconButton(
+                                      splashRadius: remToPx(1),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      icon: const Icon(Icons.arrow_back),
+                                    ),
+                                    SizedBox(width: remToPx(1)),
+                                    Text(
+                                      Translator.t.search(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          ?.copyWith(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
                                 ),
-                                onSubmitted: (final String value) async {
-                                  setState(() {
-                                    searches.resolving(null);
-                                  });
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: Translator.t
+                                        .searchInPlugin(widget.tracker.name),
+                                  ),
+                                  onSubmitted: (final String value) async {
+                                    setState(() {
+                                      searches.resolving(null);
+                                    });
 
-                                  final List<ResolvableTrackerItem> results =
-                                      await widget.tracker.getComputables(
-                                    value,
-                                  );
+                                    final List<ResolvableTrackerItem> results =
+                                        await widget.tracker.getComputables(
+                                      value,
+                                    );
 
-                                  setState(() {
-                                    searches.resolve(results);
-                                  });
-                                },
-                              ),
-                              if (searches.hasResolved &&
-                                  searches.value!.isNotEmpty) ...<Widget>[
-                                SizedBox(
-                                  height: remToPx(1),
+                                    setState(() {
+                                      searches.resolve(results);
+                                    });
+                                  },
                                 ),
-                                ...getGridded(
-                                  MediaQuery.of(context).size.width.toInt(),
-                                  searches.value!
-                                      .map(
-                                        (final ResolvableTrackerItem x) => Card(
-                                          color: Palette.gray[
-                                              isDarkContext(context)
-                                                  ? 700
-                                                  : 200],
-                                          child: InkWell(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            onTap: () async {
-                                              final ResolvedTrackerItem<dynamic>
-                                                  resolved = await widget
-                                                      .tracker
-                                                      .resolveComputed(
-                                                widget.title,
-                                                widget.plugin,
-                                                x,
-                                              );
+                                if (searches.hasResolved &&
+                                    searches.value!.isNotEmpty) ...<Widget>[
+                                  SizedBox(
+                                    height: remToPx(1),
+                                  ),
+                                  ...getGridded(
+                                    MediaQuery.of(context).size.width.toInt(),
+                                    searches.value!
+                                        .map(
+                                          (final ResolvableTrackerItem x) =>
+                                              Card(
+                                            color: Palette.gray[
+                                                isDarkContext(context)
+                                                    ? 700
+                                                    : 200],
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              onTap: () async {
+                                                final ResolvedTrackerItem<
+                                                        dynamic> resolved =
+                                                    await widget.tracker
+                                                        .resolveComputed(
+                                                  widget.title,
+                                                  widget.plugin,
+                                                  x,
+                                                );
 
-                                              this.setState(() {
-                                                item.resolve(resolved);
-                                              });
+                                                this.setState(() {
+                                                  item.resolve(resolved);
+                                                });
 
-                                              if (mounted) {
-                                                Navigator.of(context).pop();
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsets.all(remToPx(0.5)),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      remToPx(0.25),
-                                                    ),
-                                                    child: x.image != null
-                                                        ? Image.network(
-                                                            x.image!,
-                                                            height: remToPx(5),
-                                                          )
-                                                        : Image.asset(
-                                                            Assets
-                                                                .placeholderImage(
-                                                              dark:
-                                                                  isDarkContext(
-                                                                context,
+                                                if (mounted) {
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding: EdgeInsets.all(
+                                                  remToPx(0.5),
+                                                ),
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                        remToPx(0.25),
+                                                      ),
+                                                      child: x.image != null
+                                                          ? Image.network(
+                                                              x.image!,
+                                                              height:
+                                                                  remToPx(5),
+                                                            )
+                                                          : Image.asset(
+                                                              Assets
+                                                                  .placeholderImage(
+                                                                dark:
+                                                                    isDarkContext(
+                                                                  context,
+                                                                ),
                                                               ),
+                                                              height:
+                                                                  remToPx(5),
                                                             ),
-                                                            height: remToPx(5),
-                                                          ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: remToPx(0.75),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      x.title,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize:
-                                                            Theme.of(context)
-                                                                .textTheme
-                                                                .headline6
-                                                                ?.fontSize,
+                                                    ),
+                                                    SizedBox(
+                                                      width: remToPx(0.75),
+                                                    ),
+                                                    Flexible(
+                                                      child: Text(
+                                                        x.title,
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .headline6
+                                                                  ?.fontSize,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                      .toList(),
-                                ),
-                              ] else if (searches.isResolving) ...<Widget>[
-                                SizedBox(
-                                  height: remToPx(3),
-                                ),
-                                const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ] else ...<Widget>[
-                                SizedBox(
-                                  height: remToPx(2),
-                                ),
-                                Center(
-                                  child: Text(
-                                    searches.hasResolved
-                                        ? Translator.t.noResultsFound()
-                                        : searches.isWaiting
-                                            ? Translator.t.enterToSearch()
-                                            : Translator.t.failedToGetResults(),
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .color!
-                                          .withOpacity(0.7),
+                                        )
+                                        .toList(),
+                                  ),
+                                ] else if (searches.isResolving) ...<Widget>[
+                                  SizedBox(
+                                    height: remToPx(3),
+                                  ),
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ] else ...<Widget>[
+                                  SizedBox(
+                                    height: remToPx(2),
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      searches.hasResolved
+                                          ? Translator.t.noResultsFound()
+                                          : searches.isWaiting
+                                              ? Translator.t.enterToSearch()
+                                              : Translator.t
+                                                  .failedToGetResults(),
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .color!
+                                            .withOpacity(0.7),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -316,7 +324,8 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
         type: MaterialType.transparency,
         child: InkWell(
           onTap: widget.tracker.isLoggedIn()
-              ? null : () {
+              ? null
+              : () {
                   Navigator.of(context).pushNamed(RouteNames.store);
                 },
           child: Row(
@@ -370,8 +379,10 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
                                 ) =>
                                     FadeScaleTransition(
                                   animation: a1,
-                                  child: widget.tracker
-                                      .getDetailedPage(context, item.value!),
+                                  child: SafeArea(
+                                    child: widget.tracker
+                                        .getDetailedPage(context, item.value!),
+                                  ),
                                 ),
                               );
                             },

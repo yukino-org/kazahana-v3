@@ -64,33 +64,47 @@ class _DetailedItemState extends State<DetailedItem> {
         ? Theme.of(context).textTheme.headline6!.fontSize! - remToPx(0.1)
         : Theme.of(context).textTheme.bodyText1!.fontSize!;
     final Color playBtnTextColor = largeAndDark ? Colors.black : Colors.white;
-    final Widget playBtn = TextButton.icon(
-      icon: Icon(
-        Icons.play_arrow,
-        color: playBtnTextColor,
-        size: playBtnTextSize + remToPx(0.2),
-      ),
-      label: Text(
-        widget.media.media.type == anilist.MediaType.anime
-            ? Translator.t.play()
-            : Translator.t.read(),
-        style: TextStyle(
-          fontSize: playBtnTextSize,
-          color: playBtnTextColor,
+    final Widget playBtn = Material(
+      type: MaterialType.transparency,
+      elevation: 5,
+      color: Colors.white,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: largeAndDark ? Colors.white : Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(remToPx(0.2)),
+        ),
+        child: InkWell(
+          onTap: widget.onPlay ?? pushToSearchPage,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: remToPx(0.5),
+              vertical: remToPx(0.3),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  Icons.play_arrow,
+                  color: playBtnTextColor,
+                  size: playBtnTextSize + remToPx(0.1),
+                ),
+                SizedBox(
+                  width: remToPx(0.3),
+                ),
+                Text(
+                  widget.media.media.type == anilist.MediaType.anime
+                      ? Translator.t.play()
+                      : Translator.t.read(),
+                  style: TextStyle(
+                    fontSize: playBtnTextSize,
+                    color: playBtnTextColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      style: TextButton.styleFrom(
-        elevation: 5,
-        backgroundColor:
-            largeAndDark ? Colors.white : Theme.of(context).primaryColor,
-        padding: EdgeInsets.only(
-          top: remToPx(0.5),
-          left: remToPx(0.5),
-          right: remToPx(0.5),
-          bottom: remToPx(0.6),
-        ),
-      ),
-      onPressed: widget.onPlay ?? pushToSearchPage,
     );
 
     return NotificationListener<ScrollNotification>(
@@ -517,8 +531,11 @@ class _DetailedItemState extends State<DetailedItem> {
                 final Animation<double> a1,
                 final Animation<double> a2,
               ) =>
-                  EditModal(media: widget.media),
+                  SafeArea(
+                child: EditModal(media: widget.media),
+              ),
             );
+
             setState(() {});
           },
           tooltip: Translator.t.edit(),

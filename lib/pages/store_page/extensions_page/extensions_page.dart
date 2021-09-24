@@ -48,8 +48,10 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                         final Animation<double> a1,
                         final Animation<double> a2,
                       ) =>
-                          Dialog(
-                        child: _ExtensionPopup(ext: ext),
+                          SafeArea(
+                        child: Dialog(
+                          child: _ExtensionPopup(ext: ext),
+                        ),
                       ),
                     );
 
@@ -258,10 +260,11 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                 }
                               }
                             : null,
+                        // TODO: check on desktop
                         icon: Padding(
                           padding: EdgeInsets.only(
-                            bottom: remToPx(0.1),
-                          ),
+                              // bottom: remToPx(0.1),
+                              ),
                           child: Icon(
                             <ExtensionState>[
                               ExtensionState.install,
