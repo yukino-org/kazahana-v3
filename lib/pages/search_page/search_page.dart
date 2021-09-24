@@ -95,8 +95,6 @@ class _PageState extends State<Page> {
   extensions.ExtensionType popupPluginType = extensions.ExtensionType.anime;
   search_page.PageArguments? args;
 
-  late Widget placeholderImage;
-
   final TextEditingController textController = TextEditingController();
   final Duration animationDuration = const Duration(milliseconds: 300);
 
@@ -108,14 +106,6 @@ class _PageState extends State<Page> {
 
     Future<void>.delayed(Duration.zero, () async {
       if (mounted) {
-        placeholderImage = Image.asset(
-          Assets.placeholderImage(
-            dark: isDarkContext(
-              context,
-            ),
-          ),
-        );
-
         args = search_page.PageArguments.fromJson(
           ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
         );
@@ -255,12 +245,17 @@ class _PageState extends State<Page> {
   ) {
     Widget content = Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: remToPx(2),
+        padding: EdgeInsets.only(
+          left: remToPx(1),
+          right: remToPx(1),
+          top: remToPx(1.1),
+          bottom: remToPx(0.5),
         ),
         child: Text(
           Translator.t.nothingWasFoundHere(),
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                color: Theme.of(context).textTheme.caption?.color,
+              ),
         ),
       ),
     );
@@ -304,7 +299,10 @@ class _PageState extends State<Page> {
     return Padding(
       key: ValueKey<extensions.ExtensionType>(type),
       padding: MediaQuery.of(context).viewInsets +
-          EdgeInsets.symmetric(horizontal: remToPx(2), vertical: remToPx(1.2)),
+          EdgeInsets.symmetric(
+            horizontal: remToPx(2),
+            vertical: remToPx(1.2),
+          ),
       child: Material(
         type: MaterialType.card,
         elevation: 24,
@@ -316,7 +314,9 @@ class _PageState extends State<Page> {
           ),
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
-              vertical: remToPx(0.8),
+              vertical: MediaQuery.of(context).size.width > ResponsiveSizes.md
+                  ? remToPx(0.8)
+                  : remToPx(0.6),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,37 +345,38 @@ class _PageState extends State<Page> {
                             padding: EdgeInsets.symmetric(
                               horizontal: remToPx(0.1),
                             ),
-                            child: TextButton(
-                              clipBehavior: Clip.antiAlias,
-                              onPressed: () {
-                                setState(() {
-                                  popupPluginType = x;
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: Colors.transparent,
-                                side: BorderSide.none,
-                              ),
-                              child: AnimatedContainer(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: remToPx(0.5),
-                                  vertical: remToPx(0.2),
-                                ),
-                                color: isCurrent
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.transparent,
-                                duration: animationDuration,
-                                child: AnimatedDefaultTextStyle(
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(
-                                        color: isCurrent ? Colors.white : null,
-                                      ),
-                                  duration: animationDuration,
-                                  child: Text(
-                                    StringUtils.capitalize(x.type),
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: InkWell(
+                                mouseCursor: SystemMouseCursors.click,
+                                onTap: () {
+                                  setState(() {
+                                    popupPluginType = x;
+                                  });
+                                },
+                                borderRadius: BorderRadius.circular(4),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: isCurrent
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: remToPx(0.5),
+                                      vertical: remToPx(0.2),
+                                    ),
+                                    child: Text(
+                                      StringUtils.capitalize(x.type),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                            color:
+                                                isCurrent ? Colors.white : null,
+                                          ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -534,9 +535,21 @@ class _PageState extends State<Page> {
                                               ? FallbackableNetworkImage(
                                                   url: x.thumbnail!.url,
                                                   headers: x.thumbnail!.headers,
-                                                  placeholder: placeholderImage,
+                                                  placeholder: Image.asset(
+                                                    Assets.placeholderImage(
+                                                      dark: isDarkContext(
+                                                        context,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 )
-                                              : placeholderImage,
+                                              : Image.asset(
+                                                  Assets.placeholderImage(
+                                                    dark: isDarkContext(
+                                                      context,
+                                                    ),
+                                                  ),
+                                                ),
                                         ),
                                       ),
                                       SizedBox(width: remToPx(0.75)),

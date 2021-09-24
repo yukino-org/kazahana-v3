@@ -168,8 +168,14 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
                               right: remToPx(0.25),
                             ),
                             child: Icon(
-                              Icons.check,
-                              color: Colors.green[400],
+                              loggedIn ? Icons.check : Icons.login,
+                              color: loggedIn
+                                  ? Colors.green[400]
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      ?.color
+                                      ?.withOpacity(0.5),
                             ),
                           ),
                       ],

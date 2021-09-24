@@ -285,9 +285,10 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                           side: BorderSide.none,
                           primary: Colors.white,
                           backgroundColor: Theme.of(context).primaryColor,
-                          padding: EdgeInsets.symmetric(
-                            vertical: remToPx(0.6),
-                          ),
+                          // TODO: check padding on desktops
+                          // padding: EdgeInsets.symmetric(
+                          //   vertical: remToPx(0.6),
+                          // ),
                         ),
                       ),
                     ),

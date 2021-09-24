@@ -64,6 +64,10 @@ class _PageState extends State<Page> {
                 });
               },
               onTap: (final int i) {
+                setState(() {
+                  seasonAnimeHoverIndex = i;
+                });
+
                 // TODO: push
               },
             ),
@@ -90,6 +94,10 @@ class _PageState extends State<Page> {
                 });
               },
               onTap: (final int i) {
+                setState(() {
+                  recentlyUpdatedHoverIndex = i;
+                });
+
                 // TODO: push
               },
             ),

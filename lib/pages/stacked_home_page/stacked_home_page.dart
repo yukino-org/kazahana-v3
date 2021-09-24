@@ -118,41 +118,28 @@ class _PageState extends State<Page> {
       ),
     ];
 
-    return WillPopScope(
-      child: Scaffold(
-        body: SafeArea(
-          child: applySideIfSupported(
-            PageView(
-              onPageChanged: (final int page) {
-                setState(() {
-                  currentIndex = page;
-                });
-              },
-              physics: const NeverScrollableScrollPhysics(),
-              controller: controller,
-              children: stack
-                  .map((final StackPage x) => x.r.builder(context))
-                  .toList(),
-            ),
-            barItems,
+    return Scaffold(
+      body: SafeArea(
+        child: applySideIfSupported(
+          PageView(
+            onPageChanged: (final int page) {
+              setState(() {
+                currentIndex = page;
+              });
+            },
+            physics: const NeverScrollableScrollPhysics(),
+            controller: controller,
+            children:
+                stack.map((final StackPage x) => x.r.builder(context)).toList(),
           ),
+          barItems,
         ),
-        bottomNavigationBar: Platform.isAndroid || Platform.isIOS
-            ? bottom_bar.BottomBar(
-                items: barItems,
-              )
-            : const SizedBox.shrink(),
       ),
-      onWillPop: () async {
-        final int homeIndex = stack[getIndexOfRoute(RouteNames.home)!].index;
-        if (currentIndex != homeIndex) {
-          goToPage(homeIndex);
-          return false;
-        }
-
-        Navigator.of(context).pop();
-        return true;
-      },
+      bottomNavigationBar: Platform.isAndroid || Platform.isIOS
+          ? bottom_bar.BottomBar(
+              items: barItems,
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

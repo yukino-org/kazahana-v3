@@ -4,8 +4,8 @@ import '../plugins/helpers/stateful_holder.dart';
 class FallbackableNetworkImage extends StatefulWidget {
   const FallbackableNetworkImage({
     required final this.url,
-    required final this.headers,
     required final this.placeholder,
+    final this.headers = const <String, String>{},
     final this.errorPlaceholder,
     final Key? key,
   }) : super(key: key);

@@ -5,6 +5,7 @@ import '../core/models/tracker_provider.dart';
 import '../plugins/helpers/assets.dart';
 import '../plugins/helpers/stateful_holder.dart';
 import '../plugins/helpers/ui.dart';
+import '../plugins/router.dart';
 import '../plugins/translator/translator.dart';
 
 class TrackersTile extends StatelessWidget {
@@ -57,8 +58,6 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
   StatefulHolder<ResolvedTrackerItem<dynamic>?> item =
       StatefulHolder<ResolvedTrackerItem<dynamic>?>(null);
 
-  late final String placeholderImage;
-
   @override
   void initState() {
     super.initState();
@@ -66,10 +65,8 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
     onItemUpdateChangeNotifier.subscribe(_onMediaUpdated);
 
     Future<void>.delayed(Duration.zero, () async {
-      if (mounted) {
+      if (mounted && widget.tracker.isLoggedIn()) {
         setState(() {
-          placeholderImage =
-              Assets.placeholderImage(dark: isDarkContext(context));
           item.resolving(null);
         });
 
@@ -232,7 +229,13 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
                                                             height: remToPx(5),
                                                           )
                                                         : Image.asset(
-                                                            placeholderImage,
+                                                            Assets
+                                                                .placeholderImage(
+                                                              dark:
+                                                                  isDarkContext(
+                                                                context,
+                                                              ),
+                                                            ),
                                                             height: remToPx(5),
                                                           ),
                                                   ),
@@ -309,78 +312,106 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
       );
 
   @override
-  Widget build(final BuildContext context) => Row(
-        children: <Widget>[
-          CircleAvatar(
-            radius: remToPx(1),
-            backgroundColor: Colors.black,
-            child: Image.asset(
-              widget.tracker.image,
-              height: remToPx(1.5),
-            ),
-          ),
-          SizedBox(
-            width: remToPx(1),
-          ),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                children: <InlineSpan>[
-                  TextSpan(
-                    text: widget.tracker.name,
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  if (item.hasResolved && item.value != null) ...<InlineSpan>[
-                    TextSpan(
-                      text: '\n${Translator.t.computedAs()} ',
-                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                            color: Theme.of(context).textTheme.caption?.color,
-                          ),
-                    ),
-                    TextSpan(
-                      text: item.value!.title,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () async {
-                          await showGeneralDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            barrierLabel: MaterialLocalizations.of(context)
-                                .modalBarrierDismissLabel,
-                            pageBuilder: (
-                              final BuildContext context,
-                              final Animation<double> a1,
-                              final Animation<double> a2,
-                            ) =>
-                                FadeScaleTransition(
-                              animation: a1,
-                              child: widget.tracker
-                                  .getDetailedPage(context, item.value!),
-                            ),
-                          );
-                        },
-                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                            color: Theme.of(context).textTheme.caption?.color,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    openSearchTextSpan(' - ${Translator.t.notThis()}'),
-                  ] else if (item.hasResolved && item.value == null)
-                    openSearchTextSpan('\n${Translator.t.selectAnAnime()}'),
-                ],
+  Widget build(final BuildContext context) => Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: widget.tracker.isLoggedIn()
+              ? null : () {
+                  Navigator.of(context).pushNamed(RouteNames.store);
+                },
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: remToPx(1),
+                backgroundColor: Colors.black,
+                child: Image.asset(
+                  widget.tracker.image,
+                  height: remToPx(1.5),
+                ),
               ),
-            ),
+              SizedBox(
+                width: remToPx(1),
+              ),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: widget.tracker.name,
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      if (item.hasResolved &&
+                          item.value != null) ...<InlineSpan>[
+                        TextSpan(
+                          text: '\n${Translator.t.computedAs()} ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle2
+                              ?.copyWith(
+                                color:
+                                    Theme.of(context).textTheme.caption?.color,
+                              ),
+                        ),
+                        TextSpan(
+                          text: item.value!.title,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await showGeneralDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                barrierLabel: MaterialLocalizations.of(context)
+                                    .modalBarrierDismissLabel,
+                                pageBuilder: (
+                                  final BuildContext context,
+                                  final Animation<double> a1,
+                                  final Animation<double> a2,
+                                ) =>
+                                    FadeScaleTransition(
+                                  animation: a1,
+                                  child: widget.tracker
+                                      .getDetailedPage(context, item.value!),
+                                ),
+                              );
+                            },
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle2
+                              ?.copyWith(
+                                color:
+                                    Theme.of(context).textTheme.caption?.color,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        openSearchTextSpan(' - ${Translator.t.notThis()}'),
+                      ] else if (item.hasResolved && item.value == null)
+                        openSearchTextSpan('\n${Translator.t.selectAnAnime()}'),
+                    ],
+                  ),
+                ),
+              ),
+              if (widget.tracker.isLoggedIn())
+                Switch(
+                  activeColor: Theme.of(context).primaryColor,
+                  value: widget.tracker.isEnabled(widget.title, widget.plugin),
+                  onChanged: (final bool enabled) async {
+                    await widget.tracker
+                        .setEnabled(widget.title, widget.plugin, enabled);
+                    setState(() {});
+                  },
+                )
+              else
+                Icon(
+                  Icons.login,
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      ?.color
+                      ?.withOpacity(0.5),
+                ),
+            ],
           ),
-          Switch(
-            activeColor: Theme.of(context).primaryColor,
-            value: widget.tracker.isEnabled(widget.title, widget.plugin),
-            onChanged: (final bool enabled) async {
-              await widget.tracker
-                  .setEnabled(widget.title, widget.plugin, enabled);
-              setState(() {});
-            },
-          ),
-        ],
+        ),
       );
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './anilist_section.dart' as anilist_section;
 import './anime_section.dart' as anime_section;
+import '../../components/network_image_fallback.dart';
 import '../../core/provisions/model.dart';
 import '../../core/provisions/myanimelist/utils.dart' as mal_utils;
+import '../../plugins/helpers/assets.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/translator/translator.dart';
 
@@ -116,8 +118,15 @@ class HorizontalEntityList extends StatelessWidget {
                           child: Stack(
                             children: <Widget>[
                               Positioned.fill(
-                                child: Image.network(
-                                  mal_utils.tryMaxRes(x.thumbnail),
+                                child: FallbackableNetworkImage(
+                                  url: mal_utils.tryMaxRes(x.thumbnail),
+                                  placeholder: Image.asset(
+                                    Assets.placeholderImage(
+                                      dark: isDarkContext(
+                                        context,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                               Positioned.fill(
