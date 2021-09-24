@@ -4,6 +4,7 @@
     "description": "🔧 Yukino's handy command-line interface",
     "private": true,
     "scripts": {
+        "push:stable": "ts-node ./cli/others/push-stable/run.ts",
         "hive:generate": "ts-node ./cli/flutter-cli/hive-generate/run.ts",
         "test:sources:anime": "ts-node ./cli/tests/sources/anime/run.ts",
         "test:sources:manga": "ts-node ./cli/tests/sources/manga/run.ts",
