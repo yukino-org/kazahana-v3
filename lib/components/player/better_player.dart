@@ -35,38 +35,48 @@ class VideoPlayer extends model.Player {
         (final better_player.BetterPlayerEvent e) {
           switch (e.betterPlayerEventType) {
             case better_player.BetterPlayerEventType.initialized:
-              dispatch(model.PlayerEvents.load);
+              dispatch(model.PlayerEvent(model.PlayerEvents.load, null));
               ready = true;
               break;
 
             case better_player.BetterPlayerEventType.progress:
             case better_player.BetterPlayerEventType.setupDataSource:
-              dispatch(model.PlayerEvents.durationUpdate);
+              dispatch(
+                model.PlayerEvent(model.PlayerEvents.durationUpdate, null),
+              );
               break;
 
             case better_player.BetterPlayerEventType.play:
-              dispatch(model.PlayerEvents.play);
+              dispatch(model.PlayerEvent(model.PlayerEvents.play, null));
               break;
 
             case better_player.BetterPlayerEventType.pause:
-              dispatch(model.PlayerEvents.pause);
+              dispatch(model.PlayerEvent(model.PlayerEvents.pause, null));
               break;
 
             case better_player.BetterPlayerEventType.seekTo:
-              dispatch(model.PlayerEvents.durationUpdate);
-              dispatch(model.PlayerEvents.seek);
+              dispatch(
+                model.PlayerEvent(model.PlayerEvents.durationUpdate, null),
+              );
+              dispatch(model.PlayerEvent(model.PlayerEvents.seek, null));
               break;
 
             case better_player.BetterPlayerEventType.setVolume:
-              dispatch(model.PlayerEvents.volume);
+              dispatch(model.PlayerEvent(model.PlayerEvents.volume, null));
               break;
 
             case better_player.BetterPlayerEventType.finished:
-              dispatch(model.PlayerEvents.end);
+              dispatch(model.PlayerEvent(model.PlayerEvents.end, null));
               break;
 
             case better_player.BetterPlayerEventType.setSpeed:
-              dispatch(model.PlayerEvents.speed);
+              dispatch(model.PlayerEvent(model.PlayerEvents.speed, null));
+              break;
+
+            case better_player.BetterPlayerEventType.exception:
+              dispatch(
+                model.PlayerEvent(model.PlayerEvents.error, e.parameters),
+              );
               break;
 
             default:

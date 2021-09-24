@@ -1,4 +1,4 @@
-typedef EventerSubscriber<T> = void Function(T value);
+typedef EventerSubscriber<T> = void Function(T event);
 
 class Eventer<T> {
   final List<EventerSubscriber<T>> _subscribers = <EventerSubscriber<T>>[];
@@ -12,9 +12,9 @@ class Eventer<T> {
     _subscribers.remove(sub);
   }
 
-  void dispatch(final T value) {
+  void dispatch(final T event) {
     for (final EventerSubscriber<T> sub in _subscribers) {
-      sub(value);
+      sub(event);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
@@ -203,8 +204,8 @@ class WatchPageState extends State<WatchPage>
     await player!.load();
   }
 
-  void _subscriber(final player_model.PlayerEvents event) {
-    switch (event) {
+  void _subscriber(final player_model.PlayerEvent event) {
+    switch (event.event) {
       case player_model.PlayerEvents.load:
         player!.setVolume(volume.value);
         setState(() {
@@ -250,6 +251,15 @@ class WatchPageState extends State<WatchPage>
 
       case player_model.PlayerEvents.speed:
         speed = player!.speed;
+        break;
+
+      case player_model.PlayerEvents.error:
+        showDialog(
+          context: context,
+          builder: (final BuildContext context) => Dialog(
+            child: Text(jsonEncode(event.data)),
+          ),
+        );
         break;
     }
   }

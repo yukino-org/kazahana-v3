@@ -92,7 +92,10 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
     super.dispose();
   }
 
-  void _onMediaUpdated(final ResolvedTrackerItem<dynamic> unknown) {
+  void _onMediaUpdated(
+    final ResolvedTrackerItem<dynamic> unknown, [
+    final dynamic data,
+  ]) {
     if (item.value != null &&
         widget.tracker.isItemSameKind(item.value!, unknown)) {
       setState(() {

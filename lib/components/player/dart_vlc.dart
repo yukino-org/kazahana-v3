@@ -24,31 +24,34 @@ class VideoPlayer extends model.Player {
   Future<void> load() async {
     _player = dart_vlc.Player(id: Random.secure().nextInt(69420))
       ..positionStream.listen((final dart_vlc.PositionState position) {
-        dispatch(model.PlayerEvents.durationUpdate);
+        dispatch(model.PlayerEvent(model.PlayerEvents.durationUpdate, null));
       })
       ..playbackStream.listen((final dart_vlc.PlaybackState playback) {
         dispatch(
-          playback.isPlaying
-              ? model.PlayerEvents.play
-              : model.PlayerEvents.pause,
+          model.PlayerEvent(
+            playback.isPlaying
+                ? model.PlayerEvents.play
+                : model.PlayerEvents.pause,
+            null,
+          ),
         );
 
         if (playback.isCompleted) {
-          dispatch(model.PlayerEvents.end);
+          dispatch(model.PlayerEvent(model.PlayerEvents.end, null));
         }
       })
       ..generalStream.listen((final dart_vlc.GeneralState general) {
         if (_prevSpeed != general.rate) {
-          dispatch(model.PlayerEvents.speed);
+          dispatch(model.PlayerEvent(model.PlayerEvents.speed, null));
         }
 
         if (_prevVolume != general.volume) {
-          dispatch(model.PlayerEvents.volume);
+          dispatch(model.PlayerEvent(model.PlayerEvents.volume, null));
         }
       })
       ..currentStream.listen((final dart_vlc.CurrentState current) {
         if (!ready && current.medias.isNotEmpty) {
-          dispatch(model.PlayerEvents.load);
+          dispatch(model.PlayerEvent(model.PlayerEvents.load, null));
           ready = true;
         }
       })

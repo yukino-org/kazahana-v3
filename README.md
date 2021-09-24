@@ -10,6 +10,13 @@ Yukino lets you read manga or stream anime ad-free from multiple sources. The pr
 
 We do not support piracy nor run/serve any illegal or copyrighted contents, everything is acquired from third-party sources. The developer of this application does not have any affiliation with any of the third-party sources.
 
+[![CodeFactor](https://www.codefactor.io/repository/github/yukino-app/yukino/badge/next)](https://www.codefactor.io/repository/github/yukino-app/yukino/overview/next)
+[![Android (Apk)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml)
+[![Linux (AppImage)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml)
+[![MacOS (Dmg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml)
+[![Windows (Zip & Installer)](https://github.com/yukino-app/yukino/actions/workflows/windows-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/windows-build.yml)
+[![iOS (Ipa)](https://github.com/yukino-app/yukino/actions/workflows/ios-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/ios-build.yml)
+
 <!-- [![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg?style=flat)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg?style=flat)](https://GitHub.com/zyrouge/yukino-app/releases/) [![Site](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish (Electron)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml/badge.svg?branch=main>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml>) [![Publish (Capacitor - Android)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml/badge.svg>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml>) [![CodeFactor](https://www.codefactor.io/repository/github/zyrouge/yukino-app/badge/next)](https://www.codefactor.io/repository/github/zyrouge/yukino-app/overview/next)
 
 ## Download

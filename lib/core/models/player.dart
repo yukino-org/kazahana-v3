@@ -10,6 +10,14 @@ enum PlayerEvents {
   volume,
   end,
   speed,
+  error,
+}
+
+class PlayerEvent {
+  PlayerEvent(this.event, this.data);
+
+  final PlayerEvents event;
+  final dynamic data;
 }
 
 class PlayerSource {
@@ -22,7 +30,7 @@ class PlayerSource {
   final Map<String, String> headers;
 }
 
-abstract class Player extends Eventer<PlayerEvents> {
+abstract class Player extends Eventer<PlayerEvent> {
   Player(this.source);
 
   final PlayerSource source;

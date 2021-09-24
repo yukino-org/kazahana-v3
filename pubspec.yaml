@@ -5,56 +5,56 @@ version: 1.0.1-beta.0
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+    sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  animations: ^2.0.1
-  better_player: ^0.0.72
-  collection: ^1.15.0
-  crypto: ^3.0.1
-  dart_vlc: ^0.1.4
-  encrypt: ^5.0.0
-  extensions:
-    path: packages/extensions
-  flutter:
-    sdk: flutter
-  flutter_markdown: ^0.6.6
-  fuzzy: ^0.4.0-nullsafety.0
-  hetu_script: ^0.1.2+5
-  hive: ^2.0.4
-  hive_flutter: ^1.1.0
-  html: ^0.15.0
-  http: ^0.13.3
-  package_info_plus: ^1.0.5
-  path: ^1.8.0
-  path_provider: ^2.0.2
-  protocol_registry:
-    git:
-      url: https://github.com/zyrouge/dart_protocol_registry.git
-      ref: 885fc4bdaf6a60e5fd27013b876a9d6bec3addc2
-  shelf: ^1.2.0
-  url_launcher: ^6.0.9
-  window_manager:
-    git:
-      url: https://github.com/leanflutter/window_manager.git
-      ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
+    animations: ^2.0.1
+    better_player: ^0.0.75
+    collection: ^1.15.0
+    crypto: ^3.0.1
+    dart_vlc: ^0.1.4
+    encrypt: ^5.0.0
+    extensions:
+        path: packages/extensions
+    flutter:
+        sdk: flutter
+    flutter_markdown: ^0.6.6
+    fuzzy: ^0.4.0-nullsafety.0
+    hetu_script: ^0.1.2+5
+    hive: ^2.0.4
+    hive_flutter: ^1.1.0
+    html: ^0.15.0
+    http: ^0.13.3
+    package_info_plus: ^1.0.5
+    path: ^1.8.0
+    path_provider: ^2.0.2
+    protocol_registry:
+        git:
+            url: https://github.com/zyrouge/dart_protocol_registry.git
+            ref: 885fc4bdaf6a60e5fd27013b876a9d6bec3addc2
+    shelf: ^1.2.0
+    url_launcher: ^6.0.9
+    window_manager:
+        git:
+            url: https://github.com/leanflutter/window_manager.git
+            ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
 
 dev_dependencies:
-  build_runner: ^2.0.5
-  hive_generator: ^1.1.0
-  lint: ^1.5.3
+    build_runner: ^2.0.5
+    hive_generator: ^1.1.0
+    lint: ^1.5.3
 
 flutter:
-  uses-material-design: true
-  assets:
-    - assets/images/
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins-Regular.ttf
-        - asset: assets/fonts/Poppins-Italic.ttf
-          style: italic
-        - asset: assets/fonts/Poppins-Bold.ttf
-          weight: 800
-        - asset: assets/fonts/Poppins-SemiBold.ttf
-          weight: 600
+    uses-material-design: true
+    assets:
+        - assets/images/
+    fonts:
+        - family: Poppins
+          fonts:
+              - asset: assets/fonts/Poppins-Regular.ttf
+              - asset: assets/fonts/Poppins-Italic.ttf
+                style: italic
+              - asset: assets/fonts/Poppins-Bold.ttf
+                weight: 800
+              - asset: assets/fonts/Poppins-SemiBold.ttf
+                weight: 600
