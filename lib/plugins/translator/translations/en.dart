@@ -329,4 +329,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String seasonalAnimes() => 'Seasonal Animes';
+
+  @override
+  String selectAPluginToGetResults() => 'Select a plugin to get results';
 }

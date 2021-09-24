@@ -109,4 +109,5 @@ abstract class TranslationSentences {
   String recentlyUpdated();
   String recommendedBy(final String by);
   String seasonalAnimes();
+  String selectAPluginToGetResults();
 }

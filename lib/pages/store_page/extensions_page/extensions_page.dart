@@ -105,18 +105,17 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                             ),
                           ),
                         ),
-                        if (installed) ...<Widget>[
-                          SizedBox(
-                            width: remToPx(0.75),
+                        if (installed)
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: remToPx(0.75),
+                              right: remToPx(0.25),
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.green[400],
+                            ),
                           ),
-                          Icon(
-                            Icons.check,
-                            color: Colors.green[400],
-                          ),
-                          SizedBox(
-                            width: remToPx(0.25),
-                          ),
-                        ]
                       ],
                     ),
                   ),

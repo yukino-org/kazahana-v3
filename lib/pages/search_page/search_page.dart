@@ -85,18 +85,17 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
-  LoadState state = LoadState.waiting;
-
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
   CurrentPlugin? currentPlugin;
-  List<SearchInfo> results = <SearchInfo>[];
+  StatefulHolder<List<SearchInfo>?> results =
+      StatefulHolder<List<SearchInfo>?>(null);
 
   extensions.ExtensionType popupPluginType = extensions.ExtensionType.anime;
+  search_page.PageArguments? args;
 
   late Widget placeholderImage;
-  late search_page.PageArguments args;
 
   final TextEditingController textController = TextEditingController();
   final Duration animationDuration = const Duration(milliseconds: 300);
@@ -121,25 +120,20 @@ class _PageState extends State<Page> {
           ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
         );
 
-        if (args.pluginType != null) {
+        if (args?.pluginType != null) {
           setState(() {
-            _setCurrentPreferredPlugin(args.pluginType!.type);
+            _setCurrentPreferredPlugin(args!.pluginType!.type);
           });
         }
 
-        if (args.terms != null) {
+        if (args?.terms?.isNotEmpty ?? false) {
           setState(() {
-            textController.text = args.terms!;
+            textController.text = args!.terms!;
           });
 
-          if (args.autoSearch == true) {
-            final List<SearchInfo> res = await search();
-            if (mounted) {
-              setState(() {
-                results = res;
-                state = LoadState.resolved;
-              });
-            }
+          if (currentPlugin != null && (args?.autoSearch ?? false)) {
+            args!.autoSearch = false;
+            await search();
           }
         }
       }
@@ -181,29 +175,46 @@ class _PageState extends State<Page> {
     }
   }
 
-  Future<List<SearchInfo>> search() async {
-    final List<SearchInfo> results = <SearchInfo>[];
-    final List<extensions.SearchInfo> searches =
-        await currentPlugin!.plugin.search(
-      textController.text,
-      Translator.t.code.code,
-    );
+  Future<void> search() async {
+    if (currentPlugin != null && mounted) {
+      setState(() {
+        results.resolving(null);
+      });
 
-    results.addAll(
-      searches.map(
-        (final extensions.SearchInfo x) => SearchInfo(
-          title: x.title,
-          url: x.url,
-          thumbnail: x.thumbnail,
-          locale: x.locale,
-          pluginId: currentPlugin!.plugin.id,
-          pluginName: currentPlugin!.plugin.name,
-          pluginType: currentPlugin!.type,
-        ),
-      ),
-    );
+      try {
+        final List<extensions.SearchInfo> searches =
+            await currentPlugin!.plugin.search(
+          textController.text,
+          Translator.t.code.code,
+        );
 
-    return results;
+        if (mounted) {
+          setState(() {
+            results.resolve(
+              searches
+                  .map(
+                    (final extensions.SearchInfo x) => SearchInfo(
+                      title: x.title,
+                      url: x.url,
+                      thumbnail: x.thumbnail,
+                      locale: x.locale,
+                      pluginId: currentPlugin!.plugin.id,
+                      pluginName: currentPlugin!.plugin.name,
+                      pluginType: currentPlugin!.type,
+                    ),
+                  )
+                  .toList(),
+            );
+          });
+        }
+      } catch (err) {
+        if (mounted) {
+          setState(() {
+            results.fail(null);
+          });
+        }
+      }
+    }
   }
 
   Widget getPluginWidget(final CurrentPlugin plugin) => Material(
@@ -217,16 +228,22 @@ class _PageState extends State<Page> {
             if (val != null) {
               setState(() {
                 currentPlugin = plugin;
-                DataStore.preferences.lastSelectedSearchType = plugin.type.type;
-                DataStore.preferences.lastSelectedSearchPlugins ??=
-                    <String, String>{};
-                DataStore.preferences
-                        .lastSelectedSearchPlugins![plugin.type.type] =
-                    plugin.plugin.id;
-                Navigator.of(context).pop();
               });
 
+              DataStore.preferences.lastSelectedSearchType = plugin.type.type;
+              DataStore.preferences
+                  .setLastSelectedSearchPlugin(plugin.type, plugin.plugin);
+
               await DataStore.preferences.save();
+
+              if (mounted) {
+                Navigator.of(context).pop();
+
+                if (args?.autoSearch ?? false) {
+                  args!.autoSearch = false;
+                  await search();
+                }
+              }
             }
           },
         ),
@@ -476,64 +493,17 @@ class _PageState extends State<Page> {
                     enabled: currentPlugin != null,
                   ),
                   onSubmitted: (final String terms) async {
-                    setState(() {
-                      state = LoadState.resolving;
-                    });
-
-                    try {
-                      final List<SearchInfo> res = await search();
-                      setState(() {
-                        results = res;
-                        state = LoadState.resolved;
-                      });
-                    } catch (e) {
-                      setState(() {
-                        state = LoadState.failed;
-                      });
-                    }
+                    await search();
                   },
                 ),
                 SizedBox(
                   height: remToPx(1.25),
                 ),
-                Visibility(
-                  visible: (state == LoadState.resolved && results.isEmpty) ||
-                      state == LoadState.waiting ||
-                      state == LoadState.failed,
-                  child: Align(
-                    child: Text(
-                      state == LoadState.waiting
-                          ? Translator.t.enterToSearch()
-                          : state == LoadState.resolved
-                              ? Translator.t.noResultsFound()
-                              : state == LoadState.failed
-                                  ? Translator.t.failedToGetResults()
-                                  : '',
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .color!
-                            .withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: state == LoadState.resolving,
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: remToPx(1.5),
-                    ),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                ),
-                Visibility(
-                  visible: state == LoadState.resolved && results.isNotEmpty,
-                  child: Column(
+                if (results.hasResolved && results.value!.isNotEmpty)
+                  Column(
                     children: getGridded(
                       MediaQuery.of(context).size.width.toInt(),
-                      results
+                      results.value!
                           .map(
                             (final SearchInfo x) => Card(
                               child: InkWell(
@@ -609,8 +579,33 @@ class _PageState extends State<Page> {
                           )
                           .toList(),
                     ),
+                  )
+                else if (results.isResolving)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: remToPx(1.5),
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  Center(
+                    child: Text(
+                      results.isWaiting
+                          ? (args?.autoSearch ?? false
+                              ? Translator.t.selectAPluginToGetResults()
+                              : Translator.t.enterToSearch())
+                          : results.hasResolved
+                              ? Translator.t.noResultsFound()
+                              : Translator.t.failedToGetResults(),
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .color!
+                            .withOpacity(0.7),
+                      ),
+                    ),
                   ),
-                )
               ],
             ),
           ),

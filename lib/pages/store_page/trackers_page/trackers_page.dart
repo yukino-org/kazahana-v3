@@ -160,6 +160,17 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
                                     color: Colors.white,
                                   ),
                             ),
+                          )
+                        else
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: remToPx(0.75),
+                              right: remToPx(0.25),
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.green[400],
+                            ),
                           ),
                       ],
                     ),

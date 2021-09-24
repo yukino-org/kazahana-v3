@@ -1,3 +1,4 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:hive/hive.dart';
 import '../../database.dart';
 
@@ -10,9 +11,19 @@ class PreferencesSchema extends HiveObject {
     final this.lastSelectedSearchPlugins,
   });
 
-  @HiveField(2)
+  @HiveField(1)
   String? lastSelectedSearchType;
 
-  @HiveField(3)
+  @HiveField(2)
   Map<String, String>? lastSelectedSearchPlugins;
+
+  void setLastSelectedSearchPlugin(
+    final extensions.ExtensionType type,
+    final extensions.BaseExtractor ext,
+  ) {
+    lastSelectedSearchPlugins = <String, String>{
+      type.type: ext.id,
+      if (lastSelectedSearchPlugins != null) ...lastSelectedSearchPlugins!
+    };
+  }
 }

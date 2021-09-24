@@ -17,8 +17,8 @@ class PreferencesSchemaAdapter extends TypeAdapter<PreferencesSchema> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PreferencesSchema(
-      lastSelectedSearchType: fields[2] as String?,
-      lastSelectedSearchPlugins: (fields[3] as Map?)?.cast<String, String>(),
+      lastSelectedSearchType: fields[1] as String?,
+      lastSelectedSearchPlugins: (fields[2] as Map?)?.cast<String, String>(),
     );
   }
 
@@ -26,9 +26,9 @@ class PreferencesSchemaAdapter extends TypeAdapter<PreferencesSchema> {
   void write(BinaryWriter writer, PreferencesSchema obj) {
     writer
       ..writeByte(2)
-      ..writeByte(2)
+      ..writeByte(1)
       ..write(obj.lastSelectedSearchType)
-      ..writeByte(3)
+      ..writeByte(2)
       ..write(obj.lastSelectedSearchPlugins);
   }
 
