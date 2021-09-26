@@ -161,6 +161,7 @@ class HorizontalEntityList extends StatelessWidget {
                                       vertical: remToPx(0.2),
                                     ),
                                     child: RichText(
+                                      textAlign: TextAlign.center,
                                       text: TextSpan(
                                         children: <InlineSpan>[
                                           TextSpan(

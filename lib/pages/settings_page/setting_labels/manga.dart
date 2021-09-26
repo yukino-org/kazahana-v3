@@ -1,6 +1,6 @@
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import '../../../plugins/database/schemas/settings/settings.dart';
+import '../../../plugins/state.dart';
 import '../../../plugins/translator/translator.dart';
 import '../setting_radio.dart';
 import '../setting_switch.dart';
@@ -24,7 +24,7 @@ List<Widget> getManga(
           await save();
         },
       ),
-      if (Platform.isAndroid || Platform.isIOS)
+      if (AppState.isMobile)
         SettingRadio<MangaSwipeDirections>(
           title: Translator.t.mangaReaderSwipeDirection(),
           icon: Icons.swipe,
@@ -65,7 +65,7 @@ List<Widget> getManga(
         },
       ),
       Visibility(
-        visible: Platform.isLinux || Platform.isLinux || Platform.isWindows,
+        visible: AppState.isDesktop,
         child: SettingSwitch(
           title: Translator.t.autoMangaFullscreen(),
           icon: settings.mangaAutoFullscreen

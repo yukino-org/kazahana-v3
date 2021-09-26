@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import '../../components/bar_item.dart';
 import '../../components/bottom_bar.dart' as bottom_bar;
@@ -61,9 +60,9 @@ class _PageState extends State<Page> {
     controller = PageController(initialPage: currentIndex);
 
     Future<void>.delayed(Duration.zero, () {
-      if (AppState.afterInitialRoute != null) {
-        Navigator.of(context).pushNamed(AppState.afterInitialRoute!);
-        AppState.afterInitialRoute = null;
+      // TODO: handle within AppState
+      if (AppState.launchRoute != null) {
+        Navigator.of(context).pushNamed(AppState.launchRoute!);
       }
     });
   }
@@ -75,7 +74,7 @@ class _PageState extends State<Page> {
       );
 
   Widget applySideIfSupported(final Widget body, final List<BarItem> items) {
-    if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    if (AppState.isDesktop) {
       return Stack(
         children: <Widget>[
           Positioned.fill(
@@ -135,7 +134,7 @@ class _PageState extends State<Page> {
           barItems,
         ),
       ),
-      bottomNavigationBar: Platform.isAndroid || Platform.isIOS
+      bottomNavigationBar: AppState.isMobile
           ? bottom_bar.BottomBar(
               items: barItems,
             )

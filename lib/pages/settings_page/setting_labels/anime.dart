@@ -1,8 +1,8 @@
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import '../../../core/models/player.dart' show Player;
 import '../../../plugins/database/schemas/settings/settings.dart';
 import '../../../plugins/helpers/ui.dart';
+import '../../../plugins/state.dart';
 import '../../../plugins/translator/translator.dart';
 import '../setting_dialog.dart';
 import '../setting_switch.dart';
@@ -12,7 +12,7 @@ List<Widget> getAnime(
   final Future<void> Function() save,
 ) =>
     <Widget>[
-      if (Platform.isAndroid || Platform.isIOS)
+      if (AppState.isMobile)
         SettingSwitch(
           title: Translator.t.landscapeVideoPlayer(),
           icon: Icons.screen_lock_landscape,
@@ -195,7 +195,7 @@ List<Widget> getAnime(
         },
       ),
       Visibility(
-        visible: Platform.isLinux || Platform.isLinux || Platform.isWindows,
+        visible: AppState.isDesktop,
         child: SettingSwitch(
           title: Translator.t.autoAnimeFullscreen(),
           icon: settings.animeAutoFullscreen

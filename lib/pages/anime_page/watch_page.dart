@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -299,7 +298,7 @@ class WatchPageState extends State<WatchPage>
   }
 
   void _updateLandscape([final bool reset = false]) {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (AppState.isMobile) {
       SystemChrome.setPreferredOrientations(
         !reset && AppState.settings.current.fullscreenVideoPlayer
             ? <DeviceOrientation>[
