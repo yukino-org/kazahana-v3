@@ -3,8 +3,10 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:native_bridge/window_utils.dart';
 import 'package:window_manager/window_manager.dart';
 import './eventer.dart';
+import '../state.dart';
 
 class ScreenState {
   ScreenState({
@@ -75,7 +77,7 @@ abstract class Screen {
   static bool isFullscreened = false;
 
   static Future<void> initialize() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (AppState.isMobile) {
       SystemChrome.setSystemUIChangeCallback((final bool fullscreen) async {
         isFullscreened = fullscreen;
 
@@ -84,10 +86,33 @@ abstract class Screen {
     }
   }
 
+  static Future<void> setTitle(final String title) async {
+    if (!AppState.isDesktop) return;
+
+    await WindowManager.instance.setTitle(title);
+  }
+
+  static Future<void> close() async {
+    if (!AppState.isDesktop) return;
+
+    await WindowManager.instance.terminate();
+  }
+
+  static Future<void> focus() async {
+    if (!AppState.isDesktop) return;
+
+    WindowManager.instance.show();
+    if (Platform.isLinux || Platform.isMacOS) {
+      WindowManager.instance.focus();
+    } else {
+      await WindowUtils.focus();
+    }
+  }
+
   static Future<ScreenState?> enterFullscreen() async {
     ScreenState? state;
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (AppState.isMobile) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     } else {
       state = ScreenState(
@@ -103,7 +128,7 @@ abstract class Screen {
   }
 
   static Future<void> exitFullscreen([final ScreenState? state]) async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (AppState.isMobile) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     } else {
       WindowManager.instance.setFullScreen(false);

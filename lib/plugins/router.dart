@@ -5,6 +5,7 @@ import '../pages/home_page/home_page.dart' as home_page;
 import '../pages/manga_page/manga_page.dart' as manga_page;
 import '../pages/search_page/search_page.dart' as search_page;
 import '../pages/settings_page/settings_page.dart' as settings_page;
+import '../pages/splash_page/splash_page.dart' as splash_page;
 import '../pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
 import '../pages/store_page/store_page.dart' as store_page;
 import '../pages/store_page/trackers_page/anilist_page/anilist_page.dart'
@@ -17,10 +18,10 @@ import '../plugins/translator/translator.dart';
 abstract class RouteNames {
   static const String initialRoute = '/';
 
-  static const String homeHandler = '/';
-  static const String home = '/home';
-  static const String search = '/search';
-  static const String store = '/store';
+  static const String homeHandler = '/home';
+  static const String home = '/home/home';
+  static const String search = '/home/search';
+  static const String store = '/home/store';
   static const String settings = '/settings';
   static const String animePage = '/anime_page';
   static const String mangaPage = '/manga_page';
@@ -122,6 +123,10 @@ abstract class RouteManager {
 
   static final Map<String, RouteInfo> routes = <RouteInfo>[
     RouteInfo(
+      route: RouteNames.initialRoute,
+      builder: (final BuildContext context) => const splash_page.Page(),
+    ),
+    RouteInfo(
       name: Translator.t.home,
       route: RouteNames.home,
       icon: Icons.home,
@@ -173,7 +178,7 @@ abstract class RouteManager {
       builder: (final BuildContext context) => const stacked_home_page.Page(),
       matcher: (final ParsedRouteInfo route) => <String>[
         RouteNames.homeHandler,
-        RouteNames.homeHandler,
+        RouteNames.home,
         RouteNames.search,
         RouteNames.store,
       ].contains(route.route),

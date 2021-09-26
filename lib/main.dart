@@ -1,65 +1,26 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
-import './components/player/player.dart' as player show initialize;
-import './config.dart';
-import './core/extensions.dart';
 import './core/models/languages.dart' show LanguageName;
-import './core/trackers/trackers.dart';
-import './plugins/app_lifecycle_observer.dart';
-import './plugins/database/database.dart' show DataStore;
+import './plugins/app_lifecycle.dart';
+import './plugins/database/database.dart';
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
-import './plugins/helpers/instance_manager.dart';
-import './plugins/helpers/local_server/server.dart';
 import './plugins/helpers/logger.dart';
-import './plugins/helpers/protocol_handler.dart';
-import './plugins/helpers/screen.dart';
 import './plugins/helpers/ui.dart';
+import './plugins/helpers/utils/string.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
 import './plugins/translator/translator.dart';
 
 Future<void> main(final List<String> args) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  WidgetsBinding.instance!.addObserver(appLifecycleObserver);
-
-  await Config.initialize();
-  await Logger.initialize();
-
-  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
-    await LocalServer.initialize();
-    Logger.info('Local server serving at ${LocalServer.baseURL}');
-
-    WindowManager.instance.setTitle('${Config.name} v${Config.version}');
+  try {
+    await AppLifecycle.preinitialize(args);
+    Logger.of(main)
+        .info('Completed ${StringUtils.type(AppLifecycle.preinitialize)}');
+  } catch (err) {
+    Logger.of(main)
+        .error('${StringUtils.type(AppLifecycle.preinitialize)} failed: $err');
   }
 
-  final InstanceInfo? primaryInstance = await InstanceManager.check();
-  if (primaryInstance != null &&
-      await InstanceManager.sendArguments(primaryInstance, args)) {
-    await WindowManager.instance.terminate();
-    return;
-  }
-
-  await InstanceManager.register();
-  await ProtocolHandler.register();
-  await DataStore.initialize();
-  await AppState.initialize();
-  await Screen.initialize();
-  Translator.setLanguage(
-    AppState.settings.current.locale != null &&
-            Translator.isSupportedLocale(
-              AppState.settings.current.locale!,
-            )
-        ? AppState.settings.current.locale!
-        : Translator.getSupportedLocale(),
-  );
-
-  await player.initialize();
-  await ExtensionsManager.initialize();
-  await Trackers.initialize();
-
-  AppState.afterInitialRoute = ProtocolHandler.parse(args);
-
+  Logger.of(main).info('Starting ${StringUtils.type(MainApp)}');
   runApp(const MainApp());
 }
 
@@ -73,9 +34,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool useSystemPreferredTheme =
-      AppState.settings.current.useSystemPreferredTheme;
-  bool useDarkMode = AppState.settings.current.useDarkMode;
+  bool useSystemPreferredTheme = DataStore.settings.useSystemPreferredTheme;
+  bool useDarkMode = DataStore.settings.useDarkMode;
 
   @override
   void initState() {

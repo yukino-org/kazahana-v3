@@ -1,9 +1,9 @@
-import 'dart:io' show Platform;
 import 'package:better_player/better_player.dart' as better_player;
 import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
+import '../../plugins/state.dart';
 
-bool isSupported() => Platform.isAndroid || Platform.isIOS;
+bool isSupported() => AppState.isMobile;
 
 class VideoPlayer extends model.Player {
   VideoPlayer(final model.PlayerSource source) : super(source);

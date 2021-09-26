@@ -3,12 +3,16 @@ import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:protocol_registry/protocol_registry.dart' as protocol_registry;
-import 'package:window_manager/window_manager.dart';
 import './assets.dart';
+import './screen.dart';
 import '../../config.dart';
 import '../router.dart';
 
 abstract class ProtocolHandler {
+  static const List<String> prohibitedRoutes = <String>[
+    RouteNames.initialRoute
+  ];
+
   static Future<void> register() async {
     final protocol_registry.ProtocolScheme scheme =
         protocol_registry.ProtocolScheme(
@@ -82,9 +86,12 @@ Icon=${Config.code}
   }
 
   static void handle(final String route) {
-    RouteManager.navigationKey.currentState!.pushNamed(route);
+    if (!prohibitedRoutes.contains(route)) {
+      RouteManager.navigationKey.currentState!.pushNamed(route);
+    }
+
     if (Platform.isWindows || Platform.isLinux) {
-      WindowManager.instance.focus();
+      Screen.focus();
     }
   }
 

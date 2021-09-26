@@ -6,6 +6,8 @@ import './schemas/credentials/credentials.dart' as credentials_schema;
 import './schemas/preferences/preferences.dart' as preferences_schema;
 import './schemas/settings/settings.dart' as settings_schema;
 import '../../config.dart';
+import '../helpers/logger.dart';
+import '../helpers/utils/string.dart';
 
 abstract class TypeIds {
   static const int settings = 1;
@@ -53,6 +55,7 @@ abstract class DataBox {
 abstract class DataStore {
   static Future<void> initialize() async {
     await Hive.initFlutter(p.join(Config.code, 'data'));
+    Logger.of(DataStore).info('Initialized ${StringUtils.type(Hive)}');
 
     Hive.registerAdapter(settings_schema.SettingsSchemaAdapter());
     Hive.registerAdapter(settings_schema.MangaDirectionsAdapter());
@@ -61,21 +64,31 @@ abstract class DataStore {
     await Hive.openBox<settings_schema.SettingsSchema>(
       DataStoreBoxNames.settings,
     );
+    Logger.of(DataStore)
+        .info('Registered ${StringUtils.type(settings_schema.SettingsSchema)}');
 
     Hive.registerAdapter(credentials_schema.CredentialsSchemaAdapter());
     await Hive.openBox<credentials_schema.CredentialsSchema>(
       DataStoreBoxNames.credentials,
+    );
+    Logger.of(DataStore).info(
+      'Registered ${StringUtils.type(credentials_schema.CredentialsSchema)}',
     );
 
     Hive.registerAdapter(preferences_schema.PreferencesSchemaAdapter());
     await Hive.openBox<preferences_schema.PreferencesSchema>(
       DataStoreBoxNames.preferences,
     );
+    Logger.of(DataStore).info(
+      'Registered ${StringUtils.type(preferences_schema.PreferencesSchema)}',
+    );
 
     Hive.registerAdapter(cache_schema.CacheSchemaAdapter());
     await Hive.openBox<cache_schema.CacheSchema>(
       DataStoreBoxNames.cache,
     );
+    Logger.of(DataStore)
+        .info('Registered ${StringUtils.type(cache_schema.CacheSchema)}');
   }
 
   static settings_schema.SettingsSchema get settings {

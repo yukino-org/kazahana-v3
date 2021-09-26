@@ -25,6 +25,8 @@ dependencies:
     hive_flutter: ^1.1.0
     html: ^0.15.0
     http: ^0.13.3
+    native_bridge:
+        path: packages/native_bridge
     package_info_plus: ^1.0.5
     path: ^1.8.0
     path_provider: ^2.0.2

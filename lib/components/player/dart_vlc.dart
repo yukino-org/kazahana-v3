@@ -1,17 +1,16 @@
-import 'dart:io' show Platform;
 import 'dart:math';
 import 'package:dart_vlc/dart_vlc.dart' as dart_vlc;
 import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
 import '../../plugins/helpers/local_server/routes/proxy.dart'
     show getProxiedURL;
+import '../../plugins/state.dart';
 
 Future<void> initialize() async {
   dart_vlc.DartVLC.initialize();
 }
 
-bool isSupported() =>
-    Platform.isLinux || Platform.isMacOS || Platform.isWindows;
+bool isSupported() => AppState.isDesktop;
 
 class VideoPlayer extends model.Player {
   VideoPlayer(final model.PlayerSource source) : super(source);
