@@ -1,4 +1,4 @@
-import { basename, dirname, join } from "path";
+import { dirname, join } from "path";
 import { ensureDir, readFile, writeFile, readdir, rename } from "fs-extra";
 import * as png2icons from "png2icons";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
@@ -31,7 +31,7 @@ export const build = async () => {
             "create-dmg",
             [
                 "--volname",
-                `"${config.name} v${version} Installer"`,
+                `"${config.code}"`,
                 "--volicon",
                 `"${icns}"`,
                 // "--background",
@@ -55,16 +55,16 @@ export const build = async () => {
                 "--app-drop-link 540 250",
                 "--hdiutil-quiet",
                 `"${outName}"`,
-                `"${buildDir}"`,
+                `"${config.name}.app"`,
             ],
-            config.base
+            buildDir
         )
     );
 
-    console.log((await readdir(config.base)).join(","));
+    console.log((await readdir(buildDir)).join(","));
 
     const finalPath = join(config.macos.packed, outName);
     await ensureDir(dirname(finalPath));
-    await rename(join(config.base, outName), finalPath);
+    await rename(join(buildDir, outName), finalPath);
     logger.log(`Dmg created: ${finalPath}`);
 };
