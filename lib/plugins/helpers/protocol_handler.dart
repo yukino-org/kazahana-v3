@@ -31,7 +31,7 @@ abstract class ProtocolHandler {
         p.join(Platform.environment['HOME']!, '.icons/${Config.code}.png'),
       );
 
-      if (await icon.exists() == false) {
+      if (!(await icon.exists())) {
         await icon.create(recursive: true);
 
         final ByteData image = await rootBundle.load(Assets.yukinoIcon);
@@ -52,7 +52,7 @@ Icon=${Config.code}
       final String path = registry.getDesktopFilePath(scheme);
       final File file = File(path);
 
-      if (await file.exists() == false) {
+      if (!(await file.exists())) {
         await file.create(recursive: true);
       }
 

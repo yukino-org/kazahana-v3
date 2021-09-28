@@ -31,9 +31,13 @@ class Logger {
     _write(_msg);
   }
 
-  void error(final String msg) {
+  void error(final String msg, [final StackTrace? trace]) {
     final String _msg = '[$time ERR!] $name: $msg';
     _write(_msg);
+
+    trace.toString().split('\n').forEach((final String x) {
+      _write('  $x');
+    });
   }
 
   static late String path;
@@ -54,7 +58,7 @@ class Logger {
     );
 
     final File file = File(path);
-    if (await file.exists() == false) {
+    if (!(await file.exists())) {
       await file.create(recursive: true);
     }
 

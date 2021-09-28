@@ -45,23 +45,61 @@ abstract class AppLifecycle {
 
     await Config.initialize();
     await Logger.initialize();
+
     Logger.of(AppLifecycle)
         .info('Starting ${StringUtils.type(AppLifecycle.preinitialize)}');
 
     if (AppState.isDesktop) {
-      await LocalServer.initialize();
+      try {
+        await LocalServer.initialize();
+        Logger.of(LocalServer)
+          ..info('Finsihed ${StringUtils.type(LocalServer.initialize)}')
+          ..info('Serving at ${LocalServer.baseURL}');
+      } catch (err, trace) {
+        Logger.of(LocalServer).error(
+          '${StringUtils.type(LocalServer.initialize)} failed: $err',
+          trace,
+        );
+      }
 
       Screen.setTitle('${Config.name} v${Config.version}');
     }
 
-    final InstanceInfo? primaryInstance = await InstanceManager.check();
-    if (primaryInstance != null &&
-        await InstanceManager.sendArguments(primaryInstance, args)) {
+    InstanceInfo? primaryInstance;
+    try {
+      primaryInstance = await InstanceManager.check();
+    } catch (err, trace) {
+      Logger.of(InstanceManager).error(
+        '${StringUtils.type(InstanceManager.check)} failed: $err',
+        trace,
+      );
+    }
+
+    if (primaryInstance != null) {
+      try {
+        await InstanceManager.sendArguments(primaryInstance, args);
+        Logger.of(InstanceManager).info(
+          'Finsihed ${StringUtils.type(InstanceManager.sendArguments)}',
+        );
+      } catch (err, trace) {
+        Logger.of(InstanceManager).error(
+          '${StringUtils.type(InstanceManager.sendArguments)} failed: $err',
+          trace,
+        );
+      }
+
       await Screen.close();
       return;
     }
 
-    await DataStore.initialize();
+    try {
+      await DataStore.initialize();
+    } catch (err, trace) {
+      Logger.of(DataStore).error(
+        '${StringUtils.type(DataStore.initialize)} failed: $err',
+        trace,
+      );
+    }
 
     Translator.setLanguage(
       DataStore.settings.locale != null &&
@@ -80,13 +118,82 @@ abstract class AppLifecycle {
   }
 
   static Future<void> initialize() async {
-    await InstanceManager.register();
-    await AppState.initialize();
-    await ProtocolHandler.register();
-    await Screen.initialize();
-    await player.initialize();
-    await ExtensionsManager.initialize();
-    await Trackers.initialize();
+    try {
+      await InstanceManager.register();
+      Logger.of(InstanceManager).info(
+        'Finished ${StringUtils.type(InstanceManager.register)}',
+      );
+    } catch (err, trace) {
+      Logger.of(InstanceManager).error(
+        '${StringUtils.type(InstanceManager.register)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await AppState.initialize();
+      Logger.of(AppState)
+          .info('Finished ${StringUtils.type(AppState.initialize)}');
+    } catch (err, trace) {
+      Logger.of(AppState).error(
+        '${StringUtils.type(AppState.initialize)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await ProtocolHandler.register();
+      Logger.of(ProtocolHandler)
+          .info('Finished ${StringUtils.type(ProtocolHandler.register)}');
+    } catch (err, trace) {
+      Logger.of(ProtocolHandler).error(
+        '${StringUtils.type(ProtocolHandler.register)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await Screen.initialize();
+      Logger.of(Screen).info('Finished ${StringUtils.type(Screen.initialize)}');
+    } catch (err, trace) {
+      Logger.of(Screen).error(
+        '${StringUtils.type(Screen.initialize)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await player.initialize();
+      Logger.of(player.initialize)
+          .info('Finished ${StringUtils.type(player.initialize)}');
+    } catch (err, trace) {
+      Logger.of(player.initialize).error(
+        '${StringUtils.type(player.initialize)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await ExtensionsManager.initialize();
+      Logger.of(ExtensionsManager)
+          .info('Finished ${StringUtils.type(ExtensionsManager.initialize)}');
+    } catch (err, trace) {
+      Logger.of(ExtensionsManager).error(
+        '${StringUtils.type(ExtensionsManager.initialize)} failed: $err',
+        trace,
+      );
+    }
+
+    try {
+      await Trackers.initialize();
+      Logger.of(Trackers)
+          .info('Finished ${StringUtils.type(Trackers.initialize)}');
+    } catch (err, trace) {
+      Logger.of(Trackers).error(
+        '${StringUtils.type(Trackers.initialize)} failed: $err',
+        trace,
+      );
+    }
 
     preready = false;
     events.dispatch(AppLifecycleEvents.ready);

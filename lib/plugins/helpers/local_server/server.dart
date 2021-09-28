@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import './routes.dart';
-import '../logger.dart';
 
 abstract class LocalServer {
   static bool ready = false;
@@ -35,8 +34,6 @@ abstract class LocalServer {
   static Future<void> initialize() async {
     server = await shelf_io.serve(_handler, host, port);
     port = server!.port;
-
-    Logger.of(LocalServer).info('Serving at ${LocalServer.baseURL}');
   }
 
   static String get baseURL => '$protocol://$host:$port';

@@ -17,7 +17,7 @@ export const build = async () => {
     );
 
     const zip = new AdmZip();
-    zip.addLocalFolder(built, built.match(/[^\\/]+$/)![0]);
+    zip.addLocalFolder(built, "Payload");
 
     const out = join(
         config.ios.packed,

@@ -15,9 +15,11 @@ Future<void> main(final List<String> args) async {
     await AppLifecycle.preinitialize(args);
     Logger.of(main)
         .info('Completed ${StringUtils.type(AppLifecycle.preinitialize)}');
-  } catch (err) {
-    Logger.of(main)
-        .error('${StringUtils.type(AppLifecycle.preinitialize)} failed: $err');
+  } catch (err, trace) {
+    Logger.of(main).error(
+      '${StringUtils.type(AppLifecycle.preinitialize)} failed: $err',
+      trace,
+    );
   }
 
   Logger.of(main).info('Starting ${StringUtils.type(MainApp)}');

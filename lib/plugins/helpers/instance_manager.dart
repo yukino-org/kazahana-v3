@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import './local_server/routes/ping.dart' as ping_route;
 import './local_server/routes/protocol.dart' as protocol_route;
 import './local_server/server.dart';
+import './logger.dart';
+import './utils/string.dart';
 import '../../config.dart';
 
 class InstanceInfo {
@@ -35,23 +37,25 @@ abstract class InstanceManager {
 
     if (await file.exists()) {
       final String content = await file.readAsString();
-      InstanceInfo? instance;
 
+      InstanceInfo? instance;
       try {
         instance = InstanceInfo.fromJson(
           json.decode(utf8.decode(base64.decode(content)))
               as Map<dynamic, dynamic>,
         );
-      } catch (_) {}
-
-      if (instance != null) {
-        try {
-          final http.Response res = await http.get(
-            Uri.parse('${instance.serverURL}/${ping_route.route.route}'),
-          );
-          if (res.statusCode == 200) return instance;
-        } catch (_) {}
+      } catch (err) {
+        rethrow;
       }
+
+      try {
+        final http.Response res = await http.get(
+          Uri.parse('${instance.serverURL}/${ping_route.route.route}'),
+        );
+        if (res.statusCode == 200) {
+          return instance;
+        }
+      } catch (_) {}
     }
   }
 
@@ -67,24 +71,28 @@ abstract class InstanceManager {
       base64.encode(utf8.encode(json.encode(instance.toJson()))),
     );
 
+    Logger.of(InstanceManager)
+        .info('Finished ${StringUtils.type(InstanceManager.register)}');
+
     return instance;
   }
 
-  static Future<bool> sendArguments(
+  static Future<void> sendArguments(
     final InstanceInfo info,
     final List<String> args,
   ) async {
-    try {
-      final http.Response res = await http.post(
-        Uri.parse('${info.serverURL}/${protocol_route.route.route}'),
-        body: json.encode(args),
-        headers: <String, String>{
-          'Content-Type': ContentType.json.value,
-        },
+    final http.Response res = await http.post(
+      Uri.parse('${info.serverURL}/${protocol_route.route.route}'),
+      body: json.encode(args),
+      headers: <String, String>{
+        'Content-Type': ContentType.json.value,
+      },
+    );
+    if (<int>[200, 400].contains(res.statusCode)) {
+      Logger.of(InstanceManager).info(
+        'Finished ${StringUtils.type(InstanceManager.sendArguments)}',
       );
-      if (<int>[200, 400].contains(res.statusCode)) return true;
-    } catch (_) {}
-    return false;
+    }
   }
 
   static Future<String> _getPath() async {
