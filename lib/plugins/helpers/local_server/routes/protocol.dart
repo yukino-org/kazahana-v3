@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
+import '../../deeplink.dart';
 import '../../protocol_handler.dart';
 import '../routes.dart';
 
@@ -16,7 +17,12 @@ final ServerRoute route = ServerRoute(
     if (args is List<dynamic> && args.every((final dynamic x) => x is String)) {
       final String? route = ProtocolHandler.fromArgs(args.cast<String>());
       if (route != null) {
-        ProtocolHandler.handle(route);
+        if (Deeplink.hasHandledInitialLink) {
+          ProtocolHandler.handle(route);
+        } else {
+          Deeplink.link = route;
+        }
+
         return Response(200);
       }
     }

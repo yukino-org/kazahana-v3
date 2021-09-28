@@ -62,8 +62,9 @@ void NativeBridgePlugin::HandleMethodCall(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("focusWindow") == 0) {
     HWND hWnd = GetRootWindow(registrar->GetView());
-    ::ShowWindow(hWnd, SW_RESTORE);
+    ::ShowWindow(hWnd, SW_SHOW);
     ::SetForegroundWindow(hWnd);
+    ::BringWindowToTop(hWnd);
     result->Success();
   } else {
     result->NotImplemented();
