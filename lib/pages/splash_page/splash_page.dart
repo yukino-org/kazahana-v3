@@ -21,8 +21,11 @@ class _PageState extends State<Page> with RouteAware {
     super.initState();
 
     Future<void>.delayed(Duration.zero, () async {
-      await AppLifecycle.initialize();
-      await Future<void>.delayed(const Duration(seconds: 2));
+      if (!AppLifecycle.ready) {
+        await AppLifecycle.initialize();
+        await Future<void>.delayed(const Duration(seconds: 2));
+      }
+
       if (mounted) {
         Navigator.of(context).pushNamed(RouteNames.home);
       }

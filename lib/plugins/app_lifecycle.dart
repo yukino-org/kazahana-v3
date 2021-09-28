@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './database/database.dart';
+import './helpers/deeplink.dart';
 import './helpers/eventer.dart';
 import './helpers/instance_manager.dart';
 import './helpers/local_server/server.dart';
@@ -110,7 +111,7 @@ abstract class AppLifecycle {
           : Translator.getSupportedLocale(),
     );
 
-    AppState.launchRoute = ProtocolHandler.parse(args);
+    Deeplink.link = ProtocolHandler.fromArgs(args);
     preready = true;
     events.dispatch(AppLifecycleEvents.preready);
     Logger.of(AppLifecycle)

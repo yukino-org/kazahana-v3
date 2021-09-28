@@ -35,6 +35,7 @@ dependencies:
             url: https://github.com/zyrouge/dart_protocol_registry.git
             ref: 885fc4bdaf6a60e5fd27013b876a9d6bec3addc2
     shelf: ^1.2.0
+    uni_links: ^0.5.1
     url_launcher: ^6.0.9
     window_manager:
         git:

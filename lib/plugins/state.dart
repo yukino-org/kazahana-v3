@@ -4,8 +4,6 @@ import './database/schemas/settings/settings.dart' as settings_schema;
 import './helpers/stater.dart';
 
 abstract class AppState {
-  static String? launchRoute;
-
   static final SubscriberManager<settings_schema.SettingsSchema> settings =
       SubscriberManager<settings_schema.SettingsSchema>();
 

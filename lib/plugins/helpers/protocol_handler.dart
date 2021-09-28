@@ -64,34 +64,37 @@ Icon=${Config.code}
     }
   }
 
-  static String? parse(final List<String> args) {
-    String? url = args.firstOrNull;
+  static String? fromArgs(final List<String> args) {
+    final String? url = args.firstOrNull;
+    return url != null ? parse(url) : null;
+  }
 
-    if (url != null) {
-      if (url.startsWith(protocolPrefix)) {
-        url = url.substring(protocolPrefix.length);
-      }
+  static String? parse(final String _url) {
+    String url = _url;
 
-      if (!url.startsWith('/')) {
-        url = '/$url';
-      }
-
-      return RouteManager.tryGetRouteFromParsedRouteInfo(
-                ParsedRouteInfo.fromURI(url),
-              ) !=
-              null
-          ? url
-          : null;
+    if (url.startsWith(protocolPrefix)) {
+      url = url.substring(protocolPrefix.length);
     }
+
+    if (!url.startsWith('/')) {
+      url = '/$url';
+    }
+
+    return RouteManager.tryGetRouteFromParsedRouteInfo(
+              ParsedRouteInfo.fromURI(url),
+            ) !=
+            null
+        ? url
+        : null;
   }
 
   static void handle(final String route) {
     if (!prohibitedRoutes.contains(route)) {
-      RouteManager.navigationKey.currentState!.pushNamed(route);
-    }
-
-    if (Platform.isWindows || Platform.isLinux) {
-      Screen.focus();
+      final String? link = ProtocolHandler.parse(route);
+      if (link != null) {
+        RouteManager.navigationKey.currentState!.pushNamed(link);
+        Screen.focus();
+      }
     }
   }
 

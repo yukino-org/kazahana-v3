@@ -14,7 +14,7 @@ final ServerRoute route = ServerRoute(
     } catch (_) {}
 
     if (args is List<dynamic> && args.every((final dynamic x) => x is String)) {
-      final String? route = ProtocolHandler.parse(args.cast<String>());
+      final String? route = ProtocolHandler.fromArgs(args.cast<String>());
       if (route != null) {
         ProtocolHandler.handle(route);
         return Response(200);
