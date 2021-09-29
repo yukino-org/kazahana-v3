@@ -12,7 +12,7 @@ dependencies:
     better_player: ^0.0.75
     collection: ^1.15.0
     crypto: ^3.0.1
-    dart_vlc: ^0.1.4
+    dart_vlc: ^0.1.8
     encrypt: ^5.0.0
     extensions:
         path: packages/extensions
