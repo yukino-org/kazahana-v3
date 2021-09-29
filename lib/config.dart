@@ -20,6 +20,9 @@ abstract class Config {
 
   static const String storeURL =
       'https://raw.githubusercontent.com/yukino-app/extensions-store/dist/extensions.json';
+
+  static String updatesURL(final String filename) =>
+      'https://raw.githubusercontent.com/yukino-app/yukino/updates/$filename.json';
 }
 
 abstract class MiscSettings {

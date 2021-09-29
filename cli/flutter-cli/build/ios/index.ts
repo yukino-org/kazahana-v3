@@ -20,7 +20,7 @@ export const build = async () => {
 
     const out = join(
         config.ios.packed,
-        `${config.name} v${await getVersion()} Installer.ipa`
+        `${config.name} v${await getVersion()} - ios.ipa`
     );
     await promisify(zip.writeZip)(out);
 

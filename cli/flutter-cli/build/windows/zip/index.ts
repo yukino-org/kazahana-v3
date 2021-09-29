@@ -12,7 +12,7 @@ export const zip = async () => {
     const version = await getVersion();
     const out = join(
         config.windows.packed,
-        `${config.name} v${version} Unpacked.zip`
+        `${config.name} v${version} - windows.zip`
     );
 
     const file = new Zip();

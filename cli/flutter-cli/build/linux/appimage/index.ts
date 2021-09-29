@@ -49,7 +49,10 @@ export const build = async () => {
         throw new Error("Failed to find generated appimage");
     }
 
-    const finalPath = join(config.linux.packed, basename(outPath));
+    const finalPath = join(
+        config.linux.packed,
+        `${config.name} v${version} - linux.AppImage`
+    );
     await ensureDir(dirname(finalPath));
     await rename(outPath, finalPath);
     logger.log(`AppImage created: ${finalPath}`);

@@ -19,7 +19,7 @@ export const build = async () => {
 
     const out = join(
         config.android.packed,
-        `${config.name} v${await getVersion()} Installer.apk`
+        `${config.name} v${await getVersion()} - android.apk`
     );
     await ensureDir(dirname(out));
     await copyFile(built, out);

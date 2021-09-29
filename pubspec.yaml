@@ -37,6 +37,7 @@ dependencies:
     shelf: ^1.2.0
     uni_links: ^0.5.1
     url_launcher: ^6.0.9
+    version: ^2.0.0
     window_manager:
         git:
             url: https://github.com/leanflutter/window_manager.git

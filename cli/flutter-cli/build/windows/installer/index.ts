@@ -20,7 +20,7 @@ export const build = async () => {
         rootDir: buildDir,
         primaryExe: `${config.code}.exe`,
         outputDir: config.windows.packed,
-        setupName: `${config.name} v${version} Setup`,
+        setupName: `${config.name} v${version} - windows`,
         appName: config.name,
         version: version,
         url: config.url,

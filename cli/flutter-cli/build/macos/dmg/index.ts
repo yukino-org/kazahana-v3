@@ -25,7 +25,7 @@ export const build = async () => {
     );
     logger.log(`Generated ${icns}`);
 
-    const outName = `${config.name} v${version} Installer.dmg`;
+    const outName = `${config.name} v${version} - macos.dmg`;
     await promisifyChildProcess(
         await spawn(
             "create-dmg",

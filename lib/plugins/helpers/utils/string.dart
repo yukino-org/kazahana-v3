@@ -32,4 +32,13 @@ abstract class StringUtils {
 
     return quotes ? '"$result"' : result;
   }
+
+  static String render(
+    final String template,
+    final Map<String, String> context,
+  ) =>
+      template.replaceAllMapped(RegExp('{{{(.*?)}}}'), (final Match match) {
+        final String key = match.group(1)!.trim();
+        return context.containsKey(key) ? context[key]! : 'null';
+      });
 }
