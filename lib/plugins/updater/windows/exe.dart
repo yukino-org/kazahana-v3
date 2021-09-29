@@ -33,6 +33,8 @@ echo Running app
 class WindowsExeUpdater with PlatformUpdater {
   @override
   Future<void> install(final UpdateInfo update) async {
+    progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
+
     final String tmp = path.join(
       (await path_provider.getTemporaryDirectory()).path,
       Config.code,
@@ -46,9 +48,13 @@ class WindowsExeUpdater with PlatformUpdater {
     }
 
     final HttpDownload download = HttpDownload(Uri.parse(update.path), zipFile);
-    download.subscribe(progress.dispatch);
+    download.subscribe((final DownloadProgress x) {
+      progress.dispatch(UpdaterEvent(UpdaterEvents.downloading, x));
+    });
 
     await download.download();
+
+    progress.dispatch(UpdaterEvent(UpdaterEvents.extracting));
 
     final String sevenZipPath = path.join(
       baseDir,
@@ -88,5 +94,7 @@ class WindowsExeUpdater with PlatformUpdater {
       includeParentEnvironment: false,
       runInShell: true,
     );
+
+    progress.dispatch(UpdaterEvent(UpdaterEvents.restarting));
   }
 }

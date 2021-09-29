@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:version/version.dart';
 import '../../config.dart';
 import '../helpers/eventer.dart';
-import '../helpers/http_download.dart';
 
 class UpdateInfo {
   UpdateInfo({
@@ -39,8 +38,22 @@ extension UpdateTypesUtils on UpdateTypes {
   String get type => toString().split('.').last;
 }
 
+enum UpdaterEvents {
+  starting,
+  downloading,
+  extracting,
+  restarting,
+}
+
+class UpdaterEvent {
+  UpdaterEvent(this.event, [final this.data]);
+
+  final UpdaterEvents event;
+  final dynamic data;
+}
+
 abstract class PlatformUpdater {
-  final Eventer<DownloadProgress> progress = Eventer<DownloadProgress>();
+  final Eventer<UpdaterEvent> progress = Eventer<UpdaterEvent>();
 
   Future<List<UpdateInfo>> getUpdates() async {
     try {
