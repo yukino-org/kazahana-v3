@@ -3,7 +3,7 @@ name: Android (Apk)
 on:
     push:
         branches:
-            - stable
+            - main
     workflow_dispatch:
 
 jobs:

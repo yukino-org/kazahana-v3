@@ -2,12 +2,12 @@ import { config } from "../../config";
 import { Logger } from "../../logger";
 import { promisifyChildProcess, spawn } from "../../spawn";
 
-const logger = new Logger("push-stable");
+const logger = new Logger("push-main");
 
 const next = "next";
-const main = "stable";
+const main = "main";
 
-export const pushStable = async () => {
+export const pushMain = async () => {
     await promisifyChildProcess(
         await spawn("git", ["checkout", main], config.base)
     );

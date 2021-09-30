@@ -3,7 +3,7 @@ name: Linux (AppImage)
 on:
     push:
         branches:
-            - stable
+            - main
     workflow_dispatch:
 
 jobs:

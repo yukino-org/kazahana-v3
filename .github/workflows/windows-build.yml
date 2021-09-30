@@ -3,7 +3,7 @@ name: Windows (Zip & Installer)
 on:
     push:
         branches:
-            - stable
+            - main
     workflow_dispatch:
 
 jobs:
