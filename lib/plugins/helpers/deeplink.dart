@@ -24,10 +24,12 @@ abstract class Deeplink {
   }
 
   static void listen() {
-    uni_links.linkStream.listen((final String? data) {
-      if (data != null) {
-        ProtocolHandler.handle(data);
-      }
-    });
+    if (AppState.isMobile) {
+      uni_links.linkStream.listen((final String? data) {
+        if (data != null) {
+          ProtocolHandler.handle(data);
+        }
+      });
+    }
   }
 }

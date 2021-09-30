@@ -41,7 +41,7 @@ class StatefulHolder<T> {
   bool get isResolving => state == LoadState.resolving;
   bool get hasResolved => state == LoadState.resolved;
   bool get hasFailed => state == LoadState.failed;
-  bool get hasValue => state == LoadState.resolved && value is T;
+  bool get hasValue => state == LoadState.resolved;
   bool get hasEnded => state == LoadState.resolved || state == LoadState.failed;
 }
 

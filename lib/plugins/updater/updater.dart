@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:version/version.dart';
+import './windows/exe.dart';
 import '../../config.dart';
 import '../helpers/eventer.dart';
 
@@ -42,7 +44,6 @@ enum UpdaterEvents {
   starting,
   downloading,
   extracting,
-  restarting,
 }
 
 class UpdaterEvent {
@@ -82,5 +83,21 @@ abstract class PlatformUpdater {
     }
   }
 
+  UpdateInfo? filterUpdate(final List<UpdateInfo> updates);
+
   Future<void> install(final UpdateInfo update);
+}
+
+abstract class Updater {
+  static final Map<RegExp, PlatformUpdater Function()> matchers =
+      <RegExp, PlatformUpdater Function()>{
+    RegExp(r'\.exe$'): () => WindowsExeUpdater(),
+  };
+
+  static PlatformUpdater? getUpdater() => matchers.entries
+      .firstWhereOrNull(
+        (final MapEntry<RegExp, PlatformUpdater Function()> x) =>
+            x.key.hasMatch(Platform.resolvedExecutable),
+      )
+      ?.value();
 }

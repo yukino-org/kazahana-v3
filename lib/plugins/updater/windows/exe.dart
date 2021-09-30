@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../../../config.dart';
@@ -32,6 +33,12 @@ echo Running app
 
 class WindowsExeUpdater with PlatformUpdater {
   @override
+  UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
+      updates.firstWhereOrNull(
+        (final UpdateInfo x) => x.path.endsWith('- windows.zip'),
+      );
+
+  @override
   Future<void> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
@@ -40,19 +47,27 @@ class WindowsExeUpdater with PlatformUpdater {
       Config.code,
     );
     final String baseDir = path.dirname(Platform.resolvedExecutable);
+    final String zipName = update.path.split('/').last;
 
-    final File zipFile = File(path.join(tmp, update.path.split('/').last));
+    final File zipFile = File(path.join(tmp, zipName));
 
     if (!(await zipFile.exists())) {
-      await zipFile.create(recursive: true);
+      final File partFile = File(path.join(tmp, '$zipName.part'));
+
+      if (!(await partFile.exists())) {
+        await partFile.create(recursive: true);
+      }
+
+      final HttpDownload download =
+          HttpDownload(Uri.parse(update.path), partFile);
+
+      download.subscribe((final DownloadProgress x) {
+        progress.dispatch(UpdaterEvent(UpdaterEvents.downloading, x));
+      });
+
+      await download.download();
+      await partFile.rename(zipFile.path);
     }
-
-    final HttpDownload download = HttpDownload(Uri.parse(update.path), zipFile);
-    download.subscribe((final DownloadProgress x) {
-      progress.dispatch(UpdaterEvent(UpdaterEvents.downloading, x));
-    });
-
-    await download.download();
 
     progress.dispatch(UpdaterEvent(UpdaterEvents.extracting));
 
@@ -94,7 +109,5 @@ class WindowsExeUpdater with PlatformUpdater {
       includeParentEnvironment: false,
       runInShell: true,
     );
-
-    progress.dispatch(UpdaterEvent(UpdaterEvents.restarting));
   }
 }

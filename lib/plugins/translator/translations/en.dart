@@ -332,4 +332,34 @@ class Sentences extends TranslationSentences {
 
   @override
   String selectAPluginToGetResults() => 'Select a plugin to get results';
+
+  @override
+  String initializing() => 'Initializing';
+
+  @override
+  String downloadingVersion(
+    final String version,
+    final String downloaded,
+    final String total,
+    final String percent,
+  ) =>
+      'Downloading $version ($downloaded / $total - $percent)';
+
+  @override
+  String unpackingVersion(final String version) => 'Unpacking $version';
+
+  @override
+  String restartingApp() => 'Restarting the app';
+
+  @override
+  String checkingForUpdates() => 'Checking for updates';
+
+  @override
+  String updatingToVersion(final String version) => 'Updating to $version';
+
+  @override
+  String failedToUpdate(final String err) => 'Failed to update: $err';
+
+  @override
+  String startingApp() => 'Starting app';
 }

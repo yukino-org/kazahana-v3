@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import './home_page.dart';
 import '../../core/provisions/myanimelist/home.dart' as mal;
 import '../../plugins/helpers/stateful_holder.dart';

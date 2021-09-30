@@ -110,4 +110,17 @@ abstract class TranslationSentences {
   String recommendedBy(final String by);
   String seasonalAnimes();
   String selectAPluginToGetResults();
+  String initializing();
+  String downloadingVersion(
+    final String version,
+    final String downloaded,
+    final String total,
+    final String percent,
+  );
+  String unpackingVersion(final String version);
+  String restartingApp();
+  String checkingForUpdates();
+  String updatingToVersion(final String version);
+  String failedToUpdate(final String err);
+  String startingApp();
 }

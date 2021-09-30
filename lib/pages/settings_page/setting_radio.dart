@@ -107,9 +107,7 @@ class SettingRadio<T extends Object> extends StatelessWidget {
                                     groupValue: value,
                                     activeColor: Theme.of(context).primaryColor,
                                     onChanged: (final T? val) {
-                                      if (val != null &&
-                                          val is T &&
-                                          val != value) {
+                                      if (val != null && val != value) {
                                         onChanged(val);
                                       }
                                       Navigator.of(context).pop();

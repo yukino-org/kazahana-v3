@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import './anilist_section.dart' as anilist_section;
 import './anime_section.dart' as anime_section;
 import '../../components/network_image_fallback.dart';
