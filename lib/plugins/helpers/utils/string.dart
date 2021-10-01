@@ -22,17 +22,6 @@ abstract class StringUtils {
         .replaceFirst(RegExp(r'[=]*$'), '');
   }
 
-  static String type(
-    final dynamic data, {
-    final bool quotes = true,
-  }) {
-    final String result =
-        RegExp("'([^']+)'").firstMatch(data.toString())?.group(1) ??
-            data.toString();
-
-    return quotes ? '"$result"' : result;
-  }
-
   static String render(
     final String template,
     final Map<String, String> context,

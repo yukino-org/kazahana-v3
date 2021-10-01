@@ -27,14 +27,6 @@ export const promisifyChildProcess = (cp: ChildProcess) =>
             });
     });
 
-export const spawnMultiple = async (
-    ...processes: Parameters<typeof spawn>[]
-) => {
-    for (const proc of processes) {
-        await promisifyChildProcess(await spawn(...proc));
-    }
-};
-
 export const spawn = async (cmd: string, args: string[], cwd: string) => {
     return crossSpawn(cmd, args, {
         stdio: "inherit",

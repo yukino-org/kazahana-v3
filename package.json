@@ -6,26 +6,27 @@
     "scripts": {
         "push:main": "ts-node ./cli/others/push-main/run.ts",
         "hive:generate": "ts-node ./cli/flutter-cli/hive-generate/run.ts",
+        "meta:generate": "ts-node ./cli/others/meta/run.ts",
         "test:sources:anime": "ts-node ./cli/tests/sources/anime/run.ts",
         "test:sources:manga": "ts-node ./cli/tests/sources/manga/run.ts",
         "version:bump": "ts-node ./cli/others/version/run.ts",
         "android:icons": "ts-node ./cli/icons/android/run.ts",
-        "android:run": "npm run android:icons && ts-node ./cli/flutter-cli/run/android/run.ts",
-        "android:build": "npm run android:icons && ts-node ./cli/flutter-cli/build/android/run.ts",
+        "android:run": "ts-node ./cli/flutter-cli/run/android/run.ts",
+        "android:build": "ts-node ./cli/flutter-cli/build/android/run.ts",
         "ios:icons": "ts-node ./cli/icons/ios/run.ts",
-        "ios:run": "npm run ios:icons && ts-node ./cli/flutter-cli/run/ios/run.ts",
-        "ios:build": "npm run ios:icons && ts-node ./cli/flutter-cli/build/ios/run.ts",
+        "ios:run": "ts-node ./cli/flutter-cli/run/ios/run.ts",
+        "ios:build": "ts-node ./cli/flutter-cli/build/ios/run.ts",
         "macos:icons": "ts-node ./cli/icons/macos/run.ts",
-        "macos:run": "npm run macos:icons && ts-node ./cli/flutter-cli/run/macos/run.ts",
-        "macos:build": "npm run macos:icons && ts-node ./cli/flutter-cli/build/macos/run.ts",
-        "macos:build:dmg": "npm run macos:icons && ts-node ./cli/flutter-cli/build/macos/dmg/run.ts",
+        "macos:run": "ts-node ./cli/flutter-cli/run/macos/run.ts",
+        "macos:build": "ts-node ./cli/flutter-cli/build/macos/run.ts",
+        "macos:build:dmg": "ts-node ./cli/flutter-cli/build/macos/dmg/run.ts",
         "linux:icons": "ts-node ./cli/icons/linux/run.ts",
-        "linux:run": "npm run linux:icons && ts-node ./cli/flutter-cli/run/linux/run.ts",
-        "linux:build": "npm run linux:icons && ts-node ./cli/flutter-cli/build/linux/run.ts",
+        "linux:run": "ts-node ./cli/flutter-cli/run/linux/run.ts",
+        "linux:build": "ts-node ./cli/flutter-cli/build/linux/run.ts",
         "linux:build:appimage": "ts-node ./cli/flutter-cli/build/linux/appimage/run.ts",
         "windows:icons": "ts-node ./cli/icons/windows/run.ts",
-        "windows:run": "npm run windows:icons && ts-node ./cli/flutter-cli/run/windows/run.ts",
-        "windows:build": "npm run windows:icons && ts-node ./cli/flutter-cli/build/windows/run.ts",
+        "windows:run": "ts-node ./cli/flutter-cli/run/windows/run.ts",
+        "windows:build": "ts-node ./cli/flutter-cli/build/windows/run.ts",
         "windows:build:installer": "ts-node ./cli/flutter-cli/build/windows/installer/run.ts",
         "windows:build:zip": "ts-node ./cli/flutter-cli/build/windows/zip/run.ts"
     },
@@ -42,6 +43,7 @@
     "homepage": "https://github.com/yukino-app/yukino#readme",
     "devDependencies": {
         "@types/adm-zip": "^0.4.34",
+        "@types/archiver": "^5.1.1",
         "@types/command-line-args": "^5.2.0",
         "@types/cross-spawn": "^6.0.2",
         "@types/ejs": "^3.1.0",
@@ -53,6 +55,7 @@
     },
     "dependencies": {
         "adm-zip": "^0.5.6",
+        "archiver": "^5.3.0",
         "canvas": "^2.8.0",
         "command-line-args": "^5.2.0",
         "cross-spawn": "^7.0.3",
@@ -62,6 +65,7 @@
         "png-to-ico": "^2.1.2",
         "png2icons": "^2.0.1",
         "readdirp": "^3.6.0",
-        "semver": "^7.3.5"
+        "semver": "^7.3.5",
+        "yaml": "^1.10.2"
     }
 }

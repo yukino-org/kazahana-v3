@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../config.dart';
 import '../../plugins/app_lifecycle.dart';
 import '../../plugins/helpers/http_download.dart';
+import '../../plugins/helpers/logger.dart';
 import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
@@ -32,7 +33,7 @@ class _PageState extends State<Page> with RouteAware {
         await AppLifecycle.initialize();
 
         final PlatformUpdater? updater = Updater.getUpdater();
-        if (updater != null && !kDebugMode) {
+        if (updater != null /* && !kDebugMode */) {
           status.value = Translator.t.checkingForUpdates();
 
           final List<UpdateInfo> updates = await updater.getUpdates();
@@ -43,19 +44,21 @@ class _PageState extends State<Page> with RouteAware {
                 case UpdaterEvents.downloading:
                   final DownloadProgress casted = x.data as DownloadProgress;
                   status.value = Translator.t.downloadingVersion(
-                    update.version,
-                    '${casted.downloaded / 1000000}Mb',
-                    '${casted.total / 1000000}Mb',
-                    '${casted.percent}%',
+                    'v${update.version.toString()}',
+                    '${(casted.downloaded / 1000000).toStringAsFixed(1)}Mb',
+                    '${(casted.total / 1000000).toStringAsFixed(1)}Mb',
+                    '${casted.percent.toStringAsFixed(1)}%',
                   );
                   break;
 
                 case UpdaterEvents.extracting:
-                  status.value = Translator.t.unpackingVersion(update.version);
+                  status.value = Translator.t
+                      .unpackingVersion('v${update.version.toString()}');
                   break;
 
                 case UpdaterEvents.starting:
-                  status.value = Translator.t.updatingToVersion(update.version);
+                  status.value = Translator.t
+                      .updatingToVersion('v${update.version.toString()}');
                   break;
               }
             });
@@ -64,16 +67,20 @@ class _PageState extends State<Page> with RouteAware {
               await updater.install(update);
 
               status.value = Translator.t.restartingApp();
+              await Future<void>.delayed(const Duration(seconds: 3));
 
               Screen.close();
               exit(0);
-            } catch (err) {
+            } catch (err, stack) {
+              Logger.of('splash_page').error('"Updater" failed: $err', stack);
               status.value = Translator.t.failedToUpdate(err.toString());
+              await Future<void>.delayed(const Duration(seconds: 5));
             }
           }
+        } else {
+          status.value = Translator.t.startingApp();
         }
 
-        status.value = Translator.t.startingApp();
         await Future<void>.delayed(const Duration(seconds: 2));
       }
 

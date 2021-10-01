@@ -7,7 +7,6 @@ import './local_server/routes/ping.dart' as ping_route;
 import './local_server/routes/protocol.dart' as protocol_route;
 import './local_server/server.dart';
 import './logger.dart';
-import './utils/string.dart';
 import '../../config.dart';
 
 class InstanceInfo {
@@ -71,8 +70,7 @@ abstract class InstanceManager {
       base64.encode(utf8.encode(json.encode(instance.toJson()))),
     );
 
-    Logger.of(InstanceManager)
-        .info('Finished ${StringUtils.type(InstanceManager.register)}');
+    Logger.of('InstanceManager').info('Finished "register"');
 
     return instance;
   }
@@ -89,9 +87,7 @@ abstract class InstanceManager {
       },
     );
     if (<int>[200, 400].contains(res.statusCode)) {
-      Logger.of(InstanceManager).info(
-        'Finished ${StringUtils.type(InstanceManager.sendArguments)}',
-      );
+      Logger.of('InstanceManager').info('Finished "sendArguments"');
     }
   }
 

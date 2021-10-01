@@ -1,5 +1,5 @@
 import { join } from "path";
-import { stat } from "fs/promises";
+import { stat } from "fs-extra";
 import { spawn, promisifyChildProcess } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";

@@ -1,5 +1,5 @@
 import { join } from "path";
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "fs-extra";
 import commandLineArgs from "command-line-args";
 import semver from "semver";
 import { config } from "../../config";

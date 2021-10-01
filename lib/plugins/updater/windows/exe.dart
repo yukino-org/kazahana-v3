@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../../../config.dart';
+import '../../helpers/archive.dart';
 import '../../helpers/http_download.dart';
+import '../../helpers/logger.dart';
 import '../../helpers/utils/string.dart';
 import '../updater.dart';
 
@@ -24,11 +27,16 @@ IF ERRORLEVEL 1 (
 
 :CONTINUE
 
-echo Copy updated files
-robocopy {{{ updatedDir }}} {{{ installDir }}} /s /e /purge
+echo Delete old files
+rmdir "{{{ installDir }}}" /s /q
 
-echo Running app
-{{{ exePath }}}
+echo Copy updated files
+robocopy "{{{ updatedDir }}}" "{{{ installDir }}}" /s /e
+
+echo Spawn updated app
+start "{{{ exePath }}}"
+
+echo Finished updating
 ''';
 
 class WindowsExeUpdater with PlatformUpdater {
@@ -67,20 +75,25 @@ class WindowsExeUpdater with PlatformUpdater {
 
       await download.download();
       await partFile.rename(zipFile.path);
+      Logger.of('WindowsExeUpdater')
+          .info('Update file created at: ${zipFile.path}');
+    } else {
+      Logger.of('WindowsExeUpdater')
+          .info('Update file found at: ${zipFile.path}');
     }
 
     progress.dispatch(UpdaterEvent(UpdaterEvents.extracting));
 
-    final String sevenZipPath = path.join(
-      baseDir,
-      'data/flutter_assets/assets/executables/7za.exe',
-    );
-    final String unzipPath = path.join(tmp);
-    await Process.run(
-      sevenZipPath,
-      <String>['e', '"${zipFile.path}"', '-o"$unzipPath"', '-y'],
-      runInShell: true,
-    );
+    final Directory unzipPath =
+        Directory(path.join(tmp, zipName.replaceFirst(RegExp(r'.zip$'), '')));
+
+    if (await unzipPath.exists()) {
+      await unzipPath.delete(recursive: true);
+    }
+
+    await unzipPath.create(recursive: true);
+    await extractArchive(ExtractArchiveConfig(zipFile.path, unzipPath.path));
+    Logger.of('WindowsExeUpdater').info('Unzipped into: $unzipPath');
 
     final String batPath = path.join(tmp, 'updater.bat');
     final File batFile = File(batPath);
@@ -91,23 +104,25 @@ class WindowsExeUpdater with PlatformUpdater {
 
     await batFile.writeAsString(
       StringUtils.render(_template, <String, String>{
-        'updatedDir': unzipPath,
+        'updatedDir': unzipPath.path,
         'installDir': baseDir,
         'exePath': Platform.resolvedExecutable,
         'exeName': path.basename(Platform.resolvedExecutable),
       }),
     );
+    Logger.of('WindowsExeUpdater').info('Created bat at: ${batFile.path}');
 
-    Process.run(
-      'powershell',
+    await Process.start(
+      'powershell.exe',
       <String>[
         'start',
         '-verb',
         'runas',
         batFile.path,
       ],
-      includeParentEnvironment: false,
       runInShell: true,
+      mode: ProcessStartMode.detached,
     );
+    Logger.of('WindowsExeUpdater').info('Spawned bat, waiting for restart...');
   }
 }

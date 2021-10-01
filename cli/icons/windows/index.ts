@@ -1,5 +1,5 @@
 import { join } from "path";
-import { writeFile } from "fs/promises";
+import { writeFile } from "fs-extra";
 import png2ico from "png-to-ico";
 import { config } from "../../config";
 import { Logger } from "../../logger";

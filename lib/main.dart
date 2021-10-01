@@ -5,7 +5,6 @@ import './plugins/database/database.dart';
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
 import './plugins/helpers/logger.dart';
 import './plugins/helpers/ui.dart';
-import './plugins/helpers/utils/string.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
 import './plugins/translator/translator.dart';
@@ -13,16 +12,15 @@ import './plugins/translator/translator.dart';
 Future<void> main(final List<String> args) async {
   try {
     await AppLifecycle.preinitialize(args);
-    Logger.of(main)
-        .info('Completed ${StringUtils.type(AppLifecycle.preinitialize)}');
+    Logger.of('main').info('Completed "preinitialize"');
   } catch (err, trace) {
-    Logger.of(main).error(
-      '${StringUtils.type(AppLifecycle.preinitialize)} failed: $err',
+    Logger.of('main').error(
+      '"preinitialize" failed: $err',
       trace,
     );
   }
 
-  Logger.of(main).info('Starting ${StringUtils.type(MainApp)}');
+  Logger.of('main').info('Starting "MainApp"');
   runApp(const MainApp());
 }
 

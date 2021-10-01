@@ -1,0 +1,43 @@
+[
+    {
+        "type": "prerun",
+        "triggers": [
+            "android:run",
+            "android:build",
+            "ios:run",
+            "ios:build",
+            "windows:run",
+            "windows:build",
+            "linux:run",
+            "linux:build",
+            "macos:run",
+            "macos:build"
+        ],
+        "commands": ["meta:generate", "hive:generate"]
+    },
+    {
+        "type": "prerun",
+        "triggers": ["android:run", "android:build"],
+        "commands": ["android:icons"]
+    },
+    {
+        "type": "prerun",
+        "triggers": ["ios:run", "ios:build"],
+        "commands": ["ios:icons"]
+    },
+    {
+        "type": "prerun",
+        "triggers": ["windows:run", "windows:build"],
+        "commands": ["windows:icons"]
+    },
+    {
+        "type": "prerun",
+        "triggers": ["linux:run", "linux:build"],
+        "commands": ["linux:icons"]
+    },
+    {
+        "type": "prerun",
+        "triggers": ["macos:run", "macos:build"],
+        "commands": ["macos:icons"]
+    }
+]

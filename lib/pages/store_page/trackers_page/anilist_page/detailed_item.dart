@@ -432,7 +432,7 @@ class _DetailedItemState extends State<DetailedItem> {
                             ),
                           ),
                           TextSpan(
-                            text: '${widget.media.score} / 100',
+                            text: '${widget.media.score ?? '?'} / 100',
                           ),
                         ],
                       ),

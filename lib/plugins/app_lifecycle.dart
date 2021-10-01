@@ -7,7 +7,6 @@ import './helpers/local_server/server.dart';
 import './helpers/logger.dart';
 import './helpers/protocol_handler.dart';
 import './helpers/screen.dart';
-import './helpers/utils/string.dart';
 import './state.dart';
 import './translator/translator.dart';
 import '../components/player/player.dart' as player show initialize;
@@ -47,18 +46,17 @@ abstract class AppLifecycle {
     await Config.initialize();
     await Logger.initialize();
 
-    Logger.of(AppLifecycle)
-        .info('Starting ${StringUtils.type(AppLifecycle.preinitialize)}');
+    Logger.of('AppLifecycle').info('Starting "preinitialize"');
 
     if (AppState.isDesktop) {
       try {
         await LocalServer.initialize();
-        Logger.of(LocalServer)
-          ..info('Finsihed ${StringUtils.type(LocalServer.initialize)}')
+        Logger.of('LocalServer')
+          ..info('Finsihed "initialize"')
           ..info('Serving at ${LocalServer.baseURL}');
       } catch (err, trace) {
-        Logger.of(LocalServer).error(
-          '${StringUtils.type(LocalServer.initialize)} failed: $err',
+        Logger.of('LocalServer').error(
+          '"initialize" failed: $err',
           trace,
         );
       }
@@ -70,8 +68,8 @@ abstract class AppLifecycle {
     try {
       primaryInstance = await InstanceManager.check();
     } catch (err, trace) {
-      Logger.of(InstanceManager).error(
-        '${StringUtils.type(InstanceManager.check)} failed: $err',
+      Logger.of('InstanceManager').error(
+        '"check" failed: $err',
         trace,
       );
     }
@@ -79,12 +77,10 @@ abstract class AppLifecycle {
     if (primaryInstance != null) {
       try {
         await InstanceManager.sendArguments(primaryInstance, args);
-        Logger.of(InstanceManager).info(
-          'Finsihed ${StringUtils.type(InstanceManager.sendArguments)}',
-        );
+        Logger.of('InstanceManager').info('Finsihed "sendArguments"');
       } catch (err, trace) {
-        Logger.of(InstanceManager).error(
-          '${StringUtils.type(InstanceManager.sendArguments)} failed: $err',
+        Logger.of('InstanceManager').error(
+          '"sendArguments" failed: $err',
           trace,
         );
       }
@@ -96,8 +92,8 @@ abstract class AppLifecycle {
     try {
       await DataStore.initialize();
     } catch (err, trace) {
-      Logger.of(DataStore).error(
-        '${StringUtils.type(DataStore.initialize)} failed: $err',
+      Logger.of('DataStore').error(
+        '"initialize" failed: $err',
         trace,
       );
     }
@@ -114,84 +110,76 @@ abstract class AppLifecycle {
     Deeplink.link = ProtocolHandler.fromArgs(args);
     preready = true;
     events.dispatch(AppLifecycleEvents.preready);
-    Logger.of(AppLifecycle)
-        .info('Finished ${StringUtils.type(AppLifecycle.preinitialize)}');
+    Logger.of('AppLifecycle').info('Finished "preinitialize"');
   }
 
   static Future<void> initialize() async {
     try {
       await InstanceManager.register();
-      Logger.of(InstanceManager).info(
-        'Finished ${StringUtils.type(InstanceManager.register)}',
-      );
+      Logger.of('InstanceManager').info('Finished "register"');
     } catch (err, trace) {
-      Logger.of(InstanceManager).error(
-        '${StringUtils.type(InstanceManager.register)} failed: $err',
+      Logger.of('InstanceManager').error(
+        '"register" failed: $err',
         trace,
       );
     }
 
     try {
       await AppState.initialize();
-      Logger.of(AppState)
-          .info('Finished ${StringUtils.type(AppState.initialize)}');
+      Logger.of('AppState').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of(AppState).error(
-        '${StringUtils.type(AppState.initialize)} failed: $err',
+      Logger.of('AppState').error(
+        '"initialize" failed: $err',
         trace,
       );
     }
 
     try {
       await ProtocolHandler.register();
-      Logger.of(ProtocolHandler)
-          .info('Finished ${StringUtils.type(ProtocolHandler.register)}');
+      Logger.of('ProtocolHandler').info('Finished "register"');
     } catch (err, trace) {
-      Logger.of(ProtocolHandler).error(
-        '${StringUtils.type(ProtocolHandler.register)} failed: $err',
+      Logger.of('ProtocolHandler').error(
+        '"register" failed: $err',
         trace,
       );
     }
 
     try {
       await Screen.initialize();
-      Logger.of(Screen).info('Finished ${StringUtils.type(Screen.initialize)}');
+      Logger.of('Screen').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of(Screen).error(
-        '${StringUtils.type(Screen.initialize)} failed: $err',
+      Logger.of('Screen').error(
+        '"initialize" failed: $err',
         trace,
       );
     }
 
     try {
       await player.initialize();
-      Logger.of(player.initialize)
-          .info('Finished ${StringUtils.type(player.initialize)}');
+      Logger.of('player.initialize').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of(player.initialize).error(
-        '${StringUtils.type(player.initialize)} failed: $err',
+      Logger.of('player.initialize').error(
+        '"initialize" failed: $err',
         trace,
       );
     }
 
     try {
       await ExtensionsManager.initialize();
-      Logger.of(ExtensionsManager)
-          .info('Finished ${StringUtils.type(ExtensionsManager.initialize)}');
+      Logger.of('ExtensionsManager').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of(ExtensionsManager).error(
-        '${StringUtils.type(ExtensionsManager.initialize)} failed: $err',
+      Logger.of('ExtensionsManager').error(
+        '"initialize" failed: $err',
         trace,
       );
     }
 
     try {
       await Trackers.initialize();
-      Logger.of(Trackers)
-          .info('Finished ${StringUtils.type(Trackers.initialize)}');
+      Logger.of('Trackers').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of(Trackers).error(
-        '${StringUtils.type(Trackers.initialize)} failed: $err',
+      Logger.of('Trackers').error(
+        '"initialize" failed: $err',
         trace,
       );
     }

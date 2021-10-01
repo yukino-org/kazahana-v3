@@ -3,15 +3,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart' as path_provider;
-import './utils/string.dart';
 import '../../config.dart';
 
 class Logger {
   Logger._(this.name);
 
-  factory Logger.of(final dynamic data) {
-    final String name = StringUtils.type(data, quotes: false);
-
+  factory Logger.of(final String name) {
     if (!instances.containsKey(name)) {
       instances[name] = Logger._(name);
     }
@@ -43,7 +40,7 @@ class Logger {
   static late String path;
   static late RandomAccessFile file;
   static const Duration _writeDuration = Duration(seconds: 10);
-  static final List<String> _pending = <String>[];
+  static final List<String> _pending = <String>['\n\n'];
   static final Map<String, Logger> instances = <String, Logger>{};
 
   static bool ready = false;
@@ -54,7 +51,7 @@ class Logger {
     path = p.join(
       tmpPath.path,
       Config.code,
-      'debug ${time.day}-${time.month}-${time.year} ${time.hour}-${time.minute}-${time.second}.log',
+      'debug ${time.day}-${time.month}-${time.year}.log',
     );
 
     final File file = File(path);

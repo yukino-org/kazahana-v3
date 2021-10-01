@@ -147,7 +147,7 @@ class HorizontalEntityList extends StatelessWidget {
                                 ),
                               ),
                               Align(
-                                alignment: Alignment.bottomLeft,
+                                alignment: Alignment.bottomCenter,
                                 child: AnimatedSlide(
                                   curve: Curves.easeInOut,
                                   duration: fastAnimationDuration,

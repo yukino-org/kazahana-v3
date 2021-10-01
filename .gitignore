@@ -31,3 +31,4 @@ installer.g.iss
 AppDir/
 appimage-builder-cache/
 builder.g.yml
+assets/data/meta.json

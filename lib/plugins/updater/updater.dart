@@ -6,6 +6,7 @@ import 'package:version/version.dart';
 import './windows/exe.dart';
 import '../../config.dart';
 import '../helpers/eventer.dart';
+import '../helpers/logger.dart';
 
 class UpdateInfo {
   UpdateInfo({
@@ -16,18 +17,10 @@ class UpdateInfo {
     required final this.date,
   });
 
-  factory UpdateInfo.fromJson(final Map<dynamic, dynamic> json) => UpdateInfo(
-        release: json['release'] as String,
-        version: json['version'] as String,
-        path: json['path'] as String,
-        size: json['size'] as double,
-        date: DateTime.fromMillisecondsSinceEpoch(json['date'] as int),
-      );
-
   final String release;
-  final String version;
+  final Version version;
   final String path;
-  final double size;
+  final int size;
   final DateTime date;
 }
 
@@ -58,27 +51,45 @@ abstract class PlatformUpdater {
 
   Future<List<UpdateInfo>> getUpdates() async {
     try {
-      final Version version = Version.parse(Config.version);
-      final UpdateTypes type = UpdateTypes.values.firstWhereOrNull(
-            (final UpdateTypes x) => version.preRelease.contains(x.type),
-          ) ??
-          UpdateTypes.stable;
+      final Version currentVersion = Version.parse(Config.version);
 
-      final http.Response res =
-          await http.get(Uri.parse(Config.updatesURL(type.type)));
-      final List<UpdateInfo> updates = (json.decode(res.body) as List<dynamic>)
-          .map(
-            (final dynamic x) =>
-                UpdateInfo.fromJson(json as Map<dynamic, dynamic>),
-          )
-          .toList();
+      final http.Response res = await http.get(Uri.parse(Config.releasesURL));
+      final List<Map<dynamic, dynamic>> releases =
+          (json.decode(res.body) as List<dynamic>)
+              .cast<Map<dynamic, dynamic>>();
 
-      return updates
-          .where(
-            (final UpdateInfo x) => Version.parse(x.version) > version,
-          )
-          .toList();
-    } catch (_) {
+      Version foundVersion = currentVersion;
+      List<UpdateInfo> updates = <UpdateInfo>[];
+
+      for (final Map<dynamic, dynamic> x in releases) {
+        final Version version = Version.parse(
+          (x['tag_name'] as String).replaceFirst(RegExp('^v'), ''),
+        );
+
+        if (version > foundVersion) {
+          final String release = x['name'] as String;
+          final DateTime date = DateTime.parse(x['published_at'] as String);
+
+          foundVersion = version;
+          updates = (x['assets'] as List<dynamic>)
+              .cast<Map<dynamic, dynamic>>()
+              .map(
+                (final Map<dynamic, dynamic> y) => UpdateInfo(
+                  release: release,
+                  version: foundVersion,
+                  path: y['browser_download_url'] as String,
+                  size: (y['size'] as int) * 1000,
+                  date: date,
+                ),
+              )
+              .toList();
+        }
+      }
+
+      return updates;
+    } catch (err, stack) {
+      Logger.of('PlatformUpdater').error('"getUpdates" failed: $err', stack);
+
       return <UpdateInfo>[];
     }
   }

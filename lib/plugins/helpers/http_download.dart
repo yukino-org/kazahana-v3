@@ -23,15 +23,19 @@ class HttpDownload extends Eventer<DownloadProgress> {
     final HttpClientResponse response = await request.close();
 
     int received = 0;
+    final int total = response.headers['Content-Length']?.isNotEmpty ?? false
+        ? int.parse(response.headers['Content-Length']!.first)
+        : 0;
     final double startedAt = DateTime.now().millisecondsSinceEpoch / 1000;
+
     await response.map((final List<int> x) {
       received += x.length;
       final double now = DateTime.now().millisecondsSinceEpoch / 1000;
 
       dispatch(
         DownloadProgress(
-          x.length,
           received,
+          total,
           (now / startedAt) * received,
         ),
       );

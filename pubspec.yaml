@@ -9,6 +9,7 @@ environment:
 
 dependencies:
     animations: ^2.0.1
+    archive: ^3.1.5
     better_player: ^0.0.75
     collection: ^1.15.0
     crypto: ^3.0.1
@@ -35,6 +36,7 @@ dependencies:
             url: https://github.com/zyrouge/dart_protocol_registry.git
             ref: 885fc4bdaf6a60e5fd27013b876a9d6bec3addc2
     shelf: ^1.2.0
+    tar: ^0.5.1
     uni_links: ^0.5.1
     url_launcher: ^6.0.9
     version: ^2.0.0
@@ -51,8 +53,8 @@ dev_dependencies:
 flutter:
     uses-material-design: true
     assets:
+        - assets/data/
         - assets/images/
-        - assets/executables/
     fonts:
         - family: Poppins
           fonts:

@@ -160,19 +160,28 @@ class _PageState extends State<Page> {
                                       SizedBox(
                                         height: remToPx(0.4),
                                       ),
-                                      Text(
-                                        StringUtils.capitalize(x.type.type),
-                                        style:
-                                            Theme.of(context).textTheme.caption,
-                                      ),
-                                      Text(
-                                        x.titleUserPreferred,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
+                                      RichText(
+                                        text: TextSpan(
+                                          children: <InlineSpan>[
+                                            TextSpan(
+                                              text: StringUtils.capitalize(
+                                                x.type.type,
+                                              ),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption,
                                             ),
+                                            TextSpan(
+                                              text: '\n${x.titleUserPreferred}',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
                                         textAlign: TextAlign.center,
                                       ),
                                     ],

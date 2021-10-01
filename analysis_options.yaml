@@ -1,27 +1,28 @@
 include: package:lint/analysis_options.yaml
 
 analyzer:
-  exclude:
-    - lib/**/*.g.dart
+    exclude:
+        - lib/**/*.g.dart
 
 linter:
-  rules:
-    prefer_single_quotes: true
-    always_specify_types: true
-    avoid_classes_with_only_static_members: false
-    parameter_assignments: true
-    prefer_final_parameters: true
-    require_trailing_commas: true
-    sort_child_properties_last: true
-    sort_constructors_first: true
-    always_put_required_named_parameters_first: true
-    prefer_relative_imports: true
-    prefer_expression_function_bodies: true
-    unnecessary_await_in_return: true
-    unnecessary_null_checks: true
-    unnecessary_parenthesis: true
-    unnecessary_string_escapes: true
-    use_is_even_rather_than_modulo: true
-    use_key_in_widget_constructors: true
-    avoid_renaming_method_parameters: true
-    avoid_relative_lib_imports: true
+    rules:
+        prefer_single_quotes: true
+        always_specify_types: true
+        avoid_classes_with_only_static_members: false
+        parameter_assignments: true
+        prefer_final_parameters: true
+        require_trailing_commas: true
+        sort_child_properties_last: true
+        sort_constructors_first: true
+        always_put_required_named_parameters_first: true
+        prefer_relative_imports: true
+        prefer_expression_function_bodies: true
+        unnecessary_await_in_return: true
+        unnecessary_null_checks: true
+        unnecessary_parenthesis: true
+        unnecessary_string_escapes: true
+        use_is_even_rather_than_modulo: true
+        use_key_in_widget_constructors: true
+        avoid_renaming_method_parameters: true
+        avoid_relative_lib_imports: true
+        use_build_context_synchronously: true
