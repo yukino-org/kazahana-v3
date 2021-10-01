@@ -33,7 +33,7 @@ class _PageState extends State<Page> with RouteAware {
         await AppLifecycle.initialize();
 
         final PlatformUpdater? updater = Updater.getUpdater();
-        if (updater != null /* && !kDebugMode */) {
+        if (updater != null && !kReleaseMode) {
           status.value = Translator.t.checkingForUpdates();
 
           final List<UpdateInfo> updates = await updater.getUpdates();

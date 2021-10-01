@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../../../config.dart';
@@ -34,7 +33,7 @@ echo Copy updated files
 robocopy "{{{ updatedDir }}}" "{{{ installDir }}}" /s /e
 
 echo Spawn updated app
-start "{{{ exePath }}}"
+start {{{ exePath }}}
 
 echo Finished updating
 ''';

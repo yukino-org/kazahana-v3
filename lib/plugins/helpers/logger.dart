@@ -38,9 +38,7 @@ class Logger {
   }
 
   static late String path;
-  static late RandomAccessFile file;
-  static const Duration _writeDuration = Duration(seconds: 10);
-  static final List<String> _pending = <String>['\n\n'];
+  static late IOSink file;
   static final Map<String, Logger> instances = <String, Logger>{};
 
   static bool ready = false;
@@ -59,28 +57,17 @@ class Logger {
       await file.create(recursive: true);
     }
 
-    Logger.file = await file.open(
+    Logger.file = file.openWrite(
       mode: FileMode.append,
     );
-
-    Timer.periodic(_writeDuration, (final Timer timer) {
-      _writePending();
-    });
 
     ready = true;
   }
 
   static void _write(final String msg) {
     debugPrint(msg);
-    _pending.add(msg);
+    file.write('$msg\n');
   }
 
-  static Future<void> _writePending() async {
-    if (_pending.isNotEmpty) {
-      file.writeString(_pending.join('\n'));
-      _pending.clear();
-    }
-  }
-
-  static String get time => DateTime.now().toUtc().toString().split('.')[0];
+  static String get time => DateTime.now().toIso8601String();
 }
