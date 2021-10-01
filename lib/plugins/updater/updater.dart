@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:version/version.dart';
+import './linux/appimage.dart';
 import './windows/exe.dart';
 import '../../config.dart';
 import '../helpers/eventer.dart';
@@ -103,6 +104,7 @@ abstract class Updater {
   static final Map<RegExp, PlatformUpdater Function()> matchers =
       <RegExp, PlatformUpdater Function()>{
     RegExp(r'\.exe$'): () => WindowsExeUpdater(),
+    RegExp(r'\.AppImage$'): () => LinuxAppImageUpdater(),
   };
 
   static PlatformUpdater? getUpdater() => matchers.entries
