@@ -39,6 +39,10 @@ echo Finished updating
 ''';
 
 class WindowsExeUpdater with PlatformUpdater {
+  static bool isSupported() =>
+      Platform.isWindows &&
+      RegExp(r'\.exe$').hasMatch(Platform.resolvedExecutable);
+
   @override
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
       updates.firstWhereOrNull(
@@ -46,7 +50,7 @@ class WindowsExeUpdater with PlatformUpdater {
       );
 
   @override
-  Future<void> install(final UpdateInfo update) async {
+  Future<bool> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
     final String tmp = path.join(
@@ -123,5 +127,7 @@ class WindowsExeUpdater with PlatformUpdater {
       mode: ProcessStartMode.detached,
     );
     Logger.of('WindowsExeUpdater').info('Spawned bat, waiting for restart...');
+
+    return true;
   }
 }

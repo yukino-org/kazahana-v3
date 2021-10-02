@@ -25,11 +25,11 @@ export const generate = async () => {
         await execute(process.argv.includes("-f"));
     } catch (err: any) {
         if (typeof err?.code === "number" && err.code === 78) {
-            console.log("\n");
+            console.log(" ");
             logger.log(
                 'Found conflicting outputs, retrying with "--delete-conflicting-outputs" flag'
             );
-            console.log("\n");
+            console.log(" ");
 
             await execute(true);
         }

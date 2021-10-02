@@ -7,6 +7,7 @@ import './routes.dart';
 
 abstract class LocalServer {
   static bool ready = false;
+  static bool disposed = false;
   static HttpServer? server;
 
   static const String protocol = 'http';
@@ -14,6 +15,10 @@ abstract class LocalServer {
   static int port = 0;
 
   static FutureOr<Response> _handler(final Request request) {
+    if (!ready || disposed) {
+      return Response(503, body: 'Unavailable');
+    }
+
     final ServerRoute? route = routes.firstWhereOrNull(
       (final ServerRoute x) =>
           x.method == request.method && x.route == request.url.path,

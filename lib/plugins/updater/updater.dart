@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:version/version.dart';
@@ -97,20 +96,24 @@ abstract class PlatformUpdater {
 
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates);
 
-  Future<void> install(final UpdateInfo update);
+  Future<bool> install(final UpdateInfo update);
 }
 
+typedef PlatformUpdaterValidate = bool Function();
+
 abstract class Updater {
-  static final Map<RegExp, PlatformUpdater Function()> matchers =
-      <RegExp, PlatformUpdater Function()>{
-    RegExp(r'\.exe$'): () => WindowsExeUpdater(),
-    RegExp(r'\.AppImage$'): () => LinuxAppImageUpdater(),
+  static final Map<PlatformUpdaterValidate, PlatformUpdater Function()>
+      matchers = <PlatformUpdaterValidate, PlatformUpdater Function()>{
+    WindowsExeUpdater.isSupported: () => WindowsExeUpdater(),
+    LinuxAppImageUpdater.isSupported: () => LinuxAppImageUpdater(),
   };
 
   static PlatformUpdater? getUpdater() => matchers.entries
       .firstWhereOrNull(
-        (final MapEntry<RegExp, PlatformUpdater Function()> x) =>
-            x.key.hasMatch(Platform.resolvedExecutable),
+        (
+          final MapEntry<PlatformUpdaterValidate, PlatformUpdater Function()> x,
+        ) =>
+            x.key(),
       )
       ?.value();
 }

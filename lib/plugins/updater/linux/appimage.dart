@@ -4,10 +4,16 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../../../config.dart';
 import '../../helpers/http_download.dart';
+import '../../helpers/local_server/server.dart';
 import '../../helpers/logger.dart';
 import '../updater.dart';
 
 class LinuxAppImageUpdater with PlatformUpdater {
+  static bool isSupported() =>
+      Platform.isLinux &&
+      Platform.environment.containsKey('APPIMAGE') &&
+      RegExp(r'\.AppImage$').hasMatch(Platform.environment['APPIMAGE']!);
+
   @override
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
       updates.firstWhereOrNull(
@@ -15,7 +21,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
       );
 
   @override
-  Future<void> install(final UpdateInfo update) async {
+  Future<bool> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
     final String tmp = path.join(
@@ -51,22 +57,39 @@ class LinuxAppImageUpdater with PlatformUpdater {
 
     progress.dispatch(UpdaterEvent(UpdaterEvents.extracting));
 
-    final File currentExe = File(Platform.resolvedExecutable);
+    final File currentExe = File(Platform.environment['APPIMAGE']!);
     await currentExe.delete(recursive: true);
-    await newExeFile.rename(currentExe.path);
+    Logger.of('LinuxAppImageUpdater')
+        .info('Removed current AppImage at: ${currentExe.path}');
+
+    await newExeFile.copy(currentExe.path);
+    await newExeFile.delete(recursive: true);
     await Process.run(
       'chmod',
-      <String>['a+x', currentExe.path],
+      <String>['a+x', '"${currentExe.path}"'],
       runInShell: true,
     );
+    Logger.of('LinuxAppImageUpdater')
+        .info('Copied and made AppImage executable at: ${currentExe.path}');
+
+    LocalServer.disposed = true;
+    Logger.of('LinuxAppImageUpdater').info('Disposed "LocalServer"');
 
     await Process.start(
-      currentExe.path,
-      <String>[],
+      'bash',
+      <String>[
+        '-c',
+        '"${currentExe.path}"',
+      ],
+      environment: <String, String>{
+        'RESPWND_INST': 'true',
+      },
       runInShell: true,
       mode: ProcessStartMode.detached,
     );
     Logger.of('LinuxAppImageUpdater')
         .info('Spawned new app, waiting to close...');
+
+    return true;
   }
 }

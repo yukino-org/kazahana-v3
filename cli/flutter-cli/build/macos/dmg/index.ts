@@ -61,8 +61,6 @@ export const build = async () => {
         )
     );
 
-    console.log((await readdir(buildDir)).join(","));
-
     const finalPath = join(config.macos.packed, outName);
     await ensureDir(dirname(finalPath));
     await rename(join(buildDir, outName), finalPath);

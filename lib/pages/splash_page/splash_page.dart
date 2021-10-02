@@ -32,8 +32,10 @@ class _PageState extends State<Page> with RouteAware {
       if (!AppLifecycle.ready) {
         await AppLifecycle.initialize();
 
+        Logger.of('splash_page')
+            .info('Path: ${Platform.environment['APPIMAGE']}');
         final PlatformUpdater? updater = Updater.getUpdater();
-        if (updater != null && !kReleaseMode) {
+        if (updater != null && kReleaseMode) {
           status.value = Translator.t.checkingForUpdates();
 
           final List<UpdateInfo> updates = await updater.getUpdates();

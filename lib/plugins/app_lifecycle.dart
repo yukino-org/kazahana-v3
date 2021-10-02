@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import './database/database.dart';
 import './helpers/deeplink.dart';
@@ -7,6 +9,7 @@ import './helpers/local_server/server.dart';
 import './helpers/logger.dart';
 import './helpers/protocol_handler.dart';
 import './helpers/screen.dart';
+import './helpers/utils/function.dart';
 import './state.dart';
 import './translator/translator.dart';
 import '../components/player/player.dart' as player show initialize;
@@ -90,7 +93,11 @@ abstract class AppLifecycle {
     }
 
     try {
-      await DataStore.initialize();
+      await FunctionUtils.tryLoop(
+        DataStore.initialize,
+        max: Platform.environment['RESPWND_INST'] == 'true' ? 30 : 1,
+        interval: Duration(seconds: 2),
+      );
     } catch (err, trace) {
       Logger.of('DataStore').error(
         '"initialize" failed: $err',
