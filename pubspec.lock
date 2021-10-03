@@ -438,6 +438,13 @@ packages:
       relative: true
     source: path
     version: "0.0.0"
+  ota_update:
+    dependency: "direct main"
+    description:
+      name: ota_update
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.1"
   package_config:
     dependency: transitive
     description:

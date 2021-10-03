@@ -96,7 +96,7 @@ abstract class AppLifecycle {
       await FunctionUtils.tryLoop(
         DataStore.initialize,
         max: Platform.environment['RESPWND_INST'] == 'true' ? 30 : 1,
-        interval: Duration(seconds: 2),
+        interval: const Duration(seconds: 2),
       );
     } catch (err, trace) {
       Logger.of('DataStore').error(

@@ -27,10 +27,8 @@ abstract class Config {
   static const String storeURL =
       'https://raw.githubusercontent.com/$repoAuthor/extensions-store/dist/extensions.json';
 
-  // TODO: remove this
-  // static const String releasesURL =
-  //     'https://api.github.com/repos/$repoAuthor/$repoName/releases?per_page=20';
-  static const String releasesURL = 'http://localhost:5000/versions.json';
+  static const String releasesURL =
+      'https://api.github.com/repos/$repoAuthor/$repoName/releases?per_page=20';
 }
 
 abstract class MiscSettings {

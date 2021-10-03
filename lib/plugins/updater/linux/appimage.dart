@@ -62,6 +62,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
     Logger.of('LinuxAppImageUpdater')
         .info('Removed current AppImage at: ${currentExe.path}');
 
+    await currentExe.create(recursive: true);
     await newExeFile.copy(currentExe.path);
     await newExeFile.delete(recursive: true);
     await Process.run(

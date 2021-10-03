@@ -32,8 +32,6 @@ class _PageState extends State<Page> with RouteAware {
       if (!AppLifecycle.ready) {
         await AppLifecycle.initialize();
 
-        Logger.of('splash_page')
-            .info('Path: ${Platform.environment['APPIMAGE']}');
         final PlatformUpdater? updater = Updater.getUpdater();
         if (updater != null && kReleaseMode) {
           status.value = Translator.t.checkingForUpdates();
@@ -66,13 +64,15 @@ class _PageState extends State<Page> with RouteAware {
             });
 
             try {
-              await updater.install(update);
+              final bool shouldExit = await updater.install(update);
 
-              status.value = Translator.t.restartingApp();
-              await Future<void>.delayed(const Duration(seconds: 3));
+              if (shouldExit) {
+                status.value = Translator.t.restartingApp();
+                await Future<void>.delayed(const Duration(seconds: 3));
 
-              Screen.close();
-              exit(0);
+                Screen.close();
+                exit(0);
+              }
             } catch (err, stack) {
               Logger.of('splash_page').error('"Updater" failed: $err', stack);
               status.value = Translator.t.failedToUpdate(err.toString());
@@ -105,48 +105,51 @@ class _PageState extends State<Page> with RouteAware {
   @override
   Widget build(final BuildContext context) => Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                Config.name,
-                style: Theme.of(context).textTheme.headline3?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                'v${Config.version}',
-                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Theme.of(context).textTheme.caption?.color,
-                    ),
-              ),
-              SizedBox(
-                height: remToPx(2),
-              ),
-              SizedBox(
-                width: remToPx(6),
-                child: LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).cardColor,
-                  minHeight: remToPx(0.12),
+          child: Padding(
+            padding: EdgeInsets.all(remToPx(1)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  Config.name,
+                  style: Theme.of(context).textTheme.headline3?.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-              ),
-              SizedBox(
-                height: remToPx(0.5),
-              ),
-              ValueListenableBuilder<String?>(
-                valueListenable: status,
-                builder: (
-                  final BuildContext context,
-                  final String? status,
-                  final Widget? child,
-                ) =>
-                    Text(
-                  status ?? ' ',
-                  style: Theme.of(context).textTheme.caption,
+                Text(
+                  'v${Config.version}',
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                        color: Theme.of(context).textTheme.caption?.color,
+                      ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: remToPx(2),
+                ),
+                SizedBox(
+                  width: remToPx(6),
+                  child: LinearProgressIndicator(
+                    backgroundColor: Theme.of(context).cardColor,
+                    minHeight: remToPx(0.12),
+                  ),
+                ),
+                SizedBox(
+                  height: remToPx(0.5),
+                ),
+                ValueListenableBuilder<String?>(
+                  valueListenable: status,
+                  builder: (
+                    final BuildContext context,
+                    final String? status,
+                    final Widget? child,
+                  ) =>
+                      Text(
+                    status ?? ' ',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:version/version.dart';
+import './android/apk.dart';
 import './linux/appimage.dart';
 import './windows/exe.dart';
 import '../../config.dart';
@@ -106,6 +107,7 @@ abstract class Updater {
       matchers = <PlatformUpdaterValidate, PlatformUpdater Function()>{
     WindowsExeUpdater.isSupported: () => WindowsExeUpdater(),
     LinuxAppImageUpdater.isSupported: () => LinuxAppImageUpdater(),
+    AndroidApkUpdater.isSupported: () => AndroidApkUpdater(),
   };
 
   static PlatformUpdater? getUpdater() => matchers.entries

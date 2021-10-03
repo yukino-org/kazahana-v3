@@ -77,6 +77,7 @@ class WindowsExeUpdater with PlatformUpdater {
       });
 
       await download.download();
+      await zipFile.create(recursive: true);
       await partFile.rename(zipFile.path);
       Logger.of('WindowsExeUpdater')
           .info('Update file created at: ${zipFile.path}');
