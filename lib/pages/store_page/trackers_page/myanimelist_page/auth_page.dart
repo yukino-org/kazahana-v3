@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
 import '../../../../plugins/helpers/assets.dart';
 import '../../../../plugins/helpers/logger.dart';
 import '../../../../plugins/helpers/stateful_holder.dart';
 import '../../../../plugins/helpers/ui.dart';
+import '../../../../plugins/router.dart';
 import '../../../../plugins/translator/translator.dart';
 
 class Page extends StatefulWidget {
@@ -28,9 +29,9 @@ class _PageState extends State<Page> {
 
     Future<void>.delayed(Duration.zero, () async {
       try {
-        final anilist.TokenInfo token =
-            anilist.TokenInfo.fromURL(ModalRoute.of(context)!.settings.name!);
-        await anilist.AnilistManager.authenticate(token);
+        final ParsedRouteInfo args =
+            ParsedRouteInfo.fromURI(ModalRoute.of(context)!.settings.name!);
+        await myanimelist.MyAnimeListManager.authenticate(args.params['code']!);
 
         if (mounted) {
           setState(() {
@@ -71,7 +72,7 @@ class _PageState extends State<Page> {
   @override
   Widget build(final BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(Translator.t.anilist()),
+          title: Text(Translator.t.myAnimeList()),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -90,7 +91,7 @@ class _PageState extends State<Page> {
                   child: Padding(
                     padding: EdgeInsets.all(remToPx(1)),
                     child: Image.asset(
-                      Assets.anilistLogo,
+                      Assets.myAnimeListLogo,
                       width:
                           MediaQuery.of(context).size.width > ResponsiveSizes.md
                               ? remToPx(7)

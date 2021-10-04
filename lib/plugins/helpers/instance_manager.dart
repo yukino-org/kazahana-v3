@@ -70,8 +70,6 @@ abstract class InstanceManager {
       base64.encode(utf8.encode(json.encode(instance.toJson()))),
     );
 
-    Logger.of('InstanceManager').info('Finished "register"');
-
     return instance;
   }
 

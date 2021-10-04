@@ -30,4 +30,15 @@ abstract class StringUtils {
         final String key = match.group(1)!.trim();
         return context.containsKey(key) ? context[key]! : 'null';
       });
+
+  static String pascalToSnakeCase(final String pascal) =>
+      pascal.replaceAllMapped(
+        RegExp('[A-Z]'),
+        (final Match match) => '_${match.group(0)!.toLowerCase()}',
+      );
+
+  static String pascalPretty(final String pascal) => pascal.replaceAllMapped(
+        RegExp('[A-Z]'),
+        (final Match match) => ' ${match.group(0)!}',
+      );
 }

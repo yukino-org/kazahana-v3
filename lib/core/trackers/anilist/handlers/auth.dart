@@ -1,7 +1,6 @@
 import '../../../../plugins/database/database.dart';
 import '../../../../plugins/database/schemas/credentials/credentials.dart'
     as credentials_schema;
-import '../../../../plugins/helpers/pkce_challenge.dart';
 import '../../../../plugins/helpers/querystring.dart';
 
 class TokenInfo {
@@ -46,7 +45,6 @@ class Auth {
 
   final String clientId;
   TokenInfo? token;
-  PKCEChallenge? _pkce;
 
   void authorize(final TokenInfo _token) {
     token = TokenInfo(
@@ -76,12 +74,9 @@ class Auth {
     return true;
   }
 
-  String getOauthURL() {
-    _pkce ??= PKCEChallenge.generate();
-    return Uri.encodeFull(
-      '$baseURL/oauth/authorize?client_id=$clientId&response_type=token',
-    );
-  }
+  String getOauthURL() => Uri.encodeFull(
+        '$baseURL/oauth/authorize?client_id=$clientId&response_type=token',
+      );
 
   bool isValidToken() =>
       token != null && DateTime.now().isBefore(token!.expiresAt);

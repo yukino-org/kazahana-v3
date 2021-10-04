@@ -94,12 +94,7 @@ class _PageState extends State<Page> with RouteAware {
 
   @override
   void didPopNext() {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-      return;
-    }
-
-    print('couldnt pop');
+    Navigator.of(context).pop();
   }
 
   @override

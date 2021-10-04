@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/models/page_args/anilist_page.dart' as anilist_page;
+import '../../../core/models/page_args/myanimelist_page.dart'
+    as myanimelist_page;
 import '../../../core/trackers/anilist/anilist.dart' as anilist;
+import '../../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
 import '../../../plugins/helpers/assets.dart';
 import '../../../plugins/helpers/ui.dart';
 import '../../../plugins/helpers/utils/string.dart';
@@ -48,6 +51,21 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
         ).toString(),
         loginURL: anilist.AnilistManager.auth.getOauthURL(),
         loggedIn: anilist.AnilistManager.auth.isValidToken,
+      ),
+    ),
+    ...myanimelist.ListType.values.map(
+      (final myanimelist.ListType type) => TrackerRoute(
+        name:
+            '${Translator.t.myAnimeList()} - ${StringUtils.capitalize(type.type)}',
+        image: Assets.myAnimeListLogo,
+        route: ParsedRouteInfo(
+          RouteManager.routes[RouteNames.myAnimeListPage]!.route,
+          myanimelist_page.PageArguments(
+            type: type,
+          ).toJson(),
+        ).toString(),
+        loginURL: myanimelist.MyAnimeListManager.auth.getOauthURL(),
+        loggedIn: myanimelist.MyAnimeListManager.auth.isValidToken,
       ),
     ),
   ];

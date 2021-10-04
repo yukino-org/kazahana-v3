@@ -18,15 +18,18 @@ class CredentialsSchemaAdapter extends TypeAdapter<CredentialsSchema> {
     };
     return CredentialsSchema(
       anilist: (fields[1] as Map?)?.cast<dynamic, dynamic>(),
+      myanimelist: (fields[2] as Map?)?.cast<dynamic, dynamic>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, CredentialsSchema obj) {
     writer
+      ..writeByte(2)
       ..writeByte(1)
-      ..writeByte(1)
-      ..write(obj.anilist);
+      ..write(obj.anilist)
+      ..writeByte(2)
+      ..write(obj.myanimelist);
   }
 
   @override

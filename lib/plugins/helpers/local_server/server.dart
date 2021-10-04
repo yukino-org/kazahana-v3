@@ -6,7 +6,6 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 import './routes.dart';
 
 abstract class LocalServer {
-  static bool ready = false;
   static bool disposed = false;
   static HttpServer? server;
 
@@ -15,7 +14,7 @@ abstract class LocalServer {
   static int port = 0;
 
   static FutureOr<Response> _handler(final Request request) {
-    if (!ready || disposed) {
+    if (disposed) {
       return Response(503, body: 'Unavailable');
     }
 

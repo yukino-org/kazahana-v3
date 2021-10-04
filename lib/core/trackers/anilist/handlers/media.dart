@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import './_fuzzy_date.dart';
+import '../../../../plugins/helpers/utils/string.dart';
 import '../anilist.dart';
 
 enum MediaType {
@@ -25,14 +26,8 @@ enum MediaFormat {
 }
 
 extension MediaFormatUtils on MediaFormat {
-  String get format => toString()
-      .split('.')
-      .last
-      .replaceAllMapped(
-        RegExp('[A-Z]'),
-        (final Match match) => '_${match.group(0)!.toLowerCase()}',
-      )
-      .toUpperCase();
+  String get format =>
+      StringUtils.pascalToSnakeCase(toString().split('.').last).toUpperCase();
 }
 
 enum MediaSeason {

@@ -7,8 +7,12 @@ part 'credentials.g.dart';
 class CredentialsSchema extends HiveObject {
   CredentialsSchema({
     final this.anilist,
+    final this.myanimelist,
   });
 
   @HiveField(1)
   Map<dynamic, dynamic>? anilist;
+
+  @HiveField(2)
+  Map<dynamic, dynamic>? myanimelist;
 }

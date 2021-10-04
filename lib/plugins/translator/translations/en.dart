@@ -362,4 +362,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String startingApp() => 'Starting app';
+
+  @override
+  String myAnimeList() => 'MyAnimeList';
 }

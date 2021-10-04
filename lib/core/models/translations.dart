@@ -123,4 +123,5 @@ abstract class TranslationSentences {
   String updatingToVersion(final String version);
   String failedToUpdate(final String err);
   String startingApp();
+  String myAnimeList();
 }

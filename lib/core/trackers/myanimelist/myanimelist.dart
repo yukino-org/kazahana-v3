@@ -1,20 +1,31 @@
-import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import './handlers/auth.dart';
 import '../../../plugins/database/database.dart';
-import '../../secrets/anilist.dart';
+import '../../../plugins/helpers/querystring.dart';
+import '../../secrets/myanimelist.dart';
 
+export './handlers/anime_list.dart';
 export './handlers/auth.dart';
+export './handlers/list.dart';
+export './handlers/user_info.dart';
+
+enum MyAnimeListRequestMethods {
+  get,
+  post,
+  put,
+}
 
 abstract class MyAnimeListManager {
   static const String webURL = 'https://myanimelist.com';
-  static const String baseURL = 'https://myanimelist.net/v1';
+  static const String baseURL = 'https://api.myanimelist.net/v2';
 
-  static final Auth auth = Auth(AnilistSecrets.clientId);
+  static final Auth auth = Auth(
+    MyAnimeListSecrets.clientId,
+    MyAnimeListSecrets.redirectURL,
+  );
 
   static Future<void> initialize() async {
-    final Map<dynamic, dynamic>? _token = DataStore.credentials.anilist;
+    final Map<dynamic, dynamic>? _token = DataStore.credentials.myanimelist;
 
     if (_token != null) {
       final TokenInfo token = TokenInfo.fromJson(_token);
@@ -26,38 +37,65 @@ abstract class MyAnimeListManager {
     }
   }
 
-  static Future<void> authenticate(final TokenInfo token) async {
-    auth.authorize(token);
+  static Future<void> authenticate(final String code) async {
+    await auth.authenticateFromCode(code);
     if (auth.token != null) {
       await auth.saveToken();
     }
   }
 
-  static Future<dynamic> request(final String url) async {
+  static Future<String> request(
+    final MyAnimeListRequestMethods method,
+    final String url, [
+    final Map<dynamic, dynamic>? body,
+  ]) async {
     if (!auth.isValidToken()) throw StateError('Not logged in');
 
-    // TODO
-    final http.Response res = await http.post(
-      Uri.parse(baseURL),
-      // body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Authorization': '${auth.token!.tokenType} ${auth.token!.accessToken}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    );
+    final Uri uri = Uri.parse('$baseURL$url');
+    final Map<String, String> headers = <String, String>{
+      'Authorization': '${auth.token!.tokenType} ${auth.token!.accessToken}',
+    };
 
-    final dynamic parsed = res.body.isNotEmpty ? json.decode(res.body) : null;
-    if (parsed is Map<dynamic, dynamic> &&
-        (parsed['errors'] as List<dynamic>?)?.firstWhereOrNull(
-              (final dynamic x) => x['message'] == 'Invalid token',
-            ) !=
-            null) {
-      await auth.deleteToken();
-      throw StateError('Login expired');
+    if (body != null) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
 
-    return parsed;
+    final http.Response res;
+    switch (method) {
+      case MyAnimeListRequestMethods.get:
+        res = await http.get(
+          uri,
+          headers: headers,
+        );
+        break;
+
+      case MyAnimeListRequestMethods.post:
+        res = await http.post(
+          uri,
+          body: QueryString.stringify(body!.cast<String, dynamic>()),
+          headers: headers,
+        );
+        break;
+
+      case MyAnimeListRequestMethods.put:
+        res = await http.put(
+          uri,
+          body: QueryString.stringify(body!.cast<String, dynamic>()),
+          headers: headers,
+        );
+        break;
+
+      default:
+        throw Error();
+    }
+
+    if (res.statusCode == 401) {
+      await auth.authenticateFromRefreshCode();
+      await auth.saveToken();
+      return request(method, url, body);
+    }
+
+    return res.body;
   }
 
   bool get isLoggedIn => auth.isValidToken();

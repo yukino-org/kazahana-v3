@@ -12,6 +12,10 @@ import '../pages/store_page/trackers_page/anilist_page/anilist_page.dart'
     as anilist_page;
 import '../pages/store_page/trackers_page/anilist_page/auth_page.dart'
     as anilist_auth_page;
+import '../pages/store_page/trackers_page/myanimelist_page/auth_page.dart'
+    as myanimelist_auth_page;
+import '../pages/store_page/trackers_page/myanimelist_page/myanimelist_page.dart'
+    as myanimelist_page;
 import '../plugins/helpers/stater.dart' show SubscriberManager;
 import '../plugins/translator/translator.dart';
 
@@ -27,6 +31,8 @@ abstract class RouteNames {
   static const String mangaPage = '/manga_page';
   static const String anilistAuthPage = '/connections/anilist/auth';
   static const String anilistPage = '/connections/anilist';
+  static const String myAnimeListAuthPage = '/connections/myanimelist/auth';
+  static const String myAnimeListPage = '/connections/myanimelist';
 }
 
 class RouteInfo {
@@ -172,6 +178,15 @@ abstract class RouteManager {
     RouteInfo(
       route: RouteNames.anilistPage,
       builder: (final BuildContext context) => const anilist_page.Page(),
+    ),
+    RouteInfo(
+      route: RouteNames.myAnimeListAuthPage,
+      builder: (final BuildContext context) =>
+          const myanimelist_auth_page.Page(),
+    ),
+    RouteInfo(
+      route: RouteNames.myAnimeListPage,
+      builder: (final BuildContext context) => const myanimelist_page.Page(),
     ),
     RouteInfo(
       route: RouteNames.homeHandler,
