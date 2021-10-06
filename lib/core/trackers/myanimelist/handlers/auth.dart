@@ -129,6 +129,11 @@ class Auth {
     );
   }
 
-  bool isValidToken() =>
-      token != null && DateTime.now().isBefore(token!.expiresAt);
+  bool hasTokenExpired() => DateTime.now().isBefore(token!.expiresAt);
+
+  bool hasRefreshExpired() =>
+      DateTime.now().microsecondsSinceEpoch <
+      token!.expiresIn - 2592000000 - 3600000;
+
+  bool isValidToken() => token != null && !hasRefreshExpired();
 }

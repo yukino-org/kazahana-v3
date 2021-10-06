@@ -6,7 +6,6 @@ import '../../secrets/myanimelist.dart';
 
 export './handlers/anime_list.dart';
 export './handlers/auth.dart';
-export './handlers/list.dart';
 export './handlers/user_info.dart';
 
 enum MyAnimeListRequestMethods {
@@ -16,7 +15,7 @@ enum MyAnimeListRequestMethods {
 }
 
 abstract class MyAnimeListManager {
-  static const String webURL = 'https://myanimelist.com';
+  static const String webURL = 'https://myanimelist.net';
   static const String baseURL = 'https://api.myanimelist.net/v2';
 
   static final Auth auth = Auth(
@@ -29,10 +28,14 @@ abstract class MyAnimeListManager {
 
     if (_token != null) {
       final TokenInfo token = TokenInfo.fromJson(_token);
-      if (DateTime.now().isBefore(token.expiresAt)) {
-        auth.token = token;
-      } else {
-        await auth.deleteToken();
+      auth.token = token;
+
+      if (auth.hasTokenExpired()) {
+        try {
+          auth.authenticateFromRefreshCode();
+        } catch (_) {
+          await auth.deleteToken();
+        }
       }
     }
   }
@@ -47,7 +50,7 @@ abstract class MyAnimeListManager {
   static Future<String> request(
     final MyAnimeListRequestMethods method,
     final String url, [
-    final Map<dynamic, dynamic>? body,
+    final Map<String, dynamic>? body,
   ]) async {
     if (!auth.isValidToken()) throw StateError('Not logged in');
 

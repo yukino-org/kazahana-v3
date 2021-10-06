@@ -6,7 +6,6 @@ import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/string.dart';
 import '../../plugins/translator/translator.dart';
-import '../store_page/trackers_page/anilist_page/detailed_item.dart';
 
 final StatefulHolder<List<anilist.Media>?> _cache =
     StatefulHolder<List<anilist.Media>?>(null);
@@ -22,7 +21,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> {
+class _PageState extends State<Page> with DidLoadStater {
   final Duration animationDuration = const Duration(milliseconds: 300);
   final Duration fastAnimationDuration = const Duration(milliseconds: 150);
 
@@ -31,16 +30,18 @@ class _PageState extends State<Page> {
       <int, StatefulHolder<anilist.MediaList?>>{};
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    Future<void>.delayed(Duration.zero, () async {
-      _cache
-          .resolve(await anilist.getRecommended(0, perPage: 14, onList: false));
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    doLoadStateIfHasnt();
+  }
+
+  @override
+  Future<void> load() async {
+    _cache.resolve(await anilist.getRecommended(0, perPage: 14, onList: false));
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -86,9 +87,9 @@ class _PageState extends State<Page> {
                             final StateSetter setState,
                           ) {
                             if (mediaCache[x.id]?.hasResolved ?? false) {
-                              return DetailedItem(
-                                media: mediaCache[x.id]!.value!,
-                              );
+                              return mediaCache[x.id]!
+                                  .value!
+                                  .getDetailedPage(context, () {});
                             }
 
                             if (mediaCache[x.id] == null) {
@@ -165,7 +166,7 @@ class _PageState extends State<Page> {
                                           children: <InlineSpan>[
                                             TextSpan(
                                               text: StringUtils.capitalize(
-                                                x.type.type,
+                                                x.type.name,
                                               ),
                                               style: Theme.of(context)
                                                   .textTheme

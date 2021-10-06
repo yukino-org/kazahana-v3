@@ -1,4 +1,4 @@
-import '../../trackers/anilist/anilist.dart';
+import 'package:extensions/extensions.dart' as extensions;
 
 class PageArguments {
   PageArguments({
@@ -11,13 +11,13 @@ class PageArguments {
     }
 
     return PageArguments(
-      type: MediaType.values.firstWhere(
-        (final MediaType type) => type.type == json['type'],
+      type: extensions.ExtensionType.values.firstWhere(
+        (final extensions.ExtensionType type) => type.type == json['type'],
       ),
     );
   }
 
-  MediaType type;
+  extensions.ExtensionType type;
 
   Map<String, String> toJson() => <String, String>{
         'type': type.type,

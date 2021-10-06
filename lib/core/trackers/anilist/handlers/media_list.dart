@@ -1,5 +1,11 @@
 import 'package:collection/collection.dart';
+import 'package:extensions/extensions.dart' as extensions;
+import 'package:flutter/cupertino.dart';
 import './_fuzzy_date.dart';
+import '../../../../components/trackers/detailed_item.dart';
+import '../../../../pages/store_page/trackers_page/anilist_page/edit_modal.dart';
+import '../../../../plugins/helpers/utils/string.dart';
+import '../../detailed_info.dart' as detailed_info;
 import '../anilist.dart';
 
 enum MediaListStatus {
@@ -13,6 +19,8 @@ enum MediaListStatus {
 
 extension MediaListStatusUtils on MediaListStatus {
   String get status => toString().split('.').last.toUpperCase();
+
+  String get pretty => StringUtils.capitalize(status);
 }
 
 class MediaList {
@@ -159,6 +167,45 @@ mutation (
         FuzzyDate.toDateTime(json['completedAt'] as Map<dynamic, dynamic>);
   }
 
+  detailed_info.DetailedInfo toDetailedInfo() => detailed_info.DetailedInfo(
+        title: media.titleUserPreferred,
+        description: media.description,
+        type: media.type,
+        thumbnail: media.coverImageExtraLarge,
+        banner: media.bannerImage,
+        status: status.pretty,
+        progress: detailed_info.Progress(
+          progress: progress,
+          total: media.episodes ?? media.chapters,
+          startedAt: startedAt,
+          completedAt: completedAt,
+          volumes: media.type == extensions.ExtensionType.manga
+              ? detailed_info.VolumesProgress(
+                  progress: progressVolumes,
+                  total: media.volumes,
+                )
+              : null,
+        ),
+        score: score,
+        repeated: repeat,
+        characters: media.characters
+            .map((final Character x) => x.toCharacter())
+            .toList(),
+      );
+
+  Widget getDetailedPage(
+    final BuildContext context, [
+    final void Function()? onPlay,
+  ]) =>
+      DetailedItem(
+        item: toDetailedInfo(),
+        onPlay: onPlay,
+        onEdit: (final OnEditCallback cb) => EditModal(
+          media: this,
+          callback: cb,
+        ),
+      );
+
   static Future<MediaList> getFromMediaId(
     final int id,
     final int userId,
@@ -207,7 +254,7 @@ query (
 const int _perPage = 50;
 
 Future<List<MediaList>> getMediaList(
-  final MediaType type,
+  final extensions.ExtensionType type,
   final MediaListStatus status,
   final int page,
 ) async {
@@ -232,7 +279,7 @@ query (
       query: query,
       variables: <dynamic, dynamic>{
         'userId': user.id,
-        'type': type.type,
+        'type': type.type.toUpperCase(),
         'status': status.status,
         'page': page,
         'perpage': _perPage,

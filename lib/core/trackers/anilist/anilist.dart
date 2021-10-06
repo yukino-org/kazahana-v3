@@ -38,9 +38,9 @@ abstract class AnilistManager {
 
     if (_token != null) {
       final TokenInfo token = TokenInfo.fromJson(_token);
-      if (DateTime.now().isBefore(token.expiresAt)) {
-        auth.token = token;
-      } else {
+      auth.token = token;
+
+      if (DateTime.now().isAfter(token.expiresAt)) {
         await auth.deleteToken();
       }
     }

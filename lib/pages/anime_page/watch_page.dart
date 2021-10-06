@@ -11,6 +11,7 @@ import '../../core/models/player.dart' as player_model;
 import '../../core/models/tracker_provider.dart';
 import '../../core/trackers/providers.dart';
 import '../../plugins/helpers/screen.dart';
+import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/duration.dart';
 import '../../plugins/helpers/utils/list.dart';
@@ -61,7 +62,7 @@ class WatchPage extends StatefulWidget {
 }
 
 class WatchPageState extends State<WatchPage>
-    with TickerProviderStateMixin, FullscreenMixin {
+    with TickerProviderStateMixin, FullscreenMixin, DidLoadStater {
   List<extensions.EpisodeSource>? sources;
   int? currentIndex;
   player_model.Player? player;
@@ -103,15 +104,6 @@ class WatchPageState extends State<WatchPage>
 
     initFullscreen();
 
-    Future<void>.delayed(Duration.zero, () async {
-      if (AppState.settings.current.animeAutoFullscreen &&
-          !widget.ignoreAutoFullscreen) {
-        enterFullscreen();
-      }
-
-      getSources();
-    });
-
     playPauseController = AnimationController(
       vsync: this,
       duration: animationDuration,
@@ -149,6 +141,13 @@ class WatchPageState extends State<WatchPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
+  }
+
+  @override
   void dispose() {
     if (!ignoreExitFullscreen) {
       exitFullscreen();
@@ -167,6 +166,16 @@ class WatchPageState extends State<WatchPage>
     _updateLandscape(true);
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    if (AppState.settings.current.animeAutoFullscreen &&
+        !widget.ignoreAutoFullscreen) {
+      enterFullscreen();
+    }
+
+    getSources();
   }
 
   Future<void> getSources() async {

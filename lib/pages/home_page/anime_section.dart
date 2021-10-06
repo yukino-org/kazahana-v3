@@ -17,7 +17,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> {
+class _PageState extends State<Page> with DidLoadStater {
   final Duration animationDuration = const Duration(milliseconds: 300);
   final Duration fastAnimationDuration = const Duration(milliseconds: 150);
 
@@ -25,15 +25,18 @@ class _PageState extends State<Page> {
   int? recentlyUpdatedHoverIndex;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    Future<void>.delayed(Duration.zero, () async {
-      _cache.resolve(await mal.extractHome());
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    doLoadStateIfHasnt();
+  }
+
+  @override
+  Future<void> load() async {
+    _cache.resolve(await mal.extractHome());
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

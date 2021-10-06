@@ -6,6 +6,7 @@ import '../../plugins/app_lifecycle.dart';
 import '../../plugins/helpers/http_download.dart';
 import '../../plugins/helpers/logger.dart';
 import '../../plugins/helpers/screen.dart';
+import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
 import '../../plugins/translator/translator.dart';
@@ -20,81 +21,92 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with RouteAware {
+class _PageState extends State<Page> with RouteAware, DidLoadStater {
   final ValueNotifier<String> status =
       ValueNotifier<String>(Translator.t.initializing());
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    Future<void>.delayed(Duration.zero, () async {
-      if (!AppLifecycle.ready) {
-        await AppLifecycle.initialize();
+    doLoadStateIfHasnt();
+  }
 
-        final PlatformUpdater? updater = Updater.getUpdater();
-        if (updater != null && kReleaseMode) {
-          status.value = Translator.t.checkingForUpdates();
+  @override
+  void dispose() {
+    RouteManager.observer.unsubscribe(this);
 
-          final List<UpdateInfo> updates = await updater.getUpdates();
-          final UpdateInfo? update = updater.filterUpdate(updates);
-          if (update != null) {
-            updater.progress.subscribe((final UpdaterEvent x) {
-              switch (x.event) {
-                case UpdaterEvents.downloading:
-                  final DownloadProgress casted = x.data as DownloadProgress;
-                  status.value = Translator.t.downloadingVersion(
-                    'v${update.version.toString()}',
-                    '${(casted.downloaded / 1000000).toStringAsFixed(1)}Mb',
-                    '${(casted.total / 1000000).toStringAsFixed(1)}Mb',
-                    '${casted.percent.toStringAsFixed(1)}%',
-                  );
-                  break;
-
-                case UpdaterEvents.extracting:
-                  status.value = Translator.t
-                      .unpackingVersion('v${update.version.toString()}');
-                  break;
-
-                case UpdaterEvents.starting:
-                  status.value = Translator.t
-                      .updatingToVersion('v${update.version.toString()}');
-                  break;
-              }
-            });
-
-            try {
-              final bool shouldExit = await updater.install(update);
-
-              if (shouldExit) {
-                status.value = Translator.t.restartingApp();
-                await Future<void>.delayed(const Duration(seconds: 3));
-
-                Screen.close();
-                exit(0);
-              }
-            } catch (err, stack) {
-              Logger.of('splash_page').error('"Updater" failed: $err', stack);
-              status.value = Translator.t.failedToUpdate(err.toString());
-              await Future<void>.delayed(const Duration(seconds: 5));
-            }
-          }
-        } else {
-          status.value = Translator.t.startingApp();
-        }
-
-        await Future<void>.delayed(const Duration(seconds: 2));
-      }
-
-      if (mounted) {
-        Navigator.of(context).pushNamed(RouteNames.home);
-      }
-    });
+    super.dispose();
   }
 
   @override
   void didPopNext() {
     Navigator.of(context).pop();
+  }
+
+  @override
+  Future<void> load() async {
+    if (!AppLifecycle.ready) {
+      await AppLifecycle.initialize();
+
+      final PlatformUpdater? updater = Updater.getUpdater();
+      if (updater != null && kReleaseMode) {
+        status.value = Translator.t.checkingForUpdates();
+
+        final List<UpdateInfo> updates = await updater.getUpdates();
+        final UpdateInfo? update = updater.filterUpdate(updates);
+        if (update != null) {
+          updater.progress.subscribe((final UpdaterEvent x) {
+            switch (x.event) {
+              case UpdaterEvents.downloading:
+                final DownloadProgress casted = x.data as DownloadProgress;
+                status.value = Translator.t.downloadingVersion(
+                  'v${update.version.toString()}',
+                  '${(casted.downloaded / 1000000).toStringAsFixed(1)}Mb',
+                  '${(casted.total / 1000000).toStringAsFixed(1)}Mb',
+                  '${casted.percent.toStringAsFixed(1)}%',
+                );
+                break;
+
+              case UpdaterEvents.extracting:
+                status.value = Translator.t
+                    .unpackingVersion('v${update.version.toString()}');
+                break;
+
+              case UpdaterEvents.starting:
+                status.value = Translator.t
+                    .updatingToVersion('v${update.version.toString()}');
+                break;
+            }
+          });
+
+          try {
+            final bool shouldExit = await updater.install(update);
+
+            if (shouldExit) {
+              status.value = Translator.t.restartingApp();
+              await Future<void>.delayed(const Duration(seconds: 3));
+
+              Screen.close();
+              exit(0);
+            }
+          } catch (err, stack) {
+            Logger.of('splash_page').error('"Updater" failed: $err', stack);
+            status.value = Translator.t.failedToUpdate(err.toString());
+            await Future<void>.delayed(const Duration(seconds: 5));
+          }
+        }
+      } else {
+        status.value = Translator.t.startingApp();
+      }
+
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+
+    if (mounted) {
+      Navigator.of(context).pushNamed(RouteNames.home);
+      RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
+    }
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './watch_page.dart';
 import '../../components/toggleable_slide_widget.dart';
-import '../../components/trackers_tile.dart';
+import '../../components/trackers/trackers_tile.dart';
 import '../../config.dart';
 import '../../core/extensions.dart';
 import '../../core/models/languages.dart';
@@ -12,6 +12,7 @@ import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;
 import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
@@ -38,7 +39,8 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with SingleTickerProviderStateMixin {
+class _PageState extends State<Page>
+    with SingleTickerProviderStateMixin, DidLoadStater {
   extensions.AnimeInfo? info;
 
   extensions.EpisodeInfo? episode;
@@ -74,27 +76,24 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: animationDuration,
     );
-
-    Future<void>.delayed(Duration.zero, () async {
-      if (mounted) {
-        args = anime_page.PageArguments.fromJson(
-          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-        );
-
-        // TODO: Error handling
-        extractor = ExtensionsManager.animes[args.plugin]!;
-      }
-
-      getInfo();
-    });
   }
 
-  Future<void> goToPage(final Pages page) async {
-    await controller.animateToPage(
-      page.index,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
+  }
+
+  @override
+  Future<void> load() async {
+    args = anime_page.PageArguments.fromJson(
+      ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
     );
+
+    // TODO: Error handling
+    extractor = ExtensionsManager.animes[args.plugin]!;
+    getInfo();
   }
 
   Future<void> getInfo({
@@ -142,6 +141,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  Future<void> goToPage(final Pages page) async {
+    await controller.animateToPage(
+      page.index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 
   void setEpisode(

@@ -1,7 +1,7 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import '../../../core/models/tracker_provider.dart';
 import '../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../pages/store_page/trackers_page/anilist_page/detailed_item.dart';
 import '../../../plugins/database/database.dart' show DataBox;
 import '../../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../../plugins/helpers/assets.dart';
@@ -13,7 +13,7 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
   String title,
   String plugin,
 ) getComputed(
-  final anilist.MediaType mediaType,
+  final extensions.ExtensionType mediaType,
 ) =>
     (
       final String title,
@@ -65,7 +65,7 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
     };
 
 Future<List<ResolvableTrackerItem>> Function(String title) getComputables(
-  final anilist.MediaType mediaType,
+  final extensions.ExtensionType mediaType,
 ) =>
     (final String title) async {
       final List<anilist.Media> media =
@@ -86,7 +86,7 @@ Future<ResolvedTrackerItem<anilist.MediaList>> Function(
   String plugin,
   ResolvableTrackerItem item,
 ) resolveComputable(
-  final anilist.MediaType mediaType,
+  final extensions.ExtensionType mediaType,
 ) =>
     (
       final String title,
@@ -138,11 +138,9 @@ Widget getDetailedPage(
   final BuildContext context,
   final ResolvedTrackerItem<dynamic> item,
 ) =>
-    DetailedItem(
-      media: item.info as anilist.MediaList,
-      onPlay: () {
-        Navigator.of(context).pop();
-      },
+    (item.info as anilist.MediaList).getDetailedPage(
+      context,
+      Navigator.of(context).pop,
     );
 
 bool isItemSameKind(
@@ -156,9 +154,9 @@ final TrackerProvider<AnimeProgress, anilist.MediaList> anime =
     TrackerProvider<AnimeProgress, anilist.MediaList>(
   name: Translator.t.anilist(),
   image: Assets.anilistLogo,
-  getComputed: getComputed(anilist.MediaType.anime),
-  getComputables: getComputables(anilist.MediaType.anime),
-  resolveComputed: resolveComputable(anilist.MediaType.anime),
+  getComputed: getComputed(extensions.ExtensionType.anime),
+  getComputables: getComputables(extensions.ExtensionType.anime),
+  resolveComputed: resolveComputable(extensions.ExtensionType.anime),
   updateComputed: (
     final ResolvedTrackerItem<dynamic> media,
     final AnimeProgress progress,
@@ -214,9 +212,9 @@ final TrackerProvider<MangaProgress, anilist.MediaList> manga =
     TrackerProvider<MangaProgress, anilist.MediaList>(
   name: Translator.t.anilist(),
   image: Assets.anilistLogo,
-  getComputed: getComputed(anilist.MediaType.manga),
-  getComputables: getComputables(anilist.MediaType.manga),
-  resolveComputed: resolveComputable(anilist.MediaType.manga),
+  getComputed: getComputed(extensions.ExtensionType.manga),
+  getComputables: getComputables(extensions.ExtensionType.manga),
+  resolveComputed: resolveComputable(extensions.ExtensionType.manga),
   updateComputed: (
     final ResolvedTrackerItem<dynamic> media,
     final MangaProgress progress,

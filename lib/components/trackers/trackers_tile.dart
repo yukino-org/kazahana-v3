@@ -1,12 +1,12 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../core/models/tracker_provider.dart';
-import '../plugins/helpers/assets.dart';
-import '../plugins/helpers/stateful_holder.dart';
-import '../plugins/helpers/ui.dart';
-import '../plugins/router.dart';
-import '../plugins/translator/translator.dart';
+import '../../core/models/tracker_provider.dart';
+import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/stateful_holder.dart';
+import '../../plugins/helpers/ui.dart';
+import '../../plugins/router.dart';
+import '../../plugins/translator/translator.dart';
 
 class TrackersTile extends StatelessWidget {
   const TrackersTile({
@@ -51,7 +51,8 @@ class TrackersTileItem extends StatefulWidget {
   _TrackersTileItemState createState() => _TrackersTileItemState();
 }
 
-class _TrackersTileItemState extends State<TrackersTileItem> {
+class _TrackersTileItemState extends State<TrackersTileItem>
+    with DidLoadStater {
   StatefulHolder<List<ResolvableTrackerItem>?> searches =
       StatefulHolder<List<ResolvableTrackerItem>?>(null);
 
@@ -63,26 +64,13 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
     super.initState();
 
     onItemUpdateChangeNotifier.subscribe(_onMediaUpdated);
+  }
 
-    Future<void>.delayed(Duration.zero, () async {
-      if (mounted && widget.tracker.isLoggedIn()) {
-        setState(() {
-          item.resolving(null);
-        });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-        final ResolvedTrackerItem<dynamic>? computed =
-            await widget.tracker.getComputed(
-          widget.title,
-          widget.plugin,
-        );
-
-        if (mounted) {
-          setState(() {
-            item.resolve(computed);
-          });
-        }
-      }
-    });
+    doLoadStateIfHasnt();
   }
 
   @override
@@ -90,6 +78,27 @@ class _TrackersTileItemState extends State<TrackersTileItem> {
     onItemUpdateChangeNotifier.unsubscribe(_onMediaUpdated);
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    if (mounted && widget.tracker.isLoggedIn()) {
+      setState(() {
+        item.resolving(null);
+      });
+
+      final ResolvedTrackerItem<dynamic>? computed =
+          await widget.tracker.getComputed(
+        widget.title,
+        widget.plugin,
+      );
+
+      if (mounted) {
+        setState(() {
+          item.resolve(computed);
+        });
+      }
+    }
   }
 
   void _onMediaUpdated(

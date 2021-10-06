@@ -20,37 +20,17 @@ class FallbackableNetworkImage extends StatefulWidget {
       _FallbackableNetworkImageState();
 }
 
-class _FallbackableNetworkImageState extends State<FallbackableNetworkImage> {
+class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
+    with DidLoadStater {
   LoadState state = LoadState.waiting;
   ImageInfo? imageInfo;
   late final NetworkImage networkImage;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    Future<void>.delayed(Duration.zero, () {
-      networkImage = NetworkImage(widget.url);
-      networkImage.resolve(ImageConfiguration.empty).addListener(
-            ImageStreamListener(
-              (final ImageInfo image, final bool synchronousCall) {
-                if (mounted) {
-                  setState(() {
-                    imageInfo = image;
-                    state = LoadState.resolved;
-                  });
-                }
-              },
-              onError: (final Object exception, final StackTrace? stackTrace) {
-                if (mounted) {
-                  setState(() {
-                    state = LoadState.failed;
-                  });
-                }
-              },
-            ),
-          );
-    });
+    doLoadStateIfHasnt();
   }
 
   @override
@@ -58,6 +38,30 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage> {
     imageInfo?.dispose();
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    networkImage = NetworkImage(widget.url);
+    networkImage.resolve(ImageConfiguration.empty).addListener(
+          ImageStreamListener(
+            (final ImageInfo image, final bool synchronousCall) {
+              if (mounted) {
+                setState(() {
+                  imageInfo = image;
+                  state = LoadState.resolved;
+                });
+              }
+            },
+            onError: (final Object exception, final StackTrace? stackTrace) {
+              if (mounted) {
+                setState(() {
+                  state = LoadState.failed;
+                });
+              }
+            },
+          ),
+        );
   }
 
   @override

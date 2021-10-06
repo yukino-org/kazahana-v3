@@ -83,7 +83,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> {
+class _PageState extends State<Page> with DidLoadStater {
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
@@ -102,31 +102,39 @@ class _PageState extends State<Page> {
     super.initState();
 
     _setCurrentPreferredPlugin();
+  }
 
-    Future<void>.delayed(Duration.zero, () async {
-      if (mounted) {
-        args = search_page.PageArguments.fromJson(
-          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-        );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-        if (args?.pluginType != null) {
-          setState(() {
-            _setCurrentPreferredPlugin(args!.pluginType!.type);
-          });
-        }
+    doLoadStateIfHasnt();
+  }
 
-        if (args?.terms?.isNotEmpty ?? false) {
-          setState(() {
-            textController.text = args!.terms!;
-          });
+  @override
+  Future<void> load() async {
+    if (mounted) {
+      args = search_page.PageArguments.fromJson(
+        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+      );
 
-          if (currentPlugin != null && (args?.autoSearch ?? false)) {
-            args!.autoSearch = false;
-            await search();
-          }
+      if (args?.pluginType != null) {
+        setState(() {
+          _setCurrentPreferredPlugin(args!.pluginType!.type);
+        });
+      }
+
+      if (args?.terms?.isNotEmpty ?? false) {
+        setState(() {
+          textController.text = args!.terms!;
+        });
+
+        if (currentPlugin != null && (args?.autoSearch ?? false)) {
+          args!.autoSearch = false;
+          await search();
         }
       }
-    });
+    }
   }
 
   void _setCurrentPreferredPlugin([final String? _pluginType]) {

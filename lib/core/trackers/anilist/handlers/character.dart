@@ -1,3 +1,5 @@
+import '../../detailed_info.dart' as detailed_info;
+
 enum CharacterRole {
   main,
   supporting,
@@ -50,4 +52,10 @@ class Character {
   final String nameUserPreferred;
   final String imageMedium;
   final CharacterRole role;
+
+  detailed_info.Character toCharacter() => detailed_info.Character(
+        name: nameUserPreferred,
+        image: imageMedium,
+        role: role.role,
+      );
 }

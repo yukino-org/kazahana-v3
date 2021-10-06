@@ -1,16 +1,8 @@
 import 'package:collection/collection.dart';
+import 'package:extensions/extensions.dart' as extensions;
 import './_fuzzy_date.dart';
 import '../../../../plugins/helpers/utils/string.dart';
 import '../anilist.dart';
-
-enum MediaType {
-  anime,
-  manga,
-}
-
-extension MediaTypeUtils on MediaType {
-  String get type => toString().split('.').last.toUpperCase();
-}
 
 enum MediaFormat {
   tv,
@@ -72,8 +64,9 @@ class Media {
         id: json['id'] as int,
         idMal: json['idMal'] as int?,
         titleUserPreferred: json['title']['userPreferred'] as String,
-        type: MediaType.values.firstWhere(
-          (final MediaType type) => type.type == (json['type'] as String),
+        type: extensions.ExtensionType.values.firstWhere(
+          (final extensions.ExtensionType type) =>
+              type.type.toUpperCase() == (json['type'] as String),
         ),
         format: MediaFormat.values.firstWhere(
           (final MediaFormat type) => type.format == (json['format'] as String),
@@ -153,7 +146,7 @@ class Media {
   final int id;
   final int? idMal;
   final String titleUserPreferred;
-  final MediaType type;
+  final extensions.ExtensionType type;
   final MediaFormat format;
   final String? description;
   final DateTime? startDate;
@@ -176,7 +169,7 @@ class Media {
 
   static Future<List<Media>> search(
     final String title,
-    final MediaType type, [
+    final extensions.ExtensionType type, [
     final int page = 0,
     final int perPage = 25,
   ]) async {
@@ -200,7 +193,7 @@ query (
           'search': title,
           'page': page,
           'perpage': perPage,
-          'type': type.type,
+          'type': type.type.toUpperCase(),
         },
       ),
     );

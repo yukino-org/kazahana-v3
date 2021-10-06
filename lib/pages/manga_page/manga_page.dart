@@ -5,7 +5,7 @@ import './list_reader.dart';
 import './page_reader.dart';
 import '../../../config.dart';
 import '../../components/toggleable_slide_widget.dart';
-import '../../components/trackers_tile.dart';
+import '../../components/trackers/trackers_tile.dart';
 import '../../core/extensions.dart';
 import '../../core/models/languages.dart';
 import '../../core/models/page_args/manga_page.dart' as manga_page;
@@ -15,6 +15,7 @@ import '../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../plugins/database/schemas/settings/settings.dart'
     show MangaMode, SettingsSchema;
 import '../../plugins/helpers/assets.dart';
+import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/router.dart';
@@ -42,7 +43,8 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with SingleTickerProviderStateMixin {
+class _PageState extends State<Page>
+    with SingleTickerProviderStateMixin, DidLoadStater {
   extensions.MangaInfo? info;
 
   extensions.ChapterInfo? chapter;
@@ -82,19 +84,14 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
       duration: animationDuration,
     );
 
-    Future<void>.delayed(Duration.zero, () async {
-      if (mounted) {
-        args = manga_page.PageArguments.fromJson(
-          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-        );
-
-        extractor = ExtensionsManager.mangas[args.plugin]!;
-      }
-
-      getInfo();
-    });
-
     AppState.settings.subscribe(_appStateChange);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
   }
 
   @override
@@ -105,6 +102,19 @@ class _PageState extends State<Page> with SingleTickerProviderStateMixin {
     AppState.settings.unsubscribe(_appStateChange);
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    if (mounted) {
+      args = manga_page.PageArguments.fromJson(
+        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+      );
+
+      extractor = ExtensionsManager.mangas[args.plugin]!;
+    }
+
+    getInfo();
   }
 
   void _appStateChange(

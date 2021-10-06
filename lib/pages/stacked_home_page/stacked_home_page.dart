@@ -4,6 +4,7 @@ import '../../components/bottom_bar.dart' as bottom_bar;
 import '../../components/side_bar.dart' as side_bar;
 import '../../plugins/helpers/deeplink.dart';
 import '../../plugins/helpers/protocol_handler.dart';
+import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
 import '../../plugins/state.dart';
@@ -24,7 +25,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> {
+class _PageState extends State<Page> with DidLoadStater {
   late int currentIndex;
   late PageController controller;
 
@@ -60,15 +61,24 @@ class _PageState extends State<Page> {
             : null) ??
         0;
     controller = PageController(initialPage: currentIndex);
+  }
 
-    Future<void>.delayed(Duration.zero, () async {
-      final String? link = await Deeplink.getInitialLink();
-      if (link != null) {
-        ProtocolHandler.handle(link);
-      }
-      Deeplink.hasHandledInitialLink = true;
-      Deeplink.listen();
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
+  }
+
+  @override
+  Future<void> load() async {
+    final String? link = await Deeplink.getInitialLink();
+    if (link != null) {
+      ProtocolHandler.handle(link);
+    }
+
+    Deeplink.hasHandledInitialLink = true;
+    Deeplink.listen();
   }
 
   void goToPage(final int page) => controller.animateToPage(

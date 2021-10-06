@@ -7,6 +7,27 @@ enum LoadState {
   failed,
 }
 
+class DidLoadStater {
+  LoadState loadState = LoadState.waiting;
+
+  Future<void> load() async {
+    throw UnimplementedError();
+  }
+
+  Future<void> doLoadStateIfHasnt() async {
+    if (loadState != LoadState.waiting) return;
+
+    loadState = LoadState.resolving;
+    try {
+      await load();
+      loadState = LoadState.resolved;
+    } catch (err) {
+      loadState = LoadState.failed;
+      rethrow;
+    }
+  }
+}
+
 class StatefulHolder<T> {
   StatefulHolder(
     final this.value, {
