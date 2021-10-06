@@ -1,5 +1,5 @@
-import { join } from "path";
-import { readFile, writeFile } from "fs-extra";
+import { dirname, join } from "path";
+import { ensureDir, readFile, writeFile } from "fs-extra";
 import { parse as yaml } from "yaml";
 import { config } from "../../config";
 import { Logger } from "../../logger";
@@ -13,6 +13,7 @@ export const generate = async () => {
     const pubspec = yaml((await readFile(pubspecPath)).toString());
 
     const outPath = join(config.base, "assets/data/meta.json");
+    await ensureDir(dirname(outPath));
     await writeFile(
         outPath,
         JSON.stringify({
