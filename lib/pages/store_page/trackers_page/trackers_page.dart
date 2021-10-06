@@ -1,3 +1,4 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/models/page_args/anilist_page.dart' as anilist_page;
@@ -6,6 +7,7 @@ import '../../../core/models/page_args/myanimelist_page.dart'
 import '../../../core/trackers/anilist/anilist.dart' as anilist;
 import '../../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
 import '../../../plugins/helpers/assets.dart';
+import '../../../plugins/helpers/stateful_holder.dart';
 import '../../../plugins/helpers/ui.dart';
 import '../../../plugins/helpers/utils/string.dart';
 import '../../../plugins/router.dart';
@@ -36,10 +38,11 @@ class TrackersPage extends StatefulWidget {
   _TrackersPageState createState() => _TrackersPageState();
 }
 
-class _TrackersPageState extends State<TrackersPage> with RouteAware {
+class _TrackersPageState extends State<TrackersPage>
+    with RouteAware, DidLoadStater {
   final List<TrackerRoute> connections = <TrackerRoute>[
-    ...anilist.MediaType.values.map(
-      (final anilist.MediaType type) => TrackerRoute(
+    ...extensions.ExtensionType.values.map(
+      (final extensions.ExtensionType type) => TrackerRoute(
         name:
             '${Translator.t.anilist()} - ${StringUtils.capitalize(type.type)}',
         image: Assets.anilistLogo,
@@ -53,8 +56,8 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
         loggedIn: anilist.AnilistManager.auth.isValidToken,
       ),
     ),
-    ...myanimelist.ListType.values.map(
-      (final myanimelist.ListType type) => TrackerRoute(
+    ...extensions.ExtensionType.values.map(
+      (final extensions.ExtensionType type) => TrackerRoute(
         name:
             '${Translator.t.myAnimeList()} - ${StringUtils.capitalize(type.type)}',
         image: Assets.myAnimeListLogo,
@@ -71,12 +74,10 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
   ];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    Future<void>.delayed(Duration.zero, () {
-      RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
-    });
+    doLoadStateIfHasnt();
   }
 
   @override
@@ -89,6 +90,11 @@ class _TrackersPageState extends State<TrackersPage> with RouteAware {
   @override
   void didPopNext() {
     setState(() {});
+  }
+
+  @override
+  Future<void> load() async {
+    RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
   }
 
   @override

@@ -1,5 +1,7 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../components/trackers/detailed_item.dart';
 import '../../../../core/trackers/anilist/anilist.dart' as anilist;
 import '../../../../plugins/helpers/ui.dart';
 import '../../../../plugins/helpers/utils/string.dart';
@@ -10,10 +12,12 @@ import '../../../settings_page/setting_radio.dart';
 class EditModal extends StatefulWidget {
   const EditModal({
     required final this.media,
+    required final this.callback,
     final Key? key,
   }) : super(key: key);
 
   final anilist.MediaList media;
+  final OnEditCallback callback;
 
   @override
   _EditModalState createState() => _EditModalState();
@@ -45,6 +49,7 @@ class _EditModalState extends State<EditModal> {
       score: score,
       repeat: repeat,
     );
+    widget.callback(widget.media.toDetailedInfo());
   }
 
   @override
@@ -141,7 +146,7 @@ class _EditModalState extends State<EditModal> {
                           child: TextField(
                             decoration: InputDecoration(
                               labelText: widget.media.media.type ==
-                                      anilist.MediaType.anime
+                                      extensions.ExtensionType.anime
                                   ? Translator.t.noOfEpisodes()
                                   : Translator.t.noOfChapters(),
                             ),
@@ -163,7 +168,8 @@ class _EditModalState extends State<EditModal> {
             SizedBox(
               height: remToPx(0.3),
             ),
-            if (widget.media.media.type == anilist.MediaType.manga) ...<Widget>[
+            if (widget.media.media.type ==
+                extensions.ExtensionType.manga) ...<Widget>[
               SettingDialog(
                 title: Translator.t.volumes(),
                 icon: Icons.sync_alt,

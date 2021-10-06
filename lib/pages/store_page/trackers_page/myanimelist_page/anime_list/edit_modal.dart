@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../../components/trackers/detailed_item.dart';
 import '../../../../../core/trackers/myanimelist/myanimelist.dart'
     as myanimelist;
 import '../../../../../plugins/helpers/ui.dart';
@@ -11,10 +12,12 @@ import '../../../../settings_page/setting_radio.dart';
 class EditModal extends StatefulWidget {
   const EditModal({
     required final this.media,
+    required final this.callback,
     final Key? key,
   }) : super(key: key);
 
   final myanimelist.AnimeListEntity media;
+  final OnEditCallback callback;
 
   @override
   _EditModalState createState() => _EditModalState();
@@ -37,10 +40,10 @@ class _EditModalState extends State<EditModal> {
   Future<void> updateMedia() async {
     await widget.media.update(
       status: status,
-      // progress: progress,
       score: score,
-      // repeating: repeating,
+      watched: progress,
     );
+    widget.callback(widget.media.toDetailedInfo());
   }
 
   @override
@@ -88,68 +91,69 @@ class _EditModalState extends State<EditModal> {
                 height: remToPx(0.3),
               ),
               SettingDialog(
-                  title: Translator.t.progress(),
-                  icon: Icons.sync_alt,
-                  subtitle: '$progress / ${widget.media.status.watched}',
-                  builder: (
-                    final BuildContext context,
-                    final StateSetter setState,
-                  ) =>
-                      // widget.media.status.watched != null
-                      //     ?
-                      Wrap(
-                        children: <Widget>[
-                          SliderTheme(
-                            data: SliderThemeData(
-                              thumbShape: RoundSliderThumbShape(
-                                enabledThumbRadius: remToPx(0.4),
+                title: Translator.t.progress(),
+                icon: Icons.sync_alt,
+                subtitle:
+                    '$progress / ${widget.media.details?.totalEpisodes ?? '?'}',
+                builder: (
+                  final BuildContext context,
+                  final StateSetter setState,
+                ) =>
+                    widget.media.details?.totalEpisodes != null
+                        ? Wrap(
+                            children: <Widget>[
+                              SliderTheme(
+                                data: SliderThemeData(
+                                  thumbShape: RoundSliderThumbShape(
+                                    enabledThumbRadius: remToPx(0.4),
+                                  ),
+                                  showValueIndicator: ShowValueIndicator.always,
+                                ),
+                                child: Slider(
+                                  label: progress.toString(),
+                                  value: progress.toDouble(),
+                                  max: widget.media.details!.totalEpisodes!
+                                      .toDouble(),
+                                  onChanged: (final double value) {
+                                    setState(() {
+                                      progress = value.toInt();
+                                    });
+                                  },
+                                  onChangeEnd: (final double value) async {
+                                    setState(() {
+                                      progress = value.toInt();
+                                    });
+                                    this.setState(() {});
+                                  },
+                                ),
                               ),
-                              showValueIndicator: ShowValueIndicator.always,
+                            ],
+                          )
+                        : Padding(
+                            padding: EdgeInsets.only(
+                              left: remToPx(1.1),
+                              right: remToPx(1.1),
+                              bottom: remToPx(0.8),
                             ),
-                            child: Slider(
-                              label: progress.toString(),
-                              value: progress.toDouble(),
-                              max: widget.media.status.watched.toDouble(),
-                              onChanged: (final double value) {
-                                setState(() {
-                                  progress = value.toInt();
-                                });
-                              },
-                              onChangeEnd: (final double value) async {
-                                setState(() {
-                                  progress = value.toInt();
-                                });
-                                this.setState(() {});
+                            child: TextField(
+                              decoration: InputDecoration(
+                                labelText: Translator.t.noOfEpisodes(),
+                              ),
+                              controller: progressController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              onChanged: (final String value) {
+                                if (value.isNotEmpty) {
+                                  this.setState(() {
+                                    progress = int.parse(value);
+                                  });
+                                }
                               },
                             ),
                           ),
-                        ],
-                      )
-                  // : Padding(
-                  //     padding: EdgeInsets.only(
-                  //       left: remToPx(1.1),
-                  //       right: remToPx(1.1),
-                  //       bottom: remToPx(0.8),
-                  //     ),
-                  //     child: TextField(
-                  //       decoration: InputDecoration(
-                  //         labelText: Translator.t.noOfEpisodes(),
-                  //       ),
-                  //       controller: progressController,
-                  //       keyboardType: TextInputType.number,
-                  //       inputFormatters: <TextInputFormatter>[
-                  //         FilteringTextInputFormatter.digitsOnly,
-                  //       ],
-                  //       onChanged: (final String value) {
-                  //         if (value.isNotEmpty) {
-                  //           this.setState(() {
-                  //             progress = int.parse(value);
-                  //           });
-                  //         }
-                  //       },
-                  //     ),
-                  //   ),
-                  ),
+              ),
               SizedBox(
                 height: remToPx(0.3),
               ),
