@@ -1,5 +1,5 @@
 {
-    "name": "yukino-cli",
+    "name": "@yukino-app/cli",
     "version": "0.0.0",
     "description": "🔧 Yukino's handy command-line interface",
     "private": true,
