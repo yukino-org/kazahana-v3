@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import './anilist_section.dart' as anilist_section;
 import './anime_section.dart' as anime_section;
@@ -82,6 +83,7 @@ class HorizontalEntityList extends StatelessWidget {
     required final this.onHover,
     required final this.onTap,
     required final this.active,
+    required final this.openBuilder,
     final Key? key,
   }) : super(key: key);
 
@@ -89,8 +91,9 @@ class HorizontalEntityList extends StatelessWidget {
   final Duration fastAnimationDuration;
   final List<Entity> entities;
   final void Function(int, bool) onHover;
-  final void Function(int) onTap;
+  final void Function(int, VoidCallback) onTap;
   final bool Function(int) active;
+  final Widget Function(int, BuildContext) openBuilder;
 
   @override
   Widget build(final BuildContext context) => SizedBox(
@@ -110,82 +113,81 @@ class HorizontalEntityList extends StatelessWidget {
                         left: i != 0 ? remToPx(0.2) : 0,
                         right: i != entities.length - 1 ? remToPx(0.2) : 0,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(remToPx(0.3)),
-                        child: SizedBox(
-                          width: remToPx(8),
-                          child: Stack(
-                            children: <Widget>[
-                              Positioned.fill(
-                                child: FallbackableNetworkImage(
-                                  url: mal_utils.tryMaxRes(x.thumbnail),
-                                  placeholder: Image.asset(
-                                    Assets.placeholderImage(
-                                      dark: isDarkContext(
-                                        context,
+                      child: OpenContainer(
+                        transitionType: ContainerTransitionType.fadeThrough,
+                        openColor: Theme.of(context).scaffoldBackgroundColor,
+                        closedColor: Colors.transparent,
+                        closedElevation: 0,
+                        tappable: false,
+                        closedBuilder: (
+                          final BuildContext context,
+                          final VoidCallback openContainer,
+                        ) =>
+                            ClipRRect(
+                          borderRadius: BorderRadius.circular(remToPx(0.3)),
+                          child: SizedBox(
+                            width: remToPx(8),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned.fill(
+                                  child: FallbackableNetworkImage(
+                                    url: mal_utils.tryMaxRes(x.thumbnail),
+                                    placeholder: Image.asset(
+                                      Assets.placeholderImage(
+                                        dark: isDarkContext(
+                                          context,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Positioned.fill(
-                                child: AnimatedOpacity(
-                                  duration: animationDuration,
-                                  opacity: active(i) ? 1 : 0,
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: <Color>[
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(0.7),
-                                        ],
+                                Positioned.fill(
+                                  child: AnimatedOpacity(
+                                    duration: animationDuration,
+                                    opacity: active(i) ? 1 : 0,
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: <Color>[
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.7),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: AnimatedSlide(
-                                  curve: Curves.easeInOut,
-                                  duration: fastAnimationDuration,
-                                  offset: active(i)
-                                      ? Offset.zero
-                                      : const Offset(0, 1),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: remToPx(0.4),
-                                      vertical: remToPx(0.2),
-                                    ),
-                                    child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text: x.title,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1
-                                                ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                          ),
-                                          TextSpan(
-                                            text: '\n${x.type.type}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                ?.copyWith(
-                                                  color: Colors.white,
-                                                ),
-                                          ),
-                                          if (x.latest != null)
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: AnimatedSlide(
+                                    curve: Curves.easeInOut,
+                                    duration: fastAnimationDuration,
+                                    offset: active(i)
+                                        ? Offset.zero
+                                        : const Offset(0, 1),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: remToPx(0.4),
+                                        vertical: remToPx(0.2),
+                                      ),
+                                      child: RichText(
+                                        textAlign: TextAlign.center,
+                                        text: TextSpan(
+                                          children: <InlineSpan>[
                                             TextSpan(
-                                              text:
-                                                  ' | ${Translator.t.episode()} ${x.latest}',
+                                              text: x.title,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                            TextSpan(
+                                              text: '\n${x.type.type}',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .caption
@@ -193,25 +195,42 @@ class HorizontalEntityList extends StatelessWidget {
                                                     color: Colors.white,
                                                   ),
                                             ),
-                                        ],
+                                            if (x.latest != null)
+                                              TextSpan(
+                                                text:
+                                                    ' | ${Translator.t.episode()} ${x.latest}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .caption
+                                                    ?.copyWith(
+                                                      color: Colors.white,
+                                                    ),
+                                              ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Positioned.fill(
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    onTap: () => onTap(i),
-                                    onHover: (final bool hovered) =>
-                                        onHover(i, hovered),
+                                Positioned.fill(
+                                  child: Material(
+                                    type: MaterialType.transparency,
+                                    child: InkWell(
+                                      onTap: () => onTap(i, openContainer),
+                                      onHover: (final bool hovered) =>
+                                          onHover(i, hovered),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
+                        openBuilder: (
+                          final BuildContext context,
+                          final VoidCallback cb,
+                        ) =>
+                            openBuilder(i, context),
                       ),
                     ),
                   ),

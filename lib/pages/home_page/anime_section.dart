@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import './home_page.dart';
-import '../../core/provisions/myanimelist/home.dart' as mal;
+import '../../core/provisions/model.dart' as provisions;
+import '../../core/provisions/myanimelist/home.dart' as myanimelist;
+import '../../core/provisions/myanimelist/utils.dart' as myanimelist;
+import '../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/translator/translator.dart';
 
-final StatefulHolder<mal.HomeResult?> _cache =
-    StatefulHolder<mal.HomeResult?>(null);
+final StatefulHolder<myanimelist.HomeResult?> _cache =
+    StatefulHolder<myanimelist.HomeResult?>(null);
 
 class Page extends StatefulWidget {
   const Page({
@@ -23,6 +26,8 @@ class _PageState extends State<Page> with DidLoadStater {
 
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
+  final Map<int, StatefulHolder<myanimelist.AnimeListEntity?>> mediaCache =
+      <int, StatefulHolder<myanimelist.AnimeListEntity?>>{};
 
   @override
   void didChangeDependencies() {
@@ -33,11 +38,46 @@ class _PageState extends State<Page> with DidLoadStater {
 
   @override
   Future<void> load() async {
-    _cache.resolve(await mal.extractHome());
+    _cache.resolve(await myanimelist.extractHome());
     if (mounted) {
       setState(() {});
     }
   }
+
+  Widget buildOpenBuilder(final provisions.Entity x) => StatefulBuilder(
+        builder: (
+          final BuildContext context,
+          final StateSetter setState,
+        ) {
+          final int nodeId = myanimelist.idFromURL(x.url)!;
+
+          if (mediaCache[nodeId]?.hasResolved ?? false) {
+            return mediaCache[nodeId]!.value!.getDetailedPage(context, () {});
+          }
+
+          if (mediaCache[nodeId] == null) {
+            mediaCache[nodeId] =
+                StatefulHolder<myanimelist.AnimeListEntity?>(null);
+
+            myanimelist.AnimeListEntity.getFromNodeId(
+              nodeId,
+            ).then((final myanimelist.AnimeListEntity m) {
+              if (mounted) {
+                setState(() {
+                  mediaCache[nodeId]!.resolve(m);
+                });
+              }
+            });
+          }
+
+          return Scaffold(
+            appBar: AppBar(),
+            body: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      );
 
   @override
   Widget build(final BuildContext context) => Column(
@@ -65,12 +105,19 @@ class _PageState extends State<Page> with DidLoadStater {
                   seasonAnimeHoverIndex = hovered ? i : null;
                 });
               },
-              onTap: (final int i) {
+              onTap: (final int i, final VoidCallback openContainer) {
                 setState(() {
                   seasonAnimeHoverIndex = i;
                 });
 
-                // TODO: push
+                openContainer();
+              },
+              openBuilder: (
+                final int i,
+                final BuildContext context,
+              ) {
+                final provisions.Entity x = _cache.value!.seasonEntities[i];
+                return buildOpenBuilder(x);
               },
             ),
             SizedBox(
@@ -95,12 +142,19 @@ class _PageState extends State<Page> with DidLoadStater {
                   recentlyUpdatedHoverIndex = hovered ? i : null;
                 });
               },
-              onTap: (final int i) {
+              onTap: (final int i, final VoidCallback openContainer) {
                 setState(() {
                   recentlyUpdatedHoverIndex = i;
                 });
 
-                // TODO: push
+                openContainer();
+              },
+              openBuilder: (
+                final int i,
+                final BuildContext context,
+              ) {
+                final provisions.Entity x = _cache.value!.recentlyUpdated[i];
+                return buildOpenBuilder(x);
               },
             ),
           ] else

@@ -8,3 +8,10 @@ String tryMaxRes(final String url) {
 
   return url;
 }
+
+int? idFromURL(final String url) => int.tryParse(
+      RegExp(r'https:\/\/myanimelist\.net\/(anime|manga)\/(\d+)')
+              .firstMatch(url)
+              ?.group(2) ??
+          '',
+    );
