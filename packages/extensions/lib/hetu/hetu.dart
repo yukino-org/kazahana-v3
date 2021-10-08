@@ -35,6 +35,7 @@ Future<Hetu> createHetu() async {
       'regexReplaceFirst': helpers.regexReplaceFirst,
       'resolveFuture': helpers.resolveFuture,
       'throwError': helpers.throwError,
+      'ensureURL': HttpUtils.ensureURL,
     },
   );
 

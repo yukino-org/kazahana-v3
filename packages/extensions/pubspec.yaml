@@ -1,21 +1,21 @@
 name: extensions
 description: Yukino extension utilities
-version: 0.0.4
+version: 0.0.5
 
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+    sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  crypto: ^3.0.1
-  encrypt: ^5.0.0
-  flutter:
-    sdk: flutter
-  fuzzy: ^0.4.0-nullsafety.0
-  hetu_script: ^0.1.2+5
-  html: ^0.15.0
-  http: ^0.13.3
+    crypto: ^3.0.1
+    encrypt: ^5.0.0
+    flutter:
+        sdk: flutter
+    fuzzy: ^0.4.0-nullsafety.0
+    hetu_script: ^0.1.2+5
+    html: ^0.15.0
+    http: ^0.13.3
 
 dev_dependencies:
-  lint: ^1.5.3
+    lint: ^1.5.3

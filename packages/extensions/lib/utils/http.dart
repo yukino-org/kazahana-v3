@@ -24,4 +24,7 @@ abstract class HttpUtils {
 
   static String domainFromURL(final String url) =>
       RegExp(r':\/\/([^\/]+)').firstMatch(url)?[1] ?? url.substring(0, 10);
+
+  static String ensureURL(final String url) =>
+      tryEncodeURL(ensureProtocol(url));
 }
