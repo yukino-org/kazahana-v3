@@ -1,6 +1,7 @@
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
-import './anime_list/animelist_page.dart' as animelist_page;
+import './animelist/animelist_page.dart' as animelist_page;
+import './mangalist/mangalist_page.dart' as mangalist_page;
 import '../../../../core/models/page_args/myanimelist_page.dart'
     as myanimelist_page;
 import '../../../../plugins/helpers/stateful_holder.dart';
@@ -39,9 +40,10 @@ class _PageState extends State<Page> with DidLoadStater {
           args: args,
         );
 
-      // TODO: Manga page
-      // case extensions.ExtensionType.manga:
-      //   break;
+      case extensions.ExtensionType.manga:
+        return mangalist_page.Page(
+          args: args,
+        );
 
       default:
         throw UnimplementedError();

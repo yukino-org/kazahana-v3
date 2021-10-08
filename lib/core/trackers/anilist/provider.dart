@@ -1,29 +1,31 @@
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
-import '../../../core/models/tracker_provider.dart';
-import '../../../core/trackers/anilist/anilist.dart' as anilist;
+import './anilist.dart' as anilist;
 import '../../../plugins/database/database.dart' show DataBox;
 import '../../../plugins/database/schemas/cache/cache.dart' as cache_schema;
 import '../../../plugins/helpers/assets.dart';
 import '../../../plugins/translator/translator.dart';
+import '../../models/tracker_provider.dart';
 
 final Map<int, anilist.MediaList> _cache = <int, anilist.MediaList>{};
 
-Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
+Future<ResolvedTrackerItem?> Function(
   String title,
-  String plugin,
-) getComputed(
+  String plugin, {
+  bool force,
+}) getComputed(
   final extensions.ExtensionType mediaType,
 ) =>
     (
       final String title,
-      final String plugin,
-    ) async {
+      final String plugin, {
+      final bool force = false,
+    }) async {
       final cache_schema.CacheSchema? cache =
           DataBox.cache.get('anilist-$title-$plugin');
 
       try {
-        if (cache != null) {
+        if (!force && cache != null) {
           final anilist.UserInfo user = await anilist.getUserInfo();
 
           final anilist.MediaList mediaList = _cache[cache.value] ??
@@ -32,7 +34,7 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
                 user.id,
               );
 
-          return ResolvedTrackerItem<anilist.MediaList>(
+          return ResolvedTrackerItem(
             title: mediaList.media.titleUserPreferred,
             image: mediaList.media.coverImageMedium,
             info: mediaList,
@@ -56,7 +58,7 @@ Future<ResolvedTrackerItem<anilist.MediaList>?> Function(
           ),
         );
 
-        return ResolvedTrackerItem<anilist.MediaList>(
+        return ResolvedTrackerItem(
           title: mediaList.media.titleUserPreferred,
           image: mediaList.media.coverImageMedium,
           info: mediaList,
@@ -81,7 +83,7 @@ Future<List<ResolvableTrackerItem>> Function(String title) getComputables(
           .toList();
     };
 
-Future<ResolvedTrackerItem<anilist.MediaList>> Function(
+Future<ResolvedTrackerItem> Function(
   String title,
   String plugin,
   ResolvableTrackerItem item,
@@ -108,35 +110,42 @@ Future<ResolvedTrackerItem<anilist.MediaList>> Function(
 
       _cache[mediaList.media.id] = mediaList;
 
-      return ResolvedTrackerItem<anilist.MediaList>(
+      return ResolvedTrackerItem(
         title: mediaList.media.titleUserPreferred,
         image: mediaList.media.coverImageMedium,
         info: mediaList,
       );
     };
 
-bool isLoggedIn() => anilist.AnilistManager.auth.isValidToken();
+final bool Function() isLoggedIn = anilist.AnilistManager.auth.isValidToken;
 
-bool isEnabled(final String title, final String plugin) =>
-    !DataBox.cache.containsKey('anilist-anime-$title-$plugin-disabled');
+bool Function(String, String) isEnabled(
+  final extensions.ExtensionType mediaType,
+) =>
+    (final String title, final String plugin) => !DataBox.cache
+        .containsKey('anilist-${mediaType.type}-$title-$plugin-disabled');
 
-Future<void> setEnabled
+Future<void> Function(String, String, bool) setEnabled(
+  final extensions.ExtensionType mediaType,
+) =>
+
     // ignore: avoid_positional_boolean_parameters
     (final String title, final String plugin, final bool isEnabled) async {
-  isEnabled
-      ? await DataBox.cache.delete('anilist-anime-$title-$plugin-disabled')
-      : await DataBox.cache.put(
-          'anilist-anime-$title-$plugin-disabled',
-          cache_schema.CacheSchema(
-            null,
-            0,
-          ),
-        );
-}
+      isEnabled
+          ? await DataBox.cache
+              .delete('anilist-${mediaType.type}-$title-$plugin-disabled')
+          : await DataBox.cache.put(
+              'anilist-${mediaType.type}-$title-$plugin-disabled',
+              cache_schema.CacheSchema(
+                null,
+                0,
+              ),
+            );
+    };
 
 Widget getDetailedPage(
   final BuildContext context,
-  final ResolvedTrackerItem<dynamic> item,
+  final ResolvedTrackerItem item,
 ) =>
     (item.info as anilist.MediaList).getDetailedPage(
       context,
@@ -144,126 +153,120 @@ Widget getDetailedPage(
     );
 
 bool isItemSameKind(
-  final ResolvedTrackerItem<anilist.MediaList> current,
-  final ResolvedTrackerItem<dynamic> unknown,
+  final ResolvedTrackerItem current,
+  final ResolvedTrackerItem unknown,
 ) =>
     unknown.info is anilist.MediaList &&
     unknown.info.media.id == current.info.media.id;
 
-final TrackerProvider<AnimeProgress, anilist.MediaList> anime =
-    TrackerProvider<AnimeProgress, anilist.MediaList>(
+final TrackerProvider<AnimeProgress> anime = TrackerProvider<AnimeProgress>(
   name: Translator.t.anilist(),
   image: Assets.anilistLogo,
   getComputed: getComputed(extensions.ExtensionType.anime),
   getComputables: getComputables(extensions.ExtensionType.anime),
   resolveComputed: resolveComputable(extensions.ExtensionType.anime),
   updateComputed: (
-    final ResolvedTrackerItem<dynamic> media,
+    final ResolvedTrackerItem media,
     final AnimeProgress progress,
   ) async {
-    if (media is ResolvedTrackerItem<anilist.MediaList>) {
-      final anilist.MediaListStatus status =
-          media.info.media.episodes != null &&
-                  progress.episodes >= media.info.media.episodes!
-              ? anilist.MediaListStatus.completed
-              : anilist.MediaListStatus.current;
+    final anilist.MediaList info = media.info as anilist.MediaList;
+    final anilist.MediaListStatus status = media.info.media.episodes != null &&
+            progress.episodes >= info.media.episodes!
+        ? anilist.MediaListStatus.completed
+        : anilist.MediaListStatus.current;
 
-      final int episodes = progress.episodes;
+    final int episodes = progress.episodes;
 
-      final int repeat = progress.episodes == 1 && media.info.progress > 1
-          ? media.info.repeat + 1
-          : media.info.repeat;
+    final int repeat = progress.episodes == 1 && info.progress > 1
+        ? info.repeat + 1
+        : info.repeat;
 
-      int changes = 0;
-      final List<List<dynamic>> changables = <List<dynamic>>[
-        <dynamic>[media.info.status, status],
-        <dynamic>[media.info.progress, episodes],
-        <dynamic>[media.info.repeat, repeat],
-      ];
+    int changes = 0;
+    final List<List<dynamic>> changables = <List<dynamic>>[
+      <dynamic>[media.info.status, status],
+      <dynamic>[media.info.progress, episodes],
+      <dynamic>[media.info.repeat, repeat],
+    ];
 
-      for (final List<dynamic> item in changables) {
-        if (item.first != item.last) {
-          changes += 1;
-        }
+    for (final List<dynamic> item in changables) {
+      if (item.first != item.last) {
+        changes += 1;
       }
+    }
 
-      if (changes > 0) {
-        await media.info.update(
-          status: status,
-          progress: episodes,
-          progressVolumes: null,
-          score: null,
-          repeat: repeat,
-        );
+    if (changes > 0) {
+      await media.info.update(
+        status: status,
+        progress: episodes,
+        progressVolumes: null,
+        score: null,
+        repeat: repeat,
+      );
 
-        _cache[media.info.media.id] = media.info;
-        onItemUpdateChangeNotifier.dispatch(media);
-      }
+      _cache[info.media.id] = info;
+      onItemUpdateChangeNotifier.dispatch(media);
     }
   },
   isLoggedIn: isLoggedIn,
-  isEnabled: isEnabled,
-  setEnabled: setEnabled,
+  isEnabled: isEnabled(extensions.ExtensionType.anime),
+  setEnabled: setEnabled(extensions.ExtensionType.anime),
   getDetailedPage: getDetailedPage,
   isItemSameKind: isItemSameKind,
 );
 
-final TrackerProvider<MangaProgress, anilist.MediaList> manga =
-    TrackerProvider<MangaProgress, anilist.MediaList>(
+final TrackerProvider<MangaProgress> manga = TrackerProvider<MangaProgress>(
   name: Translator.t.anilist(),
   image: Assets.anilistLogo,
   getComputed: getComputed(extensions.ExtensionType.manga),
   getComputables: getComputables(extensions.ExtensionType.manga),
   resolveComputed: resolveComputable(extensions.ExtensionType.manga),
   updateComputed: (
-    final ResolvedTrackerItem<dynamic> media,
+    final ResolvedTrackerItem media,
     final MangaProgress progress,
   ) async {
-    if (media is ResolvedTrackerItem<anilist.MediaList>) {
-      final anilist.MediaListStatus status =
-          media.info.media.chapters != null &&
-                  progress.chapters >= media.info.media.chapters!
-              ? anilist.MediaListStatus.completed
-              : anilist.MediaListStatus.current;
+    final anilist.MediaList info = media.info as anilist.MediaList;
+    final anilist.MediaListStatus status = media.info.media.chapters != null &&
+            progress.chapters >= info.media.chapters!
+        ? anilist.MediaListStatus.completed
+        : anilist.MediaListStatus.current;
 
-      final int chapters = progress.chapters;
-      final int? volumes = progress.volume ?? media.info.progressVolumes;
+    final int chapters = progress.chapters;
+    final int? volumes = progress.volume ?? info.progressVolumes;
 
-      final int repeat = progress.chapters == 1 && media.info.progress > 1
-          ? media.info.repeat + 1
-          : media.info.repeat;
+    final int repeat = progress.chapters == 1 && info.progress > 1
+        ? info.repeat + 1
+        : info.repeat;
 
-      int changes = 0;
-      final List<List<dynamic>> changables = <List<dynamic>>[
-        <dynamic>[media.info.status, status],
-        <dynamic>[media.info.progress, chapters],
-        <dynamic>[media.info.progressVolumes, volumes],
-        <dynamic>[media.info.repeat, repeat],
-      ];
+    int changes = 0;
+    final List<List<dynamic>> changables = <List<dynamic>>[
+      <dynamic>[media.info.status, status],
+      <dynamic>[media.info.progress, chapters],
+      <dynamic>[media.info.progressVolumes, volumes],
+      <dynamic>[media.info.repeat, repeat],
+    ];
 
-      for (final List<dynamic> item in changables) {
-        if (item.first != item.last) {
-          changes += 1;
-        }
+    for (final List<dynamic> item in changables) {
+      if (item.first != item.last) {
+        changes += 1;
       }
+    }
 
-      if (changes > 0) {
-        await media.info.update(
-          status: status,
-          progress: chapters,
-          progressVolumes: volumes,
-          score: null,
-          repeat: repeat,
-        );
+    if (changes > 0) {
+      await media.info.update(
+        status: status,
+        progress: chapters,
+        progressVolumes: volumes,
+        score: null,
+        repeat: repeat,
+      );
 
-        _cache[media.info.media.id] = media.info;
-        onItemUpdateChangeNotifier.dispatch(media);
-      }
+      _cache[info.media.id] = info;
+      onItemUpdateChangeNotifier.dispatch(media);
     }
   },
   isLoggedIn: isLoggedIn,
-  isEnabled: isEnabled,
-  setEnabled: setEnabled,
+  isEnabled: isEnabled(extensions.ExtensionType.manga),
+  setEnabled: setEnabled(extensions.ExtensionType.manga),
   getDetailedPage: getDetailedPage,
   isItemSameKind: isItemSameKind,
 );

@@ -4,8 +4,11 @@ import '../../../plugins/database/database.dart';
 import '../../../plugins/helpers/querystring.dart';
 import '../../secrets/myanimelist.dart';
 
-export './handlers/anime_list.dart';
+export './handlers/anime.dart';
+export './handlers/animelist.dart';
 export './handlers/auth.dart';
+export './handlers/manga.dart';
+export './handlers/mangalist.dart';
 export './handlers/user_info.dart';
 
 enum MyAnimeListRequestMethods {

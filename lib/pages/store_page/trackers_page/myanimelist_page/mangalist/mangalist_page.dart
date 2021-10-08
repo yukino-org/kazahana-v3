@@ -20,10 +20,10 @@ class Page extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => ProfilePage(
-        title: Translator.t.myAnimeList(),
-        tabs: myanimelist.AnimeListStatus.values
+        title: () => '${Translator.t.myAnimeList()} - ${Translator.t.manga()}',
+        tabs: myanimelist.MangaListStatus.values
             .map(
-              (final myanimelist.AnimeListStatus x) =>
+              (final myanimelist.MangaListStatus x) =>
                   PageTab(x, StringUtils.capitalize(x.pretty)),
             )
             .toList(),
@@ -96,17 +96,18 @@ class Page extends StatelessWidget {
         ),
         getUserInfo: () async => myanimelist.getUserInfo(),
         getMediaList: (final PageTab tab) {
-          final myanimelist.AnimeListStatus status =
-              tab.data as myanimelist.AnimeListStatus;
+          final myanimelist.MangaListStatus status =
+              tab.data as myanimelist.MangaListStatus;
 
           return MediaList(
             type: args.type,
             status: status,
             getMediaList: (final int page) async =>
-                myanimelist.getAnimeList(status, page),
+                myanimelist.getMangaList(status, page),
             getItemCard: (final BuildContext context, final dynamic _item) {
-              final myanimelist.AnimeListEntity x =
-                  _item as myanimelist.AnimeListEntity;
+              final myanimelist.MangaListEntity x =
+                  _item as myanimelist.MangaListEntity;
+              x.applyChanges();
 
               return Card(
                 child: Padding(
@@ -150,16 +151,17 @@ class Page extends StatelessWidget {
                                 children: <InlineSpan>[
                                   TextSpan(
                                     text:
-                                        '${Translator.t.progress()}: ${x.status.watched}',
+                                        '${Translator.t.progress()}: ${x.status?.read ?? 0}',
                                   ),
                                   TextSpan(
                                     text:
-                                        ' / ${x.details?.totalEpisodes ?? '?'}',
+                                        ' / ${x.details?.totalChapters ?? '?'}',
                                   ),
                                 ],
                                 style: Theme.of(context).textTheme.caption,
                               ),
                             ),
+                            // TODO: volumes
                           ],
                         ),
                       ),
@@ -169,8 +171,9 @@ class Page extends StatelessWidget {
               );
             },
             getItemPage: (final BuildContext context, final dynamic _item) {
-              final myanimelist.AnimeListEntity x =
-                  _item as myanimelist.AnimeListEntity;
+              final myanimelist.MangaListEntity x =
+                  _item as myanimelist.MangaListEntity;
+              x.applyChanges();
 
               return x.getDetailedPage(context);
             },

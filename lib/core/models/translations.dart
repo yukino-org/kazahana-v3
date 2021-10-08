@@ -124,4 +124,7 @@ abstract class TranslationSentences {
   String failedToUpdate(final String err);
   String startingApp();
   String myAnimeList();
+  String episodesWatched();
+  String chaptersRead();
+  String volumesCompleted();
 }

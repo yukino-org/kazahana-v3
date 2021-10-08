@@ -15,10 +15,9 @@ Future<void> updateTrackers(
       volume: _vol != null ? int.tryParse(_vol) : null,
     );
 
-    for (final TrackerProvider<MangaProgress, dynamic> provider
-        in mangaProviders) {
+    for (final TrackerProvider<MangaProgress> provider in mangaProviders) {
       if (provider.isEnabled(title, plugin)) {
-        final ResolvedTrackerItem<dynamic>? item =
+        final ResolvedTrackerItem? item =
             await provider.getComputed(title, plugin);
 
         if (item != null) {

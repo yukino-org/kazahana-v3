@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../plugins/helpers/eventer.dart';
 
-final Eventer<ResolvedTrackerItem<dynamic>> onItemUpdateChangeNotifier =
-    Eventer<ResolvedTrackerItem<dynamic>>();
+final Eventer<ResolvedTrackerItem> onItemUpdateChangeNotifier =
+    Eventer<ResolvedTrackerItem>();
 
 class BaseTrackerItem {
   BaseTrackerItem({
@@ -24,14 +24,14 @@ class ResolvableTrackerItem extends BaseTrackerItem {
   final String id;
 }
 
-class ResolvedTrackerItem<T extends Object> extends BaseTrackerItem {
+class ResolvedTrackerItem extends BaseTrackerItem {
   ResolvedTrackerItem({
     required final this.info,
     required final String title,
     final String? image,
   }) : super(title: title, image: image);
 
-  final T info;
+  final dynamic info;
 }
 
 class BaseProgress {}
@@ -54,7 +54,7 @@ class MangaProgress extends BaseProgress {
   final int? volume;
 }
 
-class TrackerProvider<P extends BaseProgress, T extends Object> {
+class TrackerProvider<P extends BaseProgress> {
   TrackerProvider({
     required final this.name,
     required final this.image,
@@ -71,25 +71,28 @@ class TrackerProvider<P extends BaseProgress, T extends Object> {
 
   final String name;
   final String image;
-  final Future<ResolvedTrackerItem<T>?> Function(String title, String plugin)
-      getComputed;
+  final Future<ResolvedTrackerItem?> Function(
+    String title,
+    String plugin, {
+    bool force,
+  }) getComputed;
   final Future<List<ResolvableTrackerItem>> Function(String title)
       getComputables;
-  final Future<ResolvedTrackerItem<T>> Function(
+  final Future<ResolvedTrackerItem> Function(
     String title,
     String plugin,
     ResolvableTrackerItem item,
   ) resolveComputed;
-  final Future<void> Function(ResolvedTrackerItem<dynamic> item, P progress)
+  final Future<void> Function(ResolvedTrackerItem item, P progress)
       updateComputed;
   final bool Function() isLoggedIn;
   final bool Function(String title, String plugin) isEnabled;
   final Future<void> Function(String title, String plugin, bool isEnabled)
       setEnabled;
-  final Widget Function(BuildContext context, ResolvedTrackerItem<dynamic> item)
+  final Widget Function(BuildContext context, ResolvedTrackerItem item)
       getDetailedPage;
   final bool Function(
-    ResolvedTrackerItem<T> current,
-    ResolvedTrackerItem<dynamic> unknown,
+    ResolvedTrackerItem current,
+    ResolvedTrackerItem unknown,
   ) isItemSameKind;
 }

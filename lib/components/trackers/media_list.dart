@@ -12,6 +12,7 @@ class MediaList extends StatefulWidget {
     required final this.getMediaList,
     required final this.getItemCard,
     required final this.getItemPage,
+    final this.maybeRefresh,
     final Key? key,
   }) : super(key: key);
 
@@ -20,6 +21,7 @@ class MediaList extends StatefulWidget {
   final Future<List<dynamic>> Function(int page) getMediaList;
   final Widget Function(BuildContext, dynamic) getItemCard;
   final Widget Function(BuildContext, dynamic) getItemPage;
+  final void Function(dynamic)? maybeRefresh;
 
   @override
   _MediaListState createState() => _MediaListState();

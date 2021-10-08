@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../../../core/models/page_args/search_page.dart' as search_page;
@@ -96,7 +97,9 @@ class _DetailedItemState extends State<DetailedItem> {
                   width: remToPx(0.3),
                 ),
                 Text(
-                  Translator.t.play(),
+                  item.type == ExtensionType.anime
+                      ? Translator.t.play()
+                      : Translator.t.read(),
                   style: TextStyle(
                     fontSize: playBtnTextSize,
                     color: playBtnTextColor,
@@ -248,7 +251,9 @@ class _DetailedItemState extends State<DetailedItem> {
                                       height: remToPx(0.1),
                                     ),
                                     Text(
-                                      Translator.t.anime(),
+                                      StringUtils.capitalize(
+                                        item.type.name,
+                                      ),
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline6
@@ -295,7 +300,7 @@ class _DetailedItemState extends State<DetailedItem> {
                     if (!isLargest) ...<Widget>[
                       Text(
                         StringUtils.capitalize(
-                          Translator.t.anime(),
+                          item.type.name,
                         ),
                         style: Theme.of(context).textTheme.bodyText1?.copyWith(
                               color: Theme.of(context).primaryColor,
@@ -369,6 +374,17 @@ class _DetailedItemState extends State<DetailedItem> {
                                       .toString()
                                       .padLeft(2, '0'),
                                 ),
+                                if (item.progress.volumes?.progress != null)
+                                  TextSpan(
+                                    text:
+                                        ' (${item.progress.volumes!.progress.toString().padLeft(2, '0')} ${Translator.t.vols()})',
+                                  ),
+                                if (item.progress.startedAt != null)
+                                  TextSpan(
+                                    text:
+                                        '${isLarge ? '  ' : '\n'}(${item.progress.startedAt.toString().split(' ').first})',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
                               ],
                             ),
                           ),
@@ -455,7 +471,7 @@ class _DetailedItemState extends State<DetailedItem> {
                               ),
                             ),
                             TextSpan(
-                              text: '${item.score} / 100',
+                              text: '${item.score ?? '?'} / 100',
                             ),
                           ],
                         ),

@@ -24,16 +24,17 @@ class EditModal extends StatefulWidget {
 }
 
 class _EditModalState extends State<EditModal> {
-  late myanimelist.AnimeListStatus status = widget.media.status.status;
-  late int progress = widget.media.status.watched;
-  late int score = widget.media.status.score;
-  late bool repeating = widget.media.status.rewatching;
+  late myanimelist.AnimeListStatus status =
+      widget.media.status?.status ?? myanimelist.AnimeListStatus.planToWatch;
+  late int progress = widget.media.status?.watched ?? 0;
+  late int? score = widget.media.status?.score;
+  late bool repeating = widget.media.status?.rewatching ?? false;
 
   late TextEditingController progressController = TextEditingController(
     text: progress.toString(),
   );
   late TextEditingController scoreController = TextEditingController(
-    text: score.toString(),
+    text: score?.toString(),
   );
   late String previousScoreControllerText = scoreController.text;
 
@@ -91,7 +92,7 @@ class _EditModalState extends State<EditModal> {
                 height: remToPx(0.3),
               ),
               SettingDialog(
-                title: Translator.t.progress(),
+                title: Translator.t.episodesWatched(),
                 icon: Icons.sync_alt,
                 subtitle:
                     '$progress / ${widget.media.details?.totalEpisodes ?? '?'}',
@@ -160,7 +161,7 @@ class _EditModalState extends State<EditModal> {
               SettingDialog(
                 title: Translator.t.score(),
                 icon: Icons.sync_alt,
-                subtitle: score.toString(),
+                subtitle: score?.toString() ?? '?',
                 builder: (
                   final BuildContext context,
                   final StateSetter setState,

@@ -209,8 +209,15 @@ mutation (
   static Future<MediaList> getFromMediaId(
     final int id,
     final int userId,
-  ) async =>
-      (await tryGetFromMediaId(id, userId))!;
+  ) async {
+    final MediaList? mediaList = await tryGetFromMediaId(id, userId);
+    if (mediaList != null) {
+      return mediaList;
+    }
+
+    final Media media = await Media.getMediaFromId(id);
+    return MediaList.partial(userId: userId, media: media);
+  }
 
   static Future<MediaList?> tryGetFromMediaId(
     final int id,

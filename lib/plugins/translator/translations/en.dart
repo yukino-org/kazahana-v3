@@ -365,4 +365,13 @@ class Sentences extends TranslationSentences {
 
   @override
   String myAnimeList() => 'MyAnimeList';
+
+  @override
+  String episodesWatched() => 'Episodes watched';
+
+  @override
+  String chaptersRead() => 'Chapters read';
+
+  @override
+  String volumesCompleted() => 'Volumes completed';
 }

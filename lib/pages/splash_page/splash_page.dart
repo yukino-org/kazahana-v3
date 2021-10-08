@@ -9,6 +9,7 @@ import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/router.dart';
+import '../../plugins/state.dart';
 import '../../plugins/translator/translator.dart';
 import '../../plugins/updater/updater.dart';
 
@@ -41,7 +42,9 @@ class _PageState extends State<Page> with RouteAware, DidLoadStater {
 
   @override
   void didPopNext() {
-    Navigator.of(context).pop();
+    if (AppState.isMobile) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

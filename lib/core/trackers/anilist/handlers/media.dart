@@ -203,4 +203,27 @@ query (
         .map((final Map<dynamic, dynamic> x) => Media.fromJson(x))
         .toList();
   }
+
+  static Future<Media> getMediaFromId(
+    final int mediaId,
+  ) async {
+    const String query = '''
+query (
+  \$mediaId: Int
+) {
+  Media (id: \$mediaId) ${Media.query}
+}
+    ''';
+
+    final dynamic res = await AnilistManager.request(
+      RequestBody(
+        query: query,
+        variables: <dynamic, dynamic>{
+          'mediaId': mediaId,
+        },
+      ),
+    );
+
+    return Media.fromJson(res['data']['Media'] as Map<dynamic, dynamic>);
+  }
 }

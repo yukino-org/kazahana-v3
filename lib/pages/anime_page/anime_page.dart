@@ -570,8 +570,8 @@ class _PageState extends State<Page>
       ),
       onWillPop: () async {
         if (info != null && controller.page?.toInt() != Pages.home.index) {
+          await goToPage(Pages.home);
           setEpisode(null);
-          goToPage(Pages.home);
           return false;
         }
 

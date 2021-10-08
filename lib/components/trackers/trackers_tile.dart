@@ -18,19 +18,29 @@ class TrackersTile extends StatelessWidget {
 
   final String title;
   final String plugin;
-  final List<TrackerProvider<BaseProgress, dynamic>> providers;
+  final List<TrackerProvider<BaseProgress>> providers;
 
   @override
   Widget build(final BuildContext context) => Column(
         children: providers
+            .asMap()
             .map(
-              (final TrackerProvider<BaseProgress, dynamic> x) =>
-                  TrackersTileItem(
-                title: title,
-                plugin: plugin,
-                tracker: x,
+              (final int i, final TrackerProvider<BaseProgress> x) =>
+                  MapEntry<int, Widget>(
+                i,
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: i != providers.length - 1 ? remToPx(0.4) : 0,
+                  ),
+                  child: TrackersTileItem(
+                    title: title,
+                    plugin: plugin,
+                    tracker: x,
+                  ),
+                ),
               ),
             )
+            .values
             .toList(),
       );
 }
@@ -45,7 +55,7 @@ class TrackersTileItem extends StatefulWidget {
 
   final String title;
   final String plugin;
-  final TrackerProvider<BaseProgress, dynamic> tracker;
+  final TrackerProvider<BaseProgress> tracker;
 
   @override
   _TrackersTileItemState createState() => _TrackersTileItemState();
@@ -56,8 +66,8 @@ class _TrackersTileItemState extends State<TrackersTileItem>
   StatefulHolder<List<ResolvableTrackerItem>?> searches =
       StatefulHolder<List<ResolvableTrackerItem>?>(null);
 
-  StatefulHolder<ResolvedTrackerItem<dynamic>?> item =
-      StatefulHolder<ResolvedTrackerItem<dynamic>?>(null);
+  StatefulHolder<ResolvedTrackerItem?> item =
+      StatefulHolder<ResolvedTrackerItem?>(null);
 
   @override
   void initState() {
@@ -87,11 +97,19 @@ class _TrackersTileItemState extends State<TrackersTileItem>
         item.resolving(null);
       });
 
-      final ResolvedTrackerItem<dynamic>? computed =
-          await widget.tracker.getComputed(
-        widget.title,
-        widget.plugin,
-      );
+      ResolvedTrackerItem? computed;
+      try {
+        computed = await widget.tracker.getComputed(
+          widget.title,
+          widget.plugin,
+        );
+      } catch (_) {
+        computed = await widget.tracker.getComputed(
+          widget.title,
+          widget.plugin,
+          force: true,
+        );
+      }
 
       if (mounted) {
         setState(() {
@@ -102,7 +120,7 @@ class _TrackersTileItemState extends State<TrackersTileItem>
   }
 
   void _onMediaUpdated(
-    final ResolvedTrackerItem<dynamic> unknown, [
+    final ResolvedTrackerItem unknown, [
     final dynamic data,
   ]) {
     if (item.value != null &&
@@ -211,14 +229,24 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                               onTap: () async {
-                                                final ResolvedTrackerItem<
-                                                        dynamic> resolved =
-                                                    await widget.tracker
-                                                        .resolveComputed(
-                                                  widget.title,
-                                                  widget.plugin,
-                                                  x,
-                                                );
+                                                ResolvedTrackerItem? resolved;
+                                                try {
+                                                  resolved = await widget
+                                                      .tracker
+                                                      .resolveComputed(
+                                                    widget.title,
+                                                    widget.plugin,
+                                                    x,
+                                                  );
+                                                } catch (_) {
+                                                  resolved = await widget
+                                                      .tracker
+                                                      .getComputed(
+                                                    widget.title,
+                                                    widget.plugin,
+                                                    force: true,
+                                                  );
+                                                }
 
                                                 this.setState(() {
                                                   item.resolve(resolved);

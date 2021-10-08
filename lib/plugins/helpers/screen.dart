@@ -36,7 +36,11 @@ mixin FullscreenMixin {
 
   Future<void> exitFullscreen() async {
     fullscreenWatcher?.dispose();
-    await Screen.exitFullscreen(prevScreenState);
+
+    if (isFullscreened.value) {
+      await Screen.exitFullscreen(prevScreenState);
+    }
+
     isFullscreened.value = false;
   }
 }

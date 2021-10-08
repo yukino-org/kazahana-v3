@@ -31,7 +31,7 @@ class ProfilePage extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
-  final String title;
+  final String Function() title;
   final List<PageTab> tabs;
   final ProfileTab profile;
   final Future<dynamic> Function() getUserInfo;
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title()),
       ),
       body: user.hasResolved
           ? NestedScrollView(

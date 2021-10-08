@@ -1,18 +1,18 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/cupertino.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
 import '../../../../components/trackers/detailed_item.dart';
-import '../../../../pages/store_page/trackers_page/myanimelist_page/anime_list/edit_modal.dart';
+import '../../../../pages/store_page/trackers_page/myanimelist_page/animelist/edit_modal.dart';
 import '../../../../plugins/helpers/stateful_holder.dart';
 import '../../../../plugins/helpers/utils/string.dart';
 import '../../detailed_info.dart';
 import '../myanimelist.dart';
 
-final Map<int, AdditionalDetail> _cacheDetails = <int, AdditionalDetail>{};
+final Map<int, AnimeListAdditionalDetail> _cacheDetails =
+    <int, AnimeListAdditionalDetail>{};
 
 enum AnimeListStatus {
   watching,
@@ -58,8 +58,8 @@ class AnimeListEntityProgress {
   final String updatedAt;
 }
 
-class AdditionalDetail {
-  AdditionalDetail({
+class AnimeListAdditionalDetail {
+  AnimeListAdditionalDetail({
     required final this.synopsis,
     required final this.characters,
     required final this.totalEpisodes,
@@ -92,12 +92,30 @@ class AnimeListEntity {
         details: null,
       );
 
+  factory AnimeListEntity.fromAnimeDetails(final Map<dynamic, dynamic> json) =>
+      AnimeListEntity(
+        nodeId: json['id'] as int,
+        title: json['title'] as String,
+        mainPictureMedium: json['main_picture']['medium'] as String,
+        mainPictureLarge: json['main_picture']['large'] as String,
+        status: json.containsKey('my_list_status')
+            ? AnimeListEntityProgress.fromJson(
+                json['my_list_status'] as Map<dynamic, dynamic>,
+              )
+            : null,
+        details: AnimeListAdditionalDetail(
+          synopsis: json['synopsis'] as String,
+          totalEpisodes: json['num_episodes'] as int,
+          characters: <Character>[],
+        ),
+      );
+
   final int nodeId;
   final String title;
   final String mainPictureMedium;
   final String mainPictureLarge;
-  AnimeListEntityProgress status;
-  AdditionalDetail? details;
+  AnimeListEntityProgress? status;
+  AnimeListAdditionalDetail? details;
 
   Future<void> update({
     final AnimeListStatus? status,
@@ -135,7 +153,21 @@ class AnimeListEntity {
     );
     final dom.Document document = html.parse(res.body);
 
-    details = AdditionalDetail(
+    final Map<String, String> metas = <String, String>{};
+    document
+        .querySelector('#content .borderClass > div')
+        ?.children
+        .forEach((final dom.Element x) {
+      if (x.classes.contains('spaceit_pad')) {
+        final RegExpMatch? match =
+            RegExp(r'([^:]+):([\S\s]+)').firstMatch(x.text);
+        if (match != null) {
+          metas[match.group(1)!.trim()] = match.group(2)!.trim();
+        }
+      }
+    });
+
+    details = AnimeListAdditionalDetail(
       synopsis: document.querySelector('[itemprop="description"]')!.text,
       characters: document
           .querySelectorAll(
@@ -150,25 +182,7 @@ class AnimeListEntity {
           image: tds[0].querySelector('img')!.attributes['data-src']!.trim(),
         );
       }).toList(),
-      totalEpisodes: int.tryParse(
-        document
-                .querySelector('#content .borderClass > div')
-                ?.children
-                .firstWhereOrNull(
-                  (final dom.Element x) =>
-                      x.classes.contains('spaceit_pad') &&
-                      (x
-                              .querySelector('.dark_text')
-                              ?.text
-                              .trim()
-                              .contains('Episodes:') ??
-                          false),
-                )
-                ?.text
-                .replaceFirst('Episodes:', '')
-                .trim() ??
-            '',
-      ),
+      totalEpisodes: int.tryParse(metas['Episodes'] ?? ''),
     );
 
     _cacheDetails[nodeId] = details!;
@@ -180,15 +194,15 @@ class AnimeListEntity {
         type: extensions.ExtensionType.anime,
         thumbnail: mainPictureLarge,
         banner: null,
-        status: status.status.pretty,
+        status: status?.status.pretty,
         progress: Progress(
-          progress: status.watched,
+          progress: status?.watched ?? 0,
           total: details?.totalEpisodes,
           startedAt: null,
           completedAt: null,
           volumes: null,
         ),
-        score: status.score,
+        score: status?.score,
         repeated: null,
         characters: details?.characters ?? <Character>[],
       );
@@ -201,6 +215,30 @@ class AnimeListEntity {
         item: this,
         onPlay: onPlay,
       );
+
+  void applyChanges() {
+    details = _cacheDetails[nodeId];
+  }
+
+  static Future<AnimeListEntity> getFromNodeId(
+    final int id,
+  ) async =>
+      (await tryGetFromNodeId(id))!;
+
+  static Future<AnimeListEntity?> tryGetFromNodeId(
+    final int id,
+  ) async {
+    final String res = await MyAnimeListManager.request(
+      MyAnimeListRequestMethods.get,
+      '/anime/$id?fields=id,title,main_picture,synopsis,my_list_status,num_episodes',
+    );
+
+    final AnimeListEntity entity = AnimeListEntity.fromAnimeDetails(
+      json.decode(res) as Map<dynamic, dynamic>,
+    );
+    await entity.fetch();
+    return entity;
+  }
 }
 
 class _DetailedItemWrapper extends StatefulWidget {

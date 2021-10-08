@@ -101,7 +101,9 @@ class _EditModalState extends State<EditModal> {
               height: remToPx(0.3),
             ),
             SettingDialog(
-              title: Translator.t.progress(),
+              title: widget.media.media.type == extensions.ExtensionType.anime
+                  ? Translator.t.episodesWatched()
+                  : Translator.t.chaptersRead(),
               icon: Icons.sync_alt,
               subtitle: '$progress / ${totalProgress ?? '?'}',
               builder: (
@@ -171,7 +173,7 @@ class _EditModalState extends State<EditModal> {
             if (widget.media.media.type ==
                 extensions.ExtensionType.manga) ...<Widget>[
               SettingDialog(
-                title: Translator.t.volumes(),
+                title: Translator.t.volumesCompleted(),
                 icon: Icons.sync_alt,
                 subtitle:
                     '$progressVolumes / ${widget.media.media.volumes ?? '?'}',

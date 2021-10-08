@@ -288,10 +288,9 @@ class WatchPageState extends State<WatchPage>
 
         final AnimeProgress progress = AnimeProgress(episodes: episode);
 
-        for (final TrackerProvider<AnimeProgress, dynamic> provider
-            in animeProviders) {
+        for (final TrackerProvider<AnimeProgress> provider in animeProviders) {
           if (provider.isEnabled(widget.title, widget.extractor.id)) {
-            final ResolvedTrackerItem<dynamic>? item =
+            final ResolvedTrackerItem? item =
                 await provider.getComputed(widget.title, widget.extractor.id);
 
             if (item != null) {

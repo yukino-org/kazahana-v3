@@ -1,53 +1,50 @@
 import 'package:flutter/material.dart';
-import '../../../../components/trackers/media_list.dart';
-import '../../../../components/trackers/profile_page.dart';
-import '../../../../core/models/page_args/anilist_page.dart' as anilist_page;
-import '../../../../core/trackers/anilist/anilist.dart' as anilist;
-import '../../../../plugins/helpers/ui.dart';
-import '../../../../plugins/helpers/utils/string.dart';
-import '../../../../plugins/router.dart';
-import '../../../../plugins/translator/translator.dart';
+import '../../../../../components/trackers/media_list.dart';
+import '../../../../../components/trackers/profile_page.dart';
+import '../../../../../core/models/page_args/myanimelist_page.dart'
+    as myanimelist_page;
+import '../../../../../core/trackers/myanimelist/myanimelist.dart'
+    as myanimelist;
+import '../../../../../plugins/helpers/assets.dart';
+import '../../../../../plugins/helpers/ui.dart';
+import '../../../../../plugins/helpers/utils/string.dart';
+import '../../../../../plugins/translator/translator.dart';
 
 class Page extends StatelessWidget {
   const Page({
+    required final this.args,
     final Key? key,
   }) : super(key: key);
 
+  final myanimelist_page.PageArguments args;
+
   @override
   Widget build(final BuildContext context) => ProfilePage(
-        title: () {
-          final anilist_page.PageArguments args =
-              anilist_page.PageArguments.fromJson(
-            ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings)
-                .params,
-          );
-
-          return '${Translator.t.anilist()} - ${StringUtils.capitalize(args.type.name)}';
-        },
-        tabs: anilist.MediaListStatus.values
+        title: () => '${Translator.t.myAnimeList()} - ${Translator.t.anime()}',
+        tabs: myanimelist.AnimeListStatus.values
             .map(
-              (final anilist.MediaListStatus x) =>
+              (final myanimelist.AnimeListStatus x) =>
                   PageTab(x, StringUtils.capitalize(x.pretty)),
             )
             .toList(),
         profile: ProfileTab(
-          getLeft: (final dynamic _user) {
-            final anilist.UserInfo user = _user as anilist.UserInfo;
-
-            return Material(
-              shape: const CircleBorder(),
-              elevation: 5,
-              child: CircleAvatar(
-                radius: remToPx(2.5),
-                backgroundColor: Colors.transparent,
-                backgroundImage: NetworkImage(
-                  user.avatarMedium,
+          getLeft: (final dynamic _user) => Material(
+            shape: const CircleBorder(),
+            elevation: 5,
+            child: SizedBox(
+              width: remToPx(5),
+              height: remToPx(5),
+              child: Padding(
+                padding: EdgeInsets.all(remToPx(0.6)),
+                child: Image.asset(
+                  Assets.myAnimeListLogo,
+                  width: remToPx(4.4),
                 ),
               ),
-            );
-          },
+            ),
+          ),
           getMid: (final dynamic _user) {
-            final anilist.UserInfo user = _user as anilist.UserInfo;
+            final myanimelist.UserInfo user = _user as myanimelist.UserInfo;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +75,7 @@ class Page extends StatelessWidget {
               ),
               child: InkWell(
                 onTap: () async {
-                  await anilist.AnilistManager.auth.deleteToken();
+                  await myanimelist.MyAnimeListManager.auth.deleteToken();
                   pop();
                 },
                 child: Padding(
@@ -97,23 +94,20 @@ class Page extends StatelessWidget {
             ),
           ),
         ),
-        getUserInfo: () async => anilist.getUserInfo(),
+        getUserInfo: () async => myanimelist.getUserInfo(),
         getMediaList: (final PageTab tab) {
-          final anilist_page.PageArguments args =
-              anilist_page.PageArguments.fromJson(
-            ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings)
-                .params,
-          );
-          final anilist.MediaListStatus status =
-              tab.data as anilist.MediaListStatus;
+          final myanimelist.AnimeListStatus status =
+              tab.data as myanimelist.AnimeListStatus;
 
           return MediaList(
             type: args.type,
             status: status,
             getMediaList: (final int page) async =>
-                anilist.getMediaList(args.type, status, page),
+                myanimelist.getAnimeList(status, page),
             getItemCard: (final BuildContext context, final dynamic _item) {
-              final anilist.MediaList x = _item as anilist.MediaList;
+              final myanimelist.AnimeListEntity x =
+                  _item as myanimelist.AnimeListEntity;
+              x.applyChanges();
 
               return Card(
                 child: Padding(
@@ -128,7 +122,7 @@ class Page extends StatelessWidget {
                             remToPx(0.25),
                           ),
                           child: Image.network(
-                            x.media.coverImageMedium,
+                            x.mainPictureMedium,
                           ),
                         ),
                       ),
@@ -139,7 +133,7 @@ class Page extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              x.media.titleUserPreferred,
+                              x.title,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: Theme.of(context)
@@ -157,22 +151,12 @@ class Page extends StatelessWidget {
                                 children: <InlineSpan>[
                                   TextSpan(
                                     text:
-                                        '${Translator.t.progress()}: ${x.progress}',
+                                        '${Translator.t.progress()}: ${x.status?.watched ?? 0}',
                                   ),
-                                  if (x.startedAt != null)
-                                    TextSpan(
-                                      text:
-                                          ' (${x.startedAt.toString().split(' ').first})',
-                                    ),
                                   TextSpan(
                                     text:
-                                        ' / ${x.media.episodes ?? x.media.chapters ?? '?'}',
+                                        ' / ${x.details?.totalEpisodes ?? '?'}',
                                   ),
-                                  if (x.completedAt != null)
-                                    TextSpan(
-                                      text:
-                                          ' (${x.completedAt.toString().split(' ').first})',
-                                    ),
                                 ],
                                 style: Theme.of(context).textTheme.caption,
                               ),
@@ -186,7 +170,9 @@ class Page extends StatelessWidget {
               );
             },
             getItemPage: (final BuildContext context, final dynamic _item) {
-              final anilist.MediaList x = _item as anilist.MediaList;
+              final myanimelist.AnimeListEntity x =
+                  _item as myanimelist.AnimeListEntity;
+              x.applyChanges();
 
               return x.getDetailedPage(context);
             },
