@@ -20,3 +20,8 @@
 ## 0.0.5
 
 -   Added utility method: `ensureURL`
+
+## 0.0.6
+
+-   Added list utility methods: `mergeList`, `eachList`
+-   Added map utility methods: `mergeMap`, `eachMap`

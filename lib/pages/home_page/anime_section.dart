@@ -106,9 +106,12 @@ class _PageState extends State<Page> with DidLoadStater {
                 });
               },
               onTap: (final int i, final VoidCallback openContainer) {
-                setState(() {
-                  seasonAnimeHoverIndex = i;
-                });
+                if (seasonAnimeHoverIndex != i) {
+                  setState(() {
+                    seasonAnimeHoverIndex = i;
+                  });
+                  return;
+                }
 
                 openContainer();
               },
@@ -143,9 +146,12 @@ class _PageState extends State<Page> with DidLoadStater {
                 });
               },
               onTap: (final int i, final VoidCallback openContainer) {
-                setState(() {
-                  recentlyUpdatedHoverIndex = i;
-                });
+                if (recentlyUpdatedHoverIndex != null) {
+                  setState(() {
+                    recentlyUpdatedHoverIndex = i;
+                  });
+                  return;
+                }
 
                 openContainer();
               },

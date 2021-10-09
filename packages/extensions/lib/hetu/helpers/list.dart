@@ -1,5 +1,25 @@
 import 'package:hetu_script/hetu_script.dart';
 
+List<dynamic> mergeList(
+  final List<dynamic> m1,
+  final List<dynamic> m2,
+) =>
+    <dynamic>[
+      ...m1,
+      ...m2,
+    ];
+
+void eachList(
+  final List<dynamic> data,
+  final HTFunction fn,
+) {
+  data.asMap().forEach(
+    (final int i, final dynamic x) {
+      fn.call(positionalArgs: <dynamic>[i, x]);
+    },
+  );
+}
+
 List<dynamic> mapList(
   final List<dynamic> data,
   final HTFunction fn,
