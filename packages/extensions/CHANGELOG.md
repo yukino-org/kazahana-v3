@@ -29,3 +29,11 @@
 ## 0.0.7
 
 -   Added list utility methods: `rangeList`
+
+## 0.0.8
+
+-   Added string utility methods: `sliceString`
+
+## 0.0.9
+
+-   Handle external functions internally

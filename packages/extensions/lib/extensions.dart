@@ -152,7 +152,7 @@ abstract class ExtensionUtils {
   ) async {
     final Hetu runner = await createHetu();
 
-    await runner.eval(ext.code);
+    await runner.eval(appendHetuExternals(ext.code));
 
     final String defaultLocale = runner.invoke('defaultLocale') as String;
 
@@ -210,7 +210,7 @@ abstract class ExtensionUtils {
   ) async {
     final Hetu runner = await createHetu();
 
-    await runner.eval(ext.code);
+    await runner.eval(appendHetuExternals(ext.code));
 
     final String defaultLocale = runner.invoke('defaultLocale') as String;
 
