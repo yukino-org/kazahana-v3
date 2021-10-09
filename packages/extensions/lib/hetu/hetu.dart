@@ -41,6 +41,7 @@ Future<Hetu> createHetu() async {
       'eachMap': helpers.eachMap,
       'mergeMap': helpers.mergeMap,
       'mergeList': helpers.mergeList,
+      'rangeList': helpers.rangeList,
     },
   );
 

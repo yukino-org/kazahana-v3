@@ -25,3 +25,7 @@
 
 -   Added list utility methods: `mergeList`, `eachList`
 -   Added map utility methods: `mergeMap`, `eachMap`
+
+## 0.0.7
+
+-   Added list utility methods: `rangeList`

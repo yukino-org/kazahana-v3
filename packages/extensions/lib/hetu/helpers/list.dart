@@ -1,5 +1,12 @@
 import 'package:hetu_script/hetu_script.dart';
 
+List<int> rangeList(final int a, final int b) {
+  final int length = (b - a).abs();
+  return b > a
+      ? List<int>.generate(length, (final int i) => i + a)
+      : List<int>.generate(length, (final int i) => a - i);
+}
+
 List<dynamic> mergeList(
   final List<dynamic> m1,
   final List<dynamic> m2,
