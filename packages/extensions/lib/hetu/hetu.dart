@@ -8,7 +8,6 @@ import './helpers/html.dart' as helpers;
 import './helpers/list.dart' as helpers;
 import './helpers/map.dart' as helpers;
 import './helpers/regexp.dart' as helpers;
-import './helpers/string.dart' as helpers;
 import './helpers/throw_err.dart' as helpers;
 import '../utils/http.dart';
 
@@ -59,6 +58,8 @@ external class RegExpMatchResult {
 }
 external fun regexMatch(regex: str, text: str) -> RegExpMatchResult?;
 external fun regexMatchAll(regex: str, text: str) -> List<RegExpMatchResult>;
+external fun regexReplaceAll(data: str, from: str, to: str) -> str;
+external fun regexReplaceFirst(data: str, from: str, to: str) -> str;
 // RegExp utlities - end
 
 
@@ -76,12 +77,6 @@ external fun findList(data: List<any>, filterer: ListFilterer) -> any?;
 external fun mergeList(m1: List<any>, m2: List<any>) -> List<any>;
 external fun rangeList(a: int, b: int) -> List<int>;
 // List utlities - end
-
-
-// String utlities - start
-external fun regexReplaceAll(data: str, from: str, to: str) -> str;
-external fun regexReplaceFirst(data: str, from: str, to: str) -> str;
-// String utlities - end
 
 
 // Future utlities - start
@@ -139,7 +134,6 @@ Future<Hetu> createHetu() async {
       'mergeMap': helpers.mergeMap,
       'mergeList': helpers.mergeList,
       'rangeList': helpers.rangeList,
-      'sliceString': helpers.sliceString,
     },
   );
 
