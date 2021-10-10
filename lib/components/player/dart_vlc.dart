@@ -6,8 +6,11 @@ import '../../plugins/helpers/local_server/routes/proxy.dart'
     show getProxiedURL;
 import '../../plugins/state.dart';
 
+late final dart_vlc.Player _player;
+
 Future<void> initialize() async {
   dart_vlc.DartVLC.initialize();
+  _player = dart_vlc.Player(id: Random.secure().nextInt(69420));
 }
 
 bool isSupported() => AppState.isDesktop;
@@ -15,13 +18,12 @@ bool isSupported() => AppState.isDesktop;
 class VideoPlayer extends model.Player {
   VideoPlayer(final model.PlayerSource source) : super(source);
 
-  late dart_vlc.Player _player;
   double? _prevSpeed;
   double? _prevVolume;
 
   @override
   Future<void> load() async {
-    _player = dart_vlc.Player(id: Random.secure().nextInt(69420))
+    _player
       ..positionStream.listen((final dart_vlc.PositionState position) {
         dispatch(model.PlayerEvent(model.PlayerEvents.durationUpdate, null));
       })
@@ -100,7 +102,6 @@ class VideoPlayer extends model.Player {
   @override
   Future<void> destroy() async {
     _player.stop();
-    _player.dispose();
     super.destroy();
   }
 
