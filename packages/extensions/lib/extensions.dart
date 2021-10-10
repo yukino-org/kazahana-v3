@@ -35,7 +35,7 @@ class BaseExtension {
       BaseExtension(
         name: json['name'] as String,
         id: json['id'] as String,
-        version: json['version'] as int,
+        version: ExtensionVersion.parse(json['version'] as String),
         type: ExtensionType.values.firstWhere(
           (final ExtensionType type) => type.type == (json['type'] as String),
         ),
@@ -44,14 +44,14 @@ class BaseExtension {
 
   final String name;
   final String id;
-  final int version;
+  final ExtensionVersion version;
   final ExtensionType type;
   final String image;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
         'id': id,
-        'version': version,
+        'version': version.toString(),
         'type': type.type,
         'image': image,
       };
@@ -61,7 +61,7 @@ class ResolvableExtension extends BaseExtension {
   ResolvableExtension({
     required final String name,
     required final String id,
-    required final int version,
+    required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
     required final this.source,
@@ -112,7 +112,7 @@ class ResolvedExtension extends BaseExtension {
   ResolvedExtension({
     required final String name,
     required final String id,
-    required final int version,
+    required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
     required final this.code,

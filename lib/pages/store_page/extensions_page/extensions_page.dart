@@ -198,7 +198,7 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                           ),
                           TextSpan(
                             text:
-                                '\n${Translator.t.version()}: ${widget.ext.version}',
+                                '\n${Translator.t.version()}: ${widget.ext.version.toString()}',
                             style: Theme.of(context).textTheme.caption,
                           ),
                         ],

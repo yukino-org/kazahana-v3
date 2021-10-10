@@ -87,7 +87,7 @@ abstract class ExtensionsManager {
             (final extensions.ResolvableExtension x) =>
                 ext.id == x.id && ext.type == x.type,
           );
-          if (storeExt != null && ext.version != storeExt.version) {
+          if (storeExt != null && storeExt.version > ext.version) {
             ext = await storeExt.resolve();
             await file.writeAsString(json.encode(ext.toJson()));
           }
