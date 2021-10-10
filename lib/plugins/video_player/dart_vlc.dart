@@ -8,15 +8,8 @@ import '../../plugins/state.dart';
 
 late final dart_vlc.Player _player;
 
-Future<void> initialize() async {
-  dart_vlc.DartVLC.initialize();
-  _player = dart_vlc.Player(id: Random.secure().nextInt(69420));
-}
-
-bool isSupported() => AppState.isDesktop;
-
-class VideoPlayer extends model.Player {
-  VideoPlayer(final model.PlayerSource source) : super(source);
+class DartVlc extends model.Player {
+  DartVlc(final model.PlayerSource source) : super(source);
 
   double? _prevSpeed;
   double? _prevVolume;
@@ -119,4 +112,11 @@ class VideoPlayer extends model.Player {
 
   @override
   double get speed => _player.general.rate;
+
+  static Future<void> initialize() async {
+    dart_vlc.DartVLC.initialize();
+    _player = dart_vlc.Player(id: Random.secure().nextInt(69420));
+  }
+
+  static bool isSupported() => AppState.isDesktop;
 }

@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
 import '../../plugins/state.dart';
 
-bool isSupported() => AppState.isMobile;
-
-class VideoPlayer extends model.Player {
-  VideoPlayer(final model.PlayerSource source) : super(source);
+class BetterPlayer extends model.Player {
+  BetterPlayer(final model.PlayerSource source) : super(source);
 
   late better_player.BetterPlayerConfiguration _configuration;
   late better_player.BetterPlayerDataSource _dataSource;
@@ -142,4 +140,6 @@ class VideoPlayer extends model.Player {
   double get speed =>
       _controller.videoPlayerController?.value.speed ??
       model.Player.defaultSpeed;
+
+  static bool isSupported() => AppState.isMobile;
 }

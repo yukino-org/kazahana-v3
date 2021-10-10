@@ -5,7 +5,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './select_source.dart';
-import '../../components/player/player.dart';
 import '../../config.dart';
 import '../../core/models/player.dart' as player_model;
 import '../../core/models/tracker_provider.dart';
@@ -17,6 +16,7 @@ import '../../plugins/helpers/utils/duration.dart';
 import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
+import '../../plugins/video_player/video_player.dart';
 import '../settings_page/setting_dialog.dart';
 import '../settings_page/setting_radio.dart';
 import '../settings_page/setting_switch.dart';
@@ -202,7 +202,7 @@ class WatchPageState extends State<WatchPage>
 
     isPlaying.value = false;
 
-    player = createPlayer(
+    player = VideoPlayer.createPlayer(
       player_model.PlayerSource(
         url: sources![currentIndex!].url,
         headers: sources![currentIndex!].headers,

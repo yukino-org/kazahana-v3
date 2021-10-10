@@ -12,7 +12,7 @@ import './helpers/screen.dart';
 import './helpers/utils/function.dart';
 import './state.dart';
 import './translator/translator.dart';
-import '../components/player/player.dart' as player show initialize;
+import './video_player/video_player.dart';
 import '../config.dart';
 import '../core/extensions.dart';
 import '../core/trackers/trackers.dart';
@@ -162,7 +162,7 @@ abstract class AppLifecycle {
     }
 
     try {
-      await player.initialize();
+      await VideoPlayer.initialize();
       Logger.of('player.initialize').info('Finished "initialize"');
     } catch (err, trace) {
       Logger.of('player.initialize').error(
