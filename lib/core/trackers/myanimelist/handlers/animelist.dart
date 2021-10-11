@@ -208,9 +208,9 @@ class AnimeListEntity {
 
 class _DetailedItemWrapper extends StatefulWidget {
   const _DetailedItemWrapper({
-    required this.item,
-    required this.onPlay,
-    this.readonly = false,
+    required final this.item,
+    required final this.onPlay,
+    final this.readonly = false,
     final Key? key,
   }) : super(key: key);
 
