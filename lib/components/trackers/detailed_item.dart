@@ -50,6 +50,7 @@ class _DetailedItemState extends State<DetailedItem> {
         RouteNames.search,
         search_page.PageArguments(
           terms: item.title,
+          pluginType: item.type,
           autoSearch: true,
         ).toJson(),
       ).toString(),

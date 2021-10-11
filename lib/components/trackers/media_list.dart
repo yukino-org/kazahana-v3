@@ -29,6 +29,7 @@ class MediaList extends StatefulWidget {
 
 class _MediaListState extends State<MediaList> with DidLoadStater {
   List<dynamic>? mediaList;
+  int page = 0;
 
   final Duration animationDuration = const Duration(milliseconds: 300);
   final Widget loader = const Center(
@@ -44,7 +45,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
 
   @override
   Future<void> load() async {
-    final List<dynamic> _mediaList = await widget.getMediaList(0);
+    final List<dynamic> _mediaList = await widget.getMediaList(page);
 
     if (mounted) {
       setState(() {
@@ -54,22 +55,30 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
   }
 
   @override
-  Widget build(final BuildContext context) => mediaList != null
-      ? mediaList!.isEmpty
-          ? Center(
-              child: Text(
-                Translator.t.nothingWasFoundHere(),
-                style: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      ?.color
-                      ?.withOpacity(0.7),
+  Widget build(final BuildContext context) => ListView(
+        children: <Widget>[
+          if (mediaList != null) ...<Widget>[
+            if (mediaList!.isEmpty) ...<Widget>[
+              SizedBox(
+                height: remToPx(2),
+              ),
+              Center(
+                child: Text(
+                  Translator.t.nothingWasFoundHere(),
+                  style: TextStyle(
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.color
+                        ?.withOpacity(0.7),
+                  ),
                 ),
               ),
-            )
-          : ListView(
-              children: getGridded(
+              SizedBox(
+                height: remToPx(2),
+              ),
+            ] else ...<Widget>[
+              ...getGridded(
                 MediaQuery.of(context).size.width.toInt(),
                 mediaList!
                     .asMap()
@@ -111,13 +120,59 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
                   width: remToPx(0.4),
                 ),
               ),
-            )
-      : Column(
-          children: <Widget>[
+              SizedBox(
+                height: remToPx(1.5),
+              ),
+            ]
+          ] else ...<Widget>[
             SizedBox(
               height: remToPx(3),
             ),
             loader,
+            SizedBox(
+              height: remToPx(3),
+            ),
           ],
-        );
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              IconButton(
+                splashRadius: remToPx(1),
+                onPressed: mediaList != null && page > 0
+                    ? () {
+                        setState(() {
+                          page = page - 1;
+                          mediaList = null;
+                        });
+
+                        load();
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_back),
+              ),
+              SizedBox(
+                width: remToPx(0.8),
+              ),
+              Text('${Translator.t.page()} ${page + 1}'),
+              SizedBox(
+                width: remToPx(0.8),
+              ),
+              IconButton(
+                splashRadius: remToPx(1),
+                onPressed: mediaList != null && mediaList!.isNotEmpty
+                    ? () {
+                        setState(() {
+                          page = page + 1;
+                          mediaList = null;
+                        });
+
+                        load();
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_forward),
+              ),
+            ],
+          ),
+        ],
+      );
 }
