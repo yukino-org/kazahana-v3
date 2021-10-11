@@ -168,13 +168,11 @@ class AnimeListEntity {
   Widget getDetailedPage(
     final BuildContext context, [
     final void Function()? onPlay,
-    // ignore: avoid_positional_boolean_parameters
-    final bool readonly = false,
   ]) =>
       _DetailedItemWrapper(
         item: this,
         onPlay: onPlay,
-        readonly: readonly,
+        readonly: !MyAnimeListManager.auth.isValidToken(),
       );
 
   void applyChanges() {

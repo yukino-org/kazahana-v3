@@ -79,7 +79,7 @@ class _EditModalState extends State<EditModal> {
                       (final int k, final myanimelist.AnimeListStatus status) =>
                           MapEntry<myanimelist.AnimeListStatus, String>(
                         status,
-                        StringUtils.capitalize(status.status),
+                        StringUtils.capitalize(status.pretty),
                       ),
                     ),
                 onChanged: (final myanimelist.AnimeListStatus _status) {
