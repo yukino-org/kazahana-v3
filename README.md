@@ -58,7 +58,6 @@ You can download the latest version of app from the [releases](https://github.co
 -   [./ios](./ios) - iOS related files
 -   [./test](./test) - Test files
 -   [./media](./media) - Local assets
-<!-- -   [./screenshots](./resources) - App previews -->
 
 ## Contributing
 
@@ -66,18 +65,6 @@ Ways to contribute to this project:
 
 -   Submitting bugs and feature requests in [issues](https://github.com/yukino-app/yukino/issues).
 -   Opening [pull requests](https://github.com/yukino-app/yukino/pulls) containing bug fixes, new features, etc.
-
-## Developer guide
-
-### Cloning & Installing
-
-```bash
-git clone https://github.com/yukino-app/yukino.git
-cd yukino-app
-flutter pub get
-```
-
-> Check [scripts.md](./scripts.md) for all the scripts
 
 ## License
 
