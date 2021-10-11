@@ -89,7 +89,7 @@ class _PageState extends State<Page> with DidLoadStater {
                             if (mediaCache[x.id]?.hasResolved ?? false) {
                               return mediaCache[x.id]!
                                   .value!
-                                  .getDetailedPage(context, () {});
+                                  .getDetailedPage(context);
                             }
 
                             if (mediaCache[x.id] == null) {

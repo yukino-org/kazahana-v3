@@ -129,7 +129,9 @@ class _PageState extends State<Page> with DidLoadStater {
           textController.text = args!.terms!;
         });
 
-        if (currentPlugin != null && (args?.autoSearch ?? false)) {
+        if (currentPlugin != null &&
+            currentPlugin!.type == args!.pluginType &&
+            (args?.autoSearch ?? false)) {
           args!.autoSearch = false;
           await search();
         }
