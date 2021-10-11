@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'package:extensions/extensions.dart' as extensions;
-import 'package:flutter/cupertino.dart';
-import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' as html;
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import '../../../../components/trackers/detailed_item.dart';
 import '../../../../pages/store_page/trackers_page/myanimelist_page/animelist/edit_modal.dart';
 import '../../../../plugins/helpers/stateful_holder.dart';
@@ -145,47 +142,8 @@ class AnimeListEntity {
       return;
     }
 
-    final http.Response res = await http.get(
-      Uri.parse('${MyAnimeListManager.webURL}/anime/$nodeId'),
-      headers: <String, String>{
-        'User-Agent': extensions.HttpUtils.userAgent,
-      },
-    );
-    final dom.Document document = html.parse(res.body);
-
-    final Map<String, String> metas = <String, String>{};
-    document
-        .querySelector('#content .borderClass > div')
-        ?.children
-        .forEach((final dom.Element x) {
-      if (x.classes.contains('spaceit_pad')) {
-        final RegExpMatch? match =
-            RegExp(r'([^:]+):([\S\s]+)').firstMatch(x.text);
-        if (match != null) {
-          metas[match.group(1)!.trim()] = match.group(2)!.trim();
-        }
-      }
-    });
-
-    details = AnimeListAdditionalDetail(
-      synopsis: document.querySelector('[itemprop="description"]')!.text,
-      characters: document
-          .querySelectorAll(
-        '.detail-characters-list > div > table > tbody > tr',
-      )
-          .map((final dom.Element x) {
-        final List<dom.Element> tds = x.querySelectorAll('td');
-
-        return Character(
-          name: tds[1].querySelector('a')!.text.trim(),
-          role: tds[1].querySelector('small')!.text.trim(),
-          image: tds[0].querySelector('img')!.attributes['data-src']!.trim(),
-        );
-      }).toList(),
-      totalEpisodes: int.tryParse(metas['Episodes'] ?? ''),
-    );
-
-    _cacheDetails[nodeId] = details!;
+    final AnimeListEntity entity = await scrapeFromNodeId(nodeId);
+    details = _cacheDetails[nodeId] = entity.details!;
   }
 
   DetailedInfo toDetailedInfo() => DetailedInfo(
@@ -210,10 +168,13 @@ class AnimeListEntity {
   Widget getDetailedPage(
     final BuildContext context, [
     final void Function()? onPlay,
+    // ignore: avoid_positional_boolean_parameters
+    final bool readonly = false,
   ]) =>
       _DetailedItemWrapper(
         item: this,
         onPlay: onPlay,
+        readonly: readonly,
       );
 
   void applyChanges() {
@@ -228,16 +189,20 @@ class AnimeListEntity {
   static Future<AnimeListEntity?> tryGetFromNodeId(
     final int id,
   ) async {
-    final String res = await MyAnimeListManager.request(
-      MyAnimeListRequestMethods.get,
-      '/anime/$id?fields=id,title,main_picture,synopsis,my_list_status,num_episodes',
-    );
+    if (MyAnimeListManager.auth.isValidToken()) {
+      final String res = await MyAnimeListManager.request(
+        MyAnimeListRequestMethods.get,
+        '/anime/$id?fields=id,title,main_picture,synopsis,my_list_status,num_episodes',
+      );
 
-    final AnimeListEntity entity = AnimeListEntity.fromAnimeDetails(
-      json.decode(res) as Map<dynamic, dynamic>,
-    );
-    await entity.fetch();
-    return entity;
+      final AnimeListEntity entity = AnimeListEntity.fromAnimeDetails(
+        json.decode(res) as Map<dynamic, dynamic>,
+      );
+      await entity.fetch();
+      return entity;
+    }
+
+    return scrapeFromNodeId(id);
   }
 }
 
@@ -245,11 +210,13 @@ class _DetailedItemWrapper extends StatefulWidget {
   const _DetailedItemWrapper({
     required this.item,
     required this.onPlay,
+    this.readonly = false,
     final Key? key,
   }) : super(key: key);
 
   final AnimeListEntity item;
   final void Function()? onPlay;
+  final bool readonly;
 
   @override
   _DetailedItemWrapperState createState() => _DetailedItemWrapperState();
@@ -289,6 +256,7 @@ class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
           media: widget.item,
           callback: cb,
         ),
+        readonly: widget.readonly,
       );
 }
 

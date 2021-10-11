@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart' as extensions;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import './_fuzzy_date.dart';
 import '../../../../components/trackers/detailed_item.dart';
 import '../../../../pages/store_page/trackers_page/anilist_page/edit_modal.dart';

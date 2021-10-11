@@ -1,4 +1,9 @@
 import 'dart:convert';
+import 'package:extensions/extensions.dart' show HttpUtils;
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as html;
+import 'package:http/http.dart' as http;
+import '../../detailed_info.dart';
 import '../myanimelist.dart';
 
 class SearchAnimeEntity {
@@ -33,4 +38,56 @@ Future<List<SearchAnimeEntity>> searchAnime(final String terms) async {
       .cast<Map<dynamic, dynamic>>()
       .map((final Map<dynamic, dynamic> x) => SearchAnimeEntity.fromJson(x))
       .toList();
+}
+
+Future<AnimeListEntity> scrapeFromNodeId(final int nodeId) async {
+  final http.Response resp = await http.get(
+    Uri.parse('${MyAnimeListManager.webURL}/anime/$nodeId'),
+    headers: <String, String>{
+      'User-Agent': HttpUtils.userAgent,
+    },
+  );
+  final dom.Document document = html.parse(resp.body);
+
+  final Map<String, String> metas = <String, String>{};
+  document
+      .querySelector('#content .borderClass > div')
+      ?.children
+      .forEach((final dom.Element x) {
+    if (x.classes.contains('spaceit_pad')) {
+      final RegExpMatch? match =
+          RegExp(r'([^:]+):([\S\s]+)').firstMatch(x.text);
+      if (match != null) {
+        metas[match.group(1)!.trim()] = match.group(2)!.trim();
+      }
+    }
+  });
+
+  final String thumbnail =
+      document.querySelector('[itemprop=image]')!.attributes['data-src']!;
+
+  return AnimeListEntity(
+    nodeId: nodeId,
+    title: document.querySelector('.title-name')!.text.trim(),
+    mainPictureMedium: thumbnail,
+    mainPictureLarge: thumbnail,
+    status: null,
+    details: AnimeListAdditionalDetail(
+      synopsis: document.querySelector('[itemprop="description"]')!.text,
+      characters: document
+          .querySelectorAll(
+        '.detail-characters-list > div > table > tbody > tr',
+      )
+          .map((final dom.Element x) {
+        final List<dom.Element> tds = x.querySelectorAll('td');
+
+        return Character(
+          name: tds[1].querySelector('a')!.text.trim(),
+          role: tds[1].querySelector('small')!.text.trim(),
+          image: tds[0].querySelector('img')!.attributes['data-src']!.trim(),
+        );
+      }).toList(),
+      totalEpisodes: int.tryParse(metas['Episodes'] ?? ''),
+    ),
+  );
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:extensions/extensions.dart' as extensions;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
@@ -255,8 +255,8 @@ class MangaListEntity {
 
 class _DetailedItemWrapper extends StatefulWidget {
   const _DetailedItemWrapper({
-    required this.item,
-    required this.onPlay,
+    required final this.item,
+    required final this.onPlay,
     final Key? key,
   }) : super(key: key);
 

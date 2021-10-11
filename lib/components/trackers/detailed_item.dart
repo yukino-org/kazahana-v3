@@ -17,6 +17,7 @@ class DetailedItem extends StatefulWidget {
     required final this.onEdit,
     final this.onPlay,
     final this.showBodyLoading = false,
+    final this.readonly = false,
     final Key? key,
   }) : super(key: key);
 
@@ -24,6 +25,7 @@ class DetailedItem extends StatefulWidget {
   final Widget Function(OnEditCallback) onEdit;
   final void Function()? onPlay;
   final bool showBodyLoading;
+  final bool readonly;
 
   @override
   _DetailedItemState createState() => _DetailedItemState();
@@ -339,119 +341,136 @@ class _DetailedItemState extends State<DetailedItem> {
                           height: remToPx(1),
                         ),
                       ],
-                      RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.caption,
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: Translator.t.progress(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            if (item.status != null)
+                      if (!widget.readonly) ...<Widget>[
+                        RichText(
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.caption,
+                            children: <InlineSpan>[
                               TextSpan(
-                                text: '  (${item.status})',
+                                text: Translator.t.progress(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
+                              if (item.status != null)
+                                TextSpan(
+                                  text: '  (${item.status})',
+                                ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: remToPx(0.5),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodyText1,
+                                children: <InlineSpan>[
+                                  TextSpan(
+                                    text: item.progress.progress
+                                        .toString()
+                                        .padLeft(2, '0'),
+                                  ),
+                                  if (item.progress.volumes?.progress != null)
+                                    TextSpan(
+                                      text:
+                                          ' (${item.progress.volumes!.progress.toString().padLeft(2, '0')} ${Translator.t.vols()})',
+                                    ),
+                                  if (item.progress.startedAt != null)
+                                    TextSpan(
+                                      text:
+                                          '${isLarge ? '  ' : '\n'}(${item.progress.startedAt.toString().split(' ').first})',
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                ],
+                              ),
+                            ),
+                            if (item.progress.total != null)
+                              Text(
+                                '${((item.progress.progress / item.progress.total!) * 100).toInt()}%',
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodyText1,
+                                children: <InlineSpan>[
+                                  if (isLarge &&
+                                      item.progress.completedAt != null)
+                                    TextSpan(
+                                      text:
+                                          '(${item.progress.completedAt.toString().split(' ').first})  ',
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                  TextSpan(
+                                    text: item.progress.total
+                                            ?.toString()
+                                            .padLeft(2, '0') ??
+                                        '?',
+                                  ),
+                                  if (item.progress.volumes != null)
+                                    TextSpan(
+                                      text:
+                                          ' (${item.progress.volumes!.progress.toString().padLeft(2, '0')} ${Translator.t.vols()})',
+                                    ),
+                                  if (!isLarge &&
+                                      item.progress.completedAt != null)
+                                    TextSpan(
+                                      text:
+                                          '\n(${item.progress.completedAt.toString().split(' ').first})',
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: remToPx(0.5),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).textTheme.bodyText1,
-                              children: <InlineSpan>[
+                        SizedBox(
+                          height: remToPx(0.5),
+                        ),
+                        LinearProgressIndicator(
+                          backgroundColor: item.progress.total != null
+                              ? Theme.of(context).primaryColor.withOpacity(0.25)
+                              : Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  ?.color
+                                  ?.withOpacity(0.1),
+                          value: item.progress.total != null
+                              ? item.progress.progress / item.progress.total!
+                              : 0,
+                        ),
+                        SizedBox(
+                          height: remToPx(0.5),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.bodyText1,
+                            children: <InlineSpan>[
+                              if (item.repeated != null) ...<InlineSpan>[
                                 TextSpan(
-                                  text: item.progress.progress
-                                      .toString()
-                                      .padLeft(2, '0'),
+                                  text: '${Translator.t.repeat()}: ',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .caption
+                                        ?.color,
+                                  ),
                                 ),
-                                if (item.progress.volumes?.progress != null)
-                                  TextSpan(
-                                    text:
-                                        ' (${item.progress.volumes!.progress.toString().padLeft(2, '0')} ${Translator.t.vols()})',
-                                  ),
-                                if (item.progress.startedAt != null)
-                                  TextSpan(
-                                    text:
-                                        '${isLarge ? '  ' : '\n'}(${item.progress.startedAt.toString().split(' ').first})',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                              ],
-                            ),
-                          ),
-                          if (item.progress.total != null)
-                            Text(
-                              '${((item.progress.progress / item.progress.total!) * 100).toInt()}%',
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                          RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).textTheme.bodyText1,
-                              children: <InlineSpan>[
-                                if (isLarge &&
-                                    item.progress.completedAt != null)
-                                  TextSpan(
-                                    text:
-                                        '(${item.progress.completedAt.toString().split(' ').first})  ',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
                                 TextSpan(
-                                  text: item.progress.total
-                                          ?.toString()
-                                          .padLeft(2, '0') ??
-                                      '?',
+                                  text: '${item.repeated!.toString()}\n',
                                 ),
-                                if (item.progress.volumes != null)
-                                  TextSpan(
-                                    text:
-                                        ' (${item.progress.volumes!.progress.toString().padLeft(2, '0')} ${Translator.t.vols()})',
-                                  ),
-                                if (!isLarge &&
-                                    item.progress.completedAt != null)
-                                  TextSpan(
-                                    text:
-                                        '\n(${item.progress.completedAt.toString().split(' ').first})',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
                               ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: remToPx(0.5),
-                      ),
-                      LinearProgressIndicator(
-                        backgroundColor: item.progress.total != null
-                            ? Theme.of(context).primaryColor.withOpacity(0.25)
-                            : Theme.of(context)
-                                .textTheme
-                                .caption
-                                ?.color
-                                ?.withOpacity(0.1),
-                        value: item.progress.total != null
-                            ? item.progress.progress / item.progress.total!
-                            : 0,
-                      ),
-                      SizedBox(
-                        height: remToPx(0.5),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyText1,
-                          children: <InlineSpan>[
-                            if (item.repeated != null) ...<InlineSpan>[
                               TextSpan(
-                                text: '${Translator.t.repeat()}: ',
+                                text: '${Translator.t.score()}: ',
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .textTheme
@@ -460,25 +479,15 @@ class _DetailedItemState extends State<DetailedItem> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${item.repeated!.toString()}\n',
+                                text: '${item.score ?? '?'} / 100',
                               ),
                             ],
-                            TextSpan(
-                              text: '${Translator.t.score()}: ',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.caption?.color,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '${item.score ?? '?'} / 100',
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: remToPx(1),
-                      ),
+                        SizedBox(
+                          height: remToPx(1),
+                        ),
+                      ],
                       Text(
                         Translator.t.characters(),
                         style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -562,7 +571,7 @@ class _DetailedItemState extends State<DetailedItem> {
             ],
           ),
         ),
-        floatingActionButton: widget.showBodyLoading
+        floatingActionButton: widget.showBodyLoading || widget.readonly
             ? null
             : FloatingActionButton(
                 onPressed: () async {

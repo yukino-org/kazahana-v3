@@ -55,7 +55,9 @@ abstract class MyAnimeListManager {
     final String url, [
     final Map<String, dynamic>? body,
   ]) async {
-    if (!auth.isValidToken()) throw StateError('Not logged in');
+    if (!auth.isValidToken()) {
+      throw StateError('Not logged in');
+    }
 
     final Uri uri = Uri.parse('$baseURL$url');
     final Map<String, String> headers = <String, String>{
