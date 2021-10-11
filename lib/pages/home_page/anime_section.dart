@@ -52,7 +52,7 @@ class _PageState extends State<Page> with DidLoadStater {
           final int nodeId = myanimelist.idFromURL(x.url)!;
 
           if (mediaCache[nodeId]?.hasResolved ?? false) {
-            return mediaCache[nodeId]!.value!.getDetailedPage(context, () {});
+            return mediaCache[nodeId]!.value!.getDetailedPage(context);
           }
 
           if (mediaCache[nodeId] == null) {
