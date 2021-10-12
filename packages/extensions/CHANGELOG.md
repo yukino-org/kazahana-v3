@@ -28,11 +28,11 @@
 
 ## 0.0.7
 
--   Added list utility methods: `rangeList`
+-   Added list utility method: `rangeList`
 
 ## 0.0.8
 
--   Added string utility methods: `sliceString`
+-   Added string utility method: `sliceString`
 
 ## 0.0.9
 
@@ -41,3 +41,7 @@
 ## 0.0.10
 
 -   Support for `nsfw` property
+
+## 0.0.11
+
+-   Added future utility method: `resolveFutureAll`
