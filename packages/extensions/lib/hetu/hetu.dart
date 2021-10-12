@@ -49,16 +49,16 @@ Future<Hetu> createHetu() async {
       'flattenList': helpers.flattenList,
       'deepFlattenList': helpers.deepFlattenList,
     },
-  ).onError<HTError>((final HTError error, final StackTrace _) async {
-    if (error.line != null) {
-      error.line =
-          error.line! - RegExp('\n').allMatches(hetuExternals).length - 1;
-    }
-
-    throw error;
-  });
+  ).onError<HTError>(onHetuError);
 
   return hetu;
 }
 
-void modifyHTError(final HTError err) {}
+void onHetuError(final HTError error, final StackTrace _) {
+  if (error.line != null) {
+    error.line =
+        error.line! - RegExp('\n').allMatches(hetuExternals).length - 1;
+  }
+
+  throw error;
+}

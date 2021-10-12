@@ -163,7 +163,9 @@ abstract class ExtensionUtils {
   ) async {
     final Hetu runner = await createHetu();
 
-    await runner.eval(appendHetuExternals(ext.code));
+    await runner
+        .eval(appendHetuExternals(ext.code))
+        .onError<HTError>(onHetuError);
 
     final String defaultLocale = runner.invoke('defaultLocale') as String;
 
@@ -178,7 +180,7 @@ abstract class ExtensionUtils {
             terms,
             locale,
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -194,7 +196,7 @@ abstract class ExtensionUtils {
             url,
             locale,
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
       },
@@ -204,7 +206,7 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             episode.toJson(),
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -221,7 +223,9 @@ abstract class ExtensionUtils {
   ) async {
     final Hetu runner = await createHetu();
 
-    await runner.eval(appendHetuExternals(ext.code));
+    await runner
+        .eval(appendHetuExternals(ext.code))
+        .onError<HTError>(onHetuError);
 
     final String defaultLocale = runner.invoke('defaultLocale') as String;
 
@@ -236,7 +240,7 @@ abstract class ExtensionUtils {
             terms,
             locale,
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -252,7 +256,7 @@ abstract class ExtensionUtils {
             url,
             locale,
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
       },
@@ -262,7 +266,7 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             chapter.toJson(),
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -277,7 +281,7 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             page.toJson(),
           ],
-        );
+        ).onError<HTError>(onHetuError);
 
         return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
       },
