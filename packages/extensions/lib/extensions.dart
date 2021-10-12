@@ -185,7 +185,8 @@ abstract class ExtensionUtils {
             terms,
             locale,
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -201,7 +202,8 @@ abstract class ExtensionUtils {
             url,
             locale,
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
       },
@@ -211,7 +213,8 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             episode.toJson(),
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -250,7 +253,8 @@ abstract class ExtensionUtils {
             terms,
             locale,
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -266,7 +270,8 @@ abstract class ExtensionUtils {
             url,
             locale,
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
       },
@@ -276,7 +281,8 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             chapter.toJson(),
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -291,7 +297,8 @@ abstract class ExtensionUtils {
           positionalArgs: <dynamic>[
             page.toJson(),
           ],
-        ).onError<HTError>(onHetuError);
+        )
+          ..onError<HTError>(onHetuError);
 
         return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
       },
