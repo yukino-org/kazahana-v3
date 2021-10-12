@@ -69,6 +69,9 @@ external fun rangeList(a: int, b: int) -> List<int>;
 // Future utlities - start
 const ResolveFutureCallback: type = fun(err: str?, result);
 external fun resolveFuture(future, fn: ResolveFutureCallback);
+
+const ResolveFutureAllCallback: type = fun(err: str?, result: List);
+external fun resolveFutureAll(futures: List, fn: ResolveFutureAllCallback);
 // Future utlities - end
 
 
