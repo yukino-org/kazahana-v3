@@ -45,3 +45,7 @@
 ## 0.0.11
 
 -   Added future utility method: `resolveFutureAll`
+
+## 0.0.122
+
+-   Added list utitlity methods: `flattenList`, `deepFlattenList`

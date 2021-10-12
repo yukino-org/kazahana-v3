@@ -69,3 +69,30 @@ dynamic findList(
 
   return null;
 }
+
+List<dynamic> flattenList(final List<dynamic> data, final int level) =>
+    data.cast<List<dynamic>>().expand((final List<dynamic> x) {
+      Iterable<dynamic> flat = x;
+      int done = 1;
+
+      while (done < level) {
+        flat = flat.cast<List<dynamic>>().expand((final List<dynamic> x) => x);
+        done++;
+      }
+
+      return flat;
+    }).toList();
+
+List<dynamic> deepFlattenList(final List<dynamic> data) {
+  final List<dynamic> flat = <dynamic>[];
+
+  for (final dynamic x in data) {
+    if (x is List) {
+      flat.addAll(deepFlattenList(x));
+    } else {
+      flat.add(x);
+    }
+  }
+
+  return flat;
+}

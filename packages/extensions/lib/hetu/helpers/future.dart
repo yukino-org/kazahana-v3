@@ -26,7 +26,8 @@ Future<dynamic> resolveFutureAll(
   String? err;
 
   try {
-    result = await Future.wait(futures.cast<Future<dynamic>>());
+    result = await Future.wait(futures.cast<Future<dynamic>>())
+        .timeout(const Duration(seconds: 30));
   } catch (e) {
     err = e.toString();
   }

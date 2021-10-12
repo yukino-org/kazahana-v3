@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:hetu_script/hetu_script.dart';
+import './externals.dart';
 import './helpers/crypto.dart' as helpers;
 import './helpers/fetch.dart' as helpers;
 import './helpers/future.dart' as helpers;
@@ -45,8 +46,19 @@ Future<Hetu> createHetu() async {
       'mergeList': helpers.mergeList,
       'rangeList': helpers.rangeList,
       'resolveFutureAll': helpers.resolveFutureAll,
+      'flattenList': helpers.flattenList,
+      'deepFlattenList': helpers.deepFlattenList,
     },
-  );
+  ).onError<HTError>((final HTError error, final StackTrace _) async {
+    if (error.line != null) {
+      error.line =
+          error.line! - RegExp('\n').allMatches(hetuExternals).length - 1;
+    }
+
+    throw error;
+  });
 
   return hetu;
 }
+
+void modifyHTError(final HTError err) {}
