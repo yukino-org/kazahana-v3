@@ -37,3 +37,7 @@
 ## 0.0.9
 
 -   Handle external functions internally
+
+## 0.0.10
+
+-   Support for `nsfw` property

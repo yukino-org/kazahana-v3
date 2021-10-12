@@ -29,6 +29,7 @@ class BaseExtension {
     required final this.version,
     required final this.type,
     required final this.image,
+    required final this.nsfw,
   });
 
   factory BaseExtension.fromJson(final Map<dynamic, dynamic> json) =>
@@ -40,6 +41,7 @@ class BaseExtension {
           (final ExtensionType type) => type.type == (json['type'] as String),
         ),
         image: json['image'] as String,
+        nsfw: json['nsfw'] as bool,
       );
 
   final String name;
@@ -47,6 +49,7 @@ class BaseExtension {
   final ExtensionVersion version;
   final ExtensionType type;
   final String image;
+  final bool nsfw;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
@@ -54,6 +57,7 @@ class BaseExtension {
         'version': version.toString(),
         'type': type.type,
         'image': image,
+        'nsfw': nsfw,
       };
 }
 
@@ -64,6 +68,7 @@ class ResolvableExtension extends BaseExtension {
     required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
+    required final bool nsfw,
     required final this.source,
   }) : super(
           name: name,
@@ -71,6 +76,7 @@ class ResolvableExtension extends BaseExtension {
           version: version,
           type: type,
           image: image,
+          nsfw: nsfw,
         );
 
   factory ResolvableExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -83,6 +89,7 @@ class ResolvableExtension extends BaseExtension {
       type: base.type,
       image: base.image,
       source: json['source'] as String,
+      nsfw: base.nsfw,
     );
   }
 
@@ -98,6 +105,7 @@ class ResolvableExtension extends BaseExtension {
       type: type,
       image: image,
       code: res.body,
+      nsfw: nsfw,
     );
   }
 
@@ -115,6 +123,7 @@ class ResolvedExtension extends BaseExtension {
     required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
+    required final bool nsfw,
     required final this.code,
   }) : super(
           name: name,
@@ -122,6 +131,7 @@ class ResolvedExtension extends BaseExtension {
           version: version,
           type: type,
           image: image,
+          nsfw: nsfw,
         );
 
   factory ResolvedExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -134,6 +144,7 @@ class ResolvedExtension extends BaseExtension {
       type: base.type,
       image: base.image,
       code: json['code'] as String,
+      nsfw: base.nsfw,
     );
   }
 
