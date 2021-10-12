@@ -179,14 +179,13 @@ abstract class ExtensionUtils {
       id: ext.id,
       defaultLocale: defaultLocale,
       search: (final String terms, final String locale) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'search',
           positionalArgs: <dynamic>[
             terms,
             locale,
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -196,25 +195,23 @@ abstract class ExtensionUtils {
             .toList();
       },
       getInfo: (final String url, final String locale) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'getInfo',
           positionalArgs: <dynamic>[
             url,
             locale,
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
       },
       getSources: (final EpisodeInfo episode) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'getSources',
           positionalArgs: <dynamic>[
             episode.toJson(),
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -247,14 +244,13 @@ abstract class ExtensionUtils {
       id: ext.id,
       defaultLocale: defaultLocale,
       search: (final String terms, final String locale) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'search',
           positionalArgs: <dynamic>[
             terms,
             locale,
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -264,25 +260,23 @@ abstract class ExtensionUtils {
             .toList();
       },
       getInfo: (final String url, final String locale) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'getInfo',
           positionalArgs: <dynamic>[
             url,
             locale,
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
       },
       getChapter: (final ChapterInfo chapter) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'getChapter',
           positionalArgs: <dynamic>[
             chapter.toJson(),
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return (result as List<dynamic>)
             .cast<Map<dynamic, dynamic>>()
@@ -292,13 +286,12 @@ abstract class ExtensionUtils {
             .toList();
       },
       getPage: (final PageInfo page) async {
-        final dynamic result = await runner.invoke(
+        final dynamic result = await (runner.invoke(
           'getPage',
           positionalArgs: <dynamic>[
             page.toJson(),
           ],
-        )
-          ..onError<HTError>(onHetuError);
+        )..onError<HTError>(onHetuError));
 
         return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
       },
