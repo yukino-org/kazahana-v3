@@ -19,14 +19,14 @@ Future<dynamic> resolveFuture(
 }
 
 Future<dynamic> resolveFutureAll(
-  final List<Future<dynamic>> futures,
+  final List<dynamic> futures,
   final HTFunction fn,
 ) async {
   List<dynamic>? result;
   String? err;
 
   try {
-    result = await Future.wait(futures);
+    result = await Future.wait(futures.cast<Future<dynamic>>());
   } catch (e) {
     err = e.toString();
   }
