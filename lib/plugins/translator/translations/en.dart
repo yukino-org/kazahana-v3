@@ -374,4 +374,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String volumesCompleted() => 'Volumes completed';
+
+  @override
+  String nsfw() => 'NSFW';
 }

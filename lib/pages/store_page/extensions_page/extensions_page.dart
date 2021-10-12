@@ -100,9 +100,19 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                                 ),
                                 TextSpan(
                                   text:
-                                      '\n${StringUtils.capitalize(ext.type.type)}',
+                                      '\n${StringUtils.capitalize(ext.type.type)}${ext.nsfw ? '(18+)' : ''}',
                                   style: Theme.of(context).textTheme.caption,
                                 ),
+                                if (ext.nsfw)
+                                  TextSpan(
+                                    text: ' (${Translator.t.nsfw()})',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .caption
+                                        ?.copyWith(
+                                          color: Colors.red.shade400,
+                                        ),
+                                  ),
                               ],
                             ),
                           ),

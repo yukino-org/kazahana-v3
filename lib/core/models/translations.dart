@@ -127,4 +127,5 @@ abstract class TranslationSentences {
   String episodesWatched();
   String chaptersRead();
   String volumesCompleted();
+  String nsfw();
 }
