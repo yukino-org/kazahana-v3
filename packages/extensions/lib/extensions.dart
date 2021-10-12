@@ -167,7 +167,12 @@ abstract class ExtensionUtils {
         .eval(appendHetuExternals(ext.code))
         .onError<HTError>(onHetuError);
 
-    final String defaultLocale = runner.invoke('defaultLocale') as String;
+    late final String defaultLocale;
+    try {
+      defaultLocale = runner.invoke('defaultLocale') as String;
+    } on HTError catch (err, stack) {
+      onHetuError(err, stack);
+    }
 
     return AnimeExtractor(
       name: ext.name,
@@ -227,7 +232,12 @@ abstract class ExtensionUtils {
         .eval(appendHetuExternals(ext.code))
         .onError<HTError>(onHetuError);
 
-    final String defaultLocale = runner.invoke('defaultLocale') as String;
+    late final String defaultLocale;
+    try {
+      defaultLocale = runner.invoke('defaultLocale') as String;
+    } on HTError catch (err, stack) {
+      onHetuError(err, stack);
+    }
 
     return MangaExtractor(
       name: ext.name,

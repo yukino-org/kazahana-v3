@@ -49,7 +49,7 @@ Future<Hetu> createHetu() async {
       'flattenList': helpers.flattenList,
       'deepFlattenList': helpers.deepFlattenList,
     },
-  ).onError<HTError>(onHetuError);
+  );
 
   return hetu;
 }
@@ -57,7 +57,7 @@ Future<Hetu> createHetu() async {
 void onHetuError(final HTError error, final StackTrace _) {
   if (error.line != null) {
     error.line =
-        error.line! - RegExp('\n').allMatches(hetuExternals).length - 1;
+        error.line! - RegExp('\n').allMatches(hetuExternals).length - 2;
   }
 
   throw error;
