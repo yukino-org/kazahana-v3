@@ -54,11 +54,9 @@ Future<Hetu> createHetu() async {
   return hetu;
 }
 
-void onHetuError(final HTError error, final StackTrace _) {
+void editHetuError(final HTError error) {
   if (error.line != null) {
     error.line =
         error.line! - RegExp('\n').allMatches(hetuExternals).length - 2;
   }
-
-  throw error;
 }
