@@ -62,7 +62,9 @@ external fun eachList(data: List<any>, cb: ListEachCb) -> void;
 
 external fun findList(data: List<any>, filterer: ListFilterer) -> any?;
 external fun mergeList(m1: List<any>, m2: List<any>) -> List<any>;
-external fun rangeList(a: int, b: int) -> List<int>;
+external fun rangeList(a: num, b: num) -> List<int>;
+external fun flattenList(data: List, level: num) -> List;
+external fun deepFlattenList(data: List) -> List;
 // List utlities - end
 
 
