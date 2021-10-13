@@ -21,9 +21,5 @@ dependencies:
             url: https://github.com/yukino-app/yukino.git
             path: packages/utilx
 
-dependency_overrides:
-    utilx:
-        path: ../utilx
-
 dev_dependencies:
     lint: ^1.5.3
