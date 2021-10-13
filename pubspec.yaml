@@ -50,7 +50,7 @@ dependencies:
 
 dependency_overrides:
     utilx:
-        path: ../utilx
+        path: packages/utilx
 
 dev_dependencies:
     build_runner: ^2.0.5
