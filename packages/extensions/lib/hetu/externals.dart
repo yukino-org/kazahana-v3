@@ -95,6 +95,8 @@ external fun qsDecode(data: str) -> Map<str>;
 
 // Other utlities - start
 external fun throwError(err: str) -> void;
+external fun isValidLanguage(lang: str) -> bool;
+external fun allLanguages() -> List<str>;
 // Other utlities - end
 ''';
 

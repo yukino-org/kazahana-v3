@@ -1,6 +1,6 @@
 name: extensions
-description: Yukino extension utilities
-version: 0.0.14
+description: Extensions system of Yukino
+version: 0.0.15
 
 publish_to: none
 
@@ -16,6 +16,8 @@ dependencies:
     hetu_script: ^0.1.2+5
     html: ^0.15.0
     http: ^0.13.3
+    utilx:
+        path: ../utilx
 
 dev_dependencies:
     lint: ^1.5.3

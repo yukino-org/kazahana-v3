@@ -57,3 +57,7 @@
 ## 0.0.14
 
 -   Added query string utitlity methods: `qsEncode`, `qsDecode`
+
+## 0.0.15
+
+-   Added language utitlity methods: `allLanguages`, `validLanguages`
