@@ -17,6 +17,12 @@ dependencies:
     html: ^0.15.0
     http: ^0.13.3
     utilx:
+        git:
+            url: https://github.com/yukino-app/yukino.git
+            path: packages/utilx
+
+dependency_overrides:
+    utilx:
         path: ../utilx
 
 dev_dependencies:
