@@ -36,3 +36,11 @@ Future<dynamic> resolveFutureAll(
     positionalArgs: <dynamic>[err, result],
   );
 }
+
+Future<dynamic> wait(
+  final int duration,
+  final HTFunction fn,
+) async {
+  await Future<void>.delayed(Duration(milliseconds: duration));
+  return await fn.call();
+}

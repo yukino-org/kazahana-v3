@@ -74,6 +74,9 @@ external fun resolveFuture(future, fn: ResolveFutureCallback);
 
 const ResolveFutureAllCallback: type = fun(err: str?, result: List);
 external fun resolveFutureAll(futures: List, fn: ResolveFutureAllCallback);
+
+const WaitCallback: type = fun();
+external fun wait(duration: num, fn: WaitCallback);
 // Future utlities - end
 
 

@@ -48,6 +48,7 @@ Future<Hetu> createHetu() async {
       'resolveFutureAll': helpers.resolveFutureAll,
       'flattenList': helpers.flattenList,
       'deepFlattenList': helpers.deepFlattenList,
+      'wait': helpers.wait,
     },
   );
 

@@ -46,6 +46,10 @@
 
 -   Added future utility method: `resolveFutureAll`
 
-## 0.0.122
+## 0.0.12
 
 -   Added list utitlity methods: `flattenList`, `deepFlattenList`
+
+## 0.0.13
+
+-   Added future utitlity method: `wait`
