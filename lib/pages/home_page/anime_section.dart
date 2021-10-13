@@ -146,7 +146,7 @@ class _PageState extends State<Page> with DidLoadStater {
                 });
               },
               onTap: (final int i, final VoidCallback openContainer) {
-                if (recentlyUpdatedHoverIndex != null) {
+                if (recentlyUpdatedHoverIndex != i) {
                   setState(() {
                     recentlyUpdatedHoverIndex = i;
                   });
