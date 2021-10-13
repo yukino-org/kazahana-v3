@@ -1,4 +1,4 @@
-import './languages.dart';
+import 'package:utilx/utilities/languages.dart';
 
 abstract class TranslationSentences {
   LanguageCodes get code;

@@ -1,4 +1,4 @@
-import '../../../core/models/languages.dart';
+import 'package:utilx/utilities/languages.dart';
 import '../../../core/models/translations.dart';
 
 class Sentences extends TranslationSentences {

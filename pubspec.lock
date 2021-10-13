@@ -231,7 +231,7 @@ packages:
       path: "packages/extensions"
       relative: true
     source: path
-    version: "0.0.9"
+    version: "0.0.14"
   ffi:
     dependency: transitive
     description:
@@ -431,13 +431,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  native_bridge:
-    dependency: "direct main"
-    description:
-      path: "packages/native_bridge"
-      relative: true
-    source: path
-    version: "0.0.0"
   ota_update:
     dependency: "direct main"
     description:
@@ -774,6 +767,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  utilx:
+    dependency: "direct main"
+    description:
+      path: "packages/utilx"
+      relative: true
+    source: path
+    version: "0.0.0"
   vector_math:
     dependency: transitive
     description:

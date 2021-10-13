@@ -26,8 +26,6 @@ dependencies:
     hive_flutter: ^1.1.0
     html: ^0.15.0
     http: ^0.13.3
-    native_bridge:
-        path: packages/native_bridge
     ota_update: ^3.1.1
     package_info_plus: ^1.0.5
     path: ^1.8.0
@@ -40,6 +38,8 @@ dependencies:
     tar: ^0.5.1
     uni_links: ^0.5.1
     url_launcher: ^6.0.9
+    utilx:
+        path: packages/utilx
     version: ^2.0.0
     window_manager:
         git:

@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
+import 'package:utilx/utilities/languages.dart';
 import './translations/en.dart' as en;
-import '../../core/models/languages.dart';
 import '../../core/models/translations.dart';
 
 abstract class Translator {
@@ -9,7 +9,8 @@ abstract class Translator {
     en.Sentences(),
   ];
 
-  static Map<String, TranslationSentences> translations = <String, TranslationSentences>{
+  static Map<String, TranslationSentences> translations =
+      <String, TranslationSentences>{
     for (final TranslationSentences lang in _availableTranslations)
       lang.code.code: lang,
   };

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:native_bridge/window_utils.dart';
+import 'package:utilx/utilities/window.dart';
 import 'package:window_manager/window_manager.dart';
 import './eventer.dart';
 import '../state.dart';

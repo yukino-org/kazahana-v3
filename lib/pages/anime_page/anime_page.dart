@@ -1,12 +1,12 @@
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:utilx/utilities/languages.dart';
 import './watch_page.dart';
 import '../../components/toggleable_slide_widget.dart';
 import '../../components/trackers/trackers_tile.dart';
 import '../../config.dart';
 import '../../core/extensions.dart';
-import '../../core/models/languages.dart';
 import '../../core/models/page_args/anime_page.dart' as anime_page;
 import '../../core/trackers/providers.dart';
 import '../../plugins/database/database.dart' show DataBox;

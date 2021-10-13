@@ -1,5 +1,5 @@
-name: native_bridge
-description: Custom utility native bridge
+name: utilx
+description: Custom utility package for Yukino
 version: 0.0.0
 
 publish_to: none
@@ -19,4 +19,4 @@ flutter:
     plugin:
         platforms:
             windows:
-                pluginClass: NativeBridgePlugin
+                pluginClass: UtilXPlugin

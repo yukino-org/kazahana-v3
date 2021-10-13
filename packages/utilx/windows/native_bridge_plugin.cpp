@@ -1,4 +1,4 @@
-#include "include/native_bridge/native_bridge_plugin.h"
+#include "include/utilx/utilx_plugin.h"
 
 #include <windows.h>
 
@@ -18,13 +18,13 @@ HWND GetRootWindow(flutter::FlutterView *view) {
 
 namespace {
 
-class NativeBridgePlugin : public flutter::Plugin {
+class UtilXPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  NativeBridgePlugin(flutter::PluginRegistrarWindows* registrar);
+  UtilXPlugin(flutter::PluginRegistrarWindows* registrar);
 
-  virtual ~NativeBridgePlugin();
+  virtual ~UtilXPlugin();
 
  private:
   flutter::PluginRegistrarWindows *registrar;
@@ -36,14 +36,14 @@ class NativeBridgePlugin : public flutter::Plugin {
 };
 
 // static
-void NativeBridgePlugin::RegisterWithRegistrar(
+void UtilXPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
   auto channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "native_bridge",
+          registrar->messenger(), "utilx_native_bridge",
           &flutter::StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<NativeBridgePlugin>(registrar);
+  auto plugin = std::make_unique<UtilXPlugin>(registrar);
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -53,11 +53,11 @@ void NativeBridgePlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-NativeBridgePlugin::NativeBridgePlugin(flutter::PluginRegistrarWindows* registrar): registrar(registrar) {}
+UtilXPlugin::UtilXPlugin(flutter::PluginRegistrarWindows* registrar): registrar(registrar) {}
 
-NativeBridgePlugin::~NativeBridgePlugin() {}
+UtilXPlugin::~UtilXPlugin() {}
 
-void NativeBridgePlugin::HandleMethodCall(
+void UtilXPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("focusWindow") == 0) {
@@ -73,9 +73,9 @@ void NativeBridgePlugin::HandleMethodCall(
 
 }  // namespace
 
-void NativeBridgePluginRegisterWithRegistrar(
+void UtilXPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar) {
-  NativeBridgePlugin::RegisterWithRegistrar(
+  UtilXPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }
