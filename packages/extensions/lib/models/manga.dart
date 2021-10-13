@@ -7,7 +7,6 @@ class ChapterInfo {
     required final this.locale,
     final this.title,
     final this.volume,
-    final this.other = const <dynamic, dynamic>{},
   });
 
   factory ChapterInfo.fromJson(final Map<dynamic, dynamic> json) => ChapterInfo(
@@ -16,7 +15,6 @@ class ChapterInfo {
         volume: json['volume'] as String?,
         chapter: json['chapter'] as String,
         locale: json['locale'] as String,
-        other: json['other'] as Map<dynamic, dynamic>? ?? <dynamic, dynamic>{},
       );
 
   final String? title;
@@ -24,7 +22,6 @@ class ChapterInfo {
   final String chapter;
   final String url;
   final String locale;
-  final Map<dynamic, dynamic> other;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
@@ -32,7 +29,6 @@ class ChapterInfo {
         'chapter': chapter,
         'url': url,
         'locale': locale,
-        'other': other,
       };
 }
 
@@ -82,24 +78,19 @@ class PageInfo {
   PageInfo({
     required final this.url,
     required final this.locale,
-    final this.other = const <dynamic, dynamic>{},
   });
 
   factory PageInfo.fromJson(final Map<dynamic, dynamic> json) => PageInfo(
         url: json['url'] as String,
         locale: json['locale'] as String,
-        other:
-            (json['other'] as Map<dynamic, dynamic>?) ?? <dynamic, dynamic>{},
       );
 
   final String url;
   final String locale;
-  final Map<dynamic, dynamic> other;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'url': url,
         'locale': locale,
-        'other': other,
       };
 }
 
