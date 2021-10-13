@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:dart_vlc/dart_vlc.dart' as dart_vlc;
 import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
@@ -114,6 +115,7 @@ class DartVlc extends model.Player {
   double get speed => _player.general.rate;
 
   static Future<void> initialize() async {
+    await Future<void>.delayed(const Duration(seconds: 1));
     dart_vlc.DartVLC.initialize();
     _player = dart_vlc.Player(id: Random.secure().nextInt(69420));
   }

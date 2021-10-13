@@ -1,4 +1,4 @@
-import './native_bridge.dart';
+import './channel.dart';
 
 abstract class WindowUtils {
   /// Supports only **Windows**

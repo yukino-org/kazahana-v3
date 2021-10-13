@@ -1,7 +1,9 @@
 #include "include/utilx/utilx_plugin.h"
 
+// This must be included before many other Windows headers.
 #include <windows.h>
 
+// For getPlatformVersion; remove unless needed for your plugin implementation.
 #include <VersionHelpers.h>
 
 #include <flutter/method_channel.h>
@@ -18,16 +20,16 @@ HWND GetRootWindow(flutter::FlutterView *view) {
 
 namespace {
 
-class UtilXPlugin : public flutter::Plugin {
+class UtilxPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  UtilXPlugin(flutter::PluginRegistrarWindows* registrar);
+  UtilxPlugin(flutter::PluginRegistrarWindows* registrar);
 
-  virtual ~UtilXPlugin();
+  virtual ~UtilxPlugin();
 
  private:
-  flutter::PluginRegistrarWindows *registrar;
+ flutter::PluginRegistrarWindows *registrar;
 
   // Called when a method is called on this plugin's channel from Dart.
   void HandleMethodCall(
@@ -36,14 +38,14 @@ class UtilXPlugin : public flutter::Plugin {
 };
 
 // static
-void UtilXPlugin::RegisterWithRegistrar(
+void UtilxPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
   auto channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "utilx_native_bridge",
+          registrar->messenger(), "utilx",
           &flutter::StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<UtilXPlugin>(registrar);
+  auto plugin = std::make_unique<UtilxPlugin>(registrar);
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -53,11 +55,11 @@ void UtilXPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-UtilXPlugin::UtilXPlugin(flutter::PluginRegistrarWindows* registrar): registrar(registrar) {}
+UtilxPlugin::UtilxPlugin(flutter::PluginRegistrarWindows* registrar): registrar(registrar) {}
 
-UtilXPlugin::~UtilXPlugin() {}
+UtilxPlugin::~UtilxPlugin() {}
 
-void UtilXPlugin::HandleMethodCall(
+void UtilxPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("focusWindow") == 0) {
@@ -73,9 +75,9 @@ void UtilXPlugin::HandleMethodCall(
 
 }  // namespace
 
-void UtilXPluginRegisterWithRegistrar(
+void UtilxPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar) {
-  UtilXPlugin::RegisterWithRegistrar(
+  UtilxPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }

@@ -19,4 +19,4 @@ flutter:
     plugin:
         platforms:
             windows:
-                pluginClass: UtilXPlugin
+                pluginClass: UtilxPlugin

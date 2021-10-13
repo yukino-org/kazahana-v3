@@ -20,12 +20,12 @@ external fun createFuzzy(data: List<Map>, keys: List<Map>) -> FuzzySearcher;
 // Html Parser - start
 external class HtmlElement {
   const classes: List<str>;
-  const id: str?;
-  const text: str?;
+  const id; // str or null
+  const text; // str or null
   const innerHtml: str;
   const outerHtml: str;
   const attributes: Map<str>;
-  fun querySelector(selector: str) -> HtmlElement?;
+  fun querySelector(selector: str); // returns HtmlElement or null
   fun querySelectorAll(selector: str) -> List<HtmlElement>;
 }
 external fun parseHtml(html: str) -> HtmlElement;
@@ -41,9 +41,9 @@ external fun jsonDecode(data: str);
 // RegExp utlities - start
 external class RegExpMatchResult {
     const input: str;
-    fun group(group: num) -> str?;
+    fun group(group: num); // returns str or null
 }
-external fun regexMatch(regex: str, text: str) -> RegExpMatchResult?;
+external fun regexMatch(regex: str, text: str); // returns RegExpMatchResult or null
 external fun regexMatchAll(regex: str, text: str) -> List<RegExpMatchResult>;
 external fun regexReplaceAll(data: str, from: str, to: str) -> str;
 external fun regexReplaceFirst(data: str, from: str, to: str) -> str;
@@ -56,7 +56,7 @@ external fun mapList(data: List<any>, mapper: ListMapper) -> str;
 
 const ListFilterer: type = fun(i: num, item: any) -> bool;
 external fun filterList(data: List<any>, filterer: ListFilterer) -> List<any>;
-external fun findList(data: List<any>, filterer: ListFilterer) -> any?;
+external fun findList(data: List<any>, filterer: ListFilterer); // returns any or null
 
 const ListEachCb: type = fun(i: num, item: any) -> any;
 external fun eachList(data: List<any>, cb: ListEachCb) -> void;
@@ -69,10 +69,10 @@ external fun deepFlattenList(data: List) -> List;
 
 
 // Future utlities - start
-const ResolveFutureCallback: type = fun(err: str?, result);
+const ResolveFutureCallback: type = fun(err, result); // err - str or null, result - any or null (Any one will be null)
 external fun resolveFuture(future, fn: ResolveFutureCallback);
 
-const ResolveFutureAllCallback: type = fun(err: str?, result: List);
+const ResolveFutureAllCallback: type = fun(err, result); // err - str or null, result - List or null (Any one will be null)
 external fun resolveFutureAll(futures: List, fn: ResolveFutureAllCallback);
 
 const WaitCallback: type = fun();

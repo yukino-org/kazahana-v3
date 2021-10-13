@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'eventer.dart';
+import './eventer.dart';
 
 class DownloadProgress {
   DownloadProgress(this.downloaded, this.total, this.speed);

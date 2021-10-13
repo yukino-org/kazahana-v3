@@ -8,7 +8,7 @@
 
 #include <dart_vlc/dart_vlc_plugin.h>
 #include <url_launcher_windows/url_launcher_windows.h>
-#include <utilx/util_x_plugin.h>
+#include <utilx/utilx_plugin.h>
 #include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
@@ -16,8 +16,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("DartVlcPlugin"));
   UrlLauncherWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
-  UtilXPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("UtilXPlugin"));
+  UtilxPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("UtilxPlugin"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
 }
