@@ -39,12 +39,18 @@ dependencies:
     uni_links: ^0.5.1
     url_launcher: ^6.0.9
     utilx:
-        path: packages/utilx
+        git:
+            url: https://github.com/yukino-app/yukino.git
+            path: packages/utilx
     version: ^2.0.0
     window_manager:
         git:
             url: https://github.com/leanflutter/window_manager.git
             ref: a051716c04a05e41b0415ea43ba8dafa297e0d5b
+
+dependency_overrides:
+    utilx:
+        path: ../utilx
 
 dev_dependencies:
     build_runner: ^2.0.5
