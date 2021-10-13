@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:hetu_script/hetu_script.dart';
 import './externals.dart';
 import './helpers/crypto.dart' as helpers;
@@ -6,8 +5,10 @@ import './helpers/fetch.dart' as helpers;
 import './helpers/future.dart' as helpers;
 import './helpers/fuzzy.dart' as helpers;
 import './helpers/html.dart' as helpers;
+import './helpers/json.dart' as helpers;
 import './helpers/list.dart' as helpers;
 import './helpers/map.dart' as helpers;
+import './helpers/qs.dart' as helpers;
 import './helpers/regexp.dart' as helpers;
 import './helpers/throw_err.dart' as helpers;
 import '../utils/http.dart';
@@ -27,8 +28,8 @@ Future<Hetu> createHetu() async {
       'fetch': helpers.fetch,
       'createFuzzy': helpers.createFuzzy,
       'parseHtml': helpers.parseHtml,
-      'jsonEncode': (final dynamic data) => jsonEncode(data),
-      'jsonDecode': (final String data) => jsonDecode(data),
+      'jsonEncode': helpers.jsonEncode,
+      'jsonDecode': helpers.jsonDecode,
       'httpUserAgent': () => HttpUtils.userAgent,
       'regexMatch': helpers.regexMatch,
       'regexMatchAll': helpers.regexMatchAll,
@@ -49,6 +50,8 @@ Future<Hetu> createHetu() async {
       'flattenList': helpers.flattenList,
       'deepFlattenList': helpers.deepFlattenList,
       'wait': helpers.wait,
+      'qsEncode': helpers.qsEncode,
+      'qsDecode': helpers.qsDecode,
     },
   );
 

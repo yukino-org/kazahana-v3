@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 class QueryString {
   QueryString(this.query) {
     _parse();
@@ -8,29 +6,17 @@ class QueryString {
   factory QueryString.fromJson(final Map<String, dynamic> json) =>
       QueryString(QueryString.stringify(json));
 
+  final String query;
+  late final Map<String, String> parsed;
+
   void _parse() {
-    query.split('&').forEach((final String x) {
-      final List<String> split = x.split('=');
-      final String k = Uri.decodeQueryComponent(split[0]);
-      final String v = Uri.decodeQueryComponent(split[1]);
-      parsed[k] ??= <String>[];
-      parsed[k]!.add(v);
-    });
+    parsed = Uri.splitQueryString(query);
   }
 
-  final String query;
-  late final Map<String, List<String>> _parsed = <String, List<String>>{};
-
-  Map<String, List<String>> get parsed => _parsed;
-
-  String get(final String key) => _parsed[key]!.first;
-
-  String? getOrNull(final String key) => _parsed[key]?.firstOrNull;
-
-  List<String> getAll(final String key) => _parsed[key] ?? <String>[];
+  String get(final String key) => parsed[key]!;
 
   @override
-  String toString() => QueryString.stringify(_parsed);
+  String toString() => QueryString.stringify(parsed);
 
   static String stringify(final Map<String, dynamic> query) =>
       Uri(queryParameters: query).query;

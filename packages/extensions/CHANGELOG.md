@@ -53,3 +53,7 @@
 ## 0.0.13
 
 -   Added future utitlity method: `wait`
+
+## 0.0.14
+
+-   Added query string utitlity methods: `qsEncode`, `qsDecode`
