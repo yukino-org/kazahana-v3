@@ -87,6 +87,12 @@ external fun mergeMap(m1: Map, m2: Map) -> Map;
 // Map utlities - end
 
 
+// Query string utlities - start
+external fun qsEncode(data: Map<str>) -> str;
+external fun qsDecode(data: str) -> Map<str>;
+// Query string utlities - end
+
+
 // Other utlities - start
 external fun throwError(err: str) -> void;
 // Other utlities - end
