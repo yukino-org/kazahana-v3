@@ -22,8 +22,8 @@ class PreferencesSchema extends HiveObject {
     final extensions.BaseExtractor ext,
   ) {
     lastSelectedSearchPlugins = <String, String>{
+      if (lastSelectedSearchPlugins != null) ...lastSelectedSearchPlugins!,
       type.type: ext.id,
-      if (lastSelectedSearchPlugins != null) ...lastSelectedSearchPlugins!
     };
   }
 }

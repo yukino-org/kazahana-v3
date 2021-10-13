@@ -157,12 +157,12 @@ class _PageState extends State<Page> with DidLoadStater {
         switch (type) {
           case extensions.ExtensionType.anime:
             ext = ExtensionsManager.animes[
-                DataStore.preferences.lastSelectedSearchPlugins![pluginType]];
+                DataStore.preferences.lastSelectedSearchPlugins![type.type]];
             break;
 
           case extensions.ExtensionType.manga:
             ext = ExtensionsManager.mangas[
-                DataStore.preferences.lastSelectedSearchPlugins![pluginType]];
+                DataStore.preferences.lastSelectedSearchPlugins![type.type]];
             break;
         }
 
