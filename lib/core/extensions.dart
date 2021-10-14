@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import '../config.dart';
+import '../plugins/helpers/logger.dart';
 
 abstract class ExtensionsManager {
   static late final List<extensions.ResolvableExtension> store;
@@ -93,8 +94,11 @@ abstract class ExtensionsManager {
           }
 
           await _addExtension(ext);
-        } catch (_) {
-          await file.delete();
+        } catch (err, stack) {
+          Logger.of('extensions').error(
+            'Failed to load extension from "${file.path}"',
+            stack,
+          );
         }
       }
     }
