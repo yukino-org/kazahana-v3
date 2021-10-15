@@ -1,33 +1,16 @@
 import got, { RequestError as GotRequestError } from "got";
-import commandLineArgs from "command-line-args";
 import { config } from "../../config";
 import { Logger } from "../../logger";
 import { getVersion } from "../version";
 
 const logger = new Logger("check-release");
 
-const argsOpts: commandLineArgs.OptionDefinition[] = [
-    {
-        name: "ends",
-        alias: "e",
-        type: String,
-        multiple: true,
-    },
-];
-
 export const checkRelease = async () => {
-    const args = commandLineArgs(argsOpts);
+    const ends = process.argv.slice(2);
 
-    if (!Array.isArray(args.ends) || !args.ends.length) {
+    if (!Array.isArray(ends) || !ends.length) {
         throw new Error("Missing argument '-e'");
     }
-
-    const ends = args.ends.map((x) => {
-        let y: string = x;
-        if (y.startsWith("'")) y = y.slice(1);
-        if (y.endsWith("'")) y = y.slice(0, -1);
-        return y;
-    });
 
     const version = await getVersion();
     const res = await got
