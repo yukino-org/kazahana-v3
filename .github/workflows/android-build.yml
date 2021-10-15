@@ -32,27 +32,21 @@ jobs:
                   npm ci
                   npm run hive:generate
 
-            # - name: 🔨 Building apk
-            #   run: npm run android:build
+            - name: 🚩 Check for existing releases
+              run: npm run check-release -- --ends " - android.apk"
 
-            # - name: 🚀 Upload apk (artifact)
-            #   uses: actions/upload-artifact@v2
-            #   with:
-            #       name: android-apk
-            #       path: build/packed/android/*.apk
-            #       if-no-files-found: error
+            - name: 🔨 Building apk
+              run: npm run android:build
 
             - name: 🔢 Get version
               run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
 
-            - run: echo "${{ env.APP_VERSION }}"
-
-            # - name: 🚀 Upload apk (release)
-            #   uses: ncipollo/release-action@v1
-            #   with:
-            #       allowUpdates: true
-            #       name: v${{ steps.app_version.outputs.result }}
-            #       tag: v${{ steps.app_version.outputs.result }}
-            #       artifacts: build/packed/android/*.apk
-            #       draft: true
-            #       token: ${{ secrets.GITHUB_TOKEN }}
+            - name: 🚀 Relase apk
+              uses: ncipollo/release-action@v1
+              with:
+                  allowUpdates: true
+                  name: v${{ env.APP_VERSION }}
+                  tag: v${{ env.APP_VERSION }}
+                  artifacts: "build/packed/android/* - android.apk"
+                  draft: true
+                  token: ${{ secrets.GITHUB_TOKEN }}

@@ -34,15 +34,21 @@ jobs:
                   npm ci
                   npm run hive:generate
 
+            - name: 🚩 Check for existing releases
+              run: npm run check-release -- --ends " - linux.AppImage"
+
             - name: 🔨 Building binaries
               run: npm run linux:build
 
             - name: 📦 Packing as appimage
               run: npm run linux:build:appimage
 
-            - name: 🚀 Upload appimage
-              uses: actions/upload-artifact@v2
+            - name: 🚀 Relase appimage
+              uses: ncipollo/release-action@v1
               with:
-                  name: linux-appimage
-                  path: build/packed/linux/*.AppImage
-                  if-no-files-found: error
+                  allowUpdates: true
+                  name: v${{ env.APP_VERSION }}
+                  tag: v${{ env.APP_VERSION }}
+                  artifacts: "build/packed/linux/* - linux.AppImage"
+                  draft: true
+                  token: ${{ secrets.GITHUB_TOKEN }}

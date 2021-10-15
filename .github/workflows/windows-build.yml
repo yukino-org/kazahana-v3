@@ -29,6 +29,9 @@ jobs:
                   npm ci
                   npm run hive:generate
 
+            - name: 🚩 Check for existing releases
+              run: npm run check-release -- --ends " - windows.zip" " - windows.exe"
+
             - name: 🔨 Building binaries
               run: npm run windows:build
 
@@ -38,16 +41,12 @@ jobs:
             - name: 📦 Packing as installer
               run: npm run windows:build:installer
 
-            - name: 🚀 Upload zip
-              uses: actions/upload-artifact@v2
+            - name: 🚀 Relase zip and exe
+              uses: ncipollo/release-action@v1
               with:
-                  name: windows-zip
-                  path: build/packed/windows/*.zip
-                  if-no-files-found: error
-
-            - name: 🚀 Upload installer
-              uses: actions/upload-artifact@v2
-              with:
-                  name: windows-installer
-                  path: build/packed/windows/*.exe
-                  if-no-files-found: error
+                  allowUpdates: true
+                  name: v${{ env.APP_VERSION }}
+                  tag: v${{ env.APP_VERSION }}
+                  artifacts: "build/packed/windows/* - windows.{exe,zip}"
+                  draft: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
