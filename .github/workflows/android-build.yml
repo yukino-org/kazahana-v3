@@ -35,9 +35,35 @@ jobs:
             - name: 🔨 Building apk
               run: npm run android:build
 
-            - name: 🚀 Upload apk
+            - name: 🚀 Upload apk (artifact)
               uses: actions/upload-artifact@v2
               with:
                   name: android-apk
                   path: build/packed/android/*.apk
                   if-no-files-found: error
+
+            - name: 🔢 Get version
+              uses: actions/github-script@v4
+              id: app_version
+              with:
+                  result-encoding: string
+                  script: |
+                      const path = require("path");
+                      const fs = require("fs");
+                      const { getVersion } = require("./cli/helpers/version");
+                      const version = await getVersion();
+                      return version;
+
+            - run: echo "$app_version"
+              env:
+                  app_version: ${{ steps.app_version.outputs.result }}
+
+            # - name: 🚀 Upload apk (release)
+            #   uses: ncipollo/release-action@v1
+            #   with:
+            #       allowUpdates: true
+            #       name: v${{ steps.app_version.outputs.result }}
+            #       tag: v${{ steps.app_version.outputs.result }}
+            #       artifacts: build/packed/android/*.apk
+            #       draft: true
+            #       token: ${{ secrets.GITHUB_TOKEN }}
