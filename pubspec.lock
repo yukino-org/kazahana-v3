@@ -381,7 +381,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.0"
+    version: "4.3.0"
   latinize:
     dependency: transitive
     description:
@@ -607,7 +607,7 @@ packages:
       name: quiver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.1+1"
   shelf:
     dependency: "direct main"
     description:
@@ -794,7 +794,7 @@ packages:
       name: visibility_detector
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
+    version: "0.2.2"
   wakelock:
     dependency: transitive
     description:
