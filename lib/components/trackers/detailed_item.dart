@@ -255,7 +255,7 @@ class _DetailedItemState extends State<DetailedItem> {
                                     ),
                                     Text(
                                       StringUtils.capitalize(
-                                        item.type.name,
+                                        item.type.type,
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -303,7 +303,7 @@ class _DetailedItemState extends State<DetailedItem> {
                     if (!isLargest) ...<Widget>[
                       Text(
                         StringUtils.capitalize(
-                          item.type.name,
+                          item.type.type,
                         ),
                         style: Theme.of(context).textTheme.bodyText1?.copyWith(
                               color: Theme.of(context).primaryColor,

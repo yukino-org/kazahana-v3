@@ -1,3 +1,4 @@
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import '../../../../components/trackers/media_list.dart';
 import '../../../../components/trackers/profile_page.dart';
@@ -22,7 +23,7 @@ class Page extends StatelessWidget {
                 .params,
           );
 
-          return '${Translator.t.anilist()} - ${StringUtils.capitalize(args.type.name)}';
+          return '${Translator.t.anilist()} - ${StringUtils.capitalize(args.type.type)}';
         },
         tabs: anilist.MediaListStatus.values
             .map(

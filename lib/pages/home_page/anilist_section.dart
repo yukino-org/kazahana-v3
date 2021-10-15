@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../core/trackers/anilist/anilist.dart' as anilist;
@@ -166,7 +167,7 @@ class _PageState extends State<Page> with DidLoadStater {
                                           children: <InlineSpan>[
                                             TextSpan(
                                               text: StringUtils.capitalize(
-                                                x.type.name,
+                                                x.type.type,
                                               ),
                                               style: Theme.of(context)
                                                   .textTheme
