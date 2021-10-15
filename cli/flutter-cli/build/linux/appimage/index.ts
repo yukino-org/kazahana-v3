@@ -51,7 +51,7 @@ export const build = async () => {
 
     const finalPath = join(
         config.linux.packed,
-        `${config.name} v${version} - linux.AppImage`
+        `${config.name}_v${version}-linux.AppImage`
     );
     await ensureDir(dirname(finalPath));
     await rename(outPath, finalPath);

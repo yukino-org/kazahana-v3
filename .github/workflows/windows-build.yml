@@ -30,7 +30,7 @@ jobs:
                   npm run hive:generate
 
             - name: 🚩 Check for existing releases
-              run: npm run check-release -- --ends " - windows.zip" " - windows.exe"
+              run: npm run check-release -- --ends "-windows.zip" "-windows.exe"
 
             - name: 🔨 Building binaries
               run: npm run windows:build
@@ -42,16 +42,31 @@ jobs:
               run: npm run windows:build:installer
 
             - name: 🔢 Get version
-              run: |
-                  const { spawn, promisifyChildProcess } = require("./cli/spawn");
-                  await spawn("npm", ["run", "helpers:version:print", "-s"]);
-
-            - name: 🚀 Release zip and exe
-              uses: ncipollo/release-action@v1
+              uses: actions/github-script@v4
+              id: app_version
               with:
-                  allowUpdates: true
-                  name: v${{ env.APP_VERSION }}
-                  tag: v${{ env.APP_VERSION }}
-                  artifacts: "build/packed/windows/* - windows.{exe,zip}"
+                  result-encoding: string
+                  script: |
+                      const spawn = require("cross-spawn");
+                      const result = spawn.sync("npm", ["run", "helpers:version:print", "-s"]);
+                      if (result.status != 0) {
+                        throw new Error(result.stderr.toString());
+                      }
+
+                      return result.stdout.toString().trim();
+
+            - name: 📝 Get files
+              uses: actions/github-script@v4
+              id: app_files
+              with:
+                  result-encoding: string
+                  script: |
+                      const fg = require("fast-glob");
+                      return fg.sync("build/packed/windows/*-windows.{exe,zip}").join("\n");
+
+            - name: 🚀 Release exe and zip
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: v${{ steps.app_version.outputs.result }}
+                  files: ${{ steps.app_files.outputs.result }}
                   draft: true
-                  token: ${{ secrets.GITHUB_TOKEN }}

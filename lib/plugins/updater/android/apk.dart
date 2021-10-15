@@ -11,7 +11,7 @@ class AndroidApkUpdater with PlatformUpdater {
   @override
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
       updates.firstWhereOrNull(
-        (final UpdateInfo x) => x.path.endsWith('- android.apk'),
+        (final UpdateInfo x) => x.path.endsWith('-android.apk'),
       );
 
   @override

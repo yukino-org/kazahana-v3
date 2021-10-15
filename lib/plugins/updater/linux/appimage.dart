@@ -17,7 +17,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
   @override
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
       updates.firstWhereOrNull(
-        (final UpdateInfo x) => x.path.endsWith('- linux.AppImage'),
+        (final UpdateInfo x) => x.path.endsWith('-linux.AppImage'),
       );
 
   @override

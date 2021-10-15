@@ -35,7 +35,7 @@ jobs:
                   npm run hive:generate
 
             - name: 🚩 Check for existing releases
-              run: npm run check-release -- --ends " - linux.AppImage"
+              run: npm run check-release -- --ends "-linux.AppImage"
 
             - name: 🔨 Building binaries
               run: npm run linux:build
@@ -44,14 +44,31 @@ jobs:
               run: npm run linux:build:appimage
 
             - name: 🔢 Get version
-              run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
-
-            - name: 🚀 Release appimage
-              uses: ncipollo/release-action@v1
+              uses: actions/github-script@v4
+              id: app_version
               with:
-                  allowUpdates: true
-                  name: v${{ env.APP_VERSION }}
-                  tag: v${{ env.APP_VERSION }}
-                  artifacts: "build/packed/linux/* - linux.AppImage"
+                  result-encoding: string
+                  script: |
+                      const spawn = require("cross-spawn");
+                      const result = spawn.sync("npm", ["run", "helpers:version:print", "-s"]);
+                      if (result.status != 0) {
+                        throw new Error(result.stderr.toString());
+                      }
+
+                      return result.stdout.toString().trim();
+
+            - name: 📝 Get files
+              uses: actions/github-script@v4
+              id: app_files
+              with:
+                  result-encoding: string
+                  script: |
+                      const fg = require("fast-glob");
+                      return fg.sync("build/packed/linux/*-linux.AppImage").join("\n");
+
+            - name: 🚀 Release AppImage
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: v${{ steps.app_version.outputs.result }}
+                  files: ${{ steps.app_files.outputs.result }}
                   draft: true
-                  token: ${{ secrets.GITHUB_TOKEN }}

@@ -46,7 +46,7 @@ class WindowsExeUpdater with PlatformUpdater {
   @override
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates) =>
       updates.firstWhereOrNull(
-        (final UpdateInfo x) => x.path.endsWith('- windows.zip'),
+        (final UpdateInfo x) => x.path.endsWith('-windows.zip'),
       );
 
   @override

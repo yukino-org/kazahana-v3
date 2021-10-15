@@ -33,7 +33,7 @@ jobs:
                   npm run hive:generate
 
             - name: 🚩 Check for existing releases
-              run: npm run check-release -- --ends " - android.apk"
+              run: npm run check-release -- --ends "-android.apk"
 
             - name: 🔨 Building apk
               run: npm run android:build
@@ -59,7 +59,7 @@ jobs:
                   result-encoding: string
                   script: |
                       const fg = require("fast-glob");
-                      return fg.sync("build/packed/android/* - android.apk").join("\n");
+                      return fg.sync("build/packed/android/*-android.apk").join("\n");
 
             - name: 🚀 Release apk
               uses: softprops/action-gh-release@v1
