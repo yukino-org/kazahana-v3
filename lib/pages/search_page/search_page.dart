@@ -216,231 +216,6 @@ class _PageState extends State<Page> with DidLoadStater {
     }
   }
 
-  Widget getPluginWidget(final CurrentPlugin plugin) => Material(
-        type: MaterialType.transparency,
-        child: RadioListTile<String>(
-          title: Text(plugin.plugin.name),
-          value: plugin.plugin.id,
-          groupValue: currentPlugin?.plugin.id,
-          activeColor: Theme.of(context).primaryColor,
-          onChanged: (final String? val) async {
-            if (val != null) {
-              setState(() {
-                currentPlugin = plugin;
-              });
-
-              DataStore.preferences.lastSelectedSearchType = plugin.type.type;
-              DataStore.preferences
-                  .setLastSelectedSearchPlugin(plugin.type, plugin.plugin);
-
-              await DataStore.preferences.save();
-
-              if (mounted) {
-                Navigator.of(context).pop();
-
-                if (args?.autoSearch ?? false) {
-                  args!.autoSearch = false;
-                  await search();
-                }
-              }
-            }
-          },
-        ),
-      );
-
-  Widget getPluginPage(
-    final extensions.ExtensionType type,
-    final StateSetter setState,
-  ) {
-    Widget content = Center(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: remToPx(1),
-          right: remToPx(1),
-          top: remToPx(1.1),
-          bottom: remToPx(0.5),
-        ),
-        child: Text(
-          Translator.t.nothingWasFoundHere(),
-          style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                color: Theme.of(context).textTheme.caption?.color,
-              ),
-        ),
-      ),
-    );
-
-    switch (type) {
-      case extensions.ExtensionType.anime:
-        if (ExtensionsManager.animes.isNotEmpty) {
-          content = Column(
-            children: ExtensionsManager.animes.values
-                .map(
-                  (final extensions.AnimeExtractor x) => getPluginWidget(
-                    CurrentPlugin(
-                      type: extensions.ExtensionType.anime,
-                      plugin: x,
-                    ),
-                  ),
-                )
-                .toList(),
-          );
-        }
-        break;
-
-      case extensions.ExtensionType.manga:
-        if (ExtensionsManager.mangas.isNotEmpty) {
-          content = Column(
-            children: ExtensionsManager.mangas.values
-                .map(
-                  (final extensions.MangaExtractor x) => getPluginWidget(
-                    CurrentPlugin(
-                      type: extensions.ExtensionType.manga,
-                      plugin: x,
-                    ),
-                  ),
-                )
-                .toList(),
-          );
-        }
-        break;
-    }
-
-    return SafeArea(
-      key: ValueKey<extensions.ExtensionType>(type),
-      child: Padding(
-        padding: MediaQuery.of(context).viewInsets +
-            EdgeInsets.symmetric(
-              horizontal: remToPx(2),
-              vertical: remToPx(1.2),
-            ),
-        child: Material(
-          type: MaterialType.card,
-          elevation: 24,
-          borderRadius: BorderRadius.circular(4),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).dialogBackgroundColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.width > ResponsiveSizes.md
-                    ? remToPx(0.8)
-                    : remToPx(0.6),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: remToPx(1),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          Translator.t.selectPlugin(),
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                        const Expanded(
-                          child: SizedBox.shrink(),
-                        ),
-                        ...<extensions.ExtensionType>[
-                          extensions.ExtensionType.anime,
-                          extensions.ExtensionType.manga,
-                        ].map(
-                          (final extensions.ExtensionType x) {
-                            final bool isCurrent = x == popupPluginType;
-
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: remToPx(0.1),
-                              ),
-                              child: Material(
-                                type: MaterialType.transparency,
-                                child: InkWell(
-                                  mouseCursor: SystemMouseCursors.click,
-                                  onTap: () {
-                                    setState(() {
-                                      popupPluginType = x;
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: isCurrent
-                                          ? Theme.of(context).primaryColor
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: remToPx(0.5),
-                                        vertical: remToPx(0.2),
-                                      ),
-                                      child: Text(
-                                        StringUtils.capitalize(x.type),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1!
-                                            .copyWith(
-                                              color: isCurrent
-                                                  ? Colors.white
-                                                  : null,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: remToPx(0.3),
-                  ),
-                  content,
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: remToPx(0.7),
-                      ),
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.6),
-                              vertical: remToPx(0.3),
-                            ),
-                            child: Text(
-                              Translator.t.close(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> selectPlugins(final BuildContext context) async {
     await showGeneralDialog(
       context: context,
@@ -466,7 +241,37 @@ class _PageState extends State<Page> with DidLoadStater {
             fillColor: Colors.transparent,
             child: child,
           ),
-          child: getPluginPage(popupPluginType, setState),
+          child: _SearchPopUp(
+            key: ValueKey<extensions.ExtensionType>(popupPluginType),
+            type: popupPluginType,
+            currentPlugin: currentPlugin,
+            onTypeTap: (final extensions.ExtensionType type) {
+              setState(() {
+                popupPluginType = type;
+              });
+            },
+            onPluginTap: (final CurrentPlugin plugin) async {
+              setState(() {
+                currentPlugin = plugin;
+              });
+
+              DataStore.preferences.lastSelectedSearchType = plugin.type.type;
+              DataStore.preferences
+                  .setLastSelectedSearchPlugin(plugin.type, plugin.plugin);
+
+              await DataStore.preferences.save();
+
+              if (mounted) {
+                this.setState(() {});
+                Navigator.of(context).pop();
+
+                if (args?.autoSearch ?? false) {
+                  args!.autoSearch = false;
+                  await search();
+                }
+              }
+            },
+          ),
         ),
       ),
     );
@@ -636,4 +441,261 @@ class _PageState extends State<Page> with DidLoadStater {
           ),
         ),
       );
+}
+
+// ignore: avoid_private_typedef_functions
+typedef _SearchPopUpOnPluginSelect = void Function(CurrentPlugin);
+
+// ignore: avoid_private_typedef_functions
+typedef _SearchPopUpOnTypeSelect = void Function(extensions.ExtensionType);
+
+class _SearchPopUpTile extends StatelessWidget {
+  const _SearchPopUpTile({
+    required final this.onPluginTap,
+    required final this.currentPlugin,
+    required final this.plugin,
+    final Key? key,
+  }) : super(key: key);
+
+  final _SearchPopUpOnPluginSelect onPluginTap;
+  final CurrentPlugin? currentPlugin;
+  final CurrentPlugin plugin;
+
+  @override
+  Widget build(final BuildContext context) => Material(
+        type: MaterialType.transparency,
+        child: RadioListTile<String>(
+          title: Text(plugin.plugin.name),
+          value: plugin.plugin.id,
+          groupValue: currentPlugin?.plugin.id,
+          activeColor: Theme.of(context).primaryColor,
+          onChanged: (final String? val) async {
+            if (val == plugin.plugin.id) {
+              onPluginTap(plugin);
+            }
+          },
+        ),
+      );
+}
+
+class _SearchPopUp extends StatelessWidget {
+  const _SearchPopUp({
+    required final this.onPluginTap,
+    required final this.onTypeTap,
+    required final this.currentPlugin,
+    required final this.type,
+    final Key? key,
+  }) : super(key: key);
+
+  final _SearchPopUpOnPluginSelect onPluginTap;
+  final _SearchPopUpOnTypeSelect onTypeTap;
+  final CurrentPlugin? currentPlugin;
+  final extensions.ExtensionType type;
+
+  @override
+  Widget build(final BuildContext context) {
+    Widget content = Center(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: remToPx(1),
+          right: remToPx(1),
+          top: remToPx(1.1),
+          bottom: remToPx(0.5),
+        ),
+        child: Text(
+          Translator.t.nothingWasFoundHere(),
+          style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                color: Theme.of(context).textTheme.caption?.color,
+              ),
+        ),
+      ),
+    );
+
+    switch (type) {
+      case extensions.ExtensionType.anime:
+        if (ExtensionsManager.animes.isNotEmpty) {
+          content = Column(
+            children: ExtensionsManager.animes.values
+                .map(
+                  (final extensions.AnimeExtractor x) => _SearchPopUpTile(
+                    onPluginTap: onPluginTap,
+                    currentPlugin: currentPlugin,
+                    plugin: CurrentPlugin(
+                      type: extensions.ExtensionType.anime,
+                      plugin: x,
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        }
+        break;
+
+      case extensions.ExtensionType.manga:
+        if (ExtensionsManager.mangas.isNotEmpty) {
+          content = Column(
+            children: ExtensionsManager.mangas.values
+                .map(
+                  (final extensions.MangaExtractor x) => _SearchPopUpTile(
+                    onPluginTap: onPluginTap,
+                    currentPlugin: currentPlugin,
+                    plugin: CurrentPlugin(
+                      type: extensions.ExtensionType.manga,
+                      plugin: x,
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        }
+        break;
+    }
+
+    final bool isLarge = MediaQuery.of(context).size.width > ResponsiveSizes.xs;
+    final Widget typeSwitcher = Row(
+      mainAxisSize: isLarge ? MainAxisSize.min : MainAxisSize.max,
+      children: <extensions.ExtensionType>[
+        extensions.ExtensionType.anime,
+        extensions.ExtensionType.manga,
+      ].map(
+        (final extensions.ExtensionType x) {
+          final bool isCurrent = x == type;
+
+          final Widget child = Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: remToPx(0.1),
+            ),
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () {
+                  onTypeTap(x);
+                },
+                borderRadius: BorderRadius.circular(4),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: isCurrent
+                        ? Theme.of(context).primaryColor
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: remToPx(0.5),
+                      vertical: remToPx(0.2),
+                    ),
+                    child: Text(
+                      StringUtils.capitalize(x.type),
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: isCurrent ? Colors.white : null,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          return isLarge
+              ? child
+              : Expanded(
+                  child: child,
+                );
+        },
+      ).toList(),
+    );
+
+    return SafeArea(
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets +
+            EdgeInsets.symmetric(
+              horizontal: remToPx(2),
+              vertical: remToPx(1.2),
+            ),
+        child: Material(
+          type: MaterialType.card,
+          elevation: 24,
+          borderRadius: BorderRadius.circular(4),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).dialogBackgroundColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: isLarge ? remToPx(0.8) : remToPx(0.6),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: remToPx(1),
+                    ),
+                    child: isLarge
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                Translator.t.selectPlugin(),
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              typeSwitcher,
+                            ],
+                          )
+                        : Column(
+                            children: <Widget>[
+                              Text(
+                                Translator.t.selectPlugin(),
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              SizedBox(height: remToPx(0.5)),
+                              typeSwitcher,
+                            ],
+                          ),
+                  ),
+                  SizedBox(
+                    height: remToPx(0.3),
+                  ),
+                  content,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: remToPx(0.7),
+                      ),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: remToPx(0.6),
+                              vertical: remToPx(0.3),
+                            ),
+                            child: Text(
+                              Translator.t.close(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
