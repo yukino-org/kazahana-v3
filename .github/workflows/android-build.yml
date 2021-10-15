@@ -59,14 +59,11 @@ jobs:
                   result-encoding: string
                   script: |
                       const fg = require("fast-glob");
-                      return fg.sync("build/packed/android/* - android.apk").join(",");
+                      return fg.sync("build/packed/android/* - android.apk").join("\n");
 
             - name: 🚀 Release apk
-              uses: ncipollo/release-action@v1
+              uses: softprops/action-gh-release@v1
               with:
-                  allowUpdates: true
-                  name: v${{ steps.app_version.outputs.result }}
-                  tag: v${{ steps.app_version.outputs.result }}
-                  artifacts: ${{ steps.app_files.outputs.result }}
+                  tag_name: v${{ steps.app_version.outputs.result }}
+                  files: ${{ steps.app_files.outputs.result }}
                   draft: true
-                  token: ${{ secrets.GITHUB_TOKEN }}
