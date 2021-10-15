@@ -6,6 +6,7 @@ const root = resolve(__dirname, "..");
 
 const defaultIcon = join(root, "assets/images/yukino-icon.png");
 const buildDir = join(root, "build", "packed");
+const cacheDir = join(__dirname, ".cache");
 
 const githubMatch = /^git\+https:\/\/github\.com\/([^/]+)\/([^.]+)\.git$/.exec(
     pkgJson.repository.url
@@ -16,6 +17,7 @@ export const config = {
     code: "yukino_app",
     url: "https://yukino-app.github.io",
     base: root,
+    cacheDir: cacheDir,
     android: {
         project: join(root, "android"),
         icon: defaultIcon,

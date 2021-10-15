@@ -39,14 +39,34 @@ jobs:
               run: npm run android:build
 
             - name: 🔢 Get version
-              run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
+              uses: actions/github-script@v4
+              id: app_version
+              with:
+                  result-encoding: string
+                  script: |
+                      const spawn = require("cross-spawn");
+                      const result = spawn.sync("npm", ["run", "helpers:version:print", "-s"]);
+                      if (result.status != 0) {
+                        throw new Error(result.stderr.toString());
+                      }
 
-            - name: 🚀 Relase apk
+                      return result.stdout.toString().trim();
+
+            - name: 📝 Get files
+              uses: actions/github-script@v4
+              id: app_files
+              with:
+                  result-encoding: string
+                  script: |
+                      const fg = require("fast-glob");
+                      return fg.sync("build/packed/android/* - android.apk").join(",");
+
+            - name: 🚀 Release apk
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
-                  name: v${{ env.APP_VERSION }}
-                  tag: v${{ env.APP_VERSION }}
-                  artifacts: "build/packed/android/* - android.apk"
+                  name: v${{ steps.app_version.outputs.result }}
+                  tag: v${{ steps.app_version.outputs.result }}
+                  artifacts: ${{ steps.app_files.outputs.result }}
                   draft: true
                   token: ${{ secrets.GITHUB_TOKEN }}

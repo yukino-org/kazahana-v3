@@ -42,9 +42,11 @@ jobs:
               run: npm run windows:build:installer
 
             - name: 🔢 Get version
-              run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
+              run: |
+                  const { spawn, promisifyChildProcess } = require("./cli/spawn");
+                  await spawn("npm", ["run", "helpers:version:print", "-s"]);
 
-            - name: 🚀 Relase zip and exe
+            - name: 🚀 Release zip and exe
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true

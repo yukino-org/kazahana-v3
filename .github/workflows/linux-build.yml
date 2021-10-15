@@ -46,7 +46,7 @@ jobs:
             - name: 🔢 Get version
               run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
 
-            - name: 🚀 Relase appimage
+            - name: 🚀 Release appimage
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
