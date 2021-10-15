@@ -43,6 +43,9 @@ jobs:
             - name: 📦 Packing as appimage
               run: npm run linux:build:appimage
 
+            - name: 🔢 Get version
+              run: echo "APP_VERSION=$(npm run helpers:version:print -s)" >> $GITHUB_ENV
+
             - name: 🚀 Relase appimage
               uses: ncipollo/release-action@v1
               with:
