@@ -16,11 +16,18 @@ const argsOpts: commandLineArgs.OptionDefinition[] = [
 ];
 
 export const checkRelease = async () => {
-    const { ends } = commandLineArgs(argsOpts);
+    const args = commandLineArgs(argsOpts);
 
-    if (!Array.isArray(ends) || !ends.length) {
+    if (!Array.isArray(args.ends) || !args.ends.length) {
         throw new Error("Missing argument '-e'");
     }
+
+    const ends = args.ends.map((x) => {
+        let y: string = x;
+        if (y.startsWith("'")) y = y.slice(1);
+        if (y.endsWith("'")) y = y.slice(0, -1);
+        return y;
+    });
 
     const version = await getVersion();
     const res = await got
