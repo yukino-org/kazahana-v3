@@ -4,6 +4,7 @@ import commandLineArgs from "command-line-args";
 import semver from "semver";
 import { config } from "../../config";
 import { Logger } from "../../logger";
+import { matchRegex } from "../../helpers/version";
 
 const logger = new Logger("version");
 
@@ -28,8 +29,6 @@ const argsOpts: commandLineArgs.OptionDefinition[] = [
         multiple: false,
     },
 ];
-
-export const matchRegex = /version:(.*)/;
 
 export const increment = async () => {
     const { increment, preid, demo } = commandLineArgs(argsOpts);

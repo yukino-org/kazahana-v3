@@ -10,6 +10,7 @@
         "test:sources:anime": "ts-node ./cli/tests/sources/anime/run.ts",
         "test:sources:manga": "ts-node ./cli/tests/sources/manga/run.ts",
         "version:bump": "ts-node ./cli/others/version/run.ts",
+        "helpers:version:print": "ts-node ./cli/helpers/version/run.ts",
         "android:icons": "ts-node ./cli/icons/android/run.ts",
         "android:run": "ts-node ./cli/flutter-cli/run/android/run.ts",
         "android:build": "ts-node ./cli/flutter-cli/build/android/run.ts",
