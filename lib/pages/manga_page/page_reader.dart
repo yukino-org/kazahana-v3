@@ -12,8 +12,7 @@ import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
-import '../settings_page/setting_radio.dart';
-import '../settings_page/setting_switch.dart';
+import '../settings_page/setting_labels/manga.dart';
 
 enum TapSpace {
   left,
@@ -171,82 +170,37 @@ class _PageReaderState extends State<PageReader>
         ),
       ),
       context: context,
-      builder: (final BuildContext context) => StatefulBuilder(
-        builder: (
-          final BuildContext context,
-          final StateSetter setState,
-        ) =>
-            Padding(
-          padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
-          child: Wrap(
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  SettingRadio<MangaMode>(
-                    title: Translator.t.mangaReaderMode(),
-                    icon: Icons.pageview,
-                    value: AppState.settings.current.mangaReaderMode,
-                    labels: <MangaMode, String>{
-                      MangaMode.list: Translator.t.list(),
-                      MangaMode.page: Translator.t.page(),
-                    },
-                    onChanged: (final MangaMode val) async {
-                      AppState.settings.current.mangaReaderMode = val;
-                      await AppState.settings.current.save();
-                      AppState.settings.modify(AppState.settings.current);
+      builder: (final BuildContext context) => SafeArea(
+        child: StatefulBuilder(
+          builder: (
+            final BuildContext context,
+            final StateSetter setState,
+          ) =>
+              Padding(
+            padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
+            child: Wrap(
+              children: <Widget>[
+                Column(
+                  children: getManga(AppState.settings.current, () async {
+                    await AppState.settings.current.save();
 
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                  ),
-                  SettingRadio<MangaDirections>(
-                    title: Translator.t.mangaReaderDirection(),
-                    icon: Icons.auto_stories,
-                    value: AppState.settings.current.mangaReaderDirection,
-                    labels: <MangaDirections, String>{
-                      MangaDirections.leftToRight: Translator.t.leftToRight(),
-                      MangaDirections.rightToLeft: Translator.t.rightToLeft(),
-                    },
-                    onChanged: (final MangaDirections val) async {
-                      AppState.settings.current.mangaReaderDirection = val;
-                      await AppState.settings.current.save();
-                      setState(() {
-                        isReversed = val == MangaDirections.rightToLeft;
-                      });
-                    },
-                  ),
-                  SettingRadio<MangaSwipeDirections>(
-                    title: Translator.t.mangaReaderSwipeDirection(),
-                    icon: Icons.swipe,
-                    value: AppState.settings.current.mangaReaderSwipeDirection,
-                    labels: <MangaSwipeDirections, String>{
-                      MangaSwipeDirections.horizontal:
-                          Translator.t.horizontal(),
-                      MangaSwipeDirections.vertical: Translator.t.vertical(),
-                    },
-                    onChanged: (final MangaSwipeDirections val) async {
-                      AppState.settings.current.mangaReaderSwipeDirection = val;
-                      await AppState.settings.current.save();
-                      setState(() {
-                        isHorizontal = val == MangaSwipeDirections.horizontal;
-                      });
-                    },
-                  ),
-                  SettingSwitch(
-                    title: Translator.t.doubleTapToSwitchChapter(),
-                    icon: Icons.double_arrow,
-                    desc: Translator.t.doubleTapToSwitchChapterDetail(),
-                    value: AppState.settings.current.doubleClickSwitchChapter,
-                    onChanged: (final bool val) async {
-                      AppState.settings.current.doubleClickSwitchChapter = val;
-                      await AppState.settings.current.save();
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            ],
+                    if (AppState.settings.current.mangaReaderMode !=
+                        MangaMode.page) {
+                      AppState.settings.modify(AppState.settings.current);
+                    }
+
+                    setState(() {
+                      isReversed =
+                          AppState.settings.current.mangaReaderDirection ==
+                              MangaDirections.rightToLeft;
+                      isHorizontal =
+                          AppState.settings.current.mangaReaderSwipeDirection ==
+                              MangaSwipeDirections.horizontal;
+                    });
+                  }),
+                ),
+              ],
+            ),
           ),
         ),
       ),

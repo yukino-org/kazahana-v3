@@ -64,20 +64,17 @@ List<Widget> getManga(
           await save();
         },
       ),
-      Visibility(
-        visible: AppState.isDesktop,
-        child: SettingSwitch(
-          title: Translator.t.autoMangaFullscreen(),
-          icon: settings.mangaAutoFullscreen
-              ? Icons.fullscreen
-              : Icons.fullscreen_exit,
-          desc: Translator.t.autoMangaFullscreenDetail(),
-          value: settings.mangaAutoFullscreen,
-          onChanged: (final bool val) async {
-            settings.mangaAutoFullscreen = val;
+      SettingSwitch(
+        title: Translator.t.autoMangaFullscreen(),
+        icon: settings.mangaAutoFullscreen
+            ? Icons.fullscreen
+            : Icons.fullscreen_exit,
+        desc: Translator.t.autoMangaFullscreenDetail(),
+        value: settings.mangaAutoFullscreen,
+        onChanged: (final bool val) async {
+          settings.mangaAutoFullscreen = val;
 
-            await save();
-          },
-        ),
+          await save();
+        },
       ),
     ];

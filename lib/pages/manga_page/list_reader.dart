@@ -8,7 +8,7 @@ import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
-import '../settings_page/setting_radio.dart';
+import '../settings_page/setting_labels/manga.dart';
 
 class ListReader extends StatefulWidget {
   const ListReader({
@@ -82,37 +82,30 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
         ),
       ),
       context: context,
-      builder: (final BuildContext context) => StatefulBuilder(
-        builder: (
-          final BuildContext context,
-          final StateSetter setState,
-        ) =>
-            Padding(
-          padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
-          child: Wrap(
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  SettingRadio<MangaMode>(
-                    title: Translator.t.mangaReaderMode(),
-                    icon: Icons.pageview,
-                    value: AppState.settings.current.mangaReaderMode,
-                    labels: <MangaMode, String>{
-                      MangaMode.list: Translator.t.list(),
-                      MangaMode.page: Translator.t.page(),
-                    },
-                    onChanged: (final MangaMode val) async {
-                      AppState.settings.current.mangaReaderMode = val;
-                      await AppState.settings.current.save();
+      builder: (final BuildContext context) => SafeArea(
+        child: StatefulBuilder(
+          builder: (
+            final BuildContext context,
+            final StateSetter setState,
+          ) =>
+              Padding(
+            padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
+            child: Wrap(
+              children: <Widget>[
+                Column(
+                  children: getManga(AppState.settings.current, () async {
+                    await AppState.settings.current.save();
+
+                    if (AppState.settings.current.mangaReaderMode !=
+                        MangaMode.list) {
                       AppState.settings.modify(AppState.settings.current);
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
+                    }
+
+                    setState(() {});
+                  }),
+                ),
+              ],
+            ),
           ),
         ),
       ),
