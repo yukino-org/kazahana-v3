@@ -265,8 +265,11 @@ class _PageState extends State<Page> with DidLoadStater {
                 this.setState(() {});
                 Navigator.of(context).pop();
 
-                if (args?.autoSearch ?? false) {
-                  args!.autoSearch = false;
+                if (textController.text.isNotEmpty) {
+                  if (args != null) {
+                    args!.autoSearch = false;
+                  }
+
                   await search();
                 }
               }
