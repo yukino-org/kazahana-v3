@@ -6,7 +6,6 @@ part 'settings.g.dart';
 
 const bool _useSystemPreferredTheme = true;
 const bool _useDarkMode = false;
-const bool _fullscreenVideoPlayer = false;
 const String? _locale = null;
 const MangaDirections _mangaReaderDirection = MangaDirections.leftToRight;
 const MangaSwipeDirections _mangaReaderSwipeDirection =
@@ -14,33 +13,32 @@ const MangaSwipeDirections _mangaReaderSwipeDirection =
 const MangaMode _mangaReaderMode = MangaMode.page;
 const int _introDuration = Player.defaultIntroLength;
 const int _seekDuration = Player.defaultSeekLength;
-const int _volume = Player.maxVolume;
 const bool _autoNext = false;
 const bool _autoPlay = false;
 const bool _doubleClickSwitchChapter = true;
 const bool _animeAutoFullscreen = true;
 const bool _mangaAutoFullscreen = true;
 const int _animeTrackerWatchPercent = 80;
+const bool _animeForceLandscape = true;
 
 @HiveType(typeId: TypeIds.settings)
 class SettingsSchema extends HiveObject {
   SettingsSchema({
     final this.useSystemPreferredTheme = _useSystemPreferredTheme,
     final this.useDarkMode = _useDarkMode,
-    final this.fullscreenVideoPlayer = _fullscreenVideoPlayer,
     final this.locale = _locale,
     final this.mangaReaderDirection = _mangaReaderDirection,
     final this.mangaReaderSwipeDirection = _mangaReaderSwipeDirection,
     final this.mangaReaderMode = _mangaReaderMode,
     final this.introDuration = _introDuration,
     final this.seekDuration = _seekDuration,
-    final this.volume = _volume,
     final this.autoNext = _autoNext,
     final this.autoPlay = _autoPlay,
     final this.doubleClickSwitchChapter = _doubleClickSwitchChapter,
     final this.animeAutoFullscreen = _animeAutoFullscreen,
     final this.mangaAutoFullscreen = _mangaAutoFullscreen,
     final this.animeTrackerWatchPercent = _animeTrackerWatchPercent,
+    final this.animeForceLandscape = _animeForceLandscape,
   });
 
   @HiveField(1, defaultValue: _useSystemPreferredTheme)
@@ -48,9 +46,6 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(2, defaultValue: _useDarkMode)
   bool useDarkMode;
-
-  @HiveField(3, defaultValue: _fullscreenVideoPlayer)
-  bool fullscreenVideoPlayer;
 
   @HiveField(4, defaultValue: _locale)
   String? locale;
@@ -70,9 +65,6 @@ class SettingsSchema extends HiveObject {
   @HiveField(9, defaultValue: _seekDuration)
   int seekDuration;
 
-  @HiveField(10, defaultValue: _volume)
-  int volume;
-
   @HiveField(11, defaultValue: _autoNext)
   bool autoNext;
 
@@ -90,6 +82,9 @@ class SettingsSchema extends HiveObject {
 
   @HiveField(16, defaultValue: _animeTrackerWatchPercent)
   int animeTrackerWatchPercent;
+
+  @HiveField(17, defaultValue: _animeForceLandscape)
+  bool animeForceLandscape;
 }
 
 @HiveType(typeId: TypeIds.mangaDirections)

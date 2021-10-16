@@ -16,10 +16,8 @@ import '../../plugins/helpers/utils/list.dart';
 import '../../plugins/state.dart' show AppState;
 import '../../plugins/translator/translator.dart';
 import '../../plugins/video_player/video_player.dart';
-import '../settings_page/setting_dialog.dart';
+import '../settings_page/setting_labels/anime.dart';
 import '../settings_page/setting_radio.dart';
-import '../settings_page/setting_switch.dart';
-import '../settings_page/setting_tile.dart';
 
 class VideoDuration {
   VideoDuration(this.current, this.total);
@@ -86,7 +84,7 @@ class WatchPageState extends State<WatchPage>
     VideoDuration(Duration.zero, Duration.zero),
   );
   late final ValueNotifier<int> volume = ValueNotifier<int>(
-    100,
+    player_model.Player.maxVolume,
   );
 
   final Widget loader = const Center(
@@ -359,131 +357,14 @@ class WatchPageState extends State<WatchPage>
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      if (AppState.isMobile)
-                        SettingSwitch(
-                          title: Translator.t.landscapeVideoPlayer(),
-                          icon: Icons.screen_lock_landscape,
-                          desc: Translator.t.landscapeVideoPlayerDetail(),
-                          value: AppState.settings.current.animeForceLandscape,
-                          onChanged: (final bool val) async {
-                            AppState.settings.current.animeForceLandscape = val;
-                            await AppState.settings.current.save();
-
-                            val ? enterLandscape() : exitLandscape();
-
-                            setState(() {});
-                          },
-                        ),
-                      ValueListenableBuilder<int>(
-                        valueListenable: volume,
-                        builder: (
-                          final BuildContext context,
-                          int volume,
-                          final Widget? child,
-                        ) =>
-                            SettingTile(
-                          icon: Icons.volume_up,
-                          title: Translator.t.volume(),
-                          subtitle: '$volume%',
-                          onTap: () async {
-                            await showGeneralDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              barrierLabel: MaterialLocalizations.of(context)
-                                  .modalBarrierDismissLabel,
-                              pageBuilder: (
-                                final BuildContext context,
-                                final Animation<double> a1,
-                                final Animation<double> a2,
-                              ) =>
-                                  StatefulBuilder(
-                                builder: (
-                                  final BuildContext context,
-                                  final StateSetter setState,
-                                ) =>
-                                    SafeArea(
-                                  child: Dialog(
-                                    child: Row(
-                                      children: <Widget>[
-                                        IconButton(
-                                          icon: const Icon(Icons.volume_mute),
-                                          onPressed: () {
-                                            player?.setVolume(
-                                              player_model.Player.minVolume,
-                                            );
-                                            volume =
-                                                player_model.Player.minVolume;
-                                            setState(() {});
-                                          },
-                                        ),
-                                        Expanded(
-                                          child: Wrap(
-                                            children: <Widget>[
-                                              SliderTheme(
-                                                data: SliderThemeData(
-                                                  thumbShape:
-                                                      RoundSliderThumbShape(
-                                                    enabledThumbRadius:
-                                                        remToPx(0.4),
-                                                  ),
-                                                  showValueIndicator:
-                                                      ShowValueIndicator.always,
-                                                ),
-                                                child: Slider(
-                                                  label: '$volume%',
-                                                  value: volume.toDouble(),
-                                                  min: player_model
-                                                      .Player.minVolume
-                                                      .toDouble(),
-                                                  max: player_model
-                                                      .Player.maxVolume
-                                                      .toDouble(),
-                                                  onChanged:
-                                                      (final double value) {
-                                                    volume = value.toInt();
-                                                    setState(() {});
-                                                  },
-                                                  onChangeEnd:
-                                                      (final double value) {
-                                                    player?.setVolume(
-                                                      value.toInt(),
-                                                    );
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.volume_up),
-                                          onPressed: () {
-                                            player?.setVolume(
-                                              player_model.Player.maxVolume,
-                                            );
-                                            volume =
-                                                player_model.Player.maxVolume;
-                                            setState(() {});
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                       SettingRadio<double>(
                         title: Translator.t.speed(),
                         icon: Icons.speed,
                         value: speed,
-                        labels: <double, String>{
-                          for (final double speed
-                              in player_model.Player.allowedSpeeds)
-                            speed: '${speed}x',
-                        },
+                        labels: player_model.Player.allowedSpeeds.asMap().map(
+                              (final int k, final double v) =>
+                                  MapEntry<double, String>(v, '${v}x'),
+                            ),
                         onChanged: (final double val) async {
                           await player?.setSpeed(val);
                           setState(() {
@@ -491,131 +372,11 @@ class WatchPageState extends State<WatchPage>
                           });
                         },
                       ),
-                      SettingDialog(
-                        title: Translator.t.skipIntroDuration(),
-                        icon: Icons.fast_forward,
-                        subtitle: '$introDuration ${Translator.t.seconds()}',
-                        builder: (
-                          final BuildContext context,
-                          final StateSetter setState,
-                        ) =>
-                            Wrap(
-                          children: <Widget>[
-                            SliderTheme(
-                              data: SliderThemeData(
-                                thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: remToPx(0.4),
-                                ),
-                                showValueIndicator: ShowValueIndicator.always,
-                              ),
-                              child: Slider(
-                                label:
-                                    '$introDuration ${Translator.t.seconds()}',
-                                value: introDuration.toDouble(),
-                                min: player_model.Player.minIntroLength
-                                    .toDouble(),
-                                max: player_model.Player.maxIntroLength
-                                    .toDouble(),
-                                onChanged: (final double value) {
-                                  setState(() {
-                                    introDuration = value.toInt();
-                                  });
-                                },
-                                onChangeEnd: (final double value) async {
-                                  setState(() {
-                                    introDuration = value.toInt();
-                                  });
-                                  AppState.settings.current.introDuration =
-                                      introDuration;
-                                  await AppState.settings.current.save();
-                                  this.setState(() {});
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SettingDialog(
-                        title: Translator.t.seekDuration(),
-                        icon: Icons.fast_forward,
-                        subtitle: '$seekDuration ${Translator.t.seconds()}',
-                        builder: (
-                          final BuildContext context,
-                          final StateSetter setState,
-                        ) =>
-                            Wrap(
-                          children: <Widget>[
-                            SliderTheme(
-                              data: SliderThemeData(
-                                thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: remToPx(0.4),
-                                ),
-                                showValueIndicator: ShowValueIndicator.always,
-                              ),
-                              child: Slider(
-                                label:
-                                    '$seekDuration ${Translator.t.seconds()}',
-                                value: seekDuration.toDouble(),
-                                min: player_model.Player.minSeekLength
-                                    .toDouble(),
-                                max: player_model.Player.maxSeekLength
-                                    .toDouble(),
-                                onChanged: (final double value) {
-                                  setState(() {
-                                    seekDuration = value.toInt();
-                                  });
-                                },
-                                onChangeEnd: (final double value) async {
-                                  setState(() {
-                                    seekDuration = value.toInt();
-                                  });
-                                  AppState.settings.current.seekDuration =
-                                      seekDuration;
-                                  await AppState.settings.current.save();
-                                  this.setState(() {});
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SettingSwitch(
-                        title: Translator.t.autoPlay(),
-                        icon: Icons.slideshow,
-                        desc: Translator.t.autoPlayDetail(),
-                        value: autoPlay,
-                        onChanged: (final bool val) async {
-                          setState(() {
-                            autoPlay = val;
-                          });
-                          AppState.settings.current.autoPlay = val;
+                      ...getAnime(
+                        AppState.settings.current,
+                        () async {
                           await AppState.settings.current.save();
-                        },
-                      ),
-                      SettingSwitch(
-                        title: Translator.t.autoNext(),
-                        icon: Icons.skip_next,
-                        desc: Translator.t.autoNextDetail(),
-                        value: AppState.settings.current.autoNext,
-                        onChanged: (final bool val) async {
-                          setState(() {
-                            autoNext = val;
-                          });
-                          AppState.settings.current.autoNext = val;
-                          await AppState.settings.current.save();
-                        },
-                      ),
-                      SettingSwitch(
-                        title: Translator.t.autoAnimeFullscreen(),
-                        icon: AppState.settings.current.animeAutoFullscreen
-                            ? Icons.fullscreen
-                            : Icons.fullscreen_exit,
-                        desc: Translator.t.autoAnimeFullscreenDetail(),
-                        value: AppState.settings.current.animeAutoFullscreen,
-                        onChanged: (final bool val) async {
-                          AppState.settings.current.animeAutoFullscreen = val;
-
-                          await AppState.settings.current.save();
+                          setState(() {});
                         },
                       ),
                     ],
@@ -1195,55 +956,61 @@ class WatchPageState extends State<WatchPage>
                                                   SizedBox(
                                                     width: remToPx(0.5),
                                                   ),
-                                                  StatefulBuilder(
-                                                    builder: (
-                                                      final BuildContext
-                                                          context,
-                                                      final StateSetter
-                                                          setState,
-                                                    ) =>
-                                                        Material(
-                                                      type: MaterialType
-                                                          .transparency,
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          AppState
-                                                                  .settings
-                                                                  .current
-                                                                  .animeForceLandscape =
-                                                              !AppState
-                                                                  .settings
-                                                                  .current
-                                                                  .animeForceLandscape;
+                                                  if (AppState
+                                                      .isMobile) ...<Widget>[
+                                                    StatefulBuilder(
+                                                      builder: (
+                                                        final BuildContext
+                                                            context,
+                                                        final StateSetter
+                                                            setState,
+                                                      ) =>
+                                                          Material(
+                                                        type: MaterialType
+                                                            .transparency,
+                                                        child: InkWell(
+                                                          onTap: () async {
+                                                            AppState
+                                                                    .settings
+                                                                    .current
+                                                                    .animeForceLandscape =
+                                                                !AppState
+                                                                    .settings
+                                                                    .current
+                                                                    .animeForceLandscape;
 
-                                                          if (AppState
-                                                              .settings
-                                                              .current
-                                                              .animeForceLandscape) {
-                                                            enterLandscape();
-                                                          } else {
-                                                            exitLandscape();
-                                                          }
+                                                            if (AppState
+                                                                .settings
+                                                                .current
+                                                                .animeForceLandscape) {
+                                                              enterLandscape();
+                                                            } else {
+                                                              exitLandscape();
+                                                            }
 
-                                                          await AppState
-                                                              .settings.current
-                                                              .save();
-                                                          setState(() {});
-                                                        },
-                                                        child: Icon(
-                                                          Icons.screen_rotation,
-                                                          size:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .headline6
-                                                                  ?.fontSize,
+                                                            await AppState
+                                                                .settings
+                                                                .current
+                                                                .save();
+                                                            setState(() {});
+                                                          },
+                                                          child: Icon(
+                                                            Icons
+                                                                .screen_rotation,
+                                                            size: Theme.of(
+                                                              context,
+                                                            )
+                                                                .textTheme
+                                                                .headline6
+                                                                ?.fontSize,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: remToPx(0.7),
-                                                  ),
+                                                    SizedBox(
+                                                      width: remToPx(0.7),
+                                                    ),
+                                                  ],
                                                   ValueListenableBuilder<bool>(
                                                     valueListenable:
                                                         isFullscreened,

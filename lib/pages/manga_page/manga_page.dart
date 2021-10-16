@@ -66,7 +66,6 @@ class _PageState extends State<Page>
   late manga_page.PageArguments args;
 
   LanguageCodes? locale;
-  bool ignoreAutoFullscreen = false;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
   final Duration animationDuration = const Duration(milliseconds: 200);
@@ -596,12 +595,6 @@ class _PageState extends State<Page>
                                     pages: pages[chapter]!,
                                     previousChapter: _previousChapter,
                                     nextChapter: _nextChapter,
-                                    ignoreAutoFullscreen: ignoreAutoFullscreen,
-                                    onIgnoreAutoFullscreenChange:
-                                        (final bool _ignoreAutoFullscreen) {
-                                      ignoreAutoFullscreen =
-                                          _ignoreAutoFullscreen;
-                                    },
                                     onPop: _onPop,
                                   )
                                 : ListReader(
@@ -614,12 +607,6 @@ class _PageState extends State<Page>
                                     pages: pages[chapter]!,
                                     previousChapter: _previousChapter,
                                     nextChapter: _nextChapter,
-                                    ignoreAutoFullscreen: ignoreAutoFullscreen,
-                                    onIgnoreAutoFullscreenChange:
-                                        (final bool _ignoreAutoFullscreen) {
-                                      ignoreAutoFullscreen =
-                                          _ignoreAutoFullscreen;
-                                    },
                                     onPop: _onPop,
                                   )
                             : Material(

@@ -1,6 +1,7 @@
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
 import '../../../core/extensions.dart';
+import '../../../plugins/database/database.dart';
 import '../../../plugins/helpers/ui.dart';
 import '../../../plugins/helpers/utils/string.dart';
 import '../../../plugins/translator/translator.dart';
@@ -267,6 +268,25 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                   setState(() {
                                     status = ExtensionState.installed;
                                   });
+
+                                  if (DataStore.preferences
+                                          .lastSelectedSearchPlugins ==
+                                      null) {
+                                    final extensions.BaseExtractor? ext =
+                                        ExtensionsManager.animes[widget.ext.id];
+                                    if (ext != null) {
+                                      DataStore.preferences
+                                              .lastSelectedSearchType =
+                                          widget.ext.type.type;
+                                      DataStore.preferences
+                                          .setLastSelectedSearchPlugin(
+                                        widget.ext.type,
+                                        ext,
+                                      );
+
+                                      await DataStore.preferences.save();
+                                    }
+                                  }
                                 }
                               }
                             : null,

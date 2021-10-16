@@ -43,8 +43,6 @@ class PageReader extends StatefulWidget {
     required final this.onPop,
     required final this.previousChapter,
     required final this.nextChapter,
-    required final this.ignoreAutoFullscreen,
-    required final this.onIgnoreAutoFullscreenChange,
     final Key? key,
   }) : super(key: key);
 
@@ -56,9 +54,6 @@ class PageReader extends StatefulWidget {
   final void Function() onPop;
   final void Function() previousChapter;
   final void Function() nextChapter;
-
-  final bool ignoreAutoFullscreen;
-  final void Function(bool ignoreAutoFullscreen) onIgnoreAutoFullscreenChange;
 
   @override
   _PageReaderState createState() => _PageReaderState();
@@ -104,8 +99,7 @@ class _PageReaderState extends State<PageReader>
     super.initState();
 
     initFullscreen();
-    if (AppState.settings.current.mangaAutoFullscreen &&
-        !widget.ignoreAutoFullscreen) {
+    if (AppState.settings.current.mangaAutoFullscreen) {
       enterFullscreen();
     }
 
@@ -321,14 +315,17 @@ class _PageReaderState extends State<PageReader>
                   final Widget? child,
                 ) =>
                     IconButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    AppState.settings.current.mangaAutoFullscreen =
+                        !isFullscreened;
+
                     if (isFullscreened) {
-                      widget.onIgnoreAutoFullscreenChange(true);
                       exitFullscreen();
                     } else {
-                      widget.onIgnoreAutoFullscreenChange(false);
                       enterFullscreen();
                     }
+
+                    await AppState.settings.current.save();
                   },
                   icon: Icon(
                     isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,

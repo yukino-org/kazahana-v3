@@ -80,3 +80,9 @@ class StatefulListenableHolder<T> extends StatefulHolder<T>
     notifyListeners();
   }
 }
+
+class SimpleMutable<T> {
+  SimpleMutable(this.value);
+
+  T value;
+}

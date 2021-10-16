@@ -19,7 +19,6 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
     return SettingsSchema(
       useSystemPreferredTheme: fields[1] == null ? true : fields[1] as bool,
       useDarkMode: fields[2] == null ? false : fields[2] as bool,
-      fullscreenVideoPlayer: fields[3] == null ? false : fields[3] as bool,
       locale: fields[4] as String?,
       mangaReaderDirection: fields[5] == null
           ? MangaDirections.leftToRight
@@ -31,26 +30,24 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
           fields[7] == null ? MangaMode.page : fields[7] as MangaMode,
       introDuration: fields[8] == null ? 85 : fields[8] as int,
       seekDuration: fields[9] == null ? 15 : fields[9] as int,
-      volume: fields[10] == null ? 100 : fields[10] as int,
       autoNext: fields[11] == null ? false : fields[11] as bool,
       autoPlay: fields[12] == null ? false : fields[12] as bool,
       doubleClickSwitchChapter: fields[13] == null ? true : fields[13] as bool,
       animeAutoFullscreen: fields[14] == null ? true : fields[14] as bool,
       mangaAutoFullscreen: fields[15] == null ? true : fields[15] as bool,
       animeTrackerWatchPercent: fields[16] == null ? 80 : fields[16] as int,
+      animeForceLandscape: fields[17] == null ? true : fields[17] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsSchema obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(15)
       ..writeByte(1)
       ..write(obj.useSystemPreferredTheme)
       ..writeByte(2)
       ..write(obj.useDarkMode)
-      ..writeByte(3)
-      ..write(obj.fullscreenVideoPlayer)
       ..writeByte(4)
       ..write(obj.locale)
       ..writeByte(5)
@@ -63,8 +60,6 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..write(obj.introDuration)
       ..writeByte(9)
       ..write(obj.seekDuration)
-      ..writeByte(10)
-      ..write(obj.volume)
       ..writeByte(11)
       ..write(obj.autoNext)
       ..writeByte(12)
@@ -76,7 +71,9 @@ class SettingsSchemaAdapter extends TypeAdapter<SettingsSchema> {
       ..writeByte(15)
       ..write(obj.mangaAutoFullscreen)
       ..writeByte(16)
-      ..write(obj.animeTrackerWatchPercent);
+      ..write(obj.animeTrackerWatchPercent)
+      ..writeByte(17)
+      ..write(obj.animeForceLandscape);
   }
 
   @override

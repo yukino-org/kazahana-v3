@@ -16,7 +16,7 @@ Future<void> updateTrackers(
     );
 
     for (final TrackerProvider<MangaProgress> provider in mangaProviders) {
-      if (provider.isEnabled(title, plugin)) {
+      if (provider.isLoggedIn() && provider.isEnabled(title, plugin)) {
         final ResolvedTrackerItem? item =
             await provider.getComputed(title, plugin);
 

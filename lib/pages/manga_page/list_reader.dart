@@ -19,8 +19,6 @@ class ListReader extends StatefulWidget {
     required final this.onPop,
     required final this.previousChapter,
     required final this.nextChapter,
-    required final this.ignoreAutoFullscreen,
-    required final this.onIgnoreAutoFullscreenChange,
     final Key? key,
   }) : super(key: key);
 
@@ -32,9 +30,6 @@ class ListReader extends StatefulWidget {
   final void Function() onPop;
   final void Function() previousChapter;
   final void Function() nextChapter;
-
-  final bool ignoreAutoFullscreen;
-  final void Function(bool ignoreAutoFullscreen) onIgnoreAutoFullscreenChange;
 
   @override
   _ListReaderState createState() => _ListReaderState();
@@ -54,8 +49,8 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
     super.initState();
 
     initFullscreen();
-    if (AppState.settings.current.mangaAutoFullscreen &&
-        !widget.ignoreAutoFullscreen) {
+
+    if (AppState.settings.current.mangaAutoFullscreen) {
       enterFullscreen();
     }
   }
@@ -168,14 +163,17 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
                 final Widget? child,
               ) =>
                   IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  AppState.settings.current.mangaAutoFullscreen =
+                      !isFullscreened;
+
                   if (isFullscreened) {
-                    widget.onIgnoreAutoFullscreenChange(true);
                     exitFullscreen();
                   } else {
-                    widget.onIgnoreAutoFullscreenChange(false);
                     enterFullscreen();
                   }
+
+                  await AppState.settings.current.save();
                 },
                 icon: Icon(
                   isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,

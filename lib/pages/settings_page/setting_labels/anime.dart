@@ -17,82 +17,25 @@ List<Widget> getAnime(
           title: Translator.t.landscapeVideoPlayer(),
           icon: Icons.screen_lock_landscape,
           desc: Translator.t.landscapeVideoPlayerDetail(),
-          value: settings.fullscreenVideoPlayer,
+          value: settings.animeForceLandscape,
           onChanged: (final bool val) async {
-            settings.fullscreenVideoPlayer = val;
+            settings.animeForceLandscape = val;
 
             await save();
           },
         ),
-      SettingDialog(
-        title: Translator.t.volume(),
-        icon: settings.volume == 0
-            ? Icons.volume_mute
-            : settings.volume > 50
-                ? Icons.volume_up
-                : Icons.volume_down,
-        subtitle: '${settings.volume}%',
-        builder: (
-          final BuildContext context,
-          final StateSetter setState,
-        ) =>
-            Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: remToPx(0.5),
-          ),
-          child: Row(
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.volume_mute),
-                onPressed: () {
-                  setState(() {
-                    settings.volume = Player.minVolume;
-                  });
-                },
-              ),
-              Expanded(
-                child: Wrap(
-                  children: <Widget>[
-                    SliderTheme(
-                      data: SliderThemeData(
-                        thumbShape: RoundSliderThumbShape(
-                          enabledThumbRadius: remToPx(0.4),
-                        ),
-                        showValueIndicator: ShowValueIndicator.always,
-                      ),
-                      child: Slider(
-                        label: '${settings.volume}%',
-                        value: settings.volume.toDouble(),
-                        min: Player.minVolume.toDouble(),
-                        max: Player.maxVolume.toDouble(),
-                        onChanged: (final double value) {
-                          setState(() {
-                            settings.volume = value.toInt();
-                          });
-                        },
-                        onChangeEnd: (final double value) async {
-                          setState(() {
-                            settings.volume = value.toInt();
-                          });
+      SettingSwitch(
+        title: Translator.t.autoAnimeFullscreen(),
+        icon: settings.animeAutoFullscreen
+            ? Icons.fullscreen
+            : Icons.fullscreen_exit,
+        desc: Translator.t.autoAnimeFullscreenDetail(),
+        value: settings.animeAutoFullscreen,
+        onChanged: (final bool val) async {
+          settings.animeAutoFullscreen = val;
 
-                          await save();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.volume_up),
-                onPressed: () {
-                  setState(() {
-                    settings.volume = Player.maxVolume;
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
+          await save();
+        },
       ),
       SettingDialog(
         title: Translator.t.skipIntroDuration(),
@@ -193,22 +136,6 @@ List<Widget> getAnime(
 
           await save();
         },
-      ),
-      Visibility(
-        visible: AppState.isDesktop,
-        child: SettingSwitch(
-          title: Translator.t.autoAnimeFullscreen(),
-          icon: settings.animeAutoFullscreen
-              ? Icons.fullscreen
-              : Icons.fullscreen_exit,
-          desc: Translator.t.autoAnimeFullscreenDetail(),
-          value: settings.animeAutoFullscreen,
-          onChanged: (final bool val) async {
-            settings.animeAutoFullscreen = val;
-
-            await save();
-          },
-        ),
       ),
       SettingDialog(
         title: Translator.t.animeSyncPercent(),

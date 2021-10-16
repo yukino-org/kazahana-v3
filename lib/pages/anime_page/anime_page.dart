@@ -60,7 +60,6 @@ class _PageState extends State<Page>
   late extensions.AnimeExtractor extractor;
 
   LanguageCodes? locale;
-  bool ignoreAutoFullscreen = false;
 
   final Duration animationDuration = const Duration(milliseconds: 200);
 
@@ -548,11 +547,6 @@ class _PageState extends State<Page>
                         if (currentEpisodeIndex! + 1 < info!.episodes.length) {
                           setEpisode(currentEpisodeIndex! + 1);
                         }
-                      },
-                      ignoreAutoFullscreen: ignoreAutoFullscreen,
-                      onIgnoreAutoFullscreenChange:
-                          (final bool _ignoreAutoFullscreen) {
-                        ignoreAutoFullscreen = _ignoreAutoFullscreen;
                       },
                       onPop: () {
                         setEpisode(null);

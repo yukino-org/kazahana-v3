@@ -21,7 +21,8 @@ mixin FullscreenMixin {
   late Duration fullscreenInterval;
   ScreenState? prevScreenState;
   OnFullscreenChange? fullscreenWatcher;
-  final ValueNotifier<bool> isFullscreened = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> isFullscreened =
+      ValueNotifier<bool>(Screen.isFullscreened);
 
   // ignore: use_setters_to_change_properties
   void initFullscreen([final Duration interval = const Duration(seconds: 5)]) {
@@ -43,6 +44,14 @@ mixin FullscreenMixin {
 
     isFullscreened.value = false;
   }
+}
+
+mixin OrientationMixin {
+  Future<void> enterLandscape() =>
+      Screen.setOrientation(ScreenOrientation.vertical);
+
+  Future<void> exitLandscape() =>
+      Screen.setOrientation(ScreenOrientation.unlock);
 }
 
 class OnFullscreenChange {
@@ -72,6 +81,11 @@ class OnFullscreenChange {
       });
     }
   }
+}
+
+enum ScreenOrientation {
+  unlock,
+  vertical,
 }
 
 abstract class Screen {
@@ -116,7 +130,7 @@ abstract class Screen {
     ScreenState? state;
 
     if (AppState.isMobile) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     } else {
       state = ScreenState(
         bounds: await WindowManager.instance.getBounds(),
@@ -132,7 +146,7 @@ abstract class Screen {
 
   static Future<void> exitFullscreen([final ScreenState? state]) async {
     if (AppState.isMobile) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     } else {
       WindowManager.instance.setFullScreen(false);
 
@@ -145,5 +159,26 @@ abstract class Screen {
     }
 
     isFullscreened = false;
+  }
+
+  static Future<void> setOrientation(
+    final ScreenOrientation orientation,
+  ) async {
+    if (AppState.isMobile) {
+      final List<DeviceOrientation> to;
+      switch (orientation) {
+        case ScreenOrientation.vertical:
+          to = <DeviceOrientation>[
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight,
+          ];
+          break;
+
+        default:
+          to = <DeviceOrientation>[];
+      }
+
+      await SystemChrome.setPreferredOrientations(to);
+    }
   }
 }
