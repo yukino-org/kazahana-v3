@@ -35,7 +35,7 @@ jobs:
                   npm run hive:generate
 
             - name: 🚩 Check for existing releases
-              run: npm run check-release -- --ends '-linux.AppImage'
+              run: npm run actions:check-release -- '-linux.AppImage'
 
             - name: 🔨 Building binaries
               run: npm run linux:build

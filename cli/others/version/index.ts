@@ -1,42 +1,15 @@
 import { join } from "path";
 import { readFile, writeFile } from "fs-extra";
-import commandLineArgs from "command-line-args";
 import semver from "semver";
+import { sync as spawn } from "cross-spawn";
+import { prompt } from "inquirer";
 import { config } from "../../config";
 import { Logger } from "../../logger";
 import { matchRegex } from "../../helpers/version";
 
 const logger = new Logger("version");
 
-const argsOpts: commandLineArgs.OptionDefinition[] = [
-    {
-        name: "increment",
-        alias: "i",
-        defaultOption: true,
-        type: String,
-        multiple: false,
-    },
-    {
-        name: "preid",
-        alias: "p",
-        type: String,
-        multiple: false,
-    },
-    {
-        name: "demo",
-        alias: "d",
-        type: Boolean,
-        multiple: false,
-    },
-];
-
 export const increment = async () => {
-    const { increment, preid, demo } = commandLineArgs(argsOpts);
-
-    if (!increment) {
-        return logger.error(`Missing arg: increment`);
-    }
-
     const path = join(config.base, "pubspec.yaml");
     logger.log(`Path: ${path}`);
 
@@ -47,25 +20,51 @@ export const increment = async () => {
         return logger.error(`Missing 'version' in 'pubspec.yaml'`);
     }
 
-    const previousVersion = semver.clean(parsedVersion);
+    const previousVersion = semver.parse(semver.clean(parsedVersion));
     if (!previousVersion) {
         return logger.error(`Invalid 'version' in 'pubspec.yaml'`);
     }
 
-    logger.log(`Increment: ${increment}`);
-    logger.log(`Pre-id: ${preid || "-"}`);
-
-    const newVersion = semver.inc(previousVersion, increment, preid);
-    if (!newVersion) {
-        return logger.error(`Invalid arguments where provided`);
+    const result = spawn(
+        "npx",
+        [
+            "semver",
+            "-s",
+            "--",
+            previousVersion.version,
+            ...process.argv.slice(2),
+        ],
+        {
+            env: process.env,
+            shell: true,
+        }
+    );
+    if (result.status != 0) {
+        throw new Error(result.stderr.toString());
     }
 
-    if (!demo) {
+    const newVersion = semver.parse(
+        semver.clean(result.stdout.toString().trim())
+    )!;
+    if (newVersion.compare(previousVersion) != 1) {
+        throw new Error("Cannot bump to same version");
+    }
+
+    console.log(" ");
+    const { confirmed }: { confirmed: boolean } = await prompt({
+        name: "confirmed",
+        message: `Do you want to bump version from ${previousVersion.version} to v${newVersion.version}?`,
+        type: "confirm",
+    });
+
+    if (confirmed) {
         pubspec = pubspec.replace(matchRegex, `version: ${newVersion}`);
         await writeFile(path, pubspec);
+
+        logger.log(
+            `Bumped from ${previousVersion.version} to ${newVersion.version}`
+        );
     }
 
-    logger.log(
-        `Bumped from ${previousVersion} to ${newVersion} ${demo && "(Demo)"}`
-    );
+    console.log(" ");
 };

@@ -45,6 +45,6 @@ export const config = {
     },
     github: {
         username: githubMatch![1],
-        repo: githubMatch![1],
+        repo: githubMatch![2],
     },
 };
