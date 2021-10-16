@@ -20,7 +20,7 @@ export const updateChangelogs = async (
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
 
-    const allChanges = await getChanges({
+    const { features, fixes, refactors } = await getChanges({
         repo: {
             author: config.github.username,
             repo: config.github.repo,
@@ -31,17 +31,6 @@ export const updateChangelogs = async (
         },
     });
 
-    await github.request({
-        method: "POST",
-        url: latest.upload_url,
-        headers: {
-            "content-type": "text/plain",
-        },
-        data: JSON.stringify(allChanges),
-        name: "changelogs.json",
-    });
-
-    const { features, fixes, refactors } = allChanges;
     const changes = [];
     if (features.length || fixes.length || refactors.length) {
         changes.push(`**Changelogs**`);
