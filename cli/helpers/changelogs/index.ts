@@ -66,7 +66,7 @@ export const updateChangelogs = async (
             avatar_url: `https://github.com/${config.github.username}/${config.github.repo}/blob/next/assets/images/yukino-icon.png?raw=true`,
             embeds: [
                 {
-                    title: `v${latest.name}`,
+                    title: latest.name,
                     url: latest.html_url,
                     color: 6514417,
                     description: logs,
