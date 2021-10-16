@@ -30,7 +30,7 @@ jobs:
                   npm run hive:generate
 
             - name: 🚩 Check for existing releases
-              run: npm run check-release -- "-windows.zip" "-windows.exe"
+              run: npm run check-release -- --ends '-windows.zip' '-windows.exe'
 
             - name: 🔨 Building binaries
               run: npm run windows:build
