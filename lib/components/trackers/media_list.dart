@@ -149,6 +149,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
                       }
                     : null,
                 icon: const Icon(Icons.arrow_back),
+                tooltip: Translator.t.back(),
               ),
               SizedBox(
                 width: remToPx(0.8),
@@ -170,6 +171,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
                       }
                     : null,
                 icon: const Icon(Icons.arrow_forward),
+                tooltip: Translator.t.next(),
               ),
             ],
           ),
