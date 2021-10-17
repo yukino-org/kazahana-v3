@@ -67,6 +67,12 @@ class Sentences extends TranslationSentences {
   String close() => 'Close';
 
   @override
+  String back() => 'Back';
+
+  @override
+  String of() => 'of';
+
+  @override
   String chooseTheme() => 'Choose Theme';
 
   @override

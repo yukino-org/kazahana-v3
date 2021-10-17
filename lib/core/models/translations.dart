@@ -23,6 +23,8 @@ abstract class TranslationSentences {
   String defaultTheme();
   String darkMode();
   String close();
+  String back();
+  String of();
   String chooseTheme();
   String language();
   String chooseLanguage();

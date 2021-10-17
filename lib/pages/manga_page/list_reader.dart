@@ -131,6 +131,7 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
+            tooltip: Translator.t.back(),
             onPressed: widget.onPop,
           ),
           actions: <Widget>[

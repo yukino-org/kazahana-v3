@@ -77,10 +77,13 @@ class _SideBarState extends State<SideBar> {
                                   padding: EdgeInsets.symmetric(
                                     vertical: remToPx(0.25),
                                   ),
-                                  child: Icon(
-                                    x.icon,
-                                    size: remToPx(1.25),
-                                    color: color,
+                                  child: Tooltip(
+                                    message: x.name,
+                                    child: Icon(
+                                      x.icon,
+                                      size: remToPx(1.25),
+                                      color: color,
+                                    ),
                                   ),
                                 ),
                               ),

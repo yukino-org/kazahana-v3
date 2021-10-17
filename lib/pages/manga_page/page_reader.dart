@@ -258,6 +258,7 @@ class _PageReaderState extends State<PageReader>
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
+              tooltip: Translator.t.back(),
               onPressed: widget.onPop,
             ),
             actions: <Widget>[
