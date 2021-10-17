@@ -31,7 +31,9 @@ export const updateChangelogs = async (
         },
     });
 
-    const changes = [];
+    const donwloadURL = `${config.url}/download/${latest.tag_name}/`;
+    const changes = [`[Click here to Download](${donwloadURL})\n`];
+
     if (features.length || fixes.length || refactors.length) {
         changes.push(`**Changelogs**`);
         if (features.length) {
@@ -56,7 +58,7 @@ export const updateChangelogs = async (
             embeds: [
                 {
                     title: latest.name,
-                    url: latest.html_url,
+                    url: donwloadURL,
                     color: 6514417,
                     description: logs,
                     timestamp: new Date().toISOString(),
@@ -66,7 +68,7 @@ export const updateChangelogs = async (
     });
 
     let body = latest.body || "";
-    const changelogsRegex = /(\*\*Changelogs\*\*[\s\S]+)/;
+    const changelogsRegex = /(\*\*\[Click here to Download\]\*\*[\s\S]+)/;
 
     if (changelogsRegex.test(body)) {
         if (!logs) {
