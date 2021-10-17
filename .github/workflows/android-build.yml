@@ -36,7 +36,9 @@ jobs:
               run: npm run actions:check-release -- '-android.apk'
 
             - name: 🔨 Generate certificate
-              run: echo ${{ secrets.ANDROID_CERT_FILE }} > ./certs/android/key.jks
+              run: echo $KEY_FILE > ./certs/android/key.jks
+              env:
+                  KEY_FILE: ${{ secrets.ANDROID_CERT_FILE }}
 
             - name: 🔨 Building apk
               run: npm run android:build
