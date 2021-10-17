@@ -36,7 +36,9 @@ jobs:
               run: npm run actions:check-release -- '-android.apk'
 
             - name: 🔨 Generate certificate
-              run: echo $KEY_FILE > ./certs/android/key.jks
+              run: |
+                  mkdir -p ./certs/android
+                  echo $KEY_FILE > ./certs/android/key.jks
               env:
                   KEY_FILE: ${{ secrets.ANDROID_CERT_FILE }}
 
@@ -71,6 +73,7 @@ jobs:
             - name: 🚀 Release apk
               uses: softprops/action-gh-release@v1
               with:
+                  name: 🎉 v${{ steps.app_version.outputs.result }}
                   tag_name: v${{ steps.app_version.outputs.result }}
                   files: ${{ steps.app_files.outputs.result }}
                   draft: true
