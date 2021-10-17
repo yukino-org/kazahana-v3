@@ -38,7 +38,7 @@ jobs:
             - name: 🔨 Generate certificate
               run: |
                   mkdir -p ./certs/android
-                  echo $KEY_FILE > ./certs/android/key.jks
+                  echo $KEY_FILE  | base64 -di > ./certs/android/key.jks
               env:
                   KEY_FILE: ${{ secrets.ANDROID_CERT_FILE }}
 
