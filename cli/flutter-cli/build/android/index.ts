@@ -14,7 +14,7 @@ const logger = new Logger("build:android");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "apk", "--obfuscate"], config.base)
+        await spawn("flutter", ["build", "apk"], config.base)
     );
 
     const out = join(

@@ -9,7 +9,7 @@ const logger = new Logger("build:linux");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "linux", "--obfuscate"], config.base)
+        await spawn("flutter", ["build", "linux"], config.base)
     );
     logger.log(`Generated binaries at ${buildDir}`);
 };

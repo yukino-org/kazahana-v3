@@ -12,7 +12,7 @@ const logger = new Logger("build:ios");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "ios", "--no-codesign", "--obfuscate"], config.base)
+        await spawn("flutter", ["build", "ios", "--no-codesign"], config.base)
     );
 
     const zip = new AdmZip();
