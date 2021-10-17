@@ -11,7 +11,7 @@ const logger = new Logger("build:windows");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "windows"], config.base)
+        await spawn("flutter", ["build", "windows", "--obfuscate"], config.base)
     );
     logger.log(`Generated binaries at ${buildDir}`);
 

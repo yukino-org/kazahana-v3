@@ -79,7 +79,7 @@ abstract class PlatformUpdater {
                   release: release,
                   version: foundVersion,
                   path: y['browser_download_url'] as String,
-                  size: (y['size'] as int) * 1000,
+                  size: (y['size'] as int) ~/ 1000 ~/ 1000,
                   date: date,
                 ),
               )

@@ -9,7 +9,7 @@ const logger = new Logger("build:macos");
 
 export const build = async () => {
     await promisifyChildProcess(
-        await spawn("flutter", ["build", "macos"], config.base)
+        await spawn("flutter", ["build", "macos", "--obfuscate"], config.base)
     );
     logger.log(`Generated binaries at ${buildDir}`);
 };
