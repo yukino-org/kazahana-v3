@@ -14,7 +14,7 @@ export const getChanges = async (
     const refactors: string[] = [];
 
     changes.forEach((x) => {
-        const msg = `${x.id} ${x.msg}`;
+        const msg = `\`${x.id}\` ${x.msg}`;
         if (x.msg.startsWith("feat")) {
             features.push(msg);
         } else if (x.msg.startsWith("fix")) {

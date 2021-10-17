@@ -32,18 +32,18 @@ export const updateChangelogs = async (
     });
 
     const donwloadURL = `${config.url}/download/${latest.tag_name}/`;
-    const changes = [`[Click here to Download](${donwloadURL})\n`];
+    const changes = [`🔥 [Click here to Download](${donwloadURL})\n`];
 
     if (features.length || fixes.length || refactors.length) {
-        changes.push(`**Changelogs**`);
+        changes.push(`📝 **Changelogs**`);
         if (features.length) {
-            changes.push("\nFeatures:", ...features.map((x) => `- ${x}`));
+            changes.push("\n✨ Features:", ...features.map((x) => `- ${x}`));
         }
         if (fixes.length) {
-            changes.push("\nFixes:", ...fixes.map((x) => `- ${x}`));
+            changes.push("\n🩹 Fixes:", ...fixes.map((x) => `- ${x}`));
         }
         if (refactors.length) {
-            changes.push("\nChanges:", ...refactors.map((x) => `- ${x}`));
+            changes.push("\n♻️ Changes:", ...refactors.map((x) => `- ${x}`));
         }
     }
 

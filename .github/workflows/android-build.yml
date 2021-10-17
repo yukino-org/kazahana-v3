@@ -73,7 +73,7 @@ jobs:
             - name: 🚀 Release apk
               uses: softprops/action-gh-release@v1
               with:
-                  name: 🎉 v${{ steps.app_version.outputs.result }}
+                  name: v${{ steps.app_version.outputs.result }}
                   tag_name: v${{ steps.app_version.outputs.result }}
                   files: ${{ steps.app_files.outputs.result }}
                   draft: true
