@@ -61,7 +61,6 @@
         "@octokit/rest": "^18.12.0",
         "@types/inquirer": "^8.1.3",
         "@zyrouge/log-symbols-no-esm": "^5.0.0",
-        "@zyrouge/git-compare": "^1.0.0",
         "adm-zip": "^0.5.9",
         "archiver": "^5.3.0",
         "canvas": "^2.8.0",

@@ -1,6 +1,5 @@
 import got from "got";
 import { getOctokit } from "@actions/github";
-import { getChanges } from "./get-changes";
 import { config } from "../../config";
 
 export const updateChangelogs = async (
@@ -20,34 +19,98 @@ export const updateChangelogs = async (
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
 
-    const { features, fixes, refactors } = await getChanges({
-        repo: {
-            author: config.github.username,
-            repo: config.github.repo,
-        },
-        version: {
-            previous: previous.tag_name,
-            current: latest.tag_name,
-        },
-    });
-
-    const donwloadURL = `${config.url}/download/${latest.tag_name}/`;
-    const changes = [`🔥 [Click here to Download](${donwloadURL})\n`];
-
-    if (features.length || fixes.length || refactors.length) {
-        changes.push(`📝 **Changelogs**`);
-        if (features.length) {
-            changes.push("\n✨ Features:", ...features.map((x) => `- ${x}`));
+    const diff = await github.request(
+        "GET /repos/{owner}/{repo}/compare/{base}...{head}",
+        {
+            ...repo,
+            base: previous.tag_name,
+            head: latest.tag_name,
         }
-        if (fixes.length) {
-            changes.push("\n🩹 Fixes:", ...fixes.map((x) => `- ${x}`));
-        }
-        if (refactors.length) {
-            changes.push("\n♻️ Changes:", ...refactors.map((x) => `- ${x}`));
+    );
+
+    const commits = {
+        feat: [] as string[],
+        fix: [] as string[],
+        refactor: [] as string[],
+        perf: [] as string[],
+    };
+
+    for (const x of diff.data.commits) {
+        const match =
+            /^(feat|fix|perf|refactor){1}(\(([\w-\.]+)\))?(!)?: (.*)/.exec(
+                x.commit.message
+            );
+
+        if (match) {
+            const chunks = [`[\`${x.sha.slice(0, 6)}\`](${x.html_url})`];
+            if (match[3]) {
+                chunks.push(`**${match[3]}**:`);
+            }
+            chunks.push(match[3]);
+            const msg = chunks.join(" ");
+
+            const key = match[1] as keyof typeof commits;
+            if (!commits[key].includes(msg)) {
+                commits[key].push(msg);
+            }
         }
     }
 
-    const logs = changes.join("\n");
+    const changelogs = [`## Changelogs\n`];
+    for (const [k, v] of Object.entries(commits)) {
+        if (v.length) {
+            let head: string;
+
+            switch (k as keyof typeof commits) {
+                case "feat":
+                    head = "✨ Features";
+                    break;
+
+                case "fix":
+                    head = "🐛 Bug fixes";
+                    break;
+
+                case "refactor":
+                    head = "♻️ Changes";
+                    break;
+
+                case "perf":
+                    head = "⚡️ Performance";
+                    break;
+            }
+
+            changelogs.push(
+                `- ${head}\n`,
+                commits.feat.map((x) => `   - ${x}`).join("\n")
+            );
+        }
+    }
+
+    const links = [
+        "## Links",
+        `   - Download: ${config.url}/download/${latest.tag_name}/`,
+        `   - Release: ${latest.html_url}/`,
+    ].join("\n");
+    const notes = changelogs.join("\n");
+
+    let body = latest.body || "";
+    const bodyRegex = /(## Links[\s\S]+)/;
+    const bodyContent = `${links}\n${notes}`;
+
+    if (bodyRegex.test(body)) {
+        body = body.replace(bodyRegex, bodyContent);
+    } else {
+        body += `\n${bodyContent}`;
+    }
+
+    console.log(body);
+
+    await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
+        ...repo,
+        release_id: latest.id,
+        body,
+    });
+
     await got.post(discordWebhookURL, {
         headers: {
             "Content-Type": "application/json",
@@ -57,34 +120,17 @@ export const updateChangelogs = async (
             avatar_url: `https://github.com/${config.github.username}/${config.github.repo}/blob/next/assets/images/yukino-icon.png?raw=true`,
             embeds: [
                 {
-                    title: latest.name,
-                    url: donwloadURL,
+                    title: `${latest.name}${
+                        latest.name != latest.tag_name
+                            ? ` (${latest.tag_name})`
+                            : ""
+                    }`,
+                    url: latest.html_url,
                     color: 6514417,
-                    description: logs,
+                    description: links,
                     timestamp: new Date().toISOString(),
                 },
             ],
         }),
-    });
-
-    let body = latest.body || "";
-    const changelogsRegex = /(\*\*\[Click here to Download\]\*\*[\s\S]+)/;
-
-    if (changelogsRegex.test(body)) {
-        if (!logs) {
-            body = body.replace(changelogsRegex, "");
-        } else {
-            body = body.replace(changelogsRegex, logs);
-        }
-    } else {
-        if (logs) {
-            body += `\n\n${logs}`;
-        }
-    }
-
-    await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
-        ...repo,
-        release_id: latest.id,
-        body,
     });
 };
