@@ -84,13 +84,19 @@ class _PageState extends State<Page> with RouteAware, DidLoadStater {
           });
 
           try {
-            final bool shouldExit = await updater.install(update);
+            final InstallResponse resp = await updater.install(update);
 
-            if (shouldExit) {
+            if (resp.exit) {
               status.value = Translator.t.restartingApp();
               await Future<void>.delayed(const Duration(seconds: 3));
 
-              Screen.close();
+              await AppLifecycle.dispose();
+
+              if (resp.beforeExit != null) {
+                await resp.beforeExit!();
+              }
+
+              await Screen.close();
               exit(0);
             }
           } catch (err, stack) {

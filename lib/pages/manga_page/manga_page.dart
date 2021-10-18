@@ -307,8 +307,8 @@ class _PageState extends State<Page>
         currentChapterIndex! - 1,
       );
     } else {
-      setChapter(null);
       goToPage(Pages.home);
+      setChapter(null);
     }
   }
 
@@ -319,14 +319,14 @@ class _PageState extends State<Page>
         currentChapterIndex! + 1,
       );
     } else {
-      setChapter(null);
       goToPage(Pages.home);
+      setChapter(null);
     }
   }
 
   void _onPop() {
-    setChapter(null);
     goToPage(Pages.home);
+    setChapter(null);
   }
 
   Future<void> showLanguageDialog() async {
@@ -629,11 +629,9 @@ class _PageState extends State<Page>
       ),
       onWillPop: () async {
         if (info != null && controller.page?.toInt() != Pages.home.index) {
-          setState(() {
-            setChapter(null);
-          });
-
           goToPage(Pages.home);
+          setChapter(null);
+
           return false;
         }
 

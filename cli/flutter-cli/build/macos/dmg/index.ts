@@ -5,9 +5,9 @@ import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
+import { buildDir } from "../";
 
 const icns = join(config.base, "build/macos/icon.icns");
-export const buildDir = join(config.base, "build/macos/Build/Products/Release");
 
 const logger = new Logger("build:macos:dmg");
 

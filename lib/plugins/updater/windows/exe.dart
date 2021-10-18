@@ -50,7 +50,7 @@ class WindowsExeUpdater with PlatformUpdater {
       );
 
   @override
-  Future<bool> install(final UpdateInfo update) async {
+  Future<InstallResponse> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
     final String tmp = path.join(
@@ -116,19 +116,23 @@ class WindowsExeUpdater with PlatformUpdater {
     );
     Logger.of('WindowsExeUpdater').info('Created bat at: ${batFile.path}');
 
-    await Process.start(
-      'powershell.exe',
-      <String>[
-        'start',
-        '-verb',
-        'runas',
-        batFile.path,
-      ],
-      runInShell: true,
-      mode: ProcessStartMode.detached,
+    return InstallResponse(
+      exit: true,
+      beforeExit: () async {
+        await Process.start(
+          'powershell.exe',
+          <String>[
+            'start',
+            '-verb',
+            'runas',
+            batFile.path,
+          ],
+          runInShell: true,
+          mode: ProcessStartMode.detached,
+        );
+        Logger.of('WindowsExeUpdater')
+            .info('Spawned bat, waiting for restart...');
+      },
     );
-    Logger.of('WindowsExeUpdater').info('Spawned bat, waiting for restart...');
-
-    return true;
   }
 }

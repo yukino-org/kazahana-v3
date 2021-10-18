@@ -85,6 +85,10 @@ abstract class DataStore {
     Logger.of('DataStore').info('Registered "cache_schema.CacheSchema"');
   }
 
+  static Future<void> dispose() async {
+    await Hive.close();
+  }
+
   static settings_schema.SettingsSchema get settings {
     final settings_schema.SettingsSchema defaultValue =
         settings_schema.SettingsSchema();

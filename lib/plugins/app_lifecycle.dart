@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import './database/database.dart';
 import './helpers/deeplink.dart';
@@ -93,11 +92,12 @@ abstract class AppLifecycle {
     }
 
     try {
-      await FunctionUtils.tryLoop(
-        DataStore.initialize,
-        max: Platform.environment['RESPWND_INST'] == 'true' ? 30 : 1,
-        interval: const Duration(seconds: 2),
-      );
+      // await FunctionUtils.tryLoop(
+      //   DataStore.initialize,
+      //   max: Platform.environment['RESPWND_INST'] == 'true' ? 30 : 1,
+      //   interval: const Duration(seconds: 2),
+      // );
+      await DataStore.initialize();
     } catch (err, trace) {
       Logger.of('DataStore').error(
         '"initialize" failed: $err',
@@ -193,5 +193,13 @@ abstract class AppLifecycle {
 
     preready = false;
     events.dispatch(AppLifecycleEvents.ready);
+  }
+
+  static Future<void> dispose() async {
+    await LocalServer.dispose();
+    Logger.of('LocalServer').info('Finished "dispose"');
+
+    await DataStore.dispose();
+    Logger.of('DataStore').info('Finished "dispose"');
   }
 }

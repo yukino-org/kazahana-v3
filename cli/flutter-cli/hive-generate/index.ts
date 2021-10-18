@@ -26,7 +26,7 @@ export const generate = async () => {
     } catch (err: any) {
         if (typeof err?.code === "number" && err.code === 78) {
             console.log(" ");
-            logger.log(
+            logger.warn(
                 'Found conflicting outputs, retrying with "--delete-conflicting-outputs" flag'
             );
             console.log(" ");

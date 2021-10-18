@@ -3,7 +3,7 @@ import { copyFile, ensureDir } from "fs-extra";
 import jimp from "jimp";
 import { Logger } from "../../logger";
 import { config } from "../../config";
-import { buildDir } from "../../flutter-cli/build/linux/appimage";
+import { buildDir } from "../../flutter-cli/build/linux";
 
 export const path = join(
     buildDir,

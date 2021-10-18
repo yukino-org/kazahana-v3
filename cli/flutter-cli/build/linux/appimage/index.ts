@@ -1,11 +1,10 @@
-import { basename, dirname, join, relative } from "path";
+import { dirname, join, relative } from "path";
 import { ensureDir, readdir, readFile, rename, writeFile } from "fs-extra";
 import { spawn, promisifyChildProcess } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
-
-export const buildDir = join(config.base, "build/linux/x64/release/bundle");
+import { buildDir } from "../";
 
 const logger = new Logger("build:linux:appimage");
 

@@ -6,7 +6,6 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 import './routes.dart';
 
 abstract class LocalServer {
-  static bool disposed = false;
   static HttpServer? server;
 
   static const String protocol = 'http';
@@ -14,10 +13,6 @@ abstract class LocalServer {
   static int port = 0;
 
   static FutureOr<Response> _handler(final Request request) {
-    if (disposed) {
-      return Response(503, body: 'Unavailable');
-    }
-
     final ServerRoute? route = routes.firstWhereOrNull(
       (final ServerRoute x) =>
           x.method == request.method && x.route == request.url.path,
@@ -38,6 +33,10 @@ abstract class LocalServer {
   static Future<void> initialize() async {
     server = await shelf_io.serve(_handler, host, port);
     port = server!.port;
+  }
+
+  static Future<void> dispose() async {
+    await server?.close(force: true);
   }
 
   static String get baseURL => '$protocol://$host:$port';

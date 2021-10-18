@@ -3,7 +3,7 @@ import { spawn, promisifyChildProcess } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 
-export const buildDir = join(config.base, "build/windows/runner/Release");
+export const buildDir = join(config.base, "build/macos/Build/Products/Release");
 
 const logger = new Logger("build:macos");
 

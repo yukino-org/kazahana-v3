@@ -21,7 +21,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
       );
 
   @override
-  Future<bool> install(final UpdateInfo update) async {
+  Future<InstallResponse> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
     final String tmp = path.join(
@@ -64,7 +64,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
 
     await currentExe.create(recursive: true);
 
-    if (RegExp(r'/\d+\.\d+\.\d+/').hasMatch(path.basename(currentExe.path))) {
+    if (RegExp(r'v/\d+\.\d+\.\d+/').hasMatch(path.basename(currentExe.path))) {
       await currentExe
           .rename(path.join(path.dirname(currentExe.path), newExeName));
     }
@@ -74,7 +74,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
 
     final ProcessResult chmodRes = await Process.run(
       'chmod',
-      <String>['+777', '"${currentExe.path}"'],
+      <String>['755', currentExe.path],
       runInShell: true,
     );
     if (chmodRes.exitCode != 0) {
@@ -84,24 +84,18 @@ class LinuxAppImageUpdater with PlatformUpdater {
     Logger.of('LinuxAppImageUpdater')
         .info('Copied and made AppImage executable at: ${currentExe.path}');
 
-    LocalServer.disposed = true;
-    Logger.of('LinuxAppImageUpdater').info('Disposed "LocalServer"');
-
-    await Process.start(
-      'bash',
-      <String>[
-        '-c',
-        '"${currentExe.path}"',
-      ],
-      environment: <String, String>{
-        'RESPWND_INST': 'true',
+    return InstallResponse(
+      exit: true,
+      beforeExit: () async {
+        await Process.start(
+          currentExe.path,
+          <String>[],
+          runInShell: true,
+          mode: ProcessStartMode.detached,
+        );
+        Logger.of('LinuxAppImageUpdater')
+            .info('Spawned new app, waiting to close...');
       },
-      runInShell: true,
-      mode: ProcessStartMode.detached,
     );
-    Logger.of('LinuxAppImageUpdater')
-        .info('Spawned new app, waiting to close...');
-
-    return true;
   }
 }

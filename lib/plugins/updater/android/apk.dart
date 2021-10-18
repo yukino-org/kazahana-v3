@@ -15,10 +15,10 @@ class AndroidApkUpdater with PlatformUpdater {
       );
 
   @override
-  Future<bool> install(final UpdateInfo update) async {
+  Future<InstallResponse> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
-    final Completer<bool> future = Completer<bool>();
+    final Completer<InstallResponse> future = Completer<InstallResponse>();
 
     final OtaUpdate ota = OtaUpdate();
     final double startedAt = DateTime.now().millisecondsSinceEpoch / 1000;
@@ -57,7 +57,7 @@ class AndroidApkUpdater with PlatformUpdater {
               UpdaterEvents.extracting,
             ),
           );
-          future.complete(false);
+          future.complete(InstallResponse(exit: false));
           break;
 
         default:

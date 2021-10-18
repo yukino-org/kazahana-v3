@@ -47,6 +47,16 @@ class UpdaterEvent {
   final dynamic data;
 }
 
+class InstallResponse {
+  InstallResponse({
+    required final this.exit,
+    final this.beforeExit,
+  });
+
+  final bool exit;
+  final Future<void> Function()? beforeExit;
+}
+
 abstract class PlatformUpdater {
   final Eventer<UpdaterEvent> progress = Eventer<UpdaterEvent>();
 
@@ -97,7 +107,7 @@ abstract class PlatformUpdater {
 
   UpdateInfo? filterUpdate(final List<UpdateInfo> updates);
 
-  Future<bool> install(final UpdateInfo update);
+  Future<InstallResponse> install(final UpdateInfo update);
 }
 
 typedef PlatformUpdaterValidate = bool Function();
