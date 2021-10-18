@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import './home_page.dart';
 import '../../core/provisions/model.dart' as provisions;
 import '../../core/provisions/myanimelist/home.dart' as myanimelist;
 import '../../core/provisions/myanimelist/utils.dart' as myanimelist;
 import '../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
+import '../../plugins/database/database.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
 import '../../plugins/translator/translator.dart';
@@ -84,7 +86,7 @@ class _PageState extends State<Page> with DidLoadStater {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            _cache.hasResolved
+            _cache.hasResolved && DataStore.settings.locale! == 'en'
                 ? _cache.value!.seasonName
                 : Translator.t.seasonalAnimes(),
             style: Theme.of(context).textTheme.headline5?.copyWith(

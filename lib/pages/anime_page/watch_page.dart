@@ -575,6 +575,7 @@ class WatchPageState extends State<WatchPage>
                                                 icon: const Icon(
                                                   Icons.arrow_back,
                                                 ),
+                                                tooltip: Translator.t.back(),
                                                 onPressed: pop,
                                                 padding: EdgeInsets.only(
                                                   right: remToPx(1),
@@ -603,7 +604,7 @@ class WatchPageState extends State<WatchPage>
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${Translator.t.episode()} ${widget.episode.episode} of ${widget.totalEpisodes}',
+                                                      '${Translator.t.episode()} ${widget.episode.episode} ${Translator.t.of()} ${widget.totalEpisodes}',
                                                       style: const TextStyle(
                                                         color: Colors.white,
                                                       ),

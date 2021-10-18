@@ -175,6 +175,7 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                         Navigator.of(context).pop();
                                       },
                                       icon: const Icon(Icons.arrow_back),
+                                      tooltip: Translator.t.back(),
                                     ),
                                     SizedBox(width: remToPx(1)),
                                     Text(
