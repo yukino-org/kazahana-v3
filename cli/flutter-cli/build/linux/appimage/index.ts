@@ -30,9 +30,10 @@ export const build = async () => {
     await writeFile(builderGYml, rendered);
     logger.log(`Rendered ${builderGYml}`);
 
+    logger.log("Running appimage-builder command");
     await promisifyChildProcess(
         await spawn(
-            "appimage-builder ",
+            "appimage-builder",
             [
                 "--recipe",
                 `./${relative(config.base, builderGYml)}`,
@@ -41,6 +42,8 @@ export const build = async () => {
             config.base
         )
     );
+    logger.log("Finished running appimage-builder command");
+
     const outPath = (await readdir(config.base)).find((x) =>
         x.endsWith(".AppImage")
     );

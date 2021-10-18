@@ -1,6 +1,7 @@
 import logSymbols from "log-symbols";
 import prettyMs from "pretty-ms";
 import { executeHooksFor } from "./hooks";
+import { PromisifyChildProcessResult } from "./spawn";
 
 export const run = async (fn: () => Promise<void>) => {
     const startedAt = Date.now();
@@ -19,7 +20,14 @@ export const run = async (fn: () => Promise<void>) => {
             )}\n`
         );
     } catch (err) {
-        console.error(err);
+        if (err instanceof PromisifyChildProcessResult) {
+            console.error(
+                `Spawn failed with code ${err.code}\n\ncmd: ${err.command}\n\nstdout:\n${err.stdout}\n\nstderr:${err.stderr}`
+            );
+        } else {
+            console.error(err);
+        }
+
         console.log(
             `\n${logSymbols.error} Failed in ${prettyMs(
                 Date.now() - startedAt

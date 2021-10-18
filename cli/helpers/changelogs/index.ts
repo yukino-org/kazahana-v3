@@ -1,11 +1,16 @@
 import got from "got";
 import { getOctokit } from "@actions/github";
 import { config } from "../../config";
+import { Logger } from "../../logger";
+
+const logger = new Logger("actions:update-changelogs");
 
 export const updateChangelogs = async (
     githubToken: string,
     discordWebhookURL: string
 ) => {
+    logger.log("Generating changelogs");
+
     const github = getOctokit(githubToken, {});
     const repo = { owner: config.github.username, repo: config.github.repo };
 
@@ -103,13 +108,12 @@ export const updateChangelogs = async (
         body += `\n${bodyContent}`;
     }
 
-    console.log(body);
-
     await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
         ...repo,
         release_id: latest.id,
         body,
     });
+    logger.log("Updated release");
 
     await got.post(discordWebhookURL, {
         headers: {
@@ -133,4 +137,5 @@ export const updateChangelogs = async (
             ],
         }),
     });
+    logger.log("Posted webhook");
 };

@@ -13,9 +13,11 @@ export const built = join(
 const logger = new Logger("build:android");
 
 export const build = async () => {
+    logger.log("Running build command...");
     await promisifyChildProcess(
         await spawn("flutter", ["build", "apk"], config.base)
     );
+    logger.log("Finished running build command");
 
     const out = join(
         config.android.packed,

@@ -11,9 +11,11 @@ export const built = join(config.base, "build/ios/iphoneos/Runner.app");
 const logger = new Logger("build:ios");
 
 export const build = async () => {
+    logger.log("Running build command...");
     await promisifyChildProcess(
         await spawn("flutter", ["build", "ios", "--no-codesign"], config.base)
     );
+    logger.log("Finished running build command");
 
     const zip = new AdmZip();
     zip.addLocalFolder(built, join("Payload", built.match(/[^\\/]+$/)![0]));

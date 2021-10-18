@@ -21,17 +21,21 @@ const execute = async (force: boolean) => {
 };
 
 export const generate = async () => {
+    logger.log("Running build_runner command...");
+
     try {
         await execute(process.argv.includes("-f"));
     } catch (err: any) {
         if (typeof err?.code === "number" && err.code === 78) {
-            console.log(" ");
             logger.warn(
                 'Found conflicting outputs, retrying with "--delete-conflicting-outputs" flag'
             );
-            console.log(" ");
 
             await execute(true);
         }
+
+        throw err;
     }
+
+    logger.log("Finished running build_runner command");
 };

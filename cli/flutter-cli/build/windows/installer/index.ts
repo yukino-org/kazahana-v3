@@ -35,9 +35,12 @@ export const build = async () => {
     await writeFile(installerGIss, rendered);
     logger.log(`Rendered ${installerIss}`);
 
+    logger.log("Running iscc command");
     await promisifyChildProcess(
-        await spawn("iscc ", [installerGIss], config.base)
+        await spawn("iscc", [installerGIss], config.base)
     );
+    logger.log("Finished running iscc command");
+
     logger.log(
         `Installer created: ${join(
             context.outputDir,

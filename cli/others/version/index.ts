@@ -1,4 +1,5 @@
 import { join } from "path";
+import chalk from "chalk";
 import { readFile, writeFile } from "fs-extra";
 import semver from "semver";
 import { sync as spawn } from "cross-spawn";
@@ -62,9 +63,9 @@ export const increment = async () => {
         await writeFile(path, pubspec);
 
         logger.log(
-            `Bumped from ${previousVersion.version} to ${newVersion.version}`
+            `Bumped from ${chalk.cyanBright(
+                previousVersion.version
+            )} to ${chalk.cyanBright(newVersion.version)}`
         );
     }
-
-    console.log(" ");
 };

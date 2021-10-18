@@ -35,6 +35,11 @@ export const test = async () => {
 
     logger.log(" ");
     await promisifyChildProcess(
-        await spawn("flutter", ["test", "-r", "expanded", path], config.base)
+        await spawn(
+            "flutter",
+            ["test", "-r", "expanded", path],
+            config.base,
+            "inherit"
+        )
     );
 };

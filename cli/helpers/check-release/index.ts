@@ -4,9 +4,11 @@ import { config } from "../../config";
 import { Logger } from "../../logger";
 import { getVersion } from "../version";
 
-const logger = new Logger("check-release");
+const logger = new Logger("actions:check-release");
 
 export const checkRelease = async () => {
+    logger.log("Checking for previous releases");
+
     const ends = process.argv.slice(2).map((x) => {
         let y: string = x;
         if (y.startsWith("'")) y = y.slice(1);
@@ -17,6 +19,8 @@ export const checkRelease = async () => {
     if (!Array.isArray(ends) || !ends.length) {
         throw new Error("No input were got");
     }
+
+    logger.log(`Input: ${ends.map((x) => `"${x}"`).join(", ")}`);
 
     const octokit = new Octokit();
     const version = await getVersion();

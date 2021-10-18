@@ -10,10 +10,11 @@ export const buildDir = join(config.base, "build/windows/runner/Release");
 const logger = new Logger("build:windows");
 
 export const build = async () => {
+    logger.log("Running build command...");
     await promisifyChildProcess(
         await spawn("flutter", ["build", "windows"], config.base)
     );
-    logger.log(`Generated binaries at ${buildDir}`);
+    logger.log("Finished running build command");
 
     const dllDir = join(__dirname, "dlls");
     for await (const file of readdirp(dllDir)) {
@@ -26,4 +27,6 @@ export const build = async () => {
             )} to ${out.replace(process.cwd(), "")}`
         );
     }
+
+    logger.log(`Generated binaries at ${buildDir}`);
 };
