@@ -65,11 +65,16 @@ class LinuxAppImageUpdater with PlatformUpdater {
     await currentExe.create(recursive: true);
     await newExeFile.copy(currentExe.path);
     await newExeFile.delete(recursive: true);
-    await Process.run(
+
+    final ProcessResult chmodRes = await Process.run(
       'chmod',
       <String>['+777', '"${currentExe.path}"'],
       runInShell: true,
     );
+    if (chmodRes.exitCode != 0) {
+      throw Exception('Failed to make executable');
+    }
+
     Logger.of('LinuxAppImageUpdater')
         .info('Copied and made AppImage executable at: ${currentExe.path}');
 
