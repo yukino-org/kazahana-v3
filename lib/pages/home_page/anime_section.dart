@@ -6,8 +6,8 @@ import '../../core/provisions/myanimelist/utils.dart' as myanimelist;
 import '../../core/trackers/myanimelist/myanimelist.dart' as myanimelist;
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
-import '../../plugins/translator/translator.dart';
 import '../../plugins/state.dart';
+import '../../plugins/translator/translator.dart';
 
 final StatefulHolder<myanimelist.HomeResult?> _cache =
     StatefulHolder<myanimelist.HomeResult?>(null);

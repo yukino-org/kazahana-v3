@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import './database/database.dart';
 import './helpers/deeplink.dart';
@@ -8,7 +7,6 @@ import './helpers/local_server/server.dart';
 import './helpers/logger.dart';
 import './helpers/protocol_handler.dart';
 import './helpers/screen.dart';
-import './helpers/utils/function.dart';
 import './state.dart';
 import './translator/translator.dart';
 import './video_player/video_player.dart';
