@@ -63,6 +63,12 @@ class LinuxAppImageUpdater with PlatformUpdater {
         .info('Removed current AppImage at: ${currentExe.path}');
 
     await currentExe.create(recursive: true);
+
+    if (RegExp(r'/\d+\.\d+\.\d+/').hasMatch(path.basename(currentExe.path))) {
+      await currentExe
+          .rename(path.join(path.dirname(currentExe.path), newExeName));
+    }
+
     await newExeFile.copy(currentExe.path);
     await newExeFile.delete(recursive: true);
 
