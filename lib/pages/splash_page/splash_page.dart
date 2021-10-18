@@ -65,8 +65,8 @@ class _PageState extends State<Page> with RouteAware, DidLoadStater {
                 final DownloadProgress casted = x.data as DownloadProgress;
                 status.value = Translator.t.downloadingVersion(
                   'v${update.version.toString()}',
-                  '${(casted.downloaded / 1000000).toStringAsFixed(1)}Mb',
-                  '${(casted.total / 1000000).toStringAsFixed(1)}Mb',
+                  '${(casted.downloaded / 1048576).toStringAsFixed(1)}Mb',
+                  '${(casted.total / 1048576).toStringAsFixed(1)}Mb',
                   '${casted.percent.toStringAsFixed(1)}%',
                 );
                 break;

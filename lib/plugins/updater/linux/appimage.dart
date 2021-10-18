@@ -67,7 +67,7 @@ class LinuxAppImageUpdater with PlatformUpdater {
     await newExeFile.delete(recursive: true);
     await Process.run(
       'chmod',
-      <String>['a+x', '"${currentExe.path}"'],
+      <String>['+777', '"${currentExe.path}"'],
       runInShell: true,
     );
     Logger.of('LinuxAppImageUpdater')
