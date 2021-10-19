@@ -51,10 +51,9 @@ export const increment = async () => {
         throw new Error("Cannot bump to same version");
     }
 
-    console.log(" ");
     const { confirmed }: { confirmed: boolean } = await prompt({
         name: "confirmed",
-        message: `Do you want to bump version from ${previousVersion.version} to v${newVersion.version}?`,
+        message: `Do you want to bump version from v${previousVersion.version} to v${newVersion.version}?`,
         type: "confirm",
     });
 
