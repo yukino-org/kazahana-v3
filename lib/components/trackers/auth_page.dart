@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../../plugins/helpers/assets.dart';
 import '../../../../plugins/helpers/logger.dart';
 import '../../../../plugins/helpers/stateful_holder.dart';
 import '../../../../plugins/helpers/ui.dart';
@@ -9,12 +8,14 @@ import '../../../../plugins/translator/translator.dart';
 class AuthPage extends StatefulWidget {
   const AuthPage({
     required final this.title,
+    required final this.logo,
     required final this.authenticate,
     required final this.logger,
     final Key? key,
   }) : super(key: key);
 
   final String title;
+  final String logo;
   final Future<void> Function() authenticate;
   final Logger logger;
 
@@ -79,51 +80,53 @@ class _AuthPageState extends State<AuthPage> with DidLoadStater {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: remToPx(1),
-            horizontal: remToPx(1.25),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(remToPx(1)),
-                    child: Image.asset(
-                      Assets.anilistLogo,
-                      width:
-                          MediaQuery.of(context).size.width > ResponsiveSizes.md
-                              ? remToPx(7)
-                              : remToPx(5),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: remToPx(1),
+              horizontal: remToPx(1.25),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.9),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(remToPx(1)),
+                      child: Image.asset(
+                        widget.logo,
+                        width: MediaQuery.of(context).size.width >
+                                ResponsiveSizes.md
+                            ? remToPx(7)
+                            : remToPx(5),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: remToPx(2),
-                ),
-                if (!status.hasEnded) ...<Widget>[
-                  const CircularProgressIndicator(),
                   SizedBox(
-                    height: remToPx(1),
+                    height: remToPx(2),
+                  ),
+                  if (!status.hasEnded) ...<Widget>[
+                    const CircularProgressIndicator(),
+                    SizedBox(
+                      height: remToPx(1),
+                    ),
+                  ],
+                  RichText(
+                    text: TextSpan(
+                      children: status.value,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: remToPx(2),
                   ),
                 ],
-                RichText(
-                  text: TextSpan(
-                    children: status.value,
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: remToPx(2),
-                ),
-              ],
+              ),
             ),
           ),
         ),
