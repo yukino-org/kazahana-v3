@@ -10,21 +10,32 @@ List<Widget> getPreference(
   final Future<void> Function() save,
 ) =>
     <Widget>[
-      SettingRadio<String>(
-        title: Translator.t.language(),
-        dialogTitle: Translator.t.chooseLanguage(),
-        icon: Icons.language,
-        value: settings.locale ?? Translator.t.code.code,
-        labels: <String, String>{
-          for (final TranslationSentences lang
-              in Translator.translations.values)
-            lang.code.code: lang.code.language,
-        },
-        onChanged: (final String val) async {
-          settings.locale = val;
+      Builder(
+        builder: (final BuildContext context) => SettingRadio<String>(
+          title: Translator.t.language(),
+          dialogTitle: Translator.t.chooseLanguage(),
+          icon: Icons.language,
+          value: settings.locale ?? Translator.t.code.code,
+          labels: <String, String>{
+            for (final TranslationSentences lang
+                in Translator.translations.values)
+              lang.code.code: lang.code.language,
+          },
+          onChanged: (final String val) async {
+            settings.locale = val;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  Translator.t.restartAppForChangesToTakeEffect(),
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                backgroundColor: Theme.of(context).cardColor,
+              ),
+            );
 
-          await save();
-        },
+            await save();
+          },
+        ),
       ),
       SettingRadio<int>(
         title: Translator.t.theme(),

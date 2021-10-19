@@ -280,8 +280,7 @@ class WatchPageState extends State<WatchPage>
         AppState.settings.current.animeTrackerWatchPercent) {
       final int? episode = int.tryParse(widget.episode.episode);
 
-      // TODO: Uncomment this
-      if (episode != null /* && !hasSynced */) {
+      if (episode != null && !hasSynced) {
         hasSynced = true;
 
         final AnimeProgress progress = AnimeProgress(episodes: episode);

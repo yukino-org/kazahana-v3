@@ -130,4 +130,5 @@ abstract class TranslationSentences {
   String chaptersRead();
   String volumesCompleted();
   String nsfw();
+  String restartAppForChangesToTakeEffect();
 }

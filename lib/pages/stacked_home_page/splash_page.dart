@@ -8,21 +8,22 @@ import '../../plugins/helpers/logger.dart';
 import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
-import '../../plugins/router.dart';
-import '../../plugins/state.dart';
 import '../../plugins/translator/translator.dart';
 import '../../plugins/updater/updater.dart';
 
 class Page extends StatefulWidget {
   const Page({
+    required final this.refresh,
     final Key? key,
   }) : super(key: key);
+
+  final void Function() refresh;
 
   @override
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with RouteAware, DidLoadStater {
+class _PageState extends State<Page> with DidLoadStater {
   final ValueNotifier<String> status =
       ValueNotifier<String>(Translator.t.initializing());
 
@@ -31,20 +32,6 @@ class _PageState extends State<Page> with RouteAware, DidLoadStater {
     super.didChangeDependencies();
 
     doLoadStateIfHasnt();
-  }
-
-  @override
-  void dispose() {
-    RouteManager.observer.unsubscribe(this);
-
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    if (AppState.isMobile) {
-      Navigator.of(context).pop();
-    }
   }
 
   @override
@@ -110,11 +97,7 @@ class _PageState extends State<Page> with RouteAware, DidLoadStater {
       }
 
       await Future<void>.delayed(const Duration(seconds: 2));
-    }
-
-    if (mounted) {
-      Navigator.of(context).pushNamed(RouteNames.home);
-      RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
+      widget.refresh();
     }
   }
 

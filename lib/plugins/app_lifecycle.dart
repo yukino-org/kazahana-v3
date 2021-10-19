@@ -189,7 +189,7 @@ abstract class AppLifecycle {
       );
     }
 
-    preready = false;
+    ready = true;
     events.dispatch(AppLifecycleEvents.ready);
   }
 

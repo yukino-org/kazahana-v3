@@ -1,9 +1,9 @@
 import 'package:utilx/utilities/languages.dart';
 import 'en.dart' as en;
 
-class Sentences implements en.Sentences {
+class Sentences extends en.Sentences {
   @override
-  final LanguageCodes code = LanguageCodes.pt;
+  LanguageCodes get code => LanguageCodes.pt;
 
   @override
   String home() => 'Menu';

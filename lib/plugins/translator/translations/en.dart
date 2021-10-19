@@ -3,7 +3,7 @@ import '../../../core/models/translations.dart';
 
 class Sentences extends TranslationSentences {
   @override
-  final LanguageCodes code = LanguageCodes.en;
+  LanguageCodes get code => LanguageCodes.en;
 
   @override
   String home() => 'Home';
@@ -383,4 +383,8 @@ class Sentences extends TranslationSentences {
 
   @override
   String nsfw() => 'NSFW';
+
+  @override
+  String restartAppForChangesToTakeEffect() =>
+      'Restart app for the changes to take effect';
 }
