@@ -6,7 +6,7 @@ import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";
 
-const logger = new Logger("build:windows:zip");
+const logger = new Logger("windows:build:zip");
 
 export const zip = async () => {
     const version = await getVersion();

@@ -16,7 +16,7 @@ export interface HooksConfig {
 export const executeHook = async (hook: HooksConfig) => {
     for (const cmd of hook.commands) {
         await promisifyChildProcess(
-            await spawn("npm", ["run", cmd], config.base)
+            await spawn("npm", ["run", cmd, "-s"], config.base, "inherit")
         );
     }
 };

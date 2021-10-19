@@ -41,7 +41,7 @@ export const spawn = async (
     stdio?: StdioOptions
 ) => {
     return crossSpawn(cmd, args, {
-        stdio: "inherit",
+        stdio: stdio,
         env: process.env,
         cwd: cwd,
         shell: true,

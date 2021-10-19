@@ -10,7 +10,7 @@ export const built = join(
     "build/app/outputs/flutter-apk/app-release.apk"
 );
 
-const logger = new Logger("build:android");
+const logger = new Logger("android:build");
 
 export const build = async () => {
     logger.log("Running build command...");

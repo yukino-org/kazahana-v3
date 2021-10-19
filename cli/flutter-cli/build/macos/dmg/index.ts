@@ -9,7 +9,7 @@ import { buildDir } from "../";
 
 const icns = join(config.base, "build/macos/icon.icns");
 
-const logger = new Logger("build:macos:dmg");
+const logger = new Logger("macos:build:dmg");
 
 export const build = async () => {
     const version = await getVersion();

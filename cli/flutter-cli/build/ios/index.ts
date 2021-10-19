@@ -8,7 +8,7 @@ import { getVersion } from "../../../helpers/version";
 
 export const built = join(config.base, "build/ios/iphoneos/Runner.app");
 
-const logger = new Logger("build:ios");
+const logger = new Logger("ios:build");
 
 export const build = async () => {
     logger.log("Running build command...");

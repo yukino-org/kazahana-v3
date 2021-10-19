@@ -6,7 +6,7 @@ import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";
 
-const logger = new Logger("build:linux:appimage");
+const logger = new Logger("linux:build:appimage");
 
 const builderYml = join(__dirname, "builder.yml");
 const builderGYml = join(__dirname, "builder.g.yml");

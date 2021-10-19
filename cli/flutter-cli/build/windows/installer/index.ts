@@ -8,7 +8,7 @@ import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";
 
-const logger = new Logger("build:windows:installer");
+const logger = new Logger("windows:build:installer");
 
 const installerIss = join(__dirname, "installer.iss");
 const installerGIss = join(__dirname, "installer.g.iss");

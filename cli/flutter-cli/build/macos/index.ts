@@ -5,7 +5,7 @@ import { Logger } from "../../../logger";
 
 export const buildDir = join(config.base, "build/macos/Build/Products/Release");
 
-const logger = new Logger("build:macos");
+const logger = new Logger("macos:build");
 
 export const build = async () => {
     logger.log("Running build command...");

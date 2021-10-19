@@ -7,7 +7,7 @@ import { Logger } from "../../../logger";
 
 export const buildDir = join(config.base, "build/windows/runner/Release");
 
-const logger = new Logger("build:windows");
+const logger = new Logger("windows:build");
 
 export const build = async () => {
     logger.log("Running build command...");
