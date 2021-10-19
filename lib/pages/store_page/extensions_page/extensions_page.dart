@@ -270,8 +270,8 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                   });
 
                                   if (DataStore.preferences
-                                          .lastSelectedSearchPlugins ==
-                                      null) {
+                                          .lastSelectedSearchPlugins?.isEmpty ??
+                                      true) {
                                     final extensions.BaseExtractor? ext =
                                         ExtensionsManager.animes[widget.ext.id];
                                     if (ext != null) {
