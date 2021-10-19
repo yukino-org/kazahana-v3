@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import logSymbols from "log-symbols";
 import prettyMs from "pretty-ms";
 import { executeHooksFor } from "./hooks";
@@ -15,22 +16,30 @@ export const run = async (fn: () => Promise<void>) => {
         await executeHooksFor("postrun", process.env.npm_lifecycle_event);
 
         console.log(
-            `\n${logSymbols.success} Finished in ${prettyMs(
-                Date.now() - startedAt
+            `\n${logSymbols.success} Finished in ${chalk.greenBright(
+                prettyMs(Date.now() - startedAt)
             )}\n`
         );
     } catch (err) {
         if (err instanceof PromisifyChildProcessResult) {
+            const stdout = err.stdout.trim();
+            const stderr = err.stderr.trim();
             console.error(
-                `Spawn failed with code ${err.code}\n\ncmd: ${err.command}\n\nstdout:\n${err.stdout}\n\nstderr:${err.stderr}`
+                chalk.redBright(
+                    `Spawn failed with code ${err.code}\nCommand: ${
+                        err.command
+                    }\n${stdout.length ? `Output: ${stdout}` : ""}\n${
+                        stderr.length ? `Error: ${stderr}` : ""
+                    }`
+                )
             );
         } else {
-            console.error(err);
+            console.error(chalk.redBright(err));
         }
 
         console.log(
-            `\n${logSymbols.error} Failed in ${prettyMs(
-                Date.now() - startedAt
+            `\n${logSymbols.error} Failed in ${chalk.redBright(
+                prettyMs(Date.now() - startedAt)
             )}\n`
         );
         process.exit(1);

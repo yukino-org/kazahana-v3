@@ -15,21 +15,22 @@ export const promisifyChildProcess = (cp: ChildProcess) =>
         let stdout = "";
         let stderr = "";
 
+        const getResult = (code: number | null) =>
+            new PromisifyChildProcessResult(
+                cp.spawnargs.join(" "),
+                code,
+                stdout,
+                stderr
+            );
+
         cp.on("message", (data) => {
             stdout += data.toString();
         })
             .on("error", (err) => {
                 stderr += err.toString();
             })
-            .on("exit", (code) => {
-                const result = new PromisifyChildProcessResult(
-                    `"${cp.spawnfile}" [${cp.spawnargs
-                        .map((x) => `"${x}"`)
-                        .join(", ")}]`,
-                    code,
-                    stdout,
-                    stderr
-                );
+            .on("close", (code) => {
+                const result = getResult(code);
                 code === 0 ? resolve(result) : reject(result);
             });
     });
