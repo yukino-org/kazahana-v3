@@ -74,9 +74,9 @@ class OnFullscreenChange {
     timer?.cancel();
     timer = null;
     if (!fullscreen) {
-      timer = Timer(duration, () {
+      timer = Timer(duration, () async {
         if (!Screen.isFullscreened) {
-          Screen.enterFullscreen();
+          await Screen.enterFullscreen();
         }
       });
     }
