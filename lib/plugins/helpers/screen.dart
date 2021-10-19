@@ -146,7 +146,10 @@ abstract class Screen {
 
   static Future<void> exitFullscreen([final ScreenState? state]) async {
     if (AppState.isMobile) {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      await SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
     } else {
       WindowManager.instance.setFullScreen(false);
 
