@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:math';
-
 import 'package:dart_vlc/dart_vlc.dart' as dart_vlc;
 import 'package:flutter/material.dart';
 import '../../core/models/player.dart' as model;
@@ -14,52 +14,60 @@ class DartVlc extends model.Player {
 
   double? _prevSpeed;
   double? _prevVolume;
+  final GlobalKey _playerKey = GlobalKey();
+
+  final List<StreamSubscription<dynamic>> _subscriptions =
+      <StreamSubscription<dynamic>>[];
 
   @override
   Future<void> load() async {
-    _player
-      ..positionStream.listen((final dart_vlc.PositionState position) {
-        dispatch(model.PlayerEvent(model.PlayerEvents.durationUpdate, null));
-      })
-      ..playbackStream.listen((final dart_vlc.PlaybackState playback) {
-        dispatch(
-          model.PlayerEvent(
-            playback.isPlaying
-                ? model.PlayerEvents.play
-                : model.PlayerEvents.pause,
-            null,
-          ),
-        );
-
-        if (playback.isCompleted) {
-          dispatch(model.PlayerEvent(model.PlayerEvents.end, null));
-        }
-      })
-      ..generalStream.listen((final dart_vlc.GeneralState general) {
-        if (_prevSpeed != general.rate) {
-          dispatch(model.PlayerEvent(model.PlayerEvents.speed, null));
-        }
-
-        if (_prevVolume != general.volume) {
-          dispatch(model.PlayerEvent(model.PlayerEvents.volume, null));
-        }
-      })
-      ..currentStream.listen((final dart_vlc.CurrentState current) {
-        if (!ready && current.medias.isNotEmpty) {
-          dispatch(model.PlayerEvent(model.PlayerEvents.load, null));
-          ready = true;
-        }
-      })
-      ..open(
-        dart_vlc.Playlist(
-          medias: <dart_vlc.Media>[
-            dart_vlc.Media.network(
-              getProxiedURL(source.url, source.headers),
+    _subscriptions.addAll(
+      <StreamSubscription<dynamic>>[
+        _player.positionStream.listen((final dart_vlc.PositionState position) {
+          dispatch(model.PlayerEvent(model.PlayerEvents.durationUpdate, null));
+        }),
+        _player.playbackStream.listen((final dart_vlc.PlaybackState playback) {
+          dispatch(
+            model.PlayerEvent(
+              playback.isPlaying
+                  ? model.PlayerEvents.play
+                  : model.PlayerEvents.pause,
+              null,
             ),
-          ],
-        ),
-        autoStart: false,
-      );
+          );
+
+          if (playback.isCompleted) {
+            dispatch(model.PlayerEvent(model.PlayerEvents.end, null));
+          }
+        }),
+        _player.generalStream.listen((final dart_vlc.GeneralState general) {
+          if (_prevSpeed != general.rate) {
+            dispatch(model.PlayerEvent(model.PlayerEvents.speed, null));
+          }
+
+          if (_prevVolume != general.volume) {
+            dispatch(model.PlayerEvent(model.PlayerEvents.volume, null));
+          }
+        }),
+        _player.currentStream.listen((final dart_vlc.CurrentState current) {
+          if (!ready && current.medias.isNotEmpty) {
+            dispatch(model.PlayerEvent(model.PlayerEvents.load, null));
+            ready = true;
+          }
+        }),
+      ],
+    );
+
+    _player.open(
+      dart_vlc.Playlist(
+        medias: <dart_vlc.Media>[
+          dart_vlc.Media.network(
+            getProxiedURL(source.url, source.headers),
+          ),
+        ],
+      ),
+      autoStart: false,
+    );
   }
 
   @override
@@ -89,6 +97,7 @@ class DartVlc extends model.Player {
 
   @override
   Widget getWidget() => dart_vlc.Video(
+        key: _playerKey,
         showControls: false,
         player: _player,
       );
@@ -96,6 +105,11 @@ class DartVlc extends model.Player {
   @override
   Future<void> destroy() async {
     _player.stop();
+
+    for (final StreamSubscription<dynamic> x in _subscriptions) {
+      x.cancel();
+    }
+
     super.destroy();
   }
 

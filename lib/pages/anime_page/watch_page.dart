@@ -157,8 +157,8 @@ class WatchPageState extends State<WatchPage>
       exitFullscreen();
     }
 
-    playerChild = null;
     player?.destroy();
+    playerChild = null;
 
     isPlaying.dispose();
     duration.dispose();

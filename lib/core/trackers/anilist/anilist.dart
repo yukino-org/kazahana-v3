@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import './handlers/auth.dart';
+import '../../../config.dart';
 import '../../../plugins/database/database.dart';
 import '../../secrets/anilist.dart';
 
@@ -60,6 +61,7 @@ abstract class AnilistManager {
       Uri.parse(baseURL),
       body: json.encode(body.toJson()),
       headers: <String, String>{
+        'User-Agent': '${Config.name} v${Config.version}',
         'Authorization': '${auth.token!.tokenType} ${auth.token!.accessToken}',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
