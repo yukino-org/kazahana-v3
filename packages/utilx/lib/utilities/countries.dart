@@ -3,7 +3,7 @@ enum LanguageCountries {
 }
 
 extension LanguageCountriesUtils on LanguageCountries {
-  String get name => name.toUpperCase();
+  String get name => toString().split('.').last.toUpperCase();
   String get country => LanguageCountryUtils.codeNameMap[this]!;
 }
 

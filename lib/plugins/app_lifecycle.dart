@@ -91,11 +91,6 @@ abstract class AppLifecycle {
     }
 
     try {
-      // await FunctionUtils.tryLoop(
-      //   DataStore.initialize,
-      //   max: Platform.environment['RESPWND_INST'] == 'true' ? 30 : 1,
-      //   interval: const Duration(seconds: 2),
-      // );
       await DataStore.initialize();
     } catch (err, trace) {
       Logger.of('DataStore').error(
@@ -114,7 +109,6 @@ abstract class AppLifecycle {
     }
 
     Translator.t = settingsLocale ?? Translator.getSupportedTranslation();
-
     Deeplink.link = ProtocolHandler.fromArgs(args);
     preready = true;
     events.dispatch(AppLifecycleEvents.preready);
