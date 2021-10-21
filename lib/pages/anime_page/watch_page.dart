@@ -59,7 +59,8 @@ class WatchPageState extends State<WatchPage>
         TickerProviderStateMixin,
         FullscreenMixin,
         DidLoadStater,
-        OrientationMixin {
+        OrientationMixin,
+        WakelockMixin {
   List<extensions.EpisodeSource>? sources;
   int? currentIndex;
   player_model.Player? player;
@@ -100,6 +101,7 @@ class WatchPageState extends State<WatchPage>
     super.initState();
 
     initFullscreen();
+    enableWakelock();
 
     if (AppState.settings.current.animeAutoFullscreen) {
       enterFullscreen();
@@ -156,6 +158,8 @@ class WatchPageState extends State<WatchPage>
       exitLandscape();
       exitFullscreen();
     }
+
+    disableWakelock();
 
     player?.destroy();
     playerChild = null;

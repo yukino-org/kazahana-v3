@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:utilx/utilities/window.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:window_manager/window_manager.dart';
 import './eventer.dart';
 import '../state.dart';
@@ -52,6 +53,12 @@ mixin OrientationMixin {
 
   Future<void> exitLandscape() =>
       Screen.setOrientation(ScreenOrientation.unlock);
+}
+
+mixin WakelockMixin {
+  Future<void> enableWakelock() => Screen.enableWakelock();
+
+  Future<void> disableWakelock() => Screen.disableWakelock();
 }
 
 class OnFullscreenChange {
@@ -182,6 +189,18 @@ abstract class Screen {
       }
 
       await SystemChrome.setPreferredOrientations(to);
+    }
+  }
+
+  static Future<void> enableWakelock() async {
+    if (!Platform.isLinux) {
+      await Wakelock.enable();
+    }
+  }
+
+  static Future<void> disableWakelock() async {
+    if (!Platform.isLinux) {
+      await Wakelock.disable();
     }
   }
 }
