@@ -51,7 +51,7 @@ export const updateChangelogs = async (
             if (match[3]) {
                 chunks.push(`**${match[3]}**:`);
             }
-            chunks.push(match[3]);
+            chunks.push(match[5]);
             const msg = chunks.join(" ");
 
             const key = match[1] as keyof typeof commits;
@@ -92,7 +92,7 @@ export const updateChangelogs = async (
     }
 
     const links = [
-        "## Links",
+        "## Links\n",
         `   - Download: ${config.url}/download/${latest.tag_name}/`,
         `   - Release: ${latest.html_url}/`,
     ].join("\n");
@@ -113,6 +113,7 @@ export const updateChangelogs = async (
         release_id: latest.id,
         body,
     });
+
     logger.log("Updated release");
 
     await got.post(discordWebhookURL, {
@@ -137,5 +138,6 @@ export const updateChangelogs = async (
             ],
         }),
     });
+
     logger.log("Posted webhook");
 };
