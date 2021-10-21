@@ -6,6 +6,7 @@ import './plugins/helpers/logger.dart';
 import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
+import './plugins/translator/translator.dart';
 
 Future<void> main(final List<String> args) async {
   try {
@@ -92,7 +93,10 @@ class _MainAppState extends State<MainApp> {
               final Animation<double> a1,
               final Animation<double> a2,
             ) =>
-                route.builder(context),
+                Directionality(
+              textDirection: Translator.t.textDirection,
+              child: route.builder(context),
+            ),
             transitionsBuilder: (
               final BuildContext context,
               final Animation<double> a1,
