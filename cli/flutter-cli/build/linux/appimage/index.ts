@@ -34,7 +34,7 @@ export const build = async () => {
     await spawn(
         "appimage-builder",
         ["--recipe", `./${relative(config.base, builderGYml)}`, "--skip-tests"],
-        config.base
+        config.base, "inherit"
     );
     logger.log("Finished running appimage-builder command");
 
