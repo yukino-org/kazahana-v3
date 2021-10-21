@@ -1,4 +1,5 @@
-import { promisifyChildProcess, spawn } from "../../spawn";
+import chalk from "chalk";
+import { SpawnError, spawn } from "../../spawn";
 import { config } from "../../config";
 import { Logger } from "../../logger";
 
@@ -11,12 +12,10 @@ const execute = async (force: boolean) => {
         flags.push("--delete-conflicting-outputs");
     }
 
-    await promisifyChildProcess(
-        await spawn(
-            "flutter",
-            ["packages", "pub", "run", "build_runner", "build", ...flags],
-            config.base
-        )
+    await spawn(
+        "flutter",
+        ["packages", "pub", "run", "build_runner", "build", ...flags],
+        config.base
     );
 };
 
@@ -26,15 +25,21 @@ export const generate = async () => {
     try {
         await execute(process.argv.includes("-f"));
     } catch (err: any) {
-        if (typeof err?.code === "number" && err.code === 78) {
+        if (
+            err instanceof SpawnError &&
+            typeof err.result.code === "number" &&
+            err.result.code === 78
+        ) {
             logger.warn(
-                'Found conflicting outputs, retrying with "--delete-conflicting-outputs" flag'
+                `Found conflicting outputs, retrying with ${chalk.redBright(
+                    "--delete-conflicting-outputs"
+                )} flag`
             );
 
             await execute(true);
+        } else {
+            throw err;
         }
-
-        throw err;
     }
 
     logger.log("Finished running build_runner command");

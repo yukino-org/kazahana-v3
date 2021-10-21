@@ -1,7 +1,7 @@
 import { join } from "path";
 import { writeFile } from "fs-extra";
 import ejs from "ejs";
-import { spawn, promisifyChildProcess } from "../../../../spawn";
+import { spawn } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { path as iconPath } from "../../../../icons/windows";
 import { Logger } from "../../../../logger";
@@ -36,9 +36,7 @@ export const build = async () => {
     logger.log(`Rendered ${installerIss}`);
 
     logger.log("Running iscc command");
-    await promisifyChildProcess(
-        await spawn("iscc", [installerGIss], config.base)
-    );
+    await spawn("iscc", [installerGIss], config.base);
     logger.log("Finished running iscc command");
 
     logger.log(

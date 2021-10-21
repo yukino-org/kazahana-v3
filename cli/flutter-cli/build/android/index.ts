@@ -1,6 +1,6 @@
 import { dirname, join } from "path";
 import { ensureDir, copyFile } from "fs-extra";
-import { spawn, promisifyChildProcess } from "../../../spawn";
+import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 import { getVersion } from "../../../helpers/version";
@@ -14,9 +14,7 @@ const logger = new Logger("android:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await promisifyChildProcess(
-        await spawn("flutter", ["build", "apk"], config.base)
-    );
+    await spawn("flutter", ["build", "apk"], config.base);
     logger.log("Finished running build command");
 
     const out = join(

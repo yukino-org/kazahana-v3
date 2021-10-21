@@ -1,6 +1,6 @@
 import { config } from "../config";
 import { Logger } from "../logger";
-import { promisifyChildProcess, spawn } from "../spawn";
+import { spawn } from "../spawn";
 
 const hooks: HooksConfig[] = require("./hooks.json");
 
@@ -15,9 +15,7 @@ export interface HooksConfig {
 
 export const executeHook = async (hook: HooksConfig) => {
     for (const cmd of hook.commands) {
-        await promisifyChildProcess(
-            await spawn("npm", ["run", cmd, "-s"], config.base, "inherit")
-        );
+        await spawn("npm", ["run", cmd, "-s"], config.base, "inherit");
     }
 };
 

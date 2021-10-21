@@ -1,6 +1,6 @@
 import { dirname, join, relative } from "path";
 import { ensureDir, readdir, readFile, rename, writeFile } from "fs-extra";
-import { spawn, promisifyChildProcess } from "../../../../spawn";
+import { spawn } from "../../../../spawn";
 import { getVersion } from "../../../../helpers/version";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
@@ -31,16 +31,10 @@ export const build = async () => {
     logger.log(`Rendered ${builderGYml}`);
 
     logger.log("Running appimage-builder command");
-    await promisifyChildProcess(
-        await spawn(
-            "appimage-builder",
-            [
-                "--recipe",
-                `./${relative(config.base, builderGYml)}`,
-                "--skip-tests",
-            ],
-            config.base
-        )
+    await spawn(
+        "appimage-builder",
+        ["--recipe", `./${relative(config.base, builderGYml)}`, "--skip-tests"],
+        config.base
     );
     logger.log("Finished running appimage-builder command");
 

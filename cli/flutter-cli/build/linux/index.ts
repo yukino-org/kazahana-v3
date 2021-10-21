@@ -1,5 +1,5 @@
 import { join } from "path";
-import { spawn, promisifyChildProcess } from "../../../spawn";
+import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 
@@ -9,9 +9,7 @@ const logger = new Logger("linux:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await promisifyChildProcess(
-        await spawn("flutter", ["build", "linux"], config.base)
-    );
+    await spawn("flutter", ["build", "linux"], config.base);
     logger.log("Finished running build command");
 
     logger.log(`Generated binaries at ${buildDir}`);

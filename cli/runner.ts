@@ -2,7 +2,6 @@ import chalk from "chalk";
 import logSymbols from "log-symbols";
 import prettyMs from "pretty-ms";
 import { executeHooksFor } from "./hooks";
-import { PromisifyChildProcessResult } from "./spawn";
 
 export const run = async (fn: () => Promise<void>) => {
     const startedAt = Date.now();
@@ -21,22 +20,7 @@ export const run = async (fn: () => Promise<void>) => {
             )}\n`
         );
     } catch (err) {
-        if (err instanceof PromisifyChildProcessResult) {
-            const stdout = err.stdout.trim();
-            const stderr = err.stderr.trim();
-            console.error(
-                chalk.redBright(
-                    `Spawn failed with code ${err.code}\nCommand: ${
-                        err.command
-                    }\n${stdout.length ? `Output: ${stdout}` : ""}\n${
-                        stderr.length ? `Error: ${stderr}` : ""
-                    }`
-                )
-            );
-        } else {
-            console.error(chalk.redBright(err));
-        }
-
+        console.error(chalk.redBright(err));
         console.log(
             `\n${logSymbols.error} Failed in ${chalk.redBright(
                 prettyMs(Date.now() - startedAt)

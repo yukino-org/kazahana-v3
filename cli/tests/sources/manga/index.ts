@@ -1,6 +1,6 @@
 import { join } from "path";
 import { existsSync } from "fs";
-import { promisifyChildProcess, spawn } from "../../../spawn";
+import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 
@@ -32,12 +32,10 @@ export const test = async () => {
     }
 
     logger.log(" ");
-    await promisifyChildProcess(
-        await spawn(
-            "flutter",
-            ["test", "-r", "expanded", path],
-            config.base,
-            "inherit"
-        )
+    await spawn(
+        "flutter",
+        ["test", "-r", "expanded", path],
+        config.base,
+        "inherit"
     );
 };

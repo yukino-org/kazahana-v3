@@ -1,7 +1,7 @@
 import { join } from "path";
 import { copyFile } from "fs-extra";
 import readdirp from "readdirp";
-import { spawn, promisifyChildProcess } from "../../../spawn";
+import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 
@@ -11,9 +11,7 @@ const logger = new Logger("windows:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await promisifyChildProcess(
-        await spawn("flutter", ["build", "windows"], config.base)
-    );
+    await spawn("flutter", ["build", "windows"], config.base);
     logger.log("Finished running build command");
 
     const dllDir = join(__dirname, "dlls");
