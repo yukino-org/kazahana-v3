@@ -6,9 +6,9 @@ class TranslationLocale {
   TranslationLocale(this.code, [this.country]);
 
   factory TranslationLocale.parse(final String locale) {
-    final RegExpMatch match = RegExp('([^_]+)(_(.*?))?').firstMatch(locale)!;
+    final RegExpMatch match = RegExp('([^_]+)(_(.*))?').firstMatch(locale)!;
     final LanguageCodes lang = LanguageUtils.languageCodeMap[match.group(1)!]!;
-    final LanguageCountries? country = match.groupCount == 3
+    final LanguageCountries? country = match.group(3) != null
         ? LanguageCountryUtils.nameCodeMap[match.group(3)!]
         : null;
 
@@ -34,7 +34,7 @@ class TranslationLocale {
 
   @override
   String toString() =>
-      <String>[code.name, if (country != null) country!.country].join('_');
+      <String>[code.name, if (country != null) country!.name].join('_');
 
   @override
   bool operator ==(final Object other) =>

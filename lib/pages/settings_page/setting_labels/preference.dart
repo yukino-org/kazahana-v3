@@ -15,10 +15,11 @@ List<Widget> getPreference(
           title: Translator.t.language(),
           dialogTitle: Translator.t.chooseLanguage(),
           icon: Icons.language,
-          value: settings.locale ?? Translator.t.locale.code.name,
+          value: Translator.t.locale.toString(),
           labels: <String, String>{
             for (final TranslationSentences lang in Translator.translations)
-              lang.locale.code.name: lang.locale.code.language,
+              lang.locale.toString():
+                  '${lang.locale.code.language} (${lang.locale.toString()})',
           },
           onChanged: (final String val) async {
             settings.locale = val;

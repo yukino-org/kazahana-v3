@@ -53,7 +53,7 @@ abstract class AppLifecycle {
       try {
         await LocalServer.initialize();
         Logger.of('LocalServer')
-          ..info('Finsihed "initialize"')
+          ..info('Finished "initialize"')
           ..info('Serving at ${LocalServer.baseURL}');
       } catch (err, trace) {
         Logger.of('LocalServer').error(
@@ -78,7 +78,7 @@ abstract class AppLifecycle {
     if (primaryInstance != null) {
       try {
         await InstanceManager.sendArguments(primaryInstance, args);
-        Logger.of('InstanceManager').info('Finsihed "sendArguments"');
+        Logger.of('InstanceManager').info('Finished "sendArguments"');
       } catch (err, trace) {
         Logger.of('InstanceManager').error(
           '"sendArguments" failed: $err',
