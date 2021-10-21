@@ -126,7 +126,7 @@ class _PageState extends State<Page>
 
     info = await extractor.getInfo(
       args.src,
-      locale?.code ?? extractor.defaultLocale,
+      locale?.name ?? extractor.defaultLocale,
     );
 
     await DataBox.cache.put(
@@ -279,11 +279,11 @@ class _PageState extends State<Page>
                 ...info!.availableLocales.map(
                   (final String x) {
                     final LanguageCodes groupVal =
-                        LanguageUtils.codeLangaugeMap[info!.locale] ??
+                        LanguageUtils.languageCodeMap[info!.locale] ??
                             LanguageCodes.en;
 
                     final LanguageCodes lang =
-                        LanguageUtils.codeLangaugeMap[x] ?? LanguageCodes.en;
+                        LanguageUtils.languageCodeMap[x] ?? LanguageCodes.en;
 
                     return Material(
                       type: MaterialType.transparency,

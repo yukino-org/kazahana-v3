@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/languages.dart' show LanguageName;
 import './plugins/app_lifecycle.dart';
 import './plugins/database/database.dart';
 import './plugins/database/schemas/settings/settings.dart' as settings_schema;
@@ -7,7 +6,6 @@ import './plugins/helpers/logger.dart';
 import './plugins/helpers/ui.dart';
 import './plugins/router.dart';
 import './plugins/state.dart';
-import './plugins/translator/translator.dart';
 
 Future<void> main(final List<String> args) async {
   try {
@@ -59,10 +57,6 @@ class _MainAppState extends State<MainApp> {
       useSystemPreferredTheme = current.useSystemPreferredTheme;
       useDarkMode = current.useDarkMode;
     });
-
-    if (current.locale != null && current.locale != Translator.t.code.code) {
-      Translator.setLanguage(current.locale!);
-    }
   }
 
   @override

@@ -3,7 +3,7 @@ import '../../../core/models/translations.dart';
 
 class Sentences extends TranslationSentences {
   @override
-  LanguageCodes get code => LanguageCodes.en;
+  TranslationLocale get locale => TranslationLocale(LanguageCodes.en);
 
   @override
   String home() => 'Home';

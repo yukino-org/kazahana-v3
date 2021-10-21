@@ -184,14 +184,12 @@ enum LanguageCodes {
   zu,
 }
 
-extension LanguageName on LanguageCodes {
-  String get code => toString().split('.').last;
-  String get language => LanguageUtils.languageNameMap[this]!;
+extension LanguageCodeUtils on LanguageCodes {
+  String get language => LanguageUtils.codeNameMap[this]!;
 }
 
 abstract class LanguageUtils {
-  static const Map<LanguageCodes, String> languageNameMap =
-      <LanguageCodes, String>{
+  static const Map<LanguageCodes, String> codeNameMap = <LanguageCodes, String>{
     LanguageCodes.aa: 'Afar',
     LanguageCodes.ab: 'Abkhazian',
     LanguageCodes.af: 'Afrikaans',
@@ -379,11 +377,11 @@ abstract class LanguageUtils {
     LanguageCodes.zu: 'Zulu'
   };
 
-  static final Map<String, LanguageCodes> codeLangaugeMap = LanguageCodes.values
+  static final Map<String, LanguageCodes> languageCodeMap = LanguageCodes.values
       .asMap()
       .map(
         (final int k, final LanguageCodes v) => MapEntry<String, LanguageCodes>(
-          v.code,
+          v.name,
           v,
         ),
       )

@@ -5,34 +5,36 @@ import './translations/pt_br.dart' as pt_br;
 import '../../core/models/translations.dart';
 
 abstract class Translator {
-  static final List<TranslationSentences> _availableTranslations =
-      <TranslationSentences>[
+  static final List<TranslationSentences> translations = <TranslationSentences>[
     en.Sentences(),
     pt_br.Sentences(),
   ];
 
-  static Map<String, TranslationSentences> translations =
-      <String, TranslationSentences>{
-    for (final TranslationSentences lang in _availableTranslations)
-      lang.code.code: lang,
-  };
-
   static late TranslationSentences t;
 
-  static void setLanguage(final String language) {
-    final TranslationSentences? lang = translations[language];
-    if (lang == null) {
-      throw ArgumentError('Unknown language: $language');
+  static TranslationSentences? tryGetTranslation(final String _locale) {
+    final TranslationLocale locale = TranslationLocale.parse(_locale);
+
+    TranslationSentences? translation;
+    int threshold = 0;
+
+    for (final TranslationSentences x in translations) {
+      final int nThresh = x.locale.compare(locale);
+      if (nThresh > threshold) {
+        translation = x;
+        threshold = nThresh;
+      }
     }
 
-    t = lang;
+    return translation;
   }
 
-  static bool isSupportedLocale(final String locale) =>
-      translations[locale] != null;
+  static TranslationSentences getDefaultTranslation() =>
+      translations.firstWhere(
+        (final TranslationSentences x) =>
+            x.locale == TranslationLocale(LanguageCodes.en),
+      );
 
-  static String getSupportedLocale() {
-    final String sysLang = Platform.localeName.split('_')[0];
-    return isSupportedLocale(sysLang) ? sysLang : LanguageCodes.en.code;
-  }
+  static TranslationSentences getSupportedTranslation() =>
+      tryGetTranslation(Platform.localeName) ?? getDefaultTranslation();
 }

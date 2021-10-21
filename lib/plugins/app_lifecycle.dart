@@ -12,6 +12,7 @@ import './translator/translator.dart';
 import './video_player/video_player.dart';
 import '../config.dart';
 import '../core/extensions.dart';
+import '../core/models/translations.dart';
 import '../core/trackers/trackers.dart';
 
 // TODO: Pending at https://github.com/flutter/flutter/issues/30735
@@ -103,14 +104,16 @@ abstract class AppLifecycle {
       );
     }
 
-    Translator.setLanguage(
-      DataStore.settings.locale != null &&
-              Translator.isSupportedLocale(
-                DataStore.settings.locale!,
-              )
-          ? DataStore.settings.locale!
-          : Translator.getSupportedLocale(),
-    );
+    final TranslationSentences? settingsLocale =
+        DataStore.settings.locale != null
+            ? Translator.tryGetTranslation(DataStore.settings.locale!)
+            : null;
+    if (settingsLocale == null) {
+      DataStore.settings.locale = null;
+      await DataStore.settings.save();
+    }
+
+    Translator.t = settingsLocale ?? Translator.getSupportedTranslation();
 
     Deeplink.link = ProtocolHandler.fromArgs(args);
     preready = true;

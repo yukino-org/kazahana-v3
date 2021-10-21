@@ -2,7 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/languages.dart';
 import '../../components/network_image_fallback.dart';
 import '../../core/extensions.dart';
 import '../../core/models/page_args/anime_page.dart' as anime_page;
@@ -184,7 +183,7 @@ class _PageState extends State<Page> with DidLoadStater {
         final List<extensions.SearchInfo> searches =
             await currentPlugin!.plugin.search(
           textController.text,
-          Translator.t.code.code,
+          Translator.t.locale.code.name,
         );
 
         if (mounted) {
