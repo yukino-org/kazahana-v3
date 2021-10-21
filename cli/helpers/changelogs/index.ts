@@ -2,6 +2,7 @@ import got from "got";
 import { getOctokit } from "@actions/github";
 import { config } from "../../config";
 import { Logger } from "../../logger";
+import { capitalizeString } from "../../utils";
 
 const logger = new Logger("actions:update-changelogs");
 
@@ -49,9 +50,9 @@ export const updateChangelogs = async (
         if (match) {
             const chunks = [`[\`${x.sha.slice(0, 6)}\`](${x.html_url})`];
             if (match[3]) {
-                chunks.push(`**${match[3]}**:`);
+                chunks.push(`**${capitalizeString(match[3])}**:`);
             }
-            chunks.push(match[5]);
+            chunks.push(capitalizeString(match[5]));
             const msg = chunks.join(" ");
 
             const key = match[1] as keyof typeof commits;
@@ -62,11 +63,14 @@ export const updateChangelogs = async (
     }
 
     const changelogs = [`## Changelogs\n`];
-    for (const [k, v] of Object.entries(commits)) {
+    for (const [k, v] of Object.entries(commits) as [
+        keyof typeof commits,
+        string[]
+    ][]) {
         if (v.length) {
             let head: string;
 
-            switch (k as keyof typeof commits) {
+            switch (k) {
                 case "feat":
                     head = "✨ Features";
                     break;
@@ -86,7 +90,7 @@ export const updateChangelogs = async (
 
             changelogs.push(
                 `- ${head}\n`,
-                commits.feat.map((x) => `   - ${x}`).join("\n")
+                commits[k].map((x) => `   - ${x}`).join("\n")
             );
         }
     }
@@ -100,7 +104,7 @@ export const updateChangelogs = async (
 
     let body = latest.body || "";
     const bodyRegex = /(## Links[\s\S]+)/;
-    const bodyContent = `${links}\n${notes}`;
+    const bodyContent = `${links}\n\n${notes}`;
 
     if (bodyRegex.test(body)) {
         body = body.replace(bodyRegex, bodyContent);
