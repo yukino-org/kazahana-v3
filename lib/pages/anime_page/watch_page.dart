@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
 import './select_source.dart';
 import '../../config.dart';
 import '../../core/models/player.dart' as player_model;
 import '../../core/models/tracker_provider.dart';
 import '../../core/trackers/providers.dart';
+import '../../plugins/helpers/double_value_listenable_builder.dart';
 import '../../plugins/helpers/screen.dart';
 import '../../plugins/helpers/stateful_holder.dart';
 import '../../plugins/helpers/ui.dart';
@@ -77,6 +80,7 @@ class WatchPageState extends State<WatchPage>
   final Duration animationDuration = const Duration(milliseconds: 300);
 
   final ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> isBuffering = ValueNotifier<bool>(true);
   late AnimationController playPauseController;
   late AnimationController overlayController;
 
@@ -260,6 +264,10 @@ class WatchPageState extends State<WatchPage>
 
       case player_model.PlayerEvents.speed:
         speed = player!.speed;
+        break;
+
+      case player_model.PlayerEvents.buffering:
+        isBuffering.value = player!.isBuffering;
         break;
 
       case player_model.PlayerEvents.error:
@@ -667,19 +675,28 @@ class WatchPageState extends State<WatchPage>
                                                       color: Colors.white,
                                                     ),
                                                   ),
-                                                  ValueListenableBuilder<bool>(
-                                                    valueListenable: isPlaying,
+                                                  DoubleValueListenableBuilder<
+                                                      bool, bool>(
+                                                    valueListenable1: isPlaying,
+                                                    valueListenable2:
+                                                        isBuffering,
                                                     builder: (
                                                       final BuildContext
                                                           context,
                                                       final bool isPlaying,
+                                                      final bool isBuffering,
                                                       final Widget? child,
                                                     ) {
-                                                      isPlaying
-                                                          ? playPauseController
-                                                              .forward()
-                                                          : playPauseController
-                                                              .reverse();
+                                                      if (isBuffering &&
+                                                          isPlaying) {
+                                                        return loader;
+                                                      } else {
+                                                        isPlaying
+                                                            ? playPauseController
+                                                                .forward()
+                                                            : playPauseController
+                                                                .reverse();
+                                                      }
                                                       return Material(
                                                         type: MaterialType
                                                             .transparency,

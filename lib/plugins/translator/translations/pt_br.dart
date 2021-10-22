@@ -332,7 +332,7 @@ class Sentences extends en.Sentences {
   String topAnimes() => 'Top Animes';
 
   @override
-  String recentlyUpdated() => 'Atualizado recentemente';
+  String recentlyUpdated() => 'Atualizados recentemente';
 
   @override
   String recommendedBy(final String by) => 'Recomendado por $by';

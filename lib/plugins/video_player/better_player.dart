@@ -71,6 +71,10 @@ class BetterPlayer extends model.Player {
               dispatch(model.PlayerEvent(model.PlayerEvents.speed, null));
               break;
 
+            case better_player.BetterPlayerEventType.bufferingUpdate:
+              dispatch(model.PlayerEvent(model.PlayerEvents.buffering, null));
+              break;
+
             case better_player.BetterPlayerEventType.exception:
               dispatch(
                 model.PlayerEvent(model.PlayerEvents.error, e.parameters),
@@ -122,6 +126,9 @@ class BetterPlayer extends model.Player {
 
   @override
   bool get isPlaying => _controller.isPlaying() ?? false;
+
+  @override
+  bool get isBuffering => _controller.isBuffering() ?? true;
 
   @override
   Duration? get duration => _controller.videoPlayerController?.value.position;

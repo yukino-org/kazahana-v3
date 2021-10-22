@@ -14,6 +14,7 @@ class DartVlc extends model.Player {
 
   double? _prevSpeed;
   double? _prevVolume;
+  double? _prevBuffering;
   final GlobalKey _playerKey = GlobalKey();
 
   final List<StreamSubscription<dynamic>> _subscriptions =
@@ -55,6 +56,12 @@ class DartVlc extends model.Player {
             ready = true;
           }
         }),
+        _player.bufferingProgressStream
+            .listen((final double bufferingProgress) {
+          if (_prevBuffering != bufferingProgress) {
+            dispatch(model.PlayerEvent(model.PlayerEvents.buffering, null));
+          }
+        })
       ],
     );
 
@@ -115,6 +122,9 @@ class DartVlc extends model.Player {
 
   @override
   bool get isPlaying => _player.playback.isPlaying;
+
+  @override
+  bool get isBuffering => _player.bufferingProgress < 100.0;
 
   @override
   Duration? get duration => _player.position.position;
