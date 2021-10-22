@@ -6,6 +6,7 @@ enum PlayerEvents {
   durationUpdate,
   play,
   pause,
+  buffering,
   seek,
   volume,
   end,
@@ -51,6 +52,7 @@ abstract class Player extends Eventer<PlayerEvent> {
   }
 
   bool get isPlaying;
+  bool get isBuffering;
   Duration? get duration;
   Duration? get totalDuration;
   int get volume;
