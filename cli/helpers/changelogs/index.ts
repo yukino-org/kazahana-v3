@@ -50,11 +50,22 @@ export const updateChangelogs = async (
         if (match) {
             const chunks = [`[\`${x.sha.slice(0, 6)}\`](${x.html_url})`];
             if (match[3]) {
-                chunks.push(`**${capitalizeString(match[3])}**:`);
+                chunks.push(
+                    `**${capitalizeString(
+                        match[3].replace(/_[a-z]/, (str) =>
+                            str.slice(1).toUpperCase()
+                        )
+                    )}**:`
+                );
             }
             chunks.push(capitalizeString(match[5]));
-            const msg = chunks.join(" ");
+            if (x.stats?.additions || x.stats?.deletions) {
+                chunks.push(
+                    `+${x.stats.additions || 0} -${x.stats.deletions || 0}`
+                );
+            }
 
+            const msg = chunks.join(" ");
             const key = match[1] as keyof typeof commits;
             if (!commits[key].includes(msg)) {
                 commits[key].push(msg);
