@@ -46,13 +46,19 @@ abstract class ExtensionsManager {
 
   static bool isInstalled(
     final extensions.BaseExtension ext,
+  ) =>
+      isInstalledById(ext.type, ext.id);
+
+  static bool isInstalledById(
+    final extensions.ExtensionType type,
+    final String id,
   ) {
-    switch (ext.type) {
+    switch (type) {
       case extensions.ExtensionType.anime:
-        return animes.containsKey(ext.id);
+        return animes.containsKey(id);
 
       case extensions.ExtensionType.manga:
-        return mangas.containsKey(ext.id);
+        return mangas.containsKey(id);
     }
   }
 
