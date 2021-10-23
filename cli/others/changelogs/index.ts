@@ -114,6 +114,8 @@ class Changelogs {
         } else {
             body += `\n${bodyContent}`;
         }
+
+        return body;
     }
 
     getLinks() {
@@ -198,13 +200,6 @@ export const updateChangelogs = async (
     await ensureDir(config.cacheDir);
     await writeFile(join(config.cacheDir, "changelogs.json"), changelogs.json);
     logger.log("Created changelogs.json");
-
-    await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
-        ...repo,
-        release_id: latest.id,
-        body: changelogs.getGithubReleaseBody(latest.body ?? ""),
-    });
-    logger.log("Updated release");
 
     await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
         ...repo,
