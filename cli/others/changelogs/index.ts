@@ -204,27 +204,27 @@ export const updateChangelogs = async (
     });
     logger.log("Updated release");
 
-    await got.post(discordWebhookURL, {
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            username: "Yukino - Releases",
-            avatar_url: `https://github.com/${config.github.username}/${config.github.repo}/blob/next/assets/images/yukino-icon.png?raw=true`,
-            embeds: [
-                {
-                    title: `${latest.name}${
-                        latest.name != latest.tag_name
-                            ? ` (${latest.tag_name})`
-                            : ""
-                    }`,
-                    url: latest.html_url,
-                    color: 6514417,
-                    description: changelogs.getDiscordMessageBody(),
-                    timestamp: new Date().toISOString(),
-                },
-            ],
-        }),
-    });
-    logger.log("Posted webhook");
+    // await got.post(discordWebhookURL, {
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //         username: "Yukino - Releases",
+    //         avatar_url: `https://github.com/${config.github.username}/${config.github.repo}/blob/next/assets/images/yukino-icon.png?raw=true`,
+    //         embeds: [
+    //             {
+    //                 title: `${latest.name}${
+    //                     latest.name != latest.tag_name
+    //                         ? ` (${latest.tag_name})`
+    //                         : ""
+    //                 }`,
+    //                 url: latest.html_url,
+    //                 color: 6514417,
+    //                 description: changelogs.getDiscordMessageBody(),
+    //                 timestamp: new Date().toISOString(),
+    //             },
+    //         ],
+    //     }),
+    // });
+    // logger.log("Posted webhook");
 };
