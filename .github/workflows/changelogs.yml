@@ -27,24 +27,3 @@ jobs:
               env:
                   DISCORD_RELEASE_HOOK: ${{ secrets.DISCORD_RELEASE_HOOK }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: 🔢 Get version
-              uses: actions/github-script@v4
-              id: app_version
-              with:
-                  result-encoding: string
-                  script: |
-                      const spawn = require("cross-spawn");
-                      const result = spawn.sync("npm", ["run", "version:print", "-s"]);
-                      if (result.status != 0) {
-                        throw new Error(result.stderr.toString());
-                      }
-
-                      return result.stdout.toString().trim();
-
-            - name: 🗞️ Upload changelogs
-              uses: softprops/action-gh-release@v1
-              with:
-                  tag_name: v${{ steps.app_version.outputs.result }}
-                  files: cli/.cache/changelogs.json
-                  draft: false
