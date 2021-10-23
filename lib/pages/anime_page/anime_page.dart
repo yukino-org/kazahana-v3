@@ -237,7 +237,11 @@ class _PageState extends State<Page>
     }
   }
 
-  Widget getGridLayout(final int count, final List<Widget> children) {
+  Widget getEpisodes(
+    final int start,
+    final int end,
+    final EdgeInsets padding,
+  ) {
     const Widget filler = Expanded(
       child: SizedBox.shrink(),
     );
@@ -246,7 +250,71 @@ class _PageState extends State<Page>
       removeTop: true,
       context: context,
       child: ListView(
-        children: ListUtils.chunk<Widget>(children, count, filler)
+        padding: padding,
+        children: ListUtils.chunk<Widget>(
+          info!.sortedEpisodes
+              .sublist(
+                start,
+                end,
+              )
+              .asMap()
+              .map(
+                (
+                  final int k,
+                  final extensions.EpisodeInfo x,
+                ) =>
+                    MapEntry<int, Widget>(
+                  k,
+                  Expanded(
+                    child: Card(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          4,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: remToPx(0.4),
+                            vertical: remToPx(0.3),
+                          ),
+                          child: RichText(
+                            text: TextSpan(
+                              children: <InlineSpan>[
+                                TextSpan(
+                                  text: '${Translator.t.episode()} ',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.subtitle2,
+                                ),
+                                TextSpan(
+                                  text: x.episode.padLeft(
+                                    2,
+                                    '0',
+                                  ),
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.subtitle2?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        onTap: () {
+                          setEpisode(start + k);
+                          goToPage(Pages.player);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .values
+              .toList(),
+          MediaQuery.of(context).size.width ~/ remToPx(8),
+          filler,
+        )
             .map(
               (final List<Widget> x) => Row(
                 children: x,
@@ -477,139 +545,70 @@ class _PageState extends State<Page>
                               ),
                             ),
                             if (tabCount > 1)
-                              SliverAppBar(
-                                primary: false,
-                                pinned: true,
-                                floating: true,
-                                automaticallyImplyLeading: false,
-                                backgroundColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                title: ScrollConfiguration(
-                                  behavior: MiceScrollBehavior(),
-                                  child: TabBar(
-                                    isScrollable: true,
-                                    tabs: List<Widget>.generate(
-                                      tabCount,
-                                      (final int i) {
-                                        final int start = i * maxChunkLength;
-                                        return Tab(
-                                          text:
-                                              '$start - ${start + maxChunkLength}',
-                                        );
-                                      },
+                              SliverPadding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: paddingHorizontal,
+                                ),
+                                sliver: SliverAppBar(
+                                  primary: false,
+                                  pinned: true,
+                                  floating: true,
+                                  automaticallyImplyLeading: false,
+                                  backgroundColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  titleSpacing: 0,
+                                  centerTitle: true,
+                                  title: ScrollConfiguration(
+                                    behavior: MiceScrollBehavior(),
+                                    child: TabBar(
+                                      isScrollable: true,
+                                      tabs: List<Widget>.generate(
+                                        tabCount,
+                                        (final int i) {
+                                          final int start = i * maxChunkLength;
+                                          return Tab(
+                                            text:
+                                                '$start - ${start + maxChunkLength}',
+                                          );
+                                        },
+                                      ),
+                                      labelColor: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          ?.color,
+                                      indicatorColor:
+                                          Theme.of(context).primaryColor,
                                     ),
-                                    labelColor: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        ?.color,
-                                    indicatorColor:
-                                        Theme.of(context).primaryColor,
                                   ),
                                 ),
-                                centerTitle: true,
                               ),
                           ],
-                          body: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: paddingHorizontal,
-                            ),
-                            child: TabBarView(
-                              children: List<Widget>.generate(
-                                tabCount,
-                                (final int i) {
-                                  final int start = i * maxChunkLength;
-                                  final int totalLength =
-                                      info!.sortedEpisodes.length;
-                                  final int end = start + maxChunkLength;
-                                  final int extra =
-                                      end > totalLength ? end - totalLength : 0;
+                          body: TabBarView(
+                            children: List<Widget>.generate(
+                              tabCount,
+                              (final int i) {
+                                final int start = i * maxChunkLength;
+                                final int totalLength =
+                                    info!.sortedEpisodes.length;
+                                final int end = start + maxChunkLength;
+                                final int extra =
+                                    end > totalLength ? end - totalLength : 0;
 
-                                  return Builder(
-                                    builder: (final BuildContext context) =>
-                                        getGridLayout(
-                                      MediaQuery.of(context).size.width ~/
-                                          remToPx(8),
-                                      info!.sortedEpisodes
-                                          .sublist(
-                                            start,
-                                            end - extra,
-                                          )
-                                          .asMap()
-                                          .map(
-                                            (
-                                              final int k,
-                                              final extensions.EpisodeInfo x,
-                                            ) =>
-                                                MapEntry<int, Widget>(
-                                              k,
-                                              Expanded(
-                                                child: Card(
-                                                  child: InkWell(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      4,
-                                                    ),
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                        horizontal:
-                                                            remToPx(0.4),
-                                                        vertical: remToPx(0.3),
-                                                      ),
-                                                      child: RichText(
-                                                        text: TextSpan(
-                                                          children: <
-                                                              InlineSpan>[
-                                                            TextSpan(
-                                                              text:
-                                                                  '${Translator.t.episode()} ',
-                                                              style: Theme.of(
-                                                                context,
-                                                              )
-                                                                  .textTheme
-                                                                  .subtitle2,
-                                                            ),
-                                                            TextSpan(
-                                                              text: x.episode
-                                                                  .padLeft(
-                                                                2,
-                                                                '0',
-                                                              ),
-                                                              style: Theme.of(
-                                                                context,
-                                                              )
-                                                                  .textTheme
-                                                                  .subtitle2
-                                                                  ?.copyWith(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                    ),
-                                                    onTap: () {
-                                                      setEpisode(k);
-                                                      goToPage(Pages.player);
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          .values
-                                          .toList(),
+                                return Builder(
+                                  builder: (final BuildContext context) =>
+                                      getEpisodes(
+                                    start,
+                                    end - extra,
+                                    EdgeInsets.symmetric(
+                                      horizontal: paddingHorizontal,
                                     ),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
+                        // ),
                       ),
                       floatingActionButton: ValueListenableBuilder<bool>(
                         valueListenable: showFloatingButton,

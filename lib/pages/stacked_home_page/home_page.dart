@@ -81,11 +81,15 @@ class _PageState extends State<Page> with DidLoadStater {
     Deeplink.listen();
   }
 
-  void goToPage(final int page) => controller.animateToPage(
+  void goToPage(final int page) {
+    if (controller.hasClients) {
+      controller.animateToPage(
         page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
       );
+    }
+  }
 
   Widget applySideIfSupported(final Widget body, final List<BarItem> items) {
     if (AppState.isDesktop) {

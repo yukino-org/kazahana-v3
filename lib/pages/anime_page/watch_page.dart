@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import './select_source.dart';
 import '../../config.dart';
 import '../../core/models/player.dart' as player_model;
