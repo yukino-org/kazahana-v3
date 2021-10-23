@@ -6,6 +6,84 @@ import { capitalizeString } from "../../utils";
 
 const logger = new Logger("actions:update-changelogs");
 
+interface Commits {
+    feat: string[];
+    refactor: string[];
+    fix: string[];
+    perf: string[];
+}
+
+class Changelogs {
+    commits: Commits = {
+        feat: [],
+        refactor: [],
+        fix: [],
+        perf: [],
+    };
+
+    constructor(
+        public readonly downloadURL: string,
+        public readonly releaseURL: string
+    ) {}
+
+    getDiscordMessageBody() {
+        return `**Download**: ${this.downloadURL}\n**Release**: ${this.releaseURL}`;
+    }
+
+    getGithubReleaseBody(body: string) {
+        const bodyRegex = /(## Links[\s\S]+)/;
+        const bodyContent = `${this.getLinks()}\n\n${this.getChangelogs()}`;
+
+        if (bodyRegex.test(body)) {
+            body = body.replace(bodyRegex, bodyContent);
+        } else {
+            body += `\n${bodyContent}`;
+        }
+    }
+
+    getLinks() {
+        return `## Links\n  - Download: ${this.downloadURL}\n   - Release: ${this.releaseURL}`;
+    }
+
+    getChangelogs() {
+        const logs = [`## Changelogs\n`];
+
+        for (const [k, v] of Object.entries(this.commits) as [
+            keyof Commits,
+            string[]
+        ][]) {
+            if (v.length) {
+                let head: string;
+
+                switch (k) {
+                    case "feat":
+                        head = "✨ Features";
+                        break;
+
+                    case "fix":
+                        head = "🐛 Bug fixes";
+                        break;
+
+                    case "refactor":
+                        head = "♻️ Changes";
+                        break;
+
+                    case "perf":
+                        head = "⚡️ Performance";
+                        break;
+                }
+
+                logs.push(
+                    `- ${head}\n`,
+                    this.commits[k].map((x) => `   - ${x}`).join("\n")
+                );
+            }
+        }
+
+        return logs.join("\n");
+    }
+}
+
 export const updateChangelogs = async (
     githubToken: string,
     discordWebhookURL: string
@@ -34,12 +112,10 @@ export const updateChangelogs = async (
         }
     );
 
-    const commits = {
-        feat: [] as string[],
-        fix: [] as string[],
-        refactor: [] as string[],
-        perf: [] as string[],
-    };
+    const changelogs = new Changelogs(
+        `${config.url}/download/${latest.tag_name}`,
+        latest.html_url
+    );
 
     for (const x of diff.data.commits) {
         const match =
@@ -66,67 +142,17 @@ export const updateChangelogs = async (
             }
 
             const msg = chunks.join(" ");
-            const key = match[1] as keyof typeof commits;
-            if (!commits[key].includes(msg)) {
-                commits[key].push(msg);
+            const key = match[1] as keyof Commits;
+            if (!changelogs.commits[key].includes(msg)) {
+                changelogs.commits[key].push(msg);
             }
         }
-    }
-
-    const changelogs = [`## Changelogs\n`];
-    for (const [k, v] of Object.entries(commits) as [
-        keyof typeof commits,
-        string[]
-    ][]) {
-        if (v.length) {
-            let head: string;
-
-            switch (k) {
-                case "feat":
-                    head = "✨ Features";
-                    break;
-
-                case "fix":
-                    head = "🐛 Bug fixes";
-                    break;
-
-                case "refactor":
-                    head = "♻️ Changes";
-                    break;
-
-                case "perf":
-                    head = "⚡️ Performance";
-                    break;
-            }
-
-            changelogs.push(
-                `- ${head}\n`,
-                commits[k].map((x) => `   - ${x}`).join("\n")
-            );
-        }
-    }
-
-    const links = [
-        "## Links\n",
-        `   - Download: ${config.url}/download/${latest.tag_name}/`,
-        `   - Release: ${latest.html_url}/`,
-    ].join("\n");
-    const notes = changelogs.join("\n");
-
-    let body = latest.body || "";
-    const bodyRegex = /(## Links[\s\S]+)/;
-    const bodyContent = `${links}\n\n${notes}`;
-
-    if (bodyRegex.test(body)) {
-        body = body.replace(bodyRegex, bodyContent);
-    } else {
-        body += `\n${bodyContent}`;
     }
 
     await github.request("POST /repos/{owner}/{repo}/releases/{release_id}", {
         ...repo,
         release_id: latest.id,
-        body,
+        body: changelogs.getGithubReleaseBody(latest.body || ""),
     });
 
     logger.log("Updated release");
@@ -147,7 +173,7 @@ export const updateChangelogs = async (
                     }`,
                     url: latest.html_url,
                     color: 6514417,
-                    description: links,
+                    description: changelogs.getDiscordMessageBody(),
                     timestamp: new Date().toISOString(),
                 },
             ],
