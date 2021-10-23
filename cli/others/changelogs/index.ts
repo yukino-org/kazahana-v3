@@ -108,10 +108,8 @@ class Changelogs {
     }
 
     getGithubReleaseBody(body: string) {
-        const bodyRegex = /(## Links[\s\S]+)/;
-        const bodyContent = `${this.getLinks()}\n\n${this.getChangelogs()}\n\n<!-- changelogs: ${
-            this.json
-        } -->`;
+        const bodyRegex = /(<!-- generated -->[\s\S]+)/;
+        const bodyContent = `<!-- generated -->\n${this.getLinks()}\n\n${this.getChangelogs()}`;
 
         if (bodyRegex.test(body)) {
             body = body.replace(bodyRegex, bodyContent);
@@ -155,19 +153,15 @@ class Changelogs {
                 }
 
                 logs.push(
-                    `- ${head}\n`,
-                    this.commits[k].map((x) => `   - ${x}`).join("\n")
+                    `- ${head}`,
+                    `<!-- {${k}} -->`,
+                    this.commits[k].map((x) => `   - ${x}`).join("\n"),
+                    `<!-- {/${k}} -->`
                 );
             }
         }
 
         return logs.join("\n");
-    }
-
-    get json() {
-        return JSON.stringify({
-            commits: this.commits,
-        });
     }
 
     get downloadURL() {
