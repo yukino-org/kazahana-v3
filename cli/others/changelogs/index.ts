@@ -45,9 +45,11 @@ class CommitMessage {
             chunks.push(`**${this.commit.cat}**:`);
         }
         chunks.push(capitalizeString(this.commit.msg));
-        chunks.push(
-            `+${this.commit.stats.additions} -${this.commit.stats.deletions}`
-        );
+        if (this.commit.stats.additions || this.commit.stats.deletions) {
+            chunks.push(
+                `(+${this.commit.stats.additions} -${this.commit.stats.deletions})`
+            );
+        }
 
         return chunks.join(" ");
     }
@@ -80,7 +82,7 @@ class Changelogs {
                     type: match[1] as keyof Commits,
                     cat: match[3]
                         ? capitalizeString(
-                              match[3].replace(/_[a-z]/, (str) =>
+                              match[3].replace(/_[a-z]/g, (str) =>
                                   str.slice(1).toUpperCase()
                               )
                           )
