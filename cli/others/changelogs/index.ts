@@ -31,8 +31,8 @@ class CommitMessage {
 
     isSame(other: CommitMessage) {
         return (
-            this.commit.type === other.commit.type ||
-            this.commit.cat === other.commit.cat ||
+            this.commit.type === other.commit.type &&
+            this.commit.cat === other.commit.cat &&
             this.commit.msg === other.commit.msg
         );
     }
