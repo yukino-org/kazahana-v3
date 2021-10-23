@@ -1,7 +1,7 @@
 import { dirname, join, relative } from "path";
 import { ensureDir, readdir, readFile, rename, writeFile } from "fs-extra";
 import { spawn } from "../../../../spawn";
-import { getVersion } from "../../../../helpers/version";
+import { getVersion } from "../../../../others/version/print";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";
@@ -34,7 +34,8 @@ export const build = async () => {
     await spawn(
         "appimage-builder",
         ["--recipe", `./${relative(config.base, builderGYml)}`, "--skip-tests"],
-        config.base, "inherit"
+        config.base,
+        "inherit"
     );
     logger.log("Finished running appimage-builder command");
 

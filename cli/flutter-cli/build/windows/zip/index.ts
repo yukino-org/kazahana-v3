@@ -1,7 +1,7 @@
 import { join } from "path";
 import { promisify } from "util";
 import Zip from "adm-zip";
-import { getVersion } from "../../../../helpers/version";
+import { getVersion } from "../../../../others/version/print";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";

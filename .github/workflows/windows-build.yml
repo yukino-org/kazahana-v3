@@ -48,7 +48,7 @@ jobs:
                   result-encoding: string
                   script: |
                       const spawn = require("cross-spawn");
-                      const result = spawn.sync("npm", ["run", "helpers:version:print", "-s"]);
+                      const result = spawn.sync("npm", ["run", "version:print", "-s"]);
                       if (result.status != 0) {
                         throw new Error(result.stderr.toString());
                       }

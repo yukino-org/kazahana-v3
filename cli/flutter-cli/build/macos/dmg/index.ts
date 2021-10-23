@@ -2,7 +2,7 @@ import { dirname, join } from "path";
 import { ensureDir, readFile, writeFile, readdir, rename } from "fs-extra";
 import * as png2icons from "png2icons";
 import { spawn } from "../../../../spawn";
-import { getVersion } from "../../../../helpers/version";
+import { getVersion } from "../../../../others/version/print";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";
 import { buildDir } from "../";

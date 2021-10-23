@@ -1,6 +1,6 @@
 import { join } from "path";
 import { readFile } from "fs-extra";
-import { config } from "../../config";
+import { config } from "../../../config";
 
 export const matchRegex = /version:(.*)/;
 

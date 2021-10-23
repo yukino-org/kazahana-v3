@@ -4,9 +4,9 @@ import { readFile, writeFile } from "fs-extra";
 import semver from "semver";
 import { sync as spawn } from "cross-spawn";
 import { prompt } from "inquirer";
-import { config } from "../../config";
-import { Logger } from "../../logger";
-import { matchRegex } from "../../helpers/version";
+import { config } from "../../../config";
+import { Logger } from "../../../logger";
+import { matchRegex } from "../print";
 
 const logger = new Logger("version");
 

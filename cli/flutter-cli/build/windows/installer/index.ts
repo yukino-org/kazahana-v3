@@ -2,7 +2,7 @@ import { join } from "path";
 import { writeFile } from "fs-extra";
 import ejs from "ejs";
 import { spawn } from "../../../../spawn";
-import { getVersion } from "../../../../helpers/version";
+import { getVersion } from "../../../../others/version/print";
 import { path as iconPath } from "../../../../icons/windows";
 import { Logger } from "../../../../logger";
 import { config } from "../../../../config";

@@ -4,7 +4,7 @@ import AdmZip from "adm-zip";
 import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
-import { getVersion } from "../../../helpers/version";
+import { getVersion } from "../../../others/version/print";
 
 export const built = join(config.base, "build/ios/iphoneos/Runner.app");
 

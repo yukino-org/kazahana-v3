@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import { RequestError } from "@octokit/request-error";
 import { config } from "../../config";
 import { Logger } from "../../logger";
-import { getVersion } from "../version";
+import { getVersion } from "../version/print";
 
 const logger = new Logger("actions:check-release");
 
