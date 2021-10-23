@@ -69,6 +69,7 @@ class _PageState extends State<Page>
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
   final Duration animationDuration = const Duration(milliseconds: 200);
+  final int maxChunkLength = AppState.isDesktop ? 25 : 15;
 
   @override
   void initState() {
@@ -329,6 +330,52 @@ class _PageState extends State<Page>
     setChapter(null);
   }
 
+  Widget getChapters(
+    final int start,
+    final int end,
+    final EdgeInsets padding,
+  ) =>
+      MediaQuery.removePadding(
+        removeTop: true,
+        context: context,
+        child: ListView(
+          padding: padding,
+          children: info!.sortedChapters
+              .sublist(start, end)
+              .asMap()
+              .map(
+                (
+                  final int k,
+                  final extensions.ChapterInfo x,
+                ) =>
+                    MapEntry<int, Widget>(
+                  k,
+                  Card(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: remToPx(0.4),
+                          vertical: remToPx(0.2),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: getChapterCard(x),
+                        ),
+                      ),
+                      onTap: () {
+                        setChapter(start + k);
+                        goToPage(Pages.reader);
+                      },
+                    ),
+                  ),
+                ),
+              )
+              .values
+              .toList(),
+        ),
+      );
+
   Future<void> showLanguageDialog() async {
     await showGeneralDialog(
       context: context,
@@ -452,6 +499,7 @@ class _PageState extends State<Page>
     );
 
     final bool isLarge = MediaQuery.of(context).size.width > ResponsiveSizes.md;
+    final double paddingHorizontal = remToPx(isLarge ? 3 : 1.25);
 
     return WillPopScope(
       child: SafeArea(
@@ -477,82 +525,136 @@ class _PageState extends State<Page>
                     },
                     child: Scaffold(
                       extendBodyBehindAppBar: true,
-                      appBar: appBar,
-                      body: SingleChildScrollView(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            left: remToPx(isLarge ? 3 : 1.25),
-                            right: remToPx(isLarge ? 3 : 1.25),
-                            top: remToPx(isLarge ? 1 : 0),
-                            bottom: remToPx(isLarge ? 2 : 1),
+                      appBar: PreferredSize(
+                        preferredSize: appBar.preferredSize,
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: showFloatingButton,
+                          builder: (
+                            final BuildContext context,
+                            final bool showFloatingButton,
+                            final Widget? child,
+                          ) =>
+                              ToggleableSlideWidget(
+                            controller: floatingButtonController,
+                            visible: showFloatingButton,
+                            curve: Curves.easeInOut,
+                            offsetBegin: Offset.zero,
+                            offsetEnd: const Offset(0, -1),
+                            child: child!,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              SizedBox(
-                                height: appBar.preferredSize.height,
+                          child: appBar,
+                        ),
+                      ),
+                      body: DefaultTabController(
+                        length: tabCount,
+                        child: NestedScrollView(
+                          headerSliverBuilder: (
+                            final BuildContext context,
+                            final bool innerBoxIsScrolled,
+                          ) =>
+                              <Widget>[
+                            SliverPadding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: paddingHorizontal,
                               ),
-                              getHero(context),
-                              SizedBox(
-                                height: remToPx(1.5),
-                              ),
-                              TrackersTile(
-                                title: info!.title,
-                                plugin: extractor.id,
-                                providers: mangaProviders,
-                              ),
-                              SizedBox(
-                                height: remToPx(1.5),
-                              ),
-                              Text(
-                                Translator.t.chapters(),
-                                style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.fontSize,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.color
-                                      ?.withOpacity(0.7),
-                                ),
-                              ),
-                              ...info!.sortedChapters
-                                  .asMap()
-                                  .map(
-                                    (
-                                      final int k,
-                                      final extensions.ChapterInfo x,
-                                    ) =>
-                                        MapEntry<int, Widget>(
-                                      k,
-                                      Card(
-                                        child: InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: remToPx(0.4),
-                                              vertical: remToPx(0.2),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: getChapterCard(x),
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            setChapter(k);
-                                            goToPage(Pages.reader);
-                                          },
-                                        ),
+                              sliver: SliverList(
+                                delegate: SliverChildListDelegate.fixed(
+                                  <Widget>[
+                                    SizedBox(
+                                      height: appBar.preferredSize.height,
+                                    ),
+                                    getHero(context),
+                                    SizedBox(
+                                      height: remToPx(1.5),
+                                    ),
+                                    TrackersTile(
+                                      title: info!.title,
+                                      plugin: extractor.id,
+                                      providers: mangaProviders,
+                                    ),
+                                    SizedBox(
+                                      height: remToPx(1.5),
+                                    ),
+                                    Text(
+                                      Translator.t.chapters(),
+                                      style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            ?.fontSize,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            ?.color
+                                            ?.withOpacity(0.7),
                                       ),
                                     ),
-                                  )
-                                  .values
-                                  .toList(),
-                            ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (tabCount > 1)
+                              SliverPadding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: paddingHorizontal,
+                                ),
+                                sliver: SliverAppBar(
+                                  primary: false,
+                                  pinned: true,
+                                  floating: true,
+                                  automaticallyImplyLeading: false,
+                                  backgroundColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  titleSpacing: 0,
+                                  centerTitle: true,
+                                  title: ScrollConfiguration(
+                                    behavior: MiceScrollBehavior(),
+                                    child: TabBar(
+                                      isScrollable: true,
+                                      tabs: List<Widget>.generate(
+                                        tabCount,
+                                        (final int i) {
+                                          final int start = i * maxChunkLength;
+                                          return Tab(
+                                            text:
+                                                '$start - ${start + maxChunkLength}',
+                                          );
+                                        },
+                                      ),
+                                      labelColor: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          ?.color,
+                                      indicatorColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                          body: TabBarView(
+                            children: List<Widget>.generate(
+                              tabCount,
+                              (final int i) {
+                                final int start = i * maxChunkLength;
+                                final int totalLength =
+                                    info!.sortedChapters.length;
+                                final int end = start + maxChunkLength;
+                                final int extra =
+                                    end > totalLength ? end - totalLength : 0;
+
+                                return Builder(
+                                  builder: (final BuildContext context) =>
+                                      getChapters(
+                                    start,
+                                    end - extra,
+                                    EdgeInsets.symmetric(
+                                      horizontal: paddingHorizontal,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -640,4 +742,6 @@ class _PageState extends State<Page>
       },
     );
   }
+
+  int get tabCount => (info!.sortedChapters.length / maxChunkLength).ceil();
 }
