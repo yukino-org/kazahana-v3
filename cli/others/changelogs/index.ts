@@ -165,7 +165,9 @@ class Changelogs {
     }
 
     get json() {
-        return JSON.stringify(this);
+        return JSON.stringify({
+            commits: this.commits,
+        });
     }
 
     get downloadURL() {
