@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import './plugins/app_lifecycle.dart';
 import './plugins/database/database.dart';
@@ -20,7 +21,23 @@ Future<void> main(final List<String> args) async {
   }
 
   Logger.of('main').info('Starting "MainApp"');
-  runApp(const MainApp());
+
+  runZonedGuarded(() async {
+    FlutterError.onError = (final FlutterErrorDetails details) {
+      FlutterError.presentError(details);
+      Logger.of('main').error(
+        'Uncaught error: ${details.exceptionAsString()}',
+        details.stack,
+      );
+    };
+
+    runApp(const MainApp());
+  }, (final Object error, final StackTrace stack) {
+    Logger.of('main').error(
+      'Uncaught error: ${error.toString()}',
+      stack,
+    );
+  });
 }
 
 class MainApp extends StatefulWidget {
