@@ -373,6 +373,7 @@ class _PageReaderState extends State<PageReader>
                   }
                 },
                 child: PageView.builder(
+                  allowImplicitScrolling: true,
                   scrollDirection:
                       AppState.settings.current.mangaReaderSwipeDirection ==
                               MangaSwipeDirections.horizontal
