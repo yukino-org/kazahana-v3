@@ -105,20 +105,21 @@ final TrackerProvider<AnimeProgress> anime = TrackerProvider<AnimeProgress>(
     final myanimelist.AnimeListEntity info =
         media.info as myanimelist.AnimeListEntity;
     final myanimelist.AnimeListStatus status =
-        progress.episodes >= (info.status?.watched ?? -1)
+        progress.episodes >= (info.userStatus?.watched ?? -1) &&
+                info.details?.finishedAiring == true
             ? myanimelist.AnimeListStatus.completed
             : myanimelist.AnimeListStatus.watching;
 
     final int episodes = progress.episodes;
 
     final bool repeating =
-        progress.episodes == 1 && (info.status?.watched ?? -1) > 1;
+        progress.episodes == 1 && (info.userStatus?.watched ?? -1) > 1;
 
     int changes = 0;
     final List<List<dynamic>> changables = <List<dynamic>>[
-      <dynamic>[info.status?.status, status],
-      <dynamic>[info.status?.watched, episodes],
-      <dynamic>[info.status?.rewatching, repeating],
+      <dynamic>[info.userStatus?.status, status],
+      <dynamic>[info.userStatus?.watched, episodes],
+      <dynamic>[info.userStatus?.rewatching, repeating],
     ];
 
     for (final List<dynamic> item in changables) {

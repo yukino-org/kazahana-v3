@@ -67,12 +67,14 @@ class MangaListAdditionalDetail {
     required final this.characters,
     required final this.totalChapters,
     required final this.totalVolumes,
+    required final this.finishedPublishing,
   });
 
   final String synopsis;
   final List<Character> characters;
   final int? totalChapters;
   final int? totalVolumes;
+  final bool finishedPublishing;
 }
 
 class MangaListEntity {
@@ -113,6 +115,7 @@ class MangaListEntity {
           totalChapters: json['num_chapters'] as int,
           totalVolumes: json['num_volumes'] as int,
           characters: <Character>[],
+          finishedPublishing: false,
         ),
       );
 
@@ -192,6 +195,7 @@ class MangaListEntity {
       }).toList(),
       totalChapters: int.tryParse(metas['Chapters'] ?? ''),
       totalVolumes: int.tryParse(metas['Volumes'] ?? ''),
+      finishedPublishing: metas['Status'].toString().contains('Finished'),
     );
 
     _cacheDetails[nodeId] = details!;
@@ -203,7 +207,7 @@ class MangaListEntity {
         type: extensions.ExtensionType.manga,
         thumbnail: mainPictureLarge,
         banner: null,
-        status: status?.status.pretty,
+        userStatus: status?.status.pretty,
         progress: Progress(
           progress: status?.read ?? 0,
           total: details?.totalChapters,
@@ -217,6 +221,7 @@ class MangaListEntity {
         score: status?.score,
         repeated: null,
         characters: details?.characters ?? <Character>[],
+        finishedAiring: details?.finishedPublishing ?? false,
       );
 
   Widget getDetailedPage(

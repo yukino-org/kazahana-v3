@@ -356,9 +356,9 @@ class _DetailedItemState extends State<DetailedItem> {
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
-                              if (item.status != null)
+                              if (item.userStatus != null)
                                 TextSpan(
-                                  text: '  (${item.status})',
+                                  text: '  (${item.userStatus})',
                                 ),
                             ],
                           ),

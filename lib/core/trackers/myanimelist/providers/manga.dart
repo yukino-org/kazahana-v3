@@ -105,7 +105,8 @@ final TrackerProvider<MangaProgress> manga = TrackerProvider<MangaProgress>(
     final myanimelist.MangaListEntity info =
         media.info as myanimelist.MangaListEntity;
     final myanimelist.MangaListStatus status =
-        progress.chapters >= (info.status?.read ?? -1)
+        progress.chapters >= (info.status?.read ?? -1) &&
+                info.details?.finishedPublishing == true
             ? myanimelist.MangaListStatus.completed
             : myanimelist.MangaListStatus.reading;
 

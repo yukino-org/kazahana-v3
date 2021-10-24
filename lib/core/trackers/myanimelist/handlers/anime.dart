@@ -71,7 +71,7 @@ Future<AnimeListEntity> scrapeFromNodeId(final int nodeId) async {
     title: document.querySelector('.title-name')!.text.trim(),
     mainPictureMedium: thumbnail,
     mainPictureLarge: thumbnail,
-    status: null,
+    userStatus: null,
     details: AnimeListAdditionalDetail(
       synopsis: document.querySelector('[itemprop="description"]')!.text,
       characters: document
@@ -88,6 +88,7 @@ Future<AnimeListEntity> scrapeFromNodeId(final int nodeId) async {
         );
       }).toList(),
       totalEpisodes: int.tryParse(metas['Episodes'] ?? ''),
+      finishedAiring: metas['Status'].toString().contains('Finished'),
     ),
   );
 }

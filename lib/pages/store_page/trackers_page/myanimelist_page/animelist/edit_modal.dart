@@ -24,11 +24,11 @@ class EditModal extends StatefulWidget {
 }
 
 class _EditModalState extends State<EditModal> {
-  late myanimelist.AnimeListStatus status =
-      widget.media.status?.status ?? myanimelist.AnimeListStatus.planToWatch;
-  late int progress = widget.media.status?.watched ?? 0;
-  late int? score = widget.media.status?.score;
-  late bool repeating = widget.media.status?.rewatching ?? false;
+  late myanimelist.AnimeListStatus status = widget.media.userStatus?.status ??
+      myanimelist.AnimeListStatus.planToWatch;
+  late int progress = widget.media.userStatus?.watched ?? 0;
+  late int? score = widget.media.userStatus?.score;
+  late bool repeating = widget.media.userStatus?.rewatching ?? false;
 
   late TextEditingController progressController = TextEditingController(
     text: progress.toString(),

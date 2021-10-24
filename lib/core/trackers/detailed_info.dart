@@ -45,11 +45,12 @@ class DetailedInfo {
     required final this.type,
     required final this.thumbnail,
     required final this.banner,
-    required final this.status,
+    required final this.userStatus,
     required final this.progress,
     required final this.score,
     required final this.repeated,
     required final this.characters,
+    required final this.finishedAiring,
   });
 
   final String title;
@@ -57,9 +58,10 @@ class DetailedInfo {
   final extensions.ExtensionType type;
   final String thumbnail;
   final String? banner;
-  final String? status;
+  final String? userStatus;
   final Progress progress;
   final int? score;
   final int? repeated;
   final List<Character> characters;
+  final bool finishedAiring;
 }

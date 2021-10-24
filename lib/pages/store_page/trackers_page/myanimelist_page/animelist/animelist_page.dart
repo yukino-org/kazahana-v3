@@ -151,7 +151,7 @@ class Page extends StatelessWidget {
                                 children: <InlineSpan>[
                                   TextSpan(
                                     text:
-                                        '${Translator.t.progress()}: ${x.status?.watched ?? 0}',
+                                        '${Translator.t.progress()}: ${x.userStatus?.watched ?? 0}',
                                   ),
                                   TextSpan(
                                     text:

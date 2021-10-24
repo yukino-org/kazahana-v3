@@ -60,11 +60,13 @@ class AnimeListAdditionalDetail {
     required final this.synopsis,
     required final this.characters,
     required final this.totalEpisodes,
+    required final this.finishedAiring,
   });
 
   final String synopsis;
   final List<Character> characters;
   final int? totalEpisodes;
+  final bool finishedAiring;
 }
 
 class AnimeListEntity {
@@ -73,7 +75,7 @@ class AnimeListEntity {
     required final this.title,
     required final this.mainPictureMedium,
     required final this.mainPictureLarge,
-    required final this.status,
+    required final this.userStatus,
     required final this.details,
   });
 
@@ -83,7 +85,7 @@ class AnimeListEntity {
         title: json['node']['title'] as String,
         mainPictureMedium: json['node']['main_picture']['medium'] as String,
         mainPictureLarge: json['node']['main_picture']['large'] as String,
-        status: AnimeListEntityProgress.fromJson(
+        userStatus: AnimeListEntityProgress.fromJson(
           json['list_status'] as Map<dynamic, dynamic>,
         ),
         details: null,
@@ -95,7 +97,7 @@ class AnimeListEntity {
         title: json['title'] as String,
         mainPictureMedium: json['main_picture']['medium'] as String,
         mainPictureLarge: json['main_picture']['large'] as String,
-        status: json.containsKey('my_list_status')
+        userStatus: json.containsKey('my_list_status')
             ? AnimeListEntityProgress.fromJson(
                 json['my_list_status'] as Map<dynamic, dynamic>,
               )
@@ -104,6 +106,7 @@ class AnimeListEntity {
           synopsis: json['synopsis'] as String,
           totalEpisodes: json['num_episodes'] as int,
           characters: <Character>[],
+          finishedAiring: false,
         ),
       );
 
@@ -111,7 +114,7 @@ class AnimeListEntity {
   final String title;
   final String mainPictureMedium;
   final String mainPictureLarge;
-  AnimeListEntityProgress? status;
+  AnimeListEntityProgress? userStatus;
   AnimeListAdditionalDetail? details;
 
   Future<void> update({
@@ -129,7 +132,7 @@ class AnimeListEntity {
       if (watched != null) 'num_watched_episodes': watched.toString(),
     });
 
-    this.status = AnimeListEntityProgress.fromJson(
+    this.userStatus = AnimeListEntityProgress.fromJson(
       json.decode(res) as Map<dynamic, dynamic>,
     );
   }
@@ -152,17 +155,18 @@ class AnimeListEntity {
         type: extensions.ExtensionType.anime,
         thumbnail: mainPictureLarge,
         banner: null,
-        status: status?.status.pretty,
+        userStatus: userStatus?.status.pretty,
         progress: Progress(
-          progress: status?.watched ?? 0,
+          progress: userStatus?.watched ?? 0,
           total: details?.totalEpisodes,
           startedAt: null,
           completedAt: null,
           volumes: null,
         ),
-        score: status?.score,
+        score: userStatus?.score,
         repeated: null,
         characters: details?.characters ?? <Character>[],
+        finishedAiring: details?.finishedAiring ?? false,
       );
 
   Widget getDetailedPage(

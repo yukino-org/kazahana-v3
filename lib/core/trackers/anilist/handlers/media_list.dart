@@ -173,7 +173,7 @@ mutation (
         type: media.type,
         thumbnail: media.coverImageExtraLarge,
         banner: media.bannerImage,
-        status: status.pretty,
+        userStatus: status.pretty,
         progress: detailed_info.Progress(
           progress: progress,
           total: media.episodes ?? media.chapters,
@@ -191,6 +191,8 @@ mutation (
         characters: media.characters
             .map((final Character x) => x.toCharacter())
             .toList(),
+        // TODO: implement
+        finishedAiring: false,
       );
 
   Widget getDetailedPage(
