@@ -27,6 +27,7 @@
         "linux:run": "ts-node ./cli/flutter-cli/run/linux/run.ts",
         "linux:build": "ts-node ./cli/flutter-cli/build/linux/run.ts",
         "linux:build:appimage": "ts-node ./cli/flutter-cli/build/linux/appimage/run.ts",
+        "linux:build:tar": "ts-node ./cli/flutter-cli/build/linux/tar/run.ts",
         "windows:icons": "ts-node ./cli/icons/windows/run.ts",
         "windows:run": "ts-node ./cli/flutter-cli/run/windows/run.ts",
         "windows:build": "ts-node ./cli/flutter-cli/build/windows/run.ts",
@@ -53,6 +54,7 @@
         "@types/fs-extra": "^9.0.13",
         "@types/node": "^16.11.0",
         "@types/semver": "^7.3.8",
+        "@types/tar": "^6.1.0",
         "ts-node": "^10.3.0",
         "typescript": "^4.4.4"
     },
@@ -80,6 +82,7 @@
         "pretty-ms": "^7.0.1",
         "readdirp": "^3.6.0",
         "semver": "^7.3.5",
+        "tar": "^6.1.11",
         "yaml": "^1.10.2"
     }
 }

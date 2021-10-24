@@ -1,4 +1,4 @@
-name: Linux (AppImage)
+name: Linux (AppImage & Tar)
 
 on:
     push:
@@ -40,6 +40,9 @@ jobs:
             - name: 🔨 Building binaries
               run: npm run linux:build
 
+            - name: 📦 Packing as tar
+              run: npm run linux:build:tar
+
             - name: 📦 Packing as appimage
               run: npm run linux:build:appimage
 
@@ -64,9 +67,9 @@ jobs:
                   result-encoding: string
                   script: |
                       const fg = require("fast-glob");
-                      return fg.sync("build/packed/linux/*-linux.AppImage").join("\n");
+                      return fg.sync("build/packed/linux/*-linux.{AppImage,tar.gz}").join("\n");
 
-            - name: 🚀 Release AppImage
+            - name: 🚀 Release AppImage & tar
               uses: softprops/action-gh-release@v1
               with:
                   tag_name: v${{ steps.app_version.outputs.result }}
