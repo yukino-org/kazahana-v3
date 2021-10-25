@@ -12,6 +12,8 @@ import '../../plugins/translator/translator.dart';
 final StatefulHolder<myanimelist.HomeResult?> _cache =
     StatefulHolder<myanimelist.HomeResult?>(null);
 
+final bool _useHoverTitle = AppState.isDesktop;
+
 class Page extends StatefulWidget {
   const Page({
     final Key? key,
@@ -101,20 +103,16 @@ class _PageState extends State<Page> with DidLoadStater {
               animationDuration: animationDuration,
               fastAnimationDuration: fastAnimationDuration,
               entities: _cache.value!.seasonEntities,
-              active: (final int i) => seasonAnimeHoverIndex == i,
+              active: (final int i) =>
+                  !_useHoverTitle || seasonAnimeHoverIndex == i,
               onHover: (final int i, final bool hovered) {
-                setState(() {
-                  seasonAnimeHoverIndex = hovered ? i : null;
-                });
+                if (_useHoverTitle) {
+                  setState(() {
+                    seasonAnimeHoverIndex = hovered ? i : null;
+                  });
+                }
               },
               onTap: (final int i, final VoidCallback openContainer) {
-                if (seasonAnimeHoverIndex != i) {
-                  setState(() {
-                    seasonAnimeHoverIndex = i;
-                  });
-                  return;
-                }
-
                 openContainer();
               },
               openBuilder: (
@@ -141,20 +139,16 @@ class _PageState extends State<Page> with DidLoadStater {
               animationDuration: animationDuration,
               fastAnimationDuration: fastAnimationDuration,
               entities: _cache.value!.recentlyUpdated,
-              active: (final int i) => recentlyUpdatedHoverIndex == i,
+              active: (final int i) =>
+                  !_useHoverTitle || recentlyUpdatedHoverIndex == i,
               onHover: (final int i, final bool hovered) {
-                setState(() {
-                  recentlyUpdatedHoverIndex = hovered ? i : null;
-                });
+                if (_useHoverTitle) {
+                  setState(() {
+                    recentlyUpdatedHoverIndex = hovered ? i : null;
+                  });
+                }
               },
               onTap: (final int i, final VoidCallback openContainer) {
-                if (recentlyUpdatedHoverIndex != i) {
-                  setState(() {
-                    recentlyUpdatedHoverIndex = i;
-                  });
-                  return;
-                }
-
                 openContainer();
               },
               openBuilder: (
