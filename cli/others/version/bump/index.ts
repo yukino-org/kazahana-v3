@@ -8,7 +8,7 @@ import { config } from "../../../config";
 import { Logger } from "../../../logger";
 import { matchRegex } from "../print";
 
-const logger = new Logger("version");
+const logger = new Logger("version:bump");
 
 export const increment = async () => {
     const path = join(config.base, "pubspec.yaml");
