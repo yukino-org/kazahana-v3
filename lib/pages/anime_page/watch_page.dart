@@ -104,15 +104,6 @@ class WatchPageState extends State<WatchPage>
     super.initState();
 
     initFullscreen();
-    enableWakelock();
-
-    if (AppState.settings.current.animeAutoFullscreen) {
-      enterFullscreen();
-    }
-
-    if (AppState.settings.current.animeForceLandscape) {
-      enterLandscape();
-    }
 
     playPauseController = AnimationController(
       vsync: this,
@@ -181,7 +172,19 @@ class WatchPageState extends State<WatchPage>
 
   @override
   Future<void> load() async {
-    getSources();
+    if (mounted) {
+      enableWakelock();
+
+      if (AppState.settings.current.animeAutoFullscreen) {
+        enterFullscreen();
+      }
+
+      if (AppState.settings.current.animeForceLandscape) {
+        enterLandscape();
+      }
+
+      await getSources();
+    }
   }
 
   Future<void> getSources() async {

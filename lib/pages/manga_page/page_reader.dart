@@ -59,7 +59,7 @@ class PageReader extends StatefulWidget {
 }
 
 class _PageReaderState extends State<PageReader>
-    with SingleTickerProviderStateMixin, FullscreenMixin {
+    with SingleTickerProviderStateMixin, FullscreenMixin, DidLoadStater {
   final Duration animationDuration = const Duration(milliseconds: 300);
 
   late AnimationController overlayController;
@@ -98,9 +98,6 @@ class _PageReaderState extends State<PageReader>
     super.initState();
 
     initFullscreen();
-    if (AppState.settings.current.mangaAutoFullscreen) {
-      enterFullscreen();
-    }
 
     overlayController = AnimationController(
       vsync: this,
@@ -118,6 +115,13 @@ class _PageReaderState extends State<PageReader>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
+  }
+
+  @override
   void dispose() {
     if (!ignoreExitFullscreen) {
       exitFullscreen();
@@ -131,6 +135,13 @@ class _PageReaderState extends State<PageReader>
     pageController.dispose();
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    if (mounted && AppState.settings.current.mangaAutoFullscreen) {
+      enterFullscreen();
+    }
   }
 
   Future<void> goToPage(final int page) async {

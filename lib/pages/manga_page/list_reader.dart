@@ -35,7 +35,8 @@ class ListReader extends StatefulWidget {
   _ListReaderState createState() => _ListReaderState();
 }
 
-class _ListReaderState extends State<ListReader> with FullscreenMixin {
+class _ListReaderState extends State<ListReader>
+    with FullscreenMixin, DidLoadStater {
   final Widget loader = const CircularProgressIndicator();
 
   late final Map<extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>
@@ -49,10 +50,13 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
     super.initState();
 
     initFullscreen();
+  }
 
-    if (AppState.settings.current.mangaAutoFullscreen) {
-      enterFullscreen();
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    doLoadStateIfHasnt();
   }
 
   @override
@@ -62,6 +66,13 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
     }
 
     super.dispose();
+  }
+
+  @override
+  Future<void> load() async {
+    if (mounted && AppState.settings.current.mangaAutoFullscreen) {
+      enterFullscreen();
+    }
   }
 
   Future<void> getPage(final extensions.PageInfo page) async {
