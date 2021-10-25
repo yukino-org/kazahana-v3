@@ -153,8 +153,8 @@ class Changelogs {
                 }
 
                 logs.push(
-                    `- ${head}`,
                     `<!-- {${k}} -->`,
+                    `- ${head}`,
                     this.commits[k].map((x) => `   - ${x}`).join("\n"),
                     `<!-- {/${k}} -->`
                 );
