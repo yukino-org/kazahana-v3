@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import './update_tracker.dart';
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
@@ -73,6 +74,7 @@ class _PageReaderState extends State<PageReader>
   late TransformationController interactiveController;
   bool interactionOnProgress = false;
   LastTapDetail? lastTapDetail;
+  int lastKbEvent = DateTime.now().millisecondsSinceEpoch;
 
   late PageController pageController;
   late int currentPage;
@@ -89,6 +91,8 @@ class _PageReaderState extends State<PageReader>
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
+
+  final FocusNode focusNode = FocusNode();
 
   bool hasSynced = false;
   bool ignoreScreenChanges = false;
@@ -133,6 +137,7 @@ class _PageReaderState extends State<PageReader>
     overlayController.dispose();
     interactiveController.dispose();
     pageController.dispose();
+    focusNode.dispose();
 
     super.dispose();
   }
@@ -142,6 +147,32 @@ class _PageReaderState extends State<PageReader>
     if (mounted && AppState.settings.current.mangaAutoFullscreen) {
       enterFullscreen();
     }
+  }
+
+  void handleKeyEvent(final RawKeyEvent event) {
+    final int currentKbEvent = DateTime.now().millisecondsSinceEpoch;
+    final bool allowKbEvent =
+        (currentKbEvent - lastKbEvent) > kDoubleTapTimeout.inMilliseconds;
+
+    if (allowKbEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        isReversed ? _prevPage(true) : _nextPage(true);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        isReversed ? _nextPage(true) : _prevPage(true);
+      } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+        exitFullscreen();
+        setState(() {
+          showOverlay = true;
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.f11) {
+        enterFullscreen();
+        setState(() {
+          showOverlay = false;
+        });
+      }
+    }
+
+    lastKbEvent = currentKbEvent;
   }
 
   Future<void> goToPage(final int page) async {
@@ -290,13 +321,20 @@ class _PageReaderState extends State<PageReader>
                 ) =>
                     IconButton(
                   onPressed: () async {
+                    focusNode.requestFocus();
                     AppState.settings.current.mangaAutoFullscreen =
                         !isFullscreened;
 
                     if (isFullscreened) {
                       exitFullscreen();
+                      setState(() {
+                        showOverlay = true;
+                      });
                     } else {
                       enterFullscreen();
+                      setState(() {
+                        showOverlay = false;
+                      });
                     }
 
                     await AppState.settings.current.save();
@@ -338,170 +376,224 @@ class _PageReaderState extends State<PageReader>
                   ),
                 ),
               )
-            : GestureDetector(
-                onTapUp: (final TapUpDetails details) {
-                  final LastTapDetail currentTap = LastTapDetail(
-                    _spaceFromPosition(
-                      details.localPosition.dx /
-                          MediaQuery.of(context).size.width,
-                    ),
-                    DateTime.now(),
-                  );
-
-                  final bool useDoubleClick =
-                      AppState.settings.current.doubleClickSwitchChapter;
-                  final bool satisfied = !useDoubleClick ||
-                      lastTapDetail?.space == currentTap.space &&
-                          (currentTap.time.millisecondsSinceEpoch -
-                                  lastTapDetail!.time.millisecondsSinceEpoch) <=
-                              kDoubleTapTimeout.inMilliseconds;
-
-                  bool done = false;
-                  if (currentTap.space == TapSpace.left) {
-                    done = isReversed
-                        ? _nextPage(satisfied)
-                        : _prevPage(satisfied);
-                  } else if (currentTap.space == TapSpace.right) {
-                    done = isReversed
-                        ? _prevPage(satisfied)
-                        : _nextPage(satisfied);
-                  } else {
-                    setState(() {
-                      showOverlay = !showOverlay;
-                    });
-
-                    done = true;
-                  }
-
-                  lastTapDetail = currentTap;
-
-                  if (!done && currentTap.space != TapSpace.middle) {
-                    final bool isPrev = isReversed
-                        ? currentTap.space == TapSpace.right
-                        : currentTap.space == TapSpace.left;
-                    showFooterNotification(
-                      Text(
-                        isPrev
-                            ? Translator.t.tapAgainToSwitchPreviousChapter()
-                            : Translator.t.tapAgainToSwitchNextChapter(),
-                        key: UniqueKey(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
+            : RawKeyboardListener(
+                autofocus: true,
+                focusNode: focusNode,
+                onKey: handleKeyEvent,
+                child: GestureDetector(
+                  onTapUp: (final TapUpDetails details) {
+                    focusNode.requestFocus();
+                    final LastTapDetail currentTap = LastTapDetail(
+                      _spaceFromPosition(
+                        details.localPosition.dx /
+                            MediaQuery.of(context).size.width,
                       ),
+                      DateTime.now(),
                     );
-                  }
-                },
-                child: PageView.builder(
-                  allowImplicitScrolling: true,
-                  scrollDirection:
-                      AppState.settings.current.mangaReaderSwipeDirection ==
-                              MangaSwipeDirections.horizontal
-                          ? Axis.horizontal
-                          : Axis.vertical,
-                  onPageChanged: (final int page) {
-                    setState(() {
-                      currentPage =
-                          isReversed ? widget.pages.length - page - 1 : page;
-                      currentIndex = page;
-                    });
 
-                    interactiveController.value = Matrix4.identity();
-                  },
-                  physics: interactionOnProgress
-                      ? const NeverScrollableScrollPhysics()
-                      : const PageScrollPhysics(),
-                  controller: pageController,
-                  itemCount: widget.pages.length,
-                  itemBuilder: (final BuildContext context, final int _index) {
-                    final int index =
-                        isReversed ? widget.pages.length - _index - 1 : _index;
-                    final extensions.PageInfo page = widget.pages[index];
+                    final bool useDoubleClick =
+                        AppState.settings.current.doubleClickSwitchChapter;
+                    final bool satisfied = !useDoubleClick ||
+                        lastTapDetail?.space == currentTap.space &&
+                            (currentTap.time.millisecondsSinceEpoch -
+                                    lastTapDetail!
+                                        .time.millisecondsSinceEpoch) <=
+                                kDoubleTapTimeout.inMilliseconds;
 
-                    if (images[page] == null) {
-                      images[page] =
-                          StatefulHolder<extensions.ImageInfo?>(null);
+                    bool done = false;
+                    if (currentTap.space == TapSpace.left) {
+                      done = isReversed
+                          ? _nextPage(satisfied)
+                          : _prevPage(satisfied);
+                    } else if (currentTap.space == TapSpace.right) {
+                      done = isReversed
+                          ? _prevPage(satisfied)
+                          : _nextPage(satisfied);
+                    } else {
+                      setState(() {
+                        showOverlay = !showOverlay;
+                      });
+
+                      done = true;
                     }
 
-                    if (!images[page]!.hasValue) {
-                      if (!images[page]!.isResolving) {
-                        getPage(page);
+                    lastTapDetail = currentTap;
+
+                    if (!done && currentTap.space != TapSpace.middle) {
+                      final bool isPrev = isReversed
+                          ? currentTap.space == TapSpace.right
+                          : currentTap.space == TapSpace.left;
+                      showFooterNotification(
+                        Text(
+                          isPrev
+                              ? Translator.t.tapAgainToSwitchPreviousChapter()
+                              : Translator.t.tapAgainToSwitchNextChapter(),
+                          key: UniqueKey(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+
+                      final bool useDoubleClick =
+                          AppState.settings.current.doubleClickSwitchChapter;
+                      final bool satisfied = !useDoubleClick ||
+                          lastTapDetail?.space == currentTap.space &&
+                              (currentTap.time.millisecondsSinceEpoch -
+                                      lastTapDetail!
+                                          .time.millisecondsSinceEpoch) <=
+                                  kDoubleTapTimeout.inMilliseconds;
+
+                      bool done = false;
+                      if (currentTap.space == TapSpace.left) {
+                        done = isReversed
+                            ? _nextPage(satisfied)
+                            : _prevPage(satisfied);
+                      } else if (currentTap.space == TapSpace.right) {
+                        done = isReversed
+                            ? _prevPage(satisfied)
+                            : _nextPage(satisfied);
+                      } else {
+                        setState(() {
+                          showOverlay = !showOverlay;
+                        });
+                        done = true;
                       }
 
-                      return loader;
-                    }
+                      lastTapDetail = currentTap;
 
-                    final extensions.ImageInfo image = images[page]!.value!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Expanded(
-                          child: Image.network(
-                            image.url,
-                            headers: image.headers,
-                            loadingBuilder: (
-                              final BuildContext context,
-                              final Widget child,
-                              final ImageChunkEvent? loadingProgress,
-                            ) {
-                              if (loadingProgress == null) {
-                                return InteractiveViewer(
-                                  transformationController:
-                                      interactiveController,
-                                  child: child,
-                                  onInteractionEnd:
-                                      (final ScaleEndDetails details) {
-                                    setState(() {
-                                      interactionOnProgress =
-                                          interactiveController.value
-                                                  .getMaxScaleOnAxis() !=
-                                              1;
-                                    });
-                                  },
-                                );
-                              }
-
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: remToPx(0.5),
-                        ),
-                        ValueListenableBuilder<Widget?>(
-                          valueListenable: footerNotificationContent,
-                          builder: (
-                            final BuildContext context,
-                            final Widget? footerNotificationContent,
-                            final Widget? child,
-                          ) =>
-                              Align(
-                            child: AnimatedSwitcher(
-                              duration: animationDuration,
-                              child: footerNotificationContent ?? child!,
-                            ),
-                          ),
-                          child: Text(
-                            '${index + 1}/${widget.pages.length}',
+                      if (!done && currentTap.space != TapSpace.middle) {
+                        final bool isPrev = isReversed
+                            ? currentTap.space == TapSpace.right
+                            : currentTap.space == TapSpace.left;
+                        showFooterNotification(
+                          Text(
+                            isPrev
+                                ? Translator.t.tapAgainToSwitchPreviousChapter()
+                                : Translator.t.tapAgainToSwitchNextChapter(),
+                            key: UniqueKey(),
                             style: const TextStyle(
                               color: Colors.white,
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: remToPx(0.3),
-                        ),
-                      ],
-                    );
+                        );
+                      }
+                    }
                   },
+                  child: PageView.builder(
+                    allowImplicitScrolling: true,
+                    scrollDirection:
+                        AppState.settings.current.mangaReaderSwipeDirection ==
+                                MangaSwipeDirections.horizontal
+                            ? Axis.horizontal
+                            : Axis.vertical,
+                    onPageChanged: (final int page) {
+                      setState(() {
+                        currentPage =
+                            isReversed ? widget.pages.length - page - 1 : page;
+                        currentIndex = page;
+                      });
+
+                      interactiveController.value = Matrix4.identity();
+                    },
+                    physics: interactionOnProgress
+                        ? const NeverScrollableScrollPhysics()
+                        : const PageScrollPhysics(),
+                    controller: pageController,
+                    itemCount: widget.pages.length,
+                    itemBuilder:
+                        (final BuildContext context, final int _index) {
+                      final int index = isReversed
+                          ? widget.pages.length - _index - 1
+                          : _index;
+                      final extensions.PageInfo page = widget.pages[index];
+
+                      if (images[page] == null) {
+                        images[page] =
+                            StatefulHolder<extensions.ImageInfo?>(null);
+                      }
+
+                      if (!images[page]!.hasValue) {
+                        if (!images[page]!.isResolving) {
+                          getPage(page);
+                        }
+
+                        return loader;
+                      }
+
+                      final extensions.ImageInfo image = images[page]!.value!;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Expanded(
+                            child: Image.network(
+                              image.url,
+                              headers: image.headers,
+                              loadingBuilder: (
+                                final BuildContext context,
+                                final Widget child,
+                                final ImageChunkEvent? loadingProgress,
+                              ) {
+                                if (loadingProgress == null) {
+                                  return InteractiveViewer(
+                                    transformationController:
+                                        interactiveController,
+                                    child: child,
+                                    onInteractionEnd:
+                                        (final ScaleEndDetails details) {
+                                      setState(() {
+                                        interactionOnProgress =
+                                            interactiveController.value
+                                                    .getMaxScaleOnAxis() !=
+                                                1;
+                                      });
+                                    },
+                                  );
+                                }
+
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            height: remToPx(0.5),
+                          ),
+                          ValueListenableBuilder<Widget?>(
+                            valueListenable: footerNotificationContent,
+                            builder: (
+                              final BuildContext context,
+                              final Widget? footerNotificationContent,
+                              final Widget? child,
+                            ) =>
+                                Align(
+                              child: AnimatedSwitcher(
+                                duration: animationDuration,
+                                child: footerNotificationContent ?? child!,
+                              ),
+                            ),
+                            child: Text(
+                              '${index + 1}/${widget.pages.length}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: remToPx(0.3),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
         bottomNavigationBar: ToggleableSlideWidget(
@@ -557,19 +649,23 @@ class _PageReaderState extends State<PageReader>
                               trackHeight: remToPx(0.15),
                               showValueIndicator: ShowValueIndicator.always,
                             ),
-                            child: Slider(
-                              value: currentPage + 1,
-                              min: 1,
-                              max: widget.pages.length.toDouble(),
-                              label: (currentPage + 1).toString(),
-                              onChanged: (final double value) {
-                                setState(() {
-                                  currentPage = value.toInt() - 1;
-                                });
-                              },
-                              onChangeEnd: (final double value) async {
-                                goToPage(value.toInt() - 1);
-                              },
+                            child: RotatedBox(
+                              quarterTurns: isReversed ? 2 : 0,
+                              child: Slider(
+                                value: currentPage + 1,
+                                min: 1,
+                                max: widget.pages.length.toDouble(),
+                                label: (currentPage + 1).toString(),
+                                onChanged: (final double value) {
+                                  setState(() {
+                                    currentPage = value.toInt() - 1;
+                                  });
+                                },
+                                onChangeEnd: (final double value) async {
+                                  focusNode.requestFocus();
+                                  goToPage(value.toInt() - 1);
+                                },
+                              ),
                             ),
                           ),
                         ],
