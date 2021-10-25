@@ -56,7 +56,9 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                       ),
                     );
 
-                    setState(() {});
+                    if (mounted) {
+                      setState(() {});
+                    }
                   },
                   child: Padding(
                     padding: EdgeInsets.symmetric(
@@ -253,9 +255,11 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                     widget.ext,
                                   );
 
-                                  setState(() {
-                                    status = ExtensionState.install;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      status = ExtensionState.install;
+                                    });
+                                  }
                                 } else if (status == ExtensionState.install) {
                                   setState(() {
                                     status = ExtensionState.installing;
@@ -265,26 +269,31 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                     widget.ext,
                                   );
 
-                                  setState(() {
-                                    status = ExtensionState.installed;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      status = ExtensionState.installed;
+                                    });
 
-                                  if (DataStore.preferences
-                                          .lastSelectedSearchPlugins?.isEmpty ??
-                                      true) {
-                                    final extensions.BaseExtractor? ext =
-                                        ExtensionsManager.animes[widget.ext.id];
-                                    if (ext != null) {
-                                      DataStore.preferences
-                                              .lastSelectedSearchType =
-                                          widget.ext.type.type;
-                                      DataStore.preferences
-                                          .setLastSelectedSearchPlugin(
-                                        widget.ext.type,
-                                        ext,
-                                      );
+                                    if (DataStore
+                                            .preferences
+                                            .lastSelectedSearchPlugins
+                                            ?.isEmpty ??
+                                        true) {
+                                      final extensions.BaseExtractor? ext =
+                                          ExtensionsManager
+                                              .animes[widget.ext.id];
+                                      if (ext != null) {
+                                        DataStore.preferences
+                                                .lastSelectedSearchType =
+                                            widget.ext.type.type;
+                                        DataStore.preferences
+                                            .setLastSelectedSearchPlugin(
+                                          widget.ext.type,
+                                          ext,
+                                        );
 
-                                      await DataStore.preferences.save();
+                                        await DataStore.preferences.save();
+                                      }
                                     }
                                   }
                                 }

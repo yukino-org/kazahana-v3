@@ -62,7 +62,10 @@ class _PageState extends State<Page> {
   Future<void> saveSettings() async {
     await settings.save();
     AppState.settings.modify(settings);
-    setState(() {});
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Widget getLayouted(final Pages page, final List<Widget> children) =>
@@ -122,9 +125,11 @@ class _PageState extends State<Page> {
   }
 
   void goToPage(final Pages page) {
-    setState(() {
-      currentPage = page;
-    });
+    if (mounted) {
+      setState(() {
+        currentPage = page;
+      });
+    }
   }
 
   @override

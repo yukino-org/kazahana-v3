@@ -123,7 +123,8 @@ class _TrackersTileItemState extends State<TrackersTileItem>
     final ResolvedTrackerItem unknown, [
     final dynamic data,
   ]) {
-    if (item.value != null &&
+    if (mounted &&
+        item.value != null &&
         widget.tracker.isItemSameKind(item.value!, unknown)) {
       setState(() {
         item.resolve(unknown);
@@ -206,9 +207,11 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                       value,
                                     );
 
-                                    setState(() {
-                                      searches.resolve(results);
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        searches.resolve(results);
+                                      });
+                                    }
                                   },
                                 ),
                                 if (searches.hasResolved &&
@@ -249,11 +252,11 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                                   );
                                                 }
 
-                                                this.setState(() {
-                                                  item.resolve(resolved);
-                                                });
-
                                                 if (mounted) {
+                                                  this.setState(() {
+                                                    item.resolve(resolved);
+                                                  });
+
                                                   Navigator.of(context).pop();
                                                 }
                                               },
@@ -450,7 +453,10 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                   onChanged: (final bool enabled) async {
                     await widget.tracker
                         .setEnabled(widget.title, widget.plugin, enabled);
-                    setState(() {});
+
+                    if (mounted) {
+                      setState(() {});
+                    }
                   },
                 )
               else

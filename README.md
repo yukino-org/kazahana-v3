@@ -14,22 +14,14 @@ The developer of this application does not have any affiliation with any of the 
 [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg?style=flat)](https://github.com/zyrouge/yukino-app/releases/)
 [![CodeFactor](https://www.codefactor.io/repository/github/yukino-app/yukino/badge/next)](https://www.codefactor.io/repository/github/yukino-app/yukino/overview/next)
 [![Android (Apk)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml)
-[![Linux (AppImage)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml)
+[![Linux (AppImage & tar)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml)
 [![MacOS (Dmg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml)
 [![Windows (Zip & Installer)](https://github.com/yukino-app/yukino/actions/workflows/windows-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/windows-build.yml)
 [![iOS (Ipa)](https://github.com/yukino-app/yukino/actions/workflows/ios-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/ios-build.yml)
 
-<!-- [![Site](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/Deploy.yml) [![CodeQL](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/zyrouge/yukino-app/actions/workflows/codeql-analysis.yml) [![Publish (Electron)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml/badge.svg?branch=main>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Electron).yml>) [![Publish (Capacitor - Android)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml/badge.svg>)](<https://github.com/zyrouge/yukino-app/actions/workflows/Publish%20(Capacitor%20-%20Android).yml>) [![CodeFactor](https://www.codefactor.io/repository/github/zyrouge/yukino-app/badge/next)](https://www.codefactor.io/repository/github/zyrouge/yukino-app/overview/next)
-
 ## Download
 
-You can download the latest version of app from the [releases](https://github.com/zyrouge/yukino-app/releases) tab.
-
-## Preview
-
-![Home](./screenshots/desktop/home.png)
-
-> All previews available at [https://zyrouge.github.io/yukino-app/](https://zyrouge.github.io/yukino-app/) -->
+You can download the latest version of app from the [releases](https://github.com/yukino-app/yukino/releases) tab.
 
 ## Links
 

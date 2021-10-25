@@ -124,7 +124,10 @@ class _EditModalState extends State<EditModal> {
                                     setState(() {
                                       progress = value.toInt();
                                     });
-                                    this.setState(() {});
+
+                                    if (mounted) {
+                                      this.setState(() {});
+                                    }
                                   },
                                 ),
                               ),
@@ -146,7 +149,7 @@ class _EditModalState extends State<EditModal> {
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
                               onChanged: (final String value) {
-                                if (value.isNotEmpty) {
+                                if (mounted && value.isNotEmpty) {
                                   this.setState(() {
                                     progress = int.parse(value);
                                   });
@@ -194,9 +197,12 @@ class _EditModalState extends State<EditModal> {
                         );
                       } else {
                         previousScoreControllerText = value;
-                        this.setState(() {
-                          score = int.parse(value);
-                        });
+
+                        if (mounted) {
+                          this.setState(() {
+                            score = int.parse(value);
+                          });
+                        }
                       }
                     },
                   ),

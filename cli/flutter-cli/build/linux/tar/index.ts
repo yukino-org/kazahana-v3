@@ -1,5 +1,5 @@
 import { dirname, join } from "path";
-import { ensureDir, createWriteStream } from "fs-extra";
+import { ensureDir, readdir, createWriteStream } from "fs-extra";
 import tar from "tar";
 import { getVersion } from "../../../../others/version/print";
 import { Logger } from "../../../../logger";
@@ -24,7 +24,7 @@ export const build = async () => {
             gzip: true,
             cwd: buildDir,
         },
-        [buildDir]
+        await readdir(buildDir)
     ).pipe(stream);
     await new Promise((resolve) => stream.once("close", resolve));
 

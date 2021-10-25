@@ -126,24 +126,26 @@ class WatchPageState extends State<WatchPage>
     );
 
     overlayController.addStatusListener((final AnimationStatus status) {
-      switch (status) {
-        case AnimationStatus.forward:
-          setState(() {
-            showControls = true;
-          });
-          break;
+      if (mounted) {
+        switch (status) {
+          case AnimationStatus.forward:
+            setState(() {
+              showControls = true;
+            });
+            break;
 
-        case AnimationStatus.dismissed:
-          setState(() {
-            showControls = overlayController.isCompleted;
-          });
-          break;
+          case AnimationStatus.dismissed:
+            setState(() {
+              showControls = overlayController.isCompleted;
+            });
+            break;
 
-        default:
-          setState(() {
-            showControls = overlayController.value > 0;
-          });
-          break;
+          default:
+            setState(() {
+              showControls = overlayController.value > 0;
+            });
+            break;
+        }
       }
     });
   }
@@ -195,88 +197,92 @@ class WatchPageState extends State<WatchPage>
   }
 
   Future<void> setPlayer(final int index) async {
-    setState(() {
-      currentIndex = index;
-      playerChild = null;
-    });
+    if (mounted) {
+      setState(() {
+        currentIndex = index;
+        playerChild = null;
+      });
 
-    if (player != null) {
-      player!.destroy();
+      if (player != null) {
+        player!.destroy();
+      }
+
+      isPlaying.value = false;
+
+      player = VideoPlayer.createPlayer(
+        player_model.PlayerSource(
+          url: sources![currentIndex!].url,
+          headers: sources![currentIndex!].headers,
+        ),
+      )..subscribe(_subscriber);
+
+      await player!.load();
     }
-
-    isPlaying.value = false;
-
-    player = VideoPlayer.createPlayer(
-      player_model.PlayerSource(
-        url: sources![currentIndex!].url,
-        headers: sources![currentIndex!].headers,
-      ),
-    )..subscribe(_subscriber);
-
-    await player!.load();
   }
 
   void _subscriber(final player_model.PlayerEvent event) {
-    switch (event.event) {
-      case player_model.PlayerEvents.load:
-        player!.setVolume(volume.value);
-        setState(() {
-          playerChild = player!.getWidget();
-        });
-        _updateDuration();
-        if (autoPlay) {
-          player!.play();
-        }
-        break;
-
-      case player_model.PlayerEvents.durationUpdate:
-        _updateDuration();
-        break;
-
-      case player_model.PlayerEvents.play:
-        isPlaying.value = true;
-        break;
-
-      case player_model.PlayerEvents.pause:
-        isPlaying.value = false;
-        break;
-
-      case player_model.PlayerEvents.seek:
-        if (wasPausedBySlider == true) {
-          player!.play();
-          wasPausedBySlider = null;
-        }
-        break;
-
-      case player_model.PlayerEvents.volume:
-        volume.value = player!.volume;
-        break;
-
-      case player_model.PlayerEvents.end:
-        if (autoNext) {
-          if (widget.nextEpisodeEnabled) {
-            ignoreExitFullscreen = true;
-            widget.nextEpisode();
+    if (mounted) {
+      switch (event.event) {
+        case player_model.PlayerEvents.load:
+          player!.setVolume(volume.value);
+          setState(() {
+            playerChild = player!.getWidget();
+          });
+          _updateDuration();
+          if (autoPlay) {
+            player!.play();
           }
-        }
-        break;
+          break;
 
-      case player_model.PlayerEvents.speed:
-        speed = player!.speed;
-        break;
+        case player_model.PlayerEvents.durationUpdate:
+          _updateDuration();
+          break;
 
-      case player_model.PlayerEvents.buffering:
-        isBuffering.value = player!.isBuffering;
-        break;
+        case player_model.PlayerEvents.play:
+          isPlaying.value = true;
+          break;
 
-      case player_model.PlayerEvents.error:
-        showDialog(
-          context: context,
-          builder: (final BuildContext context) => Dialog(
-            child: Text(jsonEncode(event.data)),
-          ),
-        );
-        break;
+        case player_model.PlayerEvents.pause:
+          isPlaying.value = false;
+          break;
+
+        case player_model.PlayerEvents.seek:
+          if (wasPausedBySlider == true) {
+            player!.play();
+            wasPausedBySlider = null;
+          }
+          break;
+
+        case player_model.PlayerEvents.volume:
+          volume.value = player!.volume;
+          break;
+
+        case player_model.PlayerEvents.end:
+          if (autoNext) {
+            if (widget.nextEpisodeEnabled) {
+              ignoreExitFullscreen = true;
+              widget.nextEpisode();
+            }
+          }
+          break;
+
+        case player_model.PlayerEvents.speed:
+          speed = player!.speed;
+          break;
+
+        case player_model.PlayerEvents.buffering:
+          isBuffering.value = player!.isBuffering;
+          break;
+
+        case player_model.PlayerEvents.error:
+          showDialog(
+            context: context,
+            builder: (final BuildContext context) => Dialog(
+              child: Text(jsonEncode(event.data)),
+            ),
+          );
+          break;
+      }
     }
   }
 
@@ -379,16 +385,22 @@ class WatchPageState extends State<WatchPage>
                             ),
                         onChanged: (final double val) async {
                           await player?.setSpeed(val);
-                          setState(() {
-                            speed = val;
-                          });
+
+                          if (mounted) {
+                            setState(() {
+                              speed = val;
+                            });
+                          }
                         },
                       ),
                       ...getAnime(
                         AppState.settings.current,
                         () async {
                           await AppState.settings.current.save();
-                          setState(() {});
+
+                          if (mounted) {
+                            setState(() {});
+                          }
                         },
                       ),
                     ],
@@ -1014,7 +1026,10 @@ class WatchPageState extends State<WatchPage>
                                                                 .settings
                                                                 .current
                                                                 .save();
-                                                            setState(() {});
+
+                                                            if (mounted) {
+                                                              setState(() {});
+                                                            }
                                                           },
                                                           child: Icon(
                                                             Icons

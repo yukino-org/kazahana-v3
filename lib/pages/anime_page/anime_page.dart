@@ -154,20 +154,24 @@ class _PageState extends State<Page>
   }
 
   Future<void> goToPage(final Pages page) async {
-    await controller.animateToPage(
-      page.index,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
+    if (controller.hasClients) {
+      await controller.animateToPage(
+        page.index,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void setEpisode(
     final int? index,
   ) {
-    setState(() {
-      currentEpisodeIndex = index;
-      episode = index != null ? info!.sortedEpisodes[index] : null;
-    });
+    if (mounted) {
+      setState(() {
+        currentEpisodeIndex = index;
+        episode = index != null ? info!.sortedEpisodes[index] : null;
+      });
+    }
   }
 
   Widget getHero(
@@ -381,8 +385,10 @@ class _PageState extends State<Page>
                               locale = val;
                               info = null;
                             });
+
                             getInfo(removeCache: true);
                           }
+
                           Navigator.of(context).pop();
                         },
                       ),
@@ -439,6 +445,7 @@ class _PageState extends State<Page>
             setState(() {
               info = null;
             });
+
             getInfo(removeCache: true);
           },
           tooltip: Translator.t.refetch(),

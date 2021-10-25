@@ -89,7 +89,9 @@ class _TrackersPageState extends State<TrackersPage>
 
   @override
   void didPopNext() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

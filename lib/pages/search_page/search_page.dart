@@ -174,7 +174,7 @@ class _PageState extends State<Page> with DidLoadStater {
   }
 
   Future<void> search() async {
-    if (currentPlugin != null && mounted) {
+    if (mounted && currentPlugin != null) {
       setState(() {
         results.resolving(null);
       });

@@ -75,7 +75,8 @@ class _ProfilePageState extends State<ProfilePage>
     );
 
     tabController.addListener(() {
-      if (tabController.index != pageController.page) {
+      if (tabController.index != pageController.page &&
+          pageController.hasClients) {
         pageController.animateToPage(
           tabController.index,
           duration: animationDuration,

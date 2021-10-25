@@ -81,9 +81,9 @@ class _PageState extends State<Page> with DidLoadStater {
     Deeplink.listen();
   }
 
-  void goToPage(final int page) {
+  Future<void> goToPage(final int page) async {
     if (controller.hasClients) {
-      controller.animateToPage(
+      await controller.animateToPage(
         page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,

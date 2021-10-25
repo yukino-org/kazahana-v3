@@ -134,31 +134,37 @@ class _PageReaderState extends State<PageReader>
   }
 
   Future<void> goToPage(final int page) async {
-    await pageController.animateToPage(
-      isReversed ? widget.pages.length - page - 1 : page,
-      duration: animationDuration,
-      curve: Curves.easeInOut,
-    );
-
-    if (page == widget.pages.length - 1) {
-      hasSynced = true;
-
-      await updateTrackers(
-        widget.info.title,
-        widget.extractor.id,
-        widget.chapter.chapter,
-        widget.chapter.volume,
+    if (pageController.hasClients) {
+      await pageController.animateToPage(
+        isReversed ? widget.pages.length - page - 1 : page,
+        duration: animationDuration,
+        curve: Curves.easeInOut,
       );
+
+      if (page == widget.pages.length - 1) {
+        hasSynced = true;
+
+        await updateTrackers(
+          widget.info.title,
+          widget.extractor.id,
+          widget.chapter.chapter,
+          widget.chapter.volume,
+        );
+      }
     }
   }
 
   Future<void> getPage(final extensions.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
+
     final extensions.ImageInfo image = await widget.extractor.getPage(page);
-    setState(() {
-      images[page]!.value = image;
-      images[page]!.state = LoadState.resolved;
-    });
+
+    if (mounted) {
+      setState(() {
+        images[page]!.value = image;
+        images[page]!.state = LoadState.resolved;
+      });
+    }
   }
 
   void showOptions() {
@@ -189,14 +195,16 @@ class _PageReaderState extends State<PageReader>
                       AppState.settings.modify(AppState.settings.current);
                     }
 
-                    setState(() {
-                      isReversed =
-                          AppState.settings.current.mangaReaderDirection ==
-                              MangaDirections.rightToLeft;
-                      isHorizontal =
-                          AppState.settings.current.mangaReaderSwipeDirection ==
-                              MangaSwipeDirections.horizontal;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isReversed =
+                            AppState.settings.current.mangaReaderDirection ==
+                                MangaDirections.rightToLeft;
+                        isHorizontal = AppState
+                                .settings.current.mangaReaderSwipeDirection ==
+                            MangaSwipeDirections.horizontal;
+                      });
+                    }
                   }),
                 ),
               ],
@@ -320,7 +328,7 @@ class _PageReaderState extends State<PageReader>
                 ),
               )
             : GestureDetector(
-                onTapUp: (final TapUpDetails details) async {
+                onTapUp: (final TapUpDetails details) {
                   final LastTapDetail currentTap = LastTapDetail(
                     _spaceFromPosition(
                       details.localPosition.dx /
@@ -350,6 +358,7 @@ class _PageReaderState extends State<PageReader>
                     setState(() {
                       showOverlay = !showOverlay;
                     });
+
                     done = true;
                   }
 

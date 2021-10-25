@@ -66,11 +66,15 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
 
   Future<void> getPage(final extensions.PageInfo page) async {
     images[page]!.state = LoadState.resolving;
+
     final extensions.ImageInfo image = await widget.extractor.getPage(page);
-    setState(() {
-      images[page]!.value = image;
-      images[page]!.state = LoadState.resolved;
-    });
+
+    if (mounted) {
+      setState(() {
+        images[page]!.value = image;
+        images[page]!.state = LoadState.resolved;
+      });
+    }
   }
 
   void showOptions() {
@@ -101,7 +105,9 @@ class _ListReaderState extends State<ListReader> with FullscreenMixin {
                       AppState.settings.modify(AppState.settings.current);
                     }
 
-                    setState(() {});
+                    if (mounted) {
+                      setState(() {});
+                    }
                   }),
                 ),
               ],

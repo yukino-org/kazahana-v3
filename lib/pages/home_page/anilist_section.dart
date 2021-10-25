@@ -40,6 +40,7 @@ class _PageState extends State<Page> with DidLoadStater {
   @override
   Future<void> load() async {
     _cache.resolve(await anilist.getRecommended(0, perPage: 14, onList: false));
+
     if (mounted) {
       setState(() {});
     }

@@ -121,17 +121,21 @@ class _PageState extends State<Page>
     final SettingsSchema current,
     final SettingsSchema previous,
   ) {
-    setState(() {
-      mangaMode = AppState.settings.current.mangaReaderMode;
-    });
+    if (mounted) {
+      setState(() {
+        mangaMode = AppState.settings.current.mangaReaderMode;
+      });
+    }
   }
 
   Future<void> goToPage(final Pages page) async {
-    await controller.animateToPage(
-      page.index,
-      duration: animationDuration,
-      curve: Curves.easeInOut,
-    );
+    if (controller.hasClients) {
+      await controller.animateToPage(
+        page.index,
+        duration: animationDuration,
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   Future<void> getInfo({
@@ -180,20 +184,25 @@ class _PageState extends State<Page>
     }
   }
 
-  void setChapter(
+  Future<void> setChapter(
     final int? index,
-  ) {
-    setState(() {
-      currentChapterIndex = index;
-      chapter = index != null ? info!.sortedChapters[index] : null;
-    });
-
-    if (chapter != null && pages[chapter] == null) {
-      extractor.getChapter(chapter!).then((final List<extensions.PageInfo> x) {
-        setState(() {
-          pages[chapter!] = x;
-        });
+  ) async {
+    if (mounted) {
+      setState(() {
+        currentChapterIndex = index;
+        chapter = index != null ? info!.sortedChapters[index] : null;
       });
+
+      if (chapter != null && pages[chapter] == null) {
+        final List<extensions.PageInfo> chapterPages =
+            await extractor.getChapter(chapter!);
+
+        if (mounted) {
+          setState(() {
+            pages[chapter!] = chapterPages;
+          });
+        }
+      }
     }
   }
 
@@ -432,8 +441,10 @@ class _PageState extends State<Page>
                               locale = val;
                               info = null;
                             });
+
                             getInfo(removeCache: true);
                           }
+
                           Navigator.of(context).pop();
                         },
                       ),
@@ -490,6 +501,7 @@ class _PageState extends State<Page>
             setState(() {
               info = null;
             });
+
             getInfo(removeCache: true);
           },
           tooltip: Translator.t.refetch(),
