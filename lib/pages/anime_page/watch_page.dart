@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:extensions/extensions.dart' as extensions;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +96,7 @@ class WatchPageState extends State<WatchPage>
 
   Timer? _mouseOverlayTimer;
   bool hasSynced = false;
-  bool ignoreExitFullscreen = false;
+  bool ignoreScreenChanges = false;
 
   @override
   void initState() {
@@ -150,12 +149,11 @@ class WatchPageState extends State<WatchPage>
 
   @override
   void dispose() {
-    if (!ignoreExitFullscreen) {
+    if (!ignoreScreenChanges) {
+      disableWakelock();
       exitLandscape();
       exitFullscreen();
     }
-
-    disableWakelock();
 
     player?.destroy();
     playerChild = null;
@@ -173,7 +171,11 @@ class WatchPageState extends State<WatchPage>
   @override
   Future<void> load() async {
     if (mounted) {
-      enableWakelock();
+      isWakelockEnabled().then((final bool isWakelockEnabled) {
+        if (mounted && !isWakelockEnabled) {
+          enableWakelock();
+        }
+      });
 
       if (AppState.settings.current.animeAutoFullscreen) {
         enterFullscreen();
@@ -263,7 +265,7 @@ class WatchPageState extends State<WatchPage>
         case player_model.PlayerEvents.end:
           if (autoNext) {
             if (widget.nextEpisodeEnabled) {
-              ignoreExitFullscreen = true;
+              ignoreScreenChanges = true;
               widget.nextEpisode();
             }
           }
@@ -796,7 +798,7 @@ class WatchPageState extends State<WatchPage>
                                                       label: Translator.t
                                                           .previous(),
                                                       onPressed: () {
-                                                        ignoreExitFullscreen =
+                                                        ignoreScreenChanges =
                                                             true;
                                                         widget
                                                             .previousEpisode();
@@ -853,7 +855,7 @@ class WatchPageState extends State<WatchPage>
                                                       label:
                                                           Translator.t.next(),
                                                       onPressed: () {
-                                                        ignoreExitFullscreen =
+                                                        ignoreScreenChanges =
                                                             true;
                                                         widget.nextEpisode();
                                                       },

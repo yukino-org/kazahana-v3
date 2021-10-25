@@ -91,7 +91,7 @@ class _PageReaderState extends State<PageReader>
   );
 
   bool hasSynced = false;
-  bool ignoreExitFullscreen = false;
+  bool ignoreScreenChanges = false;
 
   @override
   void initState() {
@@ -123,7 +123,7 @@ class _PageReaderState extends State<PageReader>
 
   @override
   void dispose() {
-    if (!ignoreExitFullscreen) {
+    if (!ignoreScreenChanges) {
       exitFullscreen();
     }
 
@@ -232,7 +232,7 @@ class _PageReaderState extends State<PageReader>
       return true;
     } else {
       if (satisfied) {
-        ignoreExitFullscreen = true;
+        ignoreScreenChanges = true;
         widget.previousChapter();
         return true;
       }
@@ -246,7 +246,7 @@ class _PageReaderState extends State<PageReader>
       return true;
     } else {
       if (satisfied) {
-        ignoreExitFullscreen = true;
+        ignoreScreenChanges = true;
         widget.nextChapter();
         return true;
       }
@@ -537,7 +537,7 @@ class _PageReaderState extends State<PageReader>
                           Theme.of(context).textTheme.headline4!.fontSize!,
                         ),
                         onTap: () {
-                          ignoreExitFullscreen = true;
+                          ignoreScreenChanges = true;
                           widget.previousChapter();
                         },
                         child: Icon(
@@ -583,7 +583,7 @@ class _PageReaderState extends State<PageReader>
                           Theme.of(context).textTheme.headline4!.fontSize!,
                         ),
                         onTap: () {
-                          ignoreExitFullscreen = true;
+                          ignoreScreenChanges = true;
                           widget.nextChapter();
                         },
                         child: Icon(

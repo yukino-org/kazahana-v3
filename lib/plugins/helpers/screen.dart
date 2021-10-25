@@ -56,6 +56,8 @@ mixin OrientationMixin {
 }
 
 mixin WakelockMixin {
+  Future<bool> isWakelockEnabled() => Screen.isWakelockEnabled();
+
   Future<void> enableWakelock() => Screen.enableWakelock();
 
   Future<void> disableWakelock() => Screen.disableWakelock();
@@ -191,6 +193,8 @@ abstract class Screen {
       await SystemChrome.setPreferredOrientations(to);
     }
   }
+
+  static Future<bool> isWakelockEnabled() => Wakelock.enabled;
 
   static Future<void> enableWakelock() async {
     if (!Platform.isLinux) {

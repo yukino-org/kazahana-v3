@@ -43,7 +43,7 @@ class _ListReaderState extends State<ListReader>
       images = <extensions.PageInfo, StatefulHolder<extensions.ImageInfo?>>{};
 
   bool hasSynced = false;
-  bool ignoreExitFullscreen = false;
+  bool ignoreScreenChanges = false;
 
   @override
   void initState() {
@@ -61,7 +61,7 @@ class _ListReaderState extends State<ListReader>
 
   @override
   void dispose() {
-    if (!ignoreExitFullscreen) {
+    if (!ignoreScreenChanges) {
       exitFullscreen();
     }
 
@@ -154,14 +154,14 @@ class _ListReaderState extends State<ListReader>
           actions: <Widget>[
             IconButton(
               onPressed: () {
-                ignoreExitFullscreen = true;
+                ignoreScreenChanges = true;
                 widget.previousChapter();
               },
               icon: const Icon(Icons.first_page),
             ),
             IconButton(
               onPressed: () {
-                ignoreExitFullscreen = true;
+                ignoreScreenChanges = true;
                 widget.nextChapter();
               },
               icon: const Icon(Icons.last_page),
