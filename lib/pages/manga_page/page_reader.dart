@@ -74,6 +74,7 @@ class _PageReaderState extends State<PageReader>
   late TransformationController interactiveController;
   bool interactionOnProgress = false;
   LastTapDetail? lastTapDetail;
+  TapDownDetails? doubleTapDetails;
   int lastKbEvent = DateTime.now().millisecondsSinceEpoch;
 
   late PageController pageController;
@@ -173,6 +174,26 @@ class _PageReaderState extends State<PageReader>
     }
 
     lastKbEvent = currentKbEvent;
+  }
+
+  // ignore: use_setters_to_change_properties
+  void handleDoubleTapDown(final TapDownDetails details) {
+    doubleTapDetails = details;
+  }
+
+  void handleDoubleTap() {
+    if (interactiveController.value != Matrix4.identity()) {
+      interactiveController.value = Matrix4.identity();
+    } else {
+      final Offset position = doubleTapDetails!.localPosition;
+
+      interactiveController.value = Matrix4.identity()
+        ..translate(-position.dx, -position.dy)
+        ..scale(2.0);
+    }
+    setState(() {
+      interactionOnProgress = !interactionOnProgress;
+    });
   }
 
   Future<void> goToPage(final int page) async {
@@ -381,6 +402,8 @@ class _PageReaderState extends State<PageReader>
                 focusNode: focusNode,
                 onKey: handleKeyEvent,
                 child: GestureDetector(
+                  onDoubleTapDown: handleDoubleTapDown,
+                  onDoubleTap: handleDoubleTap,
                   onTapUp: (final TapUpDetails details) {
                     focusNode.requestFocus();
                     final LastTapDetail currentTap = LastTapDetail(
