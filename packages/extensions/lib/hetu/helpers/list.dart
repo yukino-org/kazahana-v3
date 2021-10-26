@@ -1,5 +1,22 @@
 import 'package:hetu_script/hetu_script.dart';
 
+const String listDefinitions = '''
+const ListMapper: type = fun(i: num, item: any) -> any;
+external fun mapList(data: List<any>, mapper: ListMapper) -> str;
+
+const ListFilterer: type = fun(i: num, item: any) -> bool;
+external fun filterList(data: List<any>, filterer: ListFilterer) -> List<any>;
+external fun findList(data: List<any>, filterer: ListFilterer); // returns any or null
+
+const ListEachCb: type = fun(i: num, item: any) -> any;
+external fun eachList(data: List<any>, cb: ListEachCb) -> void;
+
+external fun mergeList(m1: List<any>, m2: List<any>) -> List<any>;
+external fun rangeList(a: num, b: num) -> List<int>;
+external fun flattenList(data: List, level: num) -> List;
+external fun deepFlattenList(data: List) -> List;
+''';
+
 List<int> rangeList(final int a, final int b) {
   final int length = (b - a).abs();
   return b > a

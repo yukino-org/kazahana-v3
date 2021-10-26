@@ -162,7 +162,7 @@ abstract class ExtensionUtils {
     try {
       return runner.invoke('defaultLocale') as String;
     } on HTError catch (err) {
-      editHetuError(err);
+      HetuManager.editError(err);
       rethrow;
     }
   }
@@ -170,12 +170,12 @@ abstract class ExtensionUtils {
   static Future<AnimeExtractor> transpileToAnimeExtractor(
     final ResolvedExtension ext,
   ) async {
-    final Hetu runner = await createHetu();
+    final Hetu runner = await HetuManager.create();
 
     try {
-      await runner.eval(appendHetuExternals(ext.code));
+      await runner.eval(HetuManager.appendDefinitions(ext.code));
     } on HTError catch (err) {
-      editHetuError(err);
+      HetuManager.editError(err);
       rethrow;
     }
 
@@ -202,7 +202,7 @@ abstract class ExtensionUtils {
               )
               .toList();
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -218,7 +218,7 @@ abstract class ExtensionUtils {
 
           return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -238,7 +238,7 @@ abstract class ExtensionUtils {
               )
               .toList();
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -248,12 +248,12 @@ abstract class ExtensionUtils {
   static Future<MangaExtractor> transpileToMangaExtractor(
     final ResolvedExtension ext,
   ) async {
-    final Hetu runner = await createHetu();
+    final Hetu runner = await HetuManager.create();
 
     try {
-      await runner.eval(appendHetuExternals(ext.code));
+      await runner.eval(HetuManager.appendDefinitions(ext.code));
     } on HTError catch (err) {
-      editHetuError(err);
+      HetuManager.editError(err);
       rethrow;
     }
 
@@ -280,7 +280,7 @@ abstract class ExtensionUtils {
               )
               .toList();
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -296,7 +296,7 @@ abstract class ExtensionUtils {
 
           return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -316,7 +316,7 @@ abstract class ExtensionUtils {
               )
               .toList();
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },
@@ -331,7 +331,7 @@ abstract class ExtensionUtils {
 
           return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
-          editHetuError(err);
+          HetuManager.editError(err);
           rethrow;
         }
       },

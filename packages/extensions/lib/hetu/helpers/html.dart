@@ -2,6 +2,20 @@ import 'package:hetu_script/hetu_script.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 
+const String htmlDefinitions = '''
+external class HtmlElement {
+  const classes: List<str>;
+  const id; // str or null
+  const text; // str or null
+  const innerHtml: str;
+  const outerHtml: str;
+  const attributes: Map<str>;
+  fun querySelector(selector: str); // returns HtmlElement or null
+  fun querySelectorAll(selector: str) -> List<HtmlElement>;
+}
+external fun parseHtml(html: str) -> HtmlElement;
+''';
+
 Map<String, String> _mapElementAttributes(
   final Map<Object, String> attributes,
 ) {

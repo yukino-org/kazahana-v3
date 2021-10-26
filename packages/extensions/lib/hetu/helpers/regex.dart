@@ -1,5 +1,16 @@
 import 'package:hetu_script/hetu_script.dart';
 
+const String regexDefinitions = '''
+external class RegExpMatchResult {
+    const input: str;
+    fun group(group: num); // returns str or null
+}
+external fun regexMatch(regex: str, text: str); // returns RegExpMatchResult or null
+external fun regexMatchAll(regex: str, text: str) -> List<RegExpMatchResult>;
+external fun regexReplaceAll(data: str, from: str, to: str) -> str;
+external fun regexReplaceFirst(data: str, from: str, to: str) -> str;
+''';
+
 class RegExpMatchResult {
   RegExpMatchResult({
     required final this.input,

@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as crypto;
 
+const String cryptoDefinitions = '''
+external fun decryptCryptoJsAES(salted: str, decrypter: str, length: num) -> str;
+''';
+
 String decryptCryptoJsAES(
   final String salted,
   final String decrypter,

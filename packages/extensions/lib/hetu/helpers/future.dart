@@ -1,5 +1,16 @@
 import 'package:hetu_script/hetu_script.dart';
 
+const String futureDefinitions = '''
+const ResolveFutureCallback: type = fun(err, result); // err - str or null, result - any or null (Any one will be null)
+external fun resolveFuture(future, fn: ResolveFutureCallback);
+
+const ResolveFutureAllCallback: type = fun(err, result); // err - str or null, result - List or null (Any one will be null)
+external fun resolveFutureAll(futures: List, fn: ResolveFutureAllCallback);
+
+const WaitCallback: type = fun();
+external fun wait(duration: num, fn: WaitCallback);
+''';
+
 Future<dynamic> resolveFuture(
   final Future<dynamic> future,
   final HTFunction fn,

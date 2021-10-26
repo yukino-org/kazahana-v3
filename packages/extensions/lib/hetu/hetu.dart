@@ -1,71 +1,81 @@
 import 'package:hetu_script/hetu_script.dart';
-import './externals.dart';
-import './helpers/crypto.dart' as helpers;
-import './helpers/fetch.dart' as helpers;
-import './helpers/future.dart' as helpers;
-import './helpers/fuzzy.dart' as helpers;
-import './helpers/html.dart' as helpers;
-import './helpers/json.dart' as helpers;
-import './helpers/languages.dart' as helpers;
-import './helpers/list.dart' as helpers;
-import './helpers/map.dart' as helpers;
-import './helpers/qs.dart' as helpers;
-import './helpers/regexp.dart' as helpers;
-import './helpers/throw_err.dart' as helpers;
+import './helpers/helpers.dart' as helpers;
 import '../utils/http.dart';
 
-export './externals.dart';
+abstract class HetuManager {
+  static final String definitions = <String>[
+    helpers.cryptoDefinitions,
+    helpers.errorDefinitions,
+    helpers.futureDefinitions,
+    helpers.fuzzyDefinitions,
+    helpers.htmlDefinitions,
+    helpers.httpDefinitions,
+    helpers.jsonDefinitions,
+    helpers.languagesDefinitions,
+    helpers.listDefinitions,
+    helpers.mapDefinitions,
+    helpers.qsDefinitions,
+    helpers.regexDefinitions,
+  ].join('\n');
 
-Future<Hetu> createHetu() async {
-  final Hetu hetu = Hetu();
+  static int? _hetuDepLines;
 
-  await hetu.init(
-    externalClasses: <HTExternalClass>[
-      helpers.HtmlElementClassBinding(),
-      helpers.RegExpMatchResultClassBinding(),
-    ],
-    externalFunctions: <String, Function>{
-      'decryptCryptoJsAES': helpers.decryptCryptoJsAES,
-      'fetch': helpers.fetch,
-      'createFuzzy': helpers.createFuzzy,
-      'parseHtml': helpers.parseHtml,
-      'jsonEncode': helpers.jsonEncode,
-      'jsonDecode': helpers.jsonDecode,
-      'httpUserAgent': () => HttpUtils.userAgent,
-      'regexMatch': helpers.regexMatch,
-      'regexMatchAll': helpers.regexMatchAll,
-      'mapList': helpers.mapList,
-      'filterList': helpers.filterList,
-      'findList': helpers.findList,
-      'regexReplaceAll': helpers.regexReplaceAll,
-      'regexReplaceFirst': helpers.regexReplaceFirst,
-      'resolveFuture': helpers.resolveFuture,
-      'throwError': helpers.throwError,
-      'ensureURL': HttpUtils.ensureURL,
-      'eachList': helpers.eachList,
-      'eachMap': helpers.eachMap,
-      'mergeMap': helpers.mergeMap,
-      'mergeList': helpers.mergeList,
-      'rangeList': helpers.rangeList,
-      'resolveFutureAll': helpers.resolveFutureAll,
-      'flattenList': helpers.flattenList,
-      'deepFlattenList': helpers.deepFlattenList,
-      'wait': helpers.wait,
-      'qsEncode': helpers.qsEncode,
-      'qsDecode': helpers.qsDecode,
-      'allLanguages': helpers.allLanguages,
-      'isValidLanguages': helpers.isValidLanguages,
-    },
-  );
+  static Future<Hetu> create() async {
+    final Hetu hetu = Hetu();
 
-  return hetu;
-}
+    await hetu.init(
+      externalClasses: <HTExternalClass>[
+        helpers.HtmlElementClassBinding(),
+        helpers.RegExpMatchResultClassBinding(),
+      ],
+      externalFunctions: <String, Function>{
+        'decryptCryptoJsAES': helpers.decryptCryptoJsAES,
+        'fetch': helpers.fetch,
+        'createFuzzy': helpers.createFuzzy,
+        'parseHtml': helpers.parseHtml,
+        'jsonEncode': helpers.jsonEncode,
+        'jsonDecode': helpers.jsonDecode,
+        'httpUserAgent': () => HttpUtils.userAgent,
+        'regexMatch': helpers.regexMatch,
+        'regexMatchAll': helpers.regexMatchAll,
+        'mapList': helpers.mapList,
+        'filterList': helpers.filterList,
+        'findList': helpers.findList,
+        'regexReplaceAll': helpers.regexReplaceAll,
+        'regexReplaceFirst': helpers.regexReplaceFirst,
+        'resolveFuture': helpers.resolveFuture,
+        'throwError': helpers.throwError,
+        'ensureURL': HttpUtils.ensureURL,
+        'eachList': helpers.eachList,
+        'eachMap': helpers.eachMap,
+        'mergeMap': helpers.mergeMap,
+        'mergeList': helpers.mergeList,
+        'rangeList': helpers.rangeList,
+        'resolveFutureAll': helpers.resolveFutureAll,
+        'flattenList': helpers.flattenList,
+        'deepFlattenList': helpers.deepFlattenList,
+        'wait': helpers.wait,
+        'qsEncode': helpers.qsEncode,
+        'qsDecode': helpers.qsDecode,
+        'allLanguages': helpers.allLanguages,
+        'isValidLanguages': helpers.isValidLanguages,
+      },
+    );
 
-int? _hetuDepLines;
-void editHetuError(final HTError error) {
-  _hetuDepLines ??= RegExp('\n').allMatches(appendHetuExternals('')).length - 1;
+    return hetu;
+  }
 
-  if (error.line != null) {
-    error.line = error.line! - _hetuDepLines!;
+  static String appendDefinitions(final String code) => '''
+$definitions
+
+$code
+''';
+
+  static void editError(final HTError error) {
+    _hetuDepLines ??= RegExp('\n').allMatches(appendDefinitions('')).length - 1;
+
+    if (error.line != null) {
+      error.line = error.line! - _hetuDepLines!;
+    }
   }
 }

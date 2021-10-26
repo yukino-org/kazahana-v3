@@ -61,3 +61,7 @@
 ## 0.0.15
 
 -   Added language utitlity methods: `allLanguages`, `validLanguages`
+
+## 0.0.16
+
+-   Added map utilitu method: `listFromMap`

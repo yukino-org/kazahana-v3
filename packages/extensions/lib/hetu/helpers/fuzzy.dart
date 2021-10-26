@@ -1,6 +1,11 @@
 import 'package:fuzzy/data/result.dart';
 import 'package:fuzzy/fuzzy.dart';
 
+const String fuzzyDefinitions = '''
+const FuzzySearcher: type = fun(terms: str, limit: num) -> List<Map>;
+external fun createFuzzy(data: List<Map>, keys: List<Map>) -> FuzzySearcher;
+''';
+
 List<Map<dynamic, dynamic>> Function(String, int) createFuzzy(
   final List<dynamic> data,
   final List<dynamic> keys,

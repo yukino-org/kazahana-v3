@@ -1,6 +1,12 @@
 import 'package:http/http.dart' as http;
 import '../../utils/http.dart';
 
+const String httpDefinitions = '''
+external fun fetch(data: Map);
+external fun httpUserAgent() -> str;
+external fun ensureURL(url: str) -> str;
+''';
+
 Future<Map<dynamic, dynamic>> fetch(
   final Map<dynamic, dynamic> data,
 ) async {
