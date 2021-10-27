@@ -3,6 +3,8 @@
     "version": "0.0.0",
     "description": "🔧 Yukino's handy command-line interface",
     "private": true,
+    "author": "Zyrouge",
+    "license": "GPL-3.0",
     "scripts": {
         "push:main": "ts-node ./cli/others/push-main/run.ts",
         "hive:generate": "ts-node ./cli/flutter-cli/hive-generate/run.ts",
@@ -38,13 +40,6 @@
         "type": "git",
         "url": "git+https://github.com/yukino-app/yukino.git"
     },
-    "keywords": [],
-    "author": "Zyrouge",
-    "license": "GNU 3.0",
-    "bugs": {
-        "url": "https://github.com/yukino-app/yukino/issues"
-    },
-    "homepage": "https://github.com/yukino-app/yukino#readme",
     "devDependencies": {
         "@types/adm-zip": "^0.4.34",
         "@types/archiver": "^5.1.1",

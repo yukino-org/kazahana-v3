@@ -2,9 +2,8 @@
 name: Feature request
 about: Suggest an idea for this project
 title: "[Feature] <short title>"
-labels: 'status: pending, type: enhancement'
-assignees: ''
-
+labels: "status: pending, type: enhancement"
+assignees: ""
 ---
 
 **Is your feature request related to a problem? Please describe.**
@@ -20,4 +19,5 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context or screenshots about the feature request here.
 
 ## Checklist
+
 -   [ ] I have read the [Contribution Guidelines](https://yukino-app.github.io/wiki/developers/contribution/#contribution).
