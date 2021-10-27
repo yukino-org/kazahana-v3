@@ -87,7 +87,9 @@ class AnimeInfo {
             .map((final Map<dynamic, dynamic> x) => EpisodeInfo.fromJson(x))
             .toList(),
         thumbnail: json['thumbnail'] != null
-            ? ImageInfo.fromJson(json['thumbnail'] as Map<dynamic, dynamic>)
+            ? ImageDescriber.fromJson(
+                json['thumbnail'] as Map<dynamic, dynamic>,
+              )
             : null,
         locale: json['locale'] as String,
         availableLocales:
@@ -97,7 +99,7 @@ class AnimeInfo {
   final String title;
   final String url;
   final List<EpisodeInfo> episodes;
-  final ImageInfo? thumbnail;
+  final ImageDescriber? thumbnail;
   final String locale;
   final List<String> availableLocales;
 

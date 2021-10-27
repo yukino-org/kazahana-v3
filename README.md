@@ -6,7 +6,7 @@
 
 # Yukino
 
-Yukino lets you read manga or stream anime ad-free from multiple sources. The project's name "Yukino" meaning "Snow" named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
+An extension-based Anime and Manga client. The project's name "Yukino" meaning "Snow" was named after the character "Yukino Yukinoshita" from the anime "Yahari Ore no Seishun Love Comedy wa Machigatteiru".
 
 The developer of this application does not have any affiliation with any of the third-party sources.
 
@@ -26,7 +26,7 @@ You can download the latest version of app from the [releases](https://github.co
 ## Links
 
 -   [Website](https://yukino-app.github.io/)
--   [User guide](https://yukino-app.github.io/guides/)
+-   [Wiki](https://yukino-app.github.io/wiki/)
 -   [Discord](https://discord.gg/dUHbfHNUmE)
 -   [GitHub](https://github.com/yukino-app/yukino/)
 -   [Patreon](https://patreon.com/zyrouge/)
@@ -41,23 +41,29 @@ You can download the latest version of app from the [releases](https://github.co
 
 -   [Dart](https://dart.dev/) (Language)
 -   [Flutter](https://flutter.dev/) (UI Framework)
--   [Pub](https://pub.dev/) (Package Manager)
+-   [Pub](https://pub.dev/) (Dependency Manager)
 -   [Typescript](https://typescriptlang.org/) (Language)
--   [NPM](https://npmjs.com/) (Package Manager)
+-   [NPM](https://npmjs.com/) (Dependency Manager)
+-   [Git](https://git-scm.com/) (Code Manager)
 
 ## Code structure
 
--   [./lib](./lib) - Core flutter app
--   [./android](./android) - Android related files
--   [./ios](./ios) - iOS related files
--   [./test](./test) - Test files
--   [./media](./media) - Local assets
+-   [./lib](./lib) - Contains the core application
+-   [./cli](./cli) - Contains the command-line tool
+-   [./android](./android) - Contains the android project
+-   [./ios](./ios) - Contains the iOS project
+-   [./windows](./windows) - Contains the windows project
+-   [./macos](./macos) - Contains the macOS project
+-   [./linux](./linux) - Contains the linux project
+-   [./media](./media) - Contains assets
+-   [./packages/extensions](./packages/extensions) - Contains the extensions package
+-   [./packages/utilx](./packages/utilx) - Contains shared utilities
 
 ## Contributing
 
 Ways to contribute to this project:
 
--   Submitting bugs and feature requests in [issues](https://github.com/yukino-app/yukino/issues).
+-   Submitting bugs and feature requests at [issues](https://github.com/yukino-app/yukino/issues).
 -   Opening [pull requests](https://github.com/yukino-app/yukino/pulls) containing bug fixes, new features, etc.
 
 ## License

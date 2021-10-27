@@ -50,7 +50,9 @@ class MangaInfo {
             .map((final Map<dynamic, dynamic> x) => ChapterInfo.fromJson(x))
             .toList(),
         thumbnail: json['thumbnail'] != null
-            ? ImageInfo.fromJson(json['thumbnail'] as Map<dynamic, dynamic>)
+            ? ImageDescriber.fromJson(
+                json['thumbnail'] as Map<dynamic, dynamic>,
+              )
             : null,
         locale: json['locale'] as String,
         availableLocales:
@@ -60,7 +62,7 @@ class MangaInfo {
   final String title;
   final String url;
   final List<ChapterInfo> chapters;
-  final ImageInfo? thumbnail;
+  final ImageDescriber? thumbnail;
   final String locale;
   final List<String> availableLocales;
 
@@ -98,7 +100,7 @@ typedef GetMangaInfoFn = Future<MangaInfo> Function(String, String);
 
 typedef GetChapterFn = Future<List<PageInfo>> Function(ChapterInfo);
 
-typedef GetPageFn = Future<ImageInfo> Function(PageInfo);
+typedef GetPageFn = Future<ImageDescriber> Function(PageInfo);
 
 class MangaExtractor extends BaseExtractor {
   MangaExtractor({

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import './plugins/app_lifecycle.dart';
-import './plugins/database/database.dart';
-import './plugins/database/schemas/settings/settings.dart' as settings_schema;
-import './plugins/helpers/logger.dart';
-import './plugins/helpers/ui.dart';
-import './plugins/router.dart';
-import './plugins/state.dart';
-import './plugins/translator/translator.dart';
+import './modules/app/lifecycle.dart';
+import './modules/app/state.dart';
+import './modules/database/database.dart';
+import './modules/database/schemas/settings/settings.dart';
+import './modules/helpers/logger.dart';
+import './modules/helpers/ui.dart';
+import './modules/translator/translator.dart';
+import './ui/router.dart';
 
 Future<void> main(final List<String> args) async {
   try {
@@ -68,8 +68,8 @@ class _MainAppState extends State<MainApp> {
   }
 
   void handleSettingsChange(
-    final settings_schema.SettingsSchema current,
-    final settings_schema.SettingsSchema previous,
+    final SettingsSchema current,
+    final SettingsSchema previous,
   ) {
     setState(() {
       useSystemPreferredTheme = current.useSystemPreferredTheme;

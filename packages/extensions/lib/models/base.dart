@@ -1,10 +1,11 @@
-class ImageInfo {
-  ImageInfo({
+class ImageDescriber {
+  ImageDescriber({
     required final this.url,
     final this.headers = const <String, String>{},
   });
 
-  factory ImageInfo.fromJson(final Map<dynamic, dynamic> json) => ImageInfo(
+  factory ImageDescriber.fromJson(final Map<dynamic, dynamic> json) =>
+      ImageDescriber(
         url: json['url'] as String,
         headers:
             (json['headers'] as Map<dynamic, dynamic>).cast<String, String>(),
@@ -31,14 +32,16 @@ class SearchInfo {
         title: json['title'] as String,
         url: json['url'] as String,
         thumbnail: json['thumbnail'] != null
-            ? ImageInfo.fromJson(json['thumbnail'] as Map<dynamic, dynamic>)
+            ? ImageDescriber.fromJson(
+                json['thumbnail'] as Map<dynamic, dynamic>,
+              )
             : null,
         locale: json['locale'] as String,
       );
 
   final String title;
   final String url;
-  final ImageInfo? thumbnail;
+  final ImageDescriber? thumbnail;
   final String locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{

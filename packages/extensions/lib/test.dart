@@ -101,7 +101,7 @@ class MangaExtractorTest {
   Future<void> getPage(final PageInfo page) async {
     final TestTimer timer = TestTimer()..start();
 
-    final ImageInfo result = await extractor.getPage(page);
+    final ImageDescriber result = await extractor.getPage(page);
 
     print(encoder.convert(result.toJson()));
     timer.pass();

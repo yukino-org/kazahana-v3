@@ -329,7 +329,7 @@ abstract class ExtensionUtils {
             ],
           );
 
-          return ImageInfo.fromJson(result as Map<dynamic, dynamic>);
+          return ImageDescriber.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
           HetuManager.editError(err);
           rethrow;
