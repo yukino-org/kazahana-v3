@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './players/better_player.dart';
 import './players/dart_vlc.dart';
-import '../helpers/eventer.dart';
+import '../state/eventer.dart';
 
 enum VideoPlayerEvents {
   load,

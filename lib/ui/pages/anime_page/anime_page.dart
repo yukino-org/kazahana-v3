@@ -9,8 +9,8 @@ import '../../../modules/database/database.dart';
 import '../../../modules/database/schemas/cache/cache.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -66,7 +66,7 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page>
-    with TickerProviderStateMixin, DidLoadStater {
+    with TickerProviderStateMixin, InitialStateLoader {
   AnimeInfo? info;
 
   EpisodeInfo? episode;
@@ -107,7 +107,7 @@ class _PageState extends State<Page>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

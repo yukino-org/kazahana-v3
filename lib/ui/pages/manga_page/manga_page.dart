@@ -11,8 +11,8 @@ import '../../../modules/database/schemas/cache/cache.dart';
 import '../../../modules/database/schemas/settings/settings.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -68,7 +68,7 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page>
-    with SingleTickerProviderStateMixin, DidLoadStater {
+    with SingleTickerProviderStateMixin, InitialStateLoader {
   MangaInfo? info;
 
   ChapterInfo? chapter;
@@ -89,7 +89,7 @@ class _PageState extends State<Page>
   late PageArguments args;
 
   LanguageCodes? locale;
-  MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
+  MangaMode mangaMode = AppState.settings.value.mangaReaderMode;
 
   final int maxChunkLength = AppState.isDesktop ? 25 : 15;
 
@@ -113,7 +113,7 @@ class _PageState extends State<Page>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -145,7 +145,7 @@ class _PageState extends State<Page>
   ) {
     if (mounted) {
       setState(() {
-        mangaMode = AppState.settings.current.mangaReaderMode;
+        mangaMode = AppState.settings.value.mangaReaderMode;
       });
     }
   }

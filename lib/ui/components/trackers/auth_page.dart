@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../modules/helpers/logger.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/translator/translator.dart';
 
 class AuthPage extends StatefulWidget {
@@ -23,9 +24,9 @@ class AuthPage extends StatefulWidget {
   _AuthPageState createState() => _AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage> with DidLoadStater {
-  final StatefulHolder<List<InlineSpan>> status =
-      StatefulHolder<List<InlineSpan>>(<InlineSpan>[
+class _AuthPageState extends State<AuthPage> with InitialStateLoader {
+  final StatefulValueHolder<List<InlineSpan>> status =
+      StatefulValueHolder<List<InlineSpan>>(<InlineSpan>[
     TextSpan(text: Translator.t.authenticating()),
   ]);
 
@@ -33,7 +34,7 @@ class _AuthPageState extends State<AuthPage> with DidLoadStater {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

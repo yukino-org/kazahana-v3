@@ -15,7 +15,7 @@ import './pages/store_page/trackers_page/myanimelist_page/auth_page.dart'
     as myanimelist_auth_page;
 import './pages/store_page/trackers_page/myanimelist_page/myanimelist_page.dart'
     as myanimelist_page;
-import '../modules/helpers/stater.dart';
+import '../modules/state/eventer.dart';
 import '../modules/translator/translator.dart';
 
 abstract class RouteNames {
@@ -69,8 +69,8 @@ class RouteInfo {
 
 class RouteKeeper extends NavigatorObserver {
   Route<dynamic>? currentRoute;
-  final SubscriberManager<Route<dynamic>?> observer =
-      SubscriberManager<Route<dynamic>?>();
+  final ReactiveEventer<Route<dynamic>?> observer =
+      ReactiveEventer<Route<dynamic>?>();
 
   @override
   void didPush(

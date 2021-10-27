@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../modules/helpers/stateful_holder.dart';
+import '../../modules/state/loader.dart';
+import '../../modules/state/states.dart';
 
 class FallbackableNetworkImage extends StatefulWidget {
   const FallbackableNetworkImage({
@@ -21,8 +22,8 @@ class FallbackableNetworkImage extends StatefulWidget {
 }
 
 class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
-    with DidLoadStater {
-  LoadState state = LoadState.waiting;
+    with InitialStateLoader {
+  ReactiveStates state = ReactiveStates.waiting;
   ImageInfo? imageInfo;
   late final NetworkImage networkImage;
 
@@ -30,7 +31,7 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -49,14 +50,14 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
               if (mounted) {
                 setState(() {
                   imageInfo = image;
-                  state = LoadState.resolved;
+                  state = ReactiveStates.resolved;
                 });
               }
             },
             onError: (final Object exception, final StackTrace? stackTrace) {
               if (mounted) {
                 setState(() {
-                  state = LoadState.failed;
+                  state = ReactiveStates.failed;
                 });
               }
             },
@@ -66,11 +67,11 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
 
   @override
   Widget build(final BuildContext context) {
-    if (state == LoadState.resolved) {
+    if (state == ReactiveStates.resolved) {
       return Image(image: networkImage);
     }
 
-    if (state == LoadState.failed && widget.errorPlaceholder != null) {
+    if (state == ReactiveStates.failed && widget.errorPlaceholder != null) {
       return widget.errorPlaceholder!;
     }
 

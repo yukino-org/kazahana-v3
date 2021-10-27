@@ -2,8 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
 import '../../router.dart';
@@ -62,12 +63,12 @@ class TrackersTileItem extends StatefulWidget {
 }
 
 class _TrackersTileItemState extends State<TrackersTileItem>
-    with DidLoadStater {
-  StatefulHolder<List<ResolvableTrackerItem>?> searches =
-      StatefulHolder<List<ResolvableTrackerItem>?>(null);
+    with InitialStateLoader {
+  StatefulValueHolder<List<ResolvableTrackerItem>?> searches =
+      StatefulValueHolder<List<ResolvableTrackerItem>?>(null);
 
-  StatefulHolder<ResolvedTrackerItem?> item =
-      StatefulHolder<ResolvedTrackerItem?>(null);
+  StatefulValueHolder<ResolvedTrackerItem?> item =
+      StatefulValueHolder<ResolvedTrackerItem?>(null);
 
   @override
   void initState() {
@@ -80,7 +81,7 @@ class _TrackersTileItemState extends State<TrackersTileItem>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

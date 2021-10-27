@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
 import '../../components/network_image_fallback.dart';
@@ -120,13 +121,13 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
   CurrentPlugin? currentPlugin;
-  StatefulHolder<List<_SearchInfo>?> results =
-      StatefulHolder<List<_SearchInfo>?>(null);
+  StatefulValueHolder<List<_SearchInfo>?> results =
+      StatefulValueHolder<List<_SearchInfo>?>(null);
 
   ExtensionType popupPluginType = ExtensionType.anime;
   PageArguments? args;
@@ -144,7 +145,7 @@ class _PageState extends State<Page> with DidLoadStater {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

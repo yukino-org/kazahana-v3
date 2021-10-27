@@ -2,8 +2,8 @@ import 'package:animations/animations.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/translator/translator.dart';
 
 class MediaList extends StatefulWidget {
@@ -28,7 +28,7 @@ class MediaList extends StatefulWidget {
   _MediaListState createState() => _MediaListState();
 }
 
-class _MediaListState extends State<MediaList> with DidLoadStater {
+class _MediaListState extends State<MediaList> with InitialStateLoader {
   List<dynamic>? mediaList;
   int page = 0;
 
@@ -40,7 +40,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

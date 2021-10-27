@@ -8,8 +8,10 @@ import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/schemas/settings/settings.dart';
 import '../../../modules/helpers/screen.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/toggleable_appbar.dart';
 import '../../components/toggleable_slide_widget.dart';
@@ -60,7 +62,7 @@ class PageReader extends StatefulWidget {
 }
 
 class _PageReaderState extends State<PageReader>
-    with SingleTickerProviderStateMixin, FullscreenMixin, DidLoadStater {
+    with SingleTickerProviderStateMixin, FullscreenMixin, InitialStateLoader {
   late AnimationController overlayController;
   bool showOverlay = true;
 
@@ -79,13 +81,13 @@ class _PageReaderState extends State<PageReader>
   late int currentPage;
   late int currentIndex;
 
-  bool isHorizontal = AppState.settings.current.mangaReaderSwipeDirection ==
+  bool isHorizontal = AppState.settings.value.mangaReaderSwipeDirection ==
       MangaSwipeDirections.horizontal;
-  bool isReversed = AppState.settings.current.mangaReaderDirection ==
+  bool isReversed = AppState.settings.value.mangaReaderDirection ==
       MangaDirections.rightToLeft;
 
-  late final Map<PageInfo, StatefulHolder<ImageDescriber?>> images =
-      <PageInfo, StatefulHolder<ImageDescriber?>>{};
+  late final Map<PageInfo, StatefulValueHolder<ImageDescriber?>> images =
+      <PageInfo, StatefulValueHolder<ImageDescriber?>>{};
 
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
@@ -121,7 +123,7 @@ class _PageReaderState extends State<PageReader>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -143,7 +145,7 @@ class _PageReaderState extends State<PageReader>
 
   @override
   Future<void> load() async {
-    if (mounted && AppState.settings.current.mangaAutoFullscreen) {
+    if (mounted && AppState.settings.value.mangaAutoFullscreen) {
       enterFullscreen();
     }
   }
@@ -216,14 +218,14 @@ class _PageReaderState extends State<PageReader>
   }
 
   Future<void> getPage(final PageInfo page) async {
-    images[page]!.state = LoadState.resolving;
+    images[page]!.state = ReactiveStates.resolving;
 
     final ImageDescriber image = await widget.extractor.getPage(page);
 
     if (mounted) {
       setState(() {
         images[page]!.value = image;
-        images[page]!.state = LoadState.resolved;
+        images[page]!.state = ReactiveStates.resolved;
       });
     }
   }
@@ -248,22 +250,22 @@ class _PageReaderState extends State<PageReader>
             child: Wrap(
               children: <Widget>[
                 Column(
-                  children: getManga(AppState.settings.current, () async {
-                    await AppState.settings.current.save();
+                  children: getManga(AppState.settings.value, () async {
+                    await AppState.settings.value.save();
 
-                    if (AppState.settings.current.mangaReaderMode !=
+                    if (AppState.settings.value.mangaReaderMode !=
                         MangaMode.page) {
-                      AppState.settings.modify(AppState.settings.current);
+                      AppState.settings.value = AppState.settings.value;
                     }
 
                     if (mounted) {
                       setState(() {
                         isReversed =
-                            AppState.settings.current.mangaReaderDirection ==
+                            AppState.settings.value.mangaReaderDirection ==
                                 MangaDirections.rightToLeft;
-                        isHorizontal = AppState
-                                .settings.current.mangaReaderSwipeDirection ==
-                            MangaSwipeDirections.horizontal;
+                        isHorizontal =
+                            AppState.settings.value.mangaReaderSwipeDirection ==
+                                MangaSwipeDirections.horizontal;
                       });
                     }
                   }),
@@ -341,7 +343,7 @@ class _PageReaderState extends State<PageReader>
                     IconButton(
                   onPressed: () async {
                     focusNode.requestFocus();
-                    AppState.settings.current.mangaAutoFullscreen =
+                    AppState.settings.value.mangaAutoFullscreen =
                         !isFullscreened;
 
                     if (isFullscreened) {
@@ -356,7 +358,7 @@ class _PageReaderState extends State<PageReader>
                       });
                     }
 
-                    await AppState.settings.current.save();
+                    await AppState.settings.value.save();
                   },
                   icon: Icon(
                     isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
@@ -413,7 +415,7 @@ class _PageReaderState extends State<PageReader>
                     );
 
                     final bool useDoubleClick =
-                        AppState.settings.current.doubleClickSwitchChapter;
+                        AppState.settings.value.doubleClickSwitchChapter;
                     final bool satisfied = !useDoubleClick ||
                         lastTapDetail?.space == currentTap.space &&
                             (currentTap.time.millisecondsSinceEpoch -
@@ -457,7 +459,7 @@ class _PageReaderState extends State<PageReader>
                       );
 
                       final bool useDoubleClick =
-                          AppState.settings.current.doubleClickSwitchChapter;
+                          AppState.settings.value.doubleClickSwitchChapter;
                       final bool satisfied = !useDoubleClick ||
                           lastTapDetail?.space == currentTap.space &&
                               (currentTap.time.millisecondsSinceEpoch -
@@ -504,7 +506,7 @@ class _PageReaderState extends State<PageReader>
                   child: PageView.builder(
                     allowImplicitScrolling: true,
                     scrollDirection:
-                        AppState.settings.current.mangaReaderSwipeDirection ==
+                        AppState.settings.value.mangaReaderSwipeDirection ==
                                 MangaSwipeDirections.horizontal
                             ? Axis.horizontal
                             : Axis.vertical,
@@ -530,7 +532,8 @@ class _PageReaderState extends State<PageReader>
                       final PageInfo page = widget.pages[index];
 
                       if (images[page] == null) {
-                        images[page] = StatefulHolder<ImageDescriber?>(null);
+                        images[page] =
+                            StatefulValueHolder<ImageDescriber?>(null);
                       }
 
                       if (!images[page]!.hasValue) {

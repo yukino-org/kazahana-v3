@@ -4,8 +4,10 @@ import './update_tracker.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/schemas/settings/settings.dart';
 import '../../../modules/helpers/screen.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/full_screen_image.dart';
 import '../settings_page/setting_labels/manga.dart';
@@ -36,11 +38,11 @@ class ListReader extends StatefulWidget {
 }
 
 class _ListReaderState extends State<ListReader>
-    with FullscreenMixin, DidLoadStater {
+    with FullscreenMixin, InitialStateLoader {
   final Widget loader = const CircularProgressIndicator();
 
-  late final Map<PageInfo, StatefulHolder<ImageDescriber?>> images =
-      <PageInfo, StatefulHolder<ImageDescriber?>>{};
+  late final Map<PageInfo, StatefulValueHolder<ImageDescriber?>> images =
+      <PageInfo, StatefulValueHolder<ImageDescriber?>>{};
 
   bool hasSynced = false;
   bool ignoreScreenChanges = false;
@@ -56,7 +58,7 @@ class _ListReaderState extends State<ListReader>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -70,20 +72,20 @@ class _ListReaderState extends State<ListReader>
 
   @override
   Future<void> load() async {
-    if (mounted && AppState.settings.current.mangaAutoFullscreen) {
+    if (mounted && AppState.settings.value.mangaAutoFullscreen) {
       enterFullscreen();
     }
   }
 
   Future<void> getPage(final PageInfo page) async {
-    images[page]!.state = LoadState.resolving;
+    images[page]!.state = ReactiveStates.resolving;
 
     final ImageDescriber image = await widget.extractor.getPage(page);
 
     if (mounted) {
       setState(() {
         images[page]!.value = image;
-        images[page]!.state = LoadState.resolved;
+        images[page]!.state = ReactiveStates.resolved;
       });
     }
   }
@@ -108,12 +110,12 @@ class _ListReaderState extends State<ListReader>
             child: Wrap(
               children: <Widget>[
                 Column(
-                  children: getManga(AppState.settings.current, () async {
-                    await AppState.settings.current.save();
+                  children: getManga(AppState.settings.value, () async {
+                    await AppState.settings.value.save();
 
-                    if (AppState.settings.current.mangaReaderMode !=
+                    if (AppState.settings.value.mangaReaderMode !=
                         MangaMode.list) {
-                      AppState.settings.modify(AppState.settings.current);
+                      AppState.settings.value = AppState.settings.value;
                     }
 
                     if (mounted) {
@@ -175,8 +177,7 @@ class _ListReaderState extends State<ListReader>
               ) =>
                   IconButton(
                 onPressed: () async {
-                  AppState.settings.current.mangaAutoFullscreen =
-                      !isFullscreened;
+                  AppState.settings.value.mangaAutoFullscreen = !isFullscreened;
 
                   if (isFullscreened) {
                     exitFullscreen();
@@ -184,7 +185,7 @@ class _ListReaderState extends State<ListReader>
                     enterFullscreen();
                   }
 
-                  await AppState.settings.current.save();
+                  await AppState.settings.value.save();
                 },
                 icon: Icon(
                   isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,
@@ -223,7 +224,7 @@ class _ListReaderState extends State<ListReader>
                   final PageInfo page = widget.pages[index];
 
                   if (images[page] == null) {
-                    images[page] = StatefulHolder<ImageDescriber?>(null);
+                    images[page] = StatefulValueHolder<ImageDescriber?>(null);
                   }
 
                   if (!images[page]!.hasValue) {

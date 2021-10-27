@@ -2,7 +2,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import './animelist/animelist_page.dart' as animelist_page;
 import './mangalist/mangalist_page.dart' as mangalist_page;
-import '../../../../../modules/helpers/stateful_holder.dart';
+import '../../../../../modules/state/loader.dart';
 import '../../../../router.dart';
 
 class PageArguments {
@@ -38,14 +38,14 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   late PageArguments args;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

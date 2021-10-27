@@ -6,8 +6,8 @@ import './android/apk.dart';
 import './linux/appimage.dart';
 import './windows/exe.dart';
 import '../../config/app.dart';
-import '../helpers/eventer.dart';
 import '../helpers/logger.dart';
+import '../state/eventer.dart';
 
 class UpdateInfo {
   UpdateInfo({

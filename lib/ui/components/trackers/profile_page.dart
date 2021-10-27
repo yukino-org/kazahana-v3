@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 
 class ProfileTab {
   ProfileTab({
@@ -43,8 +44,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin, DidLoadStater {
-  StatefulHolder<dynamic> user = StatefulHolder<dynamic>(null);
+    with SingleTickerProviderStateMixin, InitialStateLoader {
+  StatefulValueHolder<dynamic> user = StatefulValueHolder<dynamic>(null);
 
   late final List<Tab> tabs = widget.tabs
       .map(
@@ -90,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

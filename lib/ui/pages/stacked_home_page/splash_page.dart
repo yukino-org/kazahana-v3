@@ -6,8 +6,8 @@ import '../../../modules/app/lifecycle.dart';
 import '../../../modules/helpers/http_download.dart';
 import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/screen.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/updater/updater.dart';
 
@@ -23,7 +23,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   final ValueNotifier<String> status =
       ValueNotifier<String>(Translator.t.initializing());
 
@@ -31,7 +31,7 @@ class _PageState extends State<Page> with DidLoadStater {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

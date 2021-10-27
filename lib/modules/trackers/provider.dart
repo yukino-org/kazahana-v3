@@ -1,6 +1,6 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import '../helpers/eventer.dart';
+import '../state/eventer.dart';
 
 class VolumesProgress {
   VolumesProgress({

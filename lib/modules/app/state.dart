@@ -1,15 +1,14 @@
 import 'dart:io';
 import '../database/database.dart';
 import '../database/schemas/settings/settings.dart';
-import '../helpers/stater.dart';
+import '../state/eventer.dart';
 
 abstract class AppState {
-  static final SubscriberManager<SettingsSchema> settings =
-      SubscriberManager<SettingsSchema>();
+  static final ReactiveEventer<SettingsSchema> settings =
+      ReactiveEventer<SettingsSchema>();
 
   static Future<void> initialize() async {
-    final SettingsSchema settings = DataStore.settings;
-    AppState.settings.initialize(settings);
+    AppState.settings.value = DataStore.settings;
   }
 
   static bool get isDesktop =>

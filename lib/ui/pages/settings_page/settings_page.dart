@@ -61,7 +61,7 @@ class _PageState extends State<Page> {
 
   Future<void> saveSettings() async {
     await settings.save();
-    AppState.settings.modify(settings);
+    AppState.settings.value = settings;
 
     if (mounted) {
       setState(() {});

@@ -3,14 +3,15 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/anilist/anilist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
 
-final StatefulHolder<List<AniListMedia>?> _cache =
-    StatefulHolder<List<AniListMedia>?>(null);
+final StatefulValueHolder<List<AniListMedia>?> _cache =
+    StatefulValueHolder<List<AniListMedia>?>(null);
 
 bool enabled() => AnilistManager.auth.isValidToken();
 
@@ -23,16 +24,16 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   int? recommendedHoverIndex;
-  final Map<int, StatefulHolder<AniListMediaList?>> mediaCache =
-      <int, StatefulHolder<AniListMediaList?>>{};
+  final Map<int, StatefulValueHolder<AniListMediaList?>> mediaCache =
+      <int, StatefulValueHolder<AniListMediaList?>>{};
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -100,7 +101,7 @@ class _PageState extends State<Page> with DidLoadStater {
 
                             if (mediaCache[x.id] == null) {
                               mediaCache[x.id] =
-                                  StatefulHolder<AniListMediaList?>(null);
+                                  StatefulValueHolder<AniListMediaList?>(null);
 
                               AniListUserInfo.getUserInfo()
                                   .then((final AniListUserInfo user) {

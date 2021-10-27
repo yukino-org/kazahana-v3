@@ -3,8 +3,8 @@ import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/deeplink.dart';
 import '../../../modules/helpers/protocol_handler.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../components/bar_item.dart';
 import '../../components/bottom_bar.dart';
 import '../../components/side_bar.dart';
@@ -26,7 +26,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   late int currentIndex;
   late PageController controller;
 
@@ -68,7 +68,7 @@ class _PageState extends State<Page> with DidLoadStater {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

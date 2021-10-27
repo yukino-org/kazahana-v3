@@ -3,7 +3,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../../ui/components/trackers/detailed_item.dart';
 import '../../../../ui/pages/store_page/trackers_page/myanimelist_page/animelist/edit_modal.dart';
-import '../../../helpers/stateful_holder.dart';
+import '../../../state/loader.dart';
 import '../../../utils/utils.dart';
 import '../../provider.dart';
 import '../myanimelist.dart';
@@ -249,14 +249,14 @@ class _DetailedItemWrapper extends StatefulWidget {
 }
 
 class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
-    with DidLoadStater {
+    with InitialStateLoader {
   late bool fetched = widget.item.details != null;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override

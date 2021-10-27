@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/holder.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/network_image_fallback.dart';
 
-final StatefulHolder<MyAnimeListHome?> _cache =
-    StatefulHolder<MyAnimeListHome?>(null);
+final StatefulValueHolder<MyAnimeListHome?> _cache =
+    StatefulValueHolder<MyAnimeListHome?>(null);
 
 final bool _useHoverTitle = AppState.isDesktop;
 
@@ -23,17 +24,17 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with DidLoadStater {
+class _PageState extends State<Page> with InitialStateLoader {
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
-  final Map<int, StatefulHolder<MyAnimeListAnimeList?>> mediaCache =
-      <int, StatefulHolder<MyAnimeListAnimeList?>>{};
+  final Map<int, StatefulValueHolder<MyAnimeListAnimeList?>> mediaCache =
+      <int, StatefulValueHolder<MyAnimeListAnimeList?>>{};
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -57,7 +58,8 @@ class _PageState extends State<Page> with DidLoadStater {
           }
 
           if (mediaCache[nodeId] == null) {
-            mediaCache[nodeId] = StatefulHolder<MyAnimeListAnimeList?>(null);
+            mediaCache[nodeId] =
+                StatefulValueHolder<MyAnimeListAnimeList?>(null);
 
             MyAnimeListAnimeList.getFromNodeId(
               nodeId,
@@ -84,7 +86,7 @@ class _PageState extends State<Page> with DidLoadStater {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            _cache.hasResolved && AppState.settings.current.locale == 'en'
+            _cache.hasResolved && AppState.settings.value.locale == 'en'
                 ? _cache.value!.seasonName
                 : Translator.t.seasonalAnimes(),
             style: Theme.of(context).textTheme.headline5?.copyWith(

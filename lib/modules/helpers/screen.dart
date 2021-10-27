@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:utilx/utilities/window.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:window_manager/window_manager.dart';
-import './eventer.dart';
 import '../app/state.dart';
+import '../state/eventer.dart';
 
 class ScreenState {
   ScreenState({

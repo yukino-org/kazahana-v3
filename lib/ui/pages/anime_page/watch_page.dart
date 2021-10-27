@@ -8,8 +8,8 @@ import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/double_value_listenable_builder.dart';
 import '../../../modules/helpers/screen.dart';
-import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/state/loader.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
@@ -57,7 +57,7 @@ class WatchPageState extends State<WatchPage>
     with
         TickerProviderStateMixin,
         FullscreenMixin,
-        DidLoadStater,
+        InitialStateLoader,
         OrientationMixin,
         WakelockMixin {
   List<EpisodeSource>? sources;
@@ -67,12 +67,12 @@ class WatchPageState extends State<WatchPage>
 
   bool showControls = true;
   bool locked = false;
-  bool autoPlay = AppState.settings.current.autoPlay;
-  bool autoNext = AppState.settings.current.autoNext;
+  bool autoPlay = AppState.settings.value.autoPlay;
+  bool autoNext = AppState.settings.value.autoNext;
   bool? wasPausedBySlider;
   double speed = VideoPlayer.defaultSpeed;
-  int seekDuration = AppState.settings.current.seekDuration;
-  int introDuration = AppState.settings.current.introDuration;
+  int seekDuration = AppState.settings.value.seekDuration;
+  int introDuration = AppState.settings.value.introDuration;
 
   final ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
   final ValueNotifier<bool> isBuffering = ValueNotifier<bool>(true);
@@ -141,7 +141,7 @@ class WatchPageState extends State<WatchPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    doLoadStateIfHasnt();
+    maybeLoad();
   }
 
   @override
@@ -174,11 +174,11 @@ class WatchPageState extends State<WatchPage>
         }
       });
 
-      if (AppState.settings.current.animeAutoFullscreen) {
+      if (AppState.settings.value.animeAutoFullscreen) {
         enterFullscreen();
       }
 
-      if (AppState.settings.current.animeForceLandscape) {
+      if (AppState.settings.value.animeForceLandscape) {
         enterLandscape();
       }
 
@@ -296,7 +296,7 @@ class WatchPageState extends State<WatchPage>
 
     if ((duration.value.current.inSeconds / duration.value.total.inSeconds) *
             100 >
-        AppState.settings.current.animeTrackerWatchPercent) {
+        AppState.settings.value.animeTrackerWatchPercent) {
       final int? episode = int.tryParse(widget.episode.episode);
 
       if (episode != null && !hasSynced) {
@@ -396,9 +396,9 @@ class WatchPageState extends State<WatchPage>
                         },
                       ),
                       ...getAnime(
-                        AppState.settings.current,
+                        AppState.settings.value,
                         () async {
-                          await AppState.settings.current.save();
+                          await AppState.settings.value.save();
 
                           if (mounted) {
                             setState(() {});
@@ -1008,16 +1008,16 @@ class WatchPageState extends State<WatchPage>
                                                           onTap: () async {
                                                             AppState
                                                                     .settings
-                                                                    .current
+                                                                    .value
                                                                     .animeForceLandscape =
                                                                 !AppState
                                                                     .settings
-                                                                    .current
+                                                                    .value
                                                                     .animeForceLandscape;
 
                                                             if (AppState
                                                                 .settings
-                                                                .current
+                                                                .value
                                                                 .animeForceLandscape) {
                                                               enterLandscape();
                                                             } else {
@@ -1025,8 +1025,7 @@ class WatchPageState extends State<WatchPage>
                                                             }
 
                                                             await AppState
-                                                                .settings
-                                                                .current
+                                                                .settings.value
                                                                 .save();
 
                                                             if (mounted) {
@@ -1066,7 +1065,7 @@ class WatchPageState extends State<WatchPage>
                                                         onTap: () async {
                                                           AppState
                                                                   .settings
-                                                                  .current
+                                                                  .value
                                                                   .animeAutoFullscreen =
                                                               !isFullscreened;
 
@@ -1077,7 +1076,7 @@ class WatchPageState extends State<WatchPage>
                                                           }
 
                                                           await AppState
-                                                              .settings.current
+                                                              .settings.value
                                                               .save();
                                                         },
                                                         child: Icon(
