@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/anilist/anilist.dart';
@@ -23,9 +24,6 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> with DidLoadStater {
-  final Duration animationDuration = const Duration(milliseconds: 300);
-  final Duration fastAnimationDuration = const Duration(milliseconds: 150);
-
   int? recommendedHoverIndex;
   final Map<int, StatefulHolder<AniListMediaList?>> mediaCache =
       <int, StatefulHolder<AniListMediaList?>>{};
@@ -66,7 +64,7 @@ class _PageState extends State<Page> with DidLoadStater {
             height: remToPx(0.3),
           ),
           if (_cache.hasResolved)
-            ...getGridded(
+            ...UiUtils.getGridded(
               MediaQuery.of(context).size.width.toInt(),
               _cache.value!
                   .asMap()
@@ -79,7 +77,7 @@ class _PageState extends State<Page> with DidLoadStater {
                         openColor: Theme.of(context).scaffoldBackgroundColor,
                         closedColor: Colors.transparent,
                         closedElevation: 0,
-                        transitionDuration: animationDuration,
+                        transitionDuration: Defaults.animationsSlower,
                         onClosed: (final dynamic result) {
                           setState(() {
                             recommendedHoverIndex = null;
@@ -201,14 +199,14 @@ class _PageState extends State<Page> with DidLoadStater {
                                       curve: Curves.easeInOut,
                                       opacity:
                                           recommendedHoverIndex == i ? 1 : 0,
-                                      duration: fastAnimationDuration,
+                                      duration: Defaults.animationsFast,
                                       child: AnimatedScale(
                                         alignment: Alignment.topCenter,
                                         curve: Curves.easeInOut,
                                         scale: recommendedHoverIndex == i
                                             ? 1
                                             : 0.95,
-                                        duration: fastAnimationDuration,
+                                        duration: Defaults.animationsFast,
                                         child: Container(
                                           color: Theme.of(context)
                                               .cardColor

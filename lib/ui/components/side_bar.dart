@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import './bar_item.dart';
+import '../../config/defaults.dart';
 import '../../modules/helpers/ui.dart';
 
 class SideBar extends StatefulWidget {
@@ -121,12 +122,12 @@ class _SideBarState extends State<SideBar> {
                         (final int i, final BarItem x) => MapEntry<int, Widget>(
                           i,
                           AnimatedOpacity(
-                            duration: const Duration(milliseconds: 150),
+                            duration: Defaults.animationsFast,
                             opacity: currentIndex == i ? 1 : 0,
                             child: AnimatedScale(
                               alignment: Alignment.centerLeft,
                               scale: currentIndex == i ? 1 : 0.8,
-                              duration: const Duration(milliseconds: 100),
+                              duration: Defaults.animationsFaster,
                               child: SizedBox(
                                 height: itemSize.height,
                                 child: Material(

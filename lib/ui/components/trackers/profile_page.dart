@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
 
@@ -53,7 +54,6 @@ class _ProfilePageState extends State<ProfilePage>
       )
       .toList();
 
-  final Duration animationDuration = const Duration(milliseconds: 300);
   late final TabController tabController;
   late final PageController pageController;
 
@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage>
           pageController.hasClients) {
         pageController.animateToPage(
           tabController.index,
-          duration: animationDuration,
+          duration: Defaults.animationsSlower,
           curve: Curves.easeInOut,
         );
       }

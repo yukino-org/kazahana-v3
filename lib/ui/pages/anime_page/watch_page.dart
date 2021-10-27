@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import './select_source.dart';
 import '../../../config/defaults.dart';
-import '../../../modules/app/state.dart' ;
+import '../../../modules/app/state.dart';
 import '../../../modules/helpers/double_value_listenable_builder.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/stateful_holder.dart';
@@ -73,7 +73,6 @@ class WatchPageState extends State<WatchPage>
   double speed = VideoPlayer.defaultSpeed;
   int seekDuration = AppState.settings.current.seekDuration;
   int introDuration = AppState.settings.current.introDuration;
-  final Duration animationDuration = const Duration(milliseconds: 300);
 
   final ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
   final ValueNotifier<bool> isBuffering = ValueNotifier<bool>(true);
@@ -104,12 +103,12 @@ class WatchPageState extends State<WatchPage>
 
     playPauseController = AnimationController(
       vsync: this,
-      duration: animationDuration,
+      duration: Defaults.animationsSlower,
     );
 
     overlayController = AnimationController(
       vsync: this,
-      duration: animationDuration,
+      duration: Defaults.animationsSlower,
       value: showControls ? 1 : 0,
     );
 
@@ -506,7 +505,7 @@ class WatchPageState extends State<WatchPage>
     if (!showControls) {
       overlayController.forward();
 
-      _mouseOverlayTimer = Timer(MiscSettings.mouseOverlayDuration, () {
+      _mouseOverlayTimer = Timer(Defaults.mouseOverlayDuration, () {
         overlayController.reverse();
       });
     } else if (isTap) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/deeplink.dart';
 import '../../../modules/helpers/protocol_handler.dart';
@@ -85,7 +86,7 @@ class _PageState extends State<Page> with DidLoadStater {
     if (controller.hasClients) {
       await controller.animateToPage(
         page,
-        duration: const Duration(milliseconds: 200),
+        duration: Defaults.animationsNormal,
         curve: Curves.easeInOut,
       );
     }

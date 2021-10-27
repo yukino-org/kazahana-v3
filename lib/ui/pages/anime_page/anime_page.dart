@@ -87,7 +87,6 @@ class _PageState extends State<Page>
 
   LanguageCodes? locale;
 
-  final Duration animationDuration = const Duration(milliseconds: 200);
   final int maxChunkLength = AppState.isDesktop ? 100 : 30;
 
   @override
@@ -100,7 +99,7 @@ class _PageState extends State<Page>
 
     floatingButtonController = AnimationController(
       vsync: this,
-      duration: animationDuration,
+      duration: Defaults.animationsNormal,
     );
   }
 
@@ -146,7 +145,7 @@ class _PageState extends State<Page>
 
     if (cachedAnime != null &&
         nowMs - cachedAnime.cachedTime <
-            MiscSettings.cachedAnimeInfoExpireTime.inMilliseconds) {
+            Defaults.cachedAnimeInfoExpireTime.inMilliseconds) {
       try {
         if (mounted) {
           setState(() {
@@ -179,7 +178,7 @@ class _PageState extends State<Page>
     if (controller.hasClients) {
       await controller.animateToPage(
         page.index,
-        duration: const Duration(milliseconds: 200),
+        duration: Defaults.animationsNormal,
         curve: Curves.easeInOut,
       );
     }
@@ -209,7 +208,7 @@ class _PageState extends State<Page>
           )
         : Image.asset(
             Assets.placeholderImage(
-              dark: isDarkContext(context),
+              dark: UiUtils.isDarkContext(context),
             ),
             width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
           );

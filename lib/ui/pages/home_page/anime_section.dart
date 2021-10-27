@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/stateful_holder.dart';
@@ -23,9 +24,6 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> with DidLoadStater {
-  final Duration animationDuration = const Duration(milliseconds: 300);
-  final Duration fastAnimationDuration = const Duration(milliseconds: 150);
-
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
   final Map<int, StatefulHolder<MyAnimeListAnimeList?>> mediaCache =
@@ -98,8 +96,6 @@ class _PageState extends State<Page> with DidLoadStater {
               height: remToPx(0.3),
             ),
             _HorizontalEntityList(
-              animationDuration: animationDuration,
-              fastAnimationDuration: fastAnimationDuration,
               entities: _cache.value!.seasonEntities,
               active: (final int i) =>
                   !_useHoverTitle || seasonAnimeHoverIndex == i,
@@ -132,8 +128,6 @@ class _PageState extends State<Page> with DidLoadStater {
               height: remToPx(0.3),
             ),
             _HorizontalEntityList(
-              animationDuration: animationDuration,
-              fastAnimationDuration: fastAnimationDuration,
               entities: _cache.value!.recentlyUpdated,
               active: (final int i) =>
                   !_useHoverTitle || recentlyUpdatedHoverIndex == i,
@@ -166,8 +160,6 @@ class _PageState extends State<Page> with DidLoadStater {
 
 class _HorizontalEntityList extends StatelessWidget {
   const _HorizontalEntityList({
-    required final this.animationDuration,
-    required final this.fastAnimationDuration,
     required final this.entities,
     required final this.onHover,
     required final this.onTap,
@@ -176,8 +168,6 @@ class _HorizontalEntityList extends StatelessWidget {
     final Key? key,
   }) : super(key: key);
 
-  final Duration animationDuration;
-  final Duration fastAnimationDuration;
   final List<MyAnimeListHomeContent> entities;
   final void Function(int, bool) onHover;
   final void Function(int, VoidCallback) onTap;
@@ -224,7 +214,7 @@ class _HorizontalEntityList extends StatelessWidget {
                                     url: x.thumbnail,
                                     placeholder: Image.asset(
                                       Assets.placeholderImage(
-                                        dark: isDarkContext(
+                                        dark: UiUtils.isDarkContext(
                                           context,
                                         ),
                                       ),
@@ -233,7 +223,7 @@ class _HorizontalEntityList extends StatelessWidget {
                                 ),
                                 Positioned.fill(
                                   child: AnimatedOpacity(
-                                    duration: animationDuration,
+                                    duration: Defaults.animationsSlower,
                                     opacity: active(i) ? 1 : 0,
                                     child: DecoratedBox(
                                       decoration: BoxDecoration(
@@ -253,7 +243,7 @@ class _HorizontalEntityList extends StatelessWidget {
                                   alignment: Alignment.bottomCenter,
                                   child: AnimatedSlide(
                                     curve: Curves.easeInOut,
-                                    duration: fastAnimationDuration,
+                                    duration: Defaults.animationsFast,
                                     offset: active(i)
                                         ? Offset.zero
                                         : const Offset(0, 1),

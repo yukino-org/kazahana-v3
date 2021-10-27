@@ -219,14 +219,14 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                   SizedBox(
                                     height: remToPx(1),
                                   ),
-                                  ...getGridded(
+                                  ...UiUtils.getGridded(
                                     MediaQuery.of(context).size.width.toInt(),
                                     searches.value!
                                         .map(
                                           (final ResolvableTrackerItem x) =>
                                               Card(
                                             color: Palette.gray[
-                                                isDarkContext(context)
+                                                UiUtils.isDarkContext(context)
                                                     ? 700
                                                     : 200],
                                             child: InkWell(
@@ -280,8 +280,8 @@ class _TrackersTileItemState extends State<TrackersTileItem>
                                                           : Image.asset(
                                                               Assets
                                                                   .placeholderImage(
-                                                                dark:
-                                                                    isDarkContext(
+                                                                dark: UiUtils
+                                                                    .isDarkContext(
                                                                   context,
                                                                 ),
                                                               ),

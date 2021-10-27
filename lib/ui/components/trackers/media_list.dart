@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/helpers/stateful_holder.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
@@ -31,7 +32,6 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
   List<dynamic>? mediaList;
   int page = 0;
 
-  final Duration animationDuration = const Duration(milliseconds: 300);
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
   );
@@ -78,7 +78,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
                 height: remToPx(2),
               ),
             ] else ...<Widget>[
-              ...getGridded(
+              ...UiUtils.getGridded(
                 MediaQuery.of(context).size.width.toInt(),
                 mediaList!
                     .asMap()
@@ -94,7 +94,7 @@ class _MediaListState extends State<MediaList> with DidLoadStater {
                           openColor: Theme.of(context).scaffoldBackgroundColor,
                           closedColor: Colors.transparent,
                           closedElevation: 0,
-                          transitionDuration: animationDuration,
+                          transitionDuration: Defaults.animationsSlower,
                           onClosed: (final dynamic result) {
                             setState(() {});
                           },

@@ -15,7 +15,7 @@ class BottomBar extends StatelessWidget {
         decoration: BoxDecoration(
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: isDarkContext(context)
+              color: UiUtils.isDarkContext(context)
                   ? Colors.black.withOpacity(0.3)
                   : Colors.black.withOpacity(0.1),
               blurRadius: remToPx(0.5),

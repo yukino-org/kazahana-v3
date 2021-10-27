@@ -91,7 +91,6 @@ class _PageState extends State<Page>
   LanguageCodes? locale;
   MangaMode mangaMode = AppState.settings.current.mangaReaderMode;
 
-  final Duration animationDuration = const Duration(milliseconds: 200);
   final int maxChunkLength = AppState.isDesktop ? 25 : 15;
 
   @override
@@ -104,7 +103,7 @@ class _PageState extends State<Page>
 
     floatingButtonController = AnimationController(
       vsync: this,
-      duration: animationDuration,
+      duration: Defaults.animationsNormal,
     );
 
     AppState.settings.subscribe(_appStateChange);
@@ -155,7 +154,7 @@ class _PageState extends State<Page>
     if (controller.hasClients) {
       await controller.animateToPage(
         page.index,
-        duration: animationDuration,
+        duration: Defaults.animationsNormal,
         curve: Curves.easeInOut,
       );
     }
@@ -176,7 +175,7 @@ class _PageState extends State<Page>
 
     if (cachedManga != null &&
         nowMs - cachedManga.cachedTime <
-            MiscSettings.cachedMangaInfoExpireTime.inMilliseconds) {
+            Defaults.cachedMangaInfoExpireTime.inMilliseconds) {
       try {
         if (mounted) {
           setState(() {
@@ -237,7 +236,7 @@ class _PageState extends State<Page>
           )
         : Image.asset(
             Assets.placeholderImage(
-              dark: isDarkContext(context),
+              dark: UiUtils.isDarkContext(context),
             ),
             width: remToPx(7),
           );

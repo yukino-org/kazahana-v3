@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './update_tracker.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/schemas/settings/settings.dart';
 import '../../../modules/helpers/screen.dart';
@@ -60,8 +61,6 @@ class PageReader extends StatefulWidget {
 
 class _PageReaderState extends State<PageReader>
     with SingleTickerProviderStateMixin, FullscreenMixin, DidLoadStater {
-  final Duration animationDuration = const Duration(milliseconds: 300);
-
   late AnimationController overlayController;
   bool showOverlay = true;
 
@@ -105,7 +104,7 @@ class _PageReaderState extends State<PageReader>
 
     overlayController = AnimationController(
       vsync: this,
-      duration: animationDuration,
+      duration: Defaults.animationsNormal,
     );
 
     interactiveController = TransformationController();
@@ -199,7 +198,7 @@ class _PageReaderState extends State<PageReader>
     if (pageController.hasClients) {
       await pageController.animateToPage(
         isReversed ? widget.pages.length - page - 1 : page,
-        duration: animationDuration,
+        duration: Defaults.animationsSlower,
         curve: Curves.easeInOut,
       );
 
@@ -597,7 +596,7 @@ class _PageReaderState extends State<PageReader>
                             ) =>
                                 Align(
                               child: AnimatedSwitcher(
-                                duration: animationDuration,
+                                duration: Defaults.animationsSlower,
                                 child: footerNotificationContent ?? child!,
                               ),
                             ),

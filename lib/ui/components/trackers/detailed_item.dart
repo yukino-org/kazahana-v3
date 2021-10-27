@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
@@ -33,7 +34,6 @@ class DetailedItem extends StatefulWidget {
 
 class _DetailedItemState extends State<DetailedItem> {
   final ValueNotifier<bool> appBarDetails = ValueNotifier<bool>(false);
-  final Duration animationDuration = const Duration(milliseconds: 300);
 
   late DetailedInfo item = widget.item;
 
@@ -66,7 +66,7 @@ class _DetailedItemState extends State<DetailedItem> {
     final double heroHeight = remToPx(20);
     final double bannerHeight = isLargest ? 0 : (20 / 100) * size.height;
 
-    final bool largeAndDark = isLargest && !isDarkContext(context);
+    final bool largeAndDark = isLargest && !UiUtils.isDarkContext(context);
     final double playBtnTextSize = isLargest
         ? Theme.of(context).textTheme.headline6!.fontSize! - remToPx(0.2)
         : Theme.of(context).textTheme.bodyText1!.fontSize!;
@@ -136,7 +136,7 @@ class _DetailedItemState extends State<DetailedItem> {
               final Widget? child,
             ) =>
                 AnimatedSwitcher(
-              duration: animationDuration,
+              duration: Defaults.animationsSlower,
               child: appBarDetails
                   ? AppBar(
                       key: UniqueKey(),
@@ -261,12 +261,12 @@ class _DetailedItemState extends State<DetailedItem> {
                                           .textTheme
                                           .headline6
                                           ?.copyWith(
-                                        color: isDarkContext(context)
+                                        color: UiUtils.isDarkContext(context)
                                             ? Theme.of(context).primaryColor
                                             : Colors.white.withOpacity(0.8),
                                         fontWeight: FontWeight.bold,
                                         shadows: <Shadow>[
-                                          if (isDarkContext(context))
+                                          if (UiUtils.isDarkContext(context))
                                             Shadow(
                                               blurRadius: remToPx(1),
                                               color:
@@ -498,7 +498,7 @@ class _DetailedItemState extends State<DetailedItem> {
                       SizedBox(
                         height: remToPx(0.5),
                       ),
-                      ...getGridded(
+                      ...UiUtils.getGridded(
                         size.width.toInt(),
                         item.characters
                             .map(

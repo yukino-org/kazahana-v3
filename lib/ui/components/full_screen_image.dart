@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/defaults.dart';
 
 class FullScreenInteractiveImage extends StatefulWidget {
   const FullScreenInteractiveImage({
@@ -15,8 +16,6 @@ class FullScreenInteractiveImage extends StatefulWidget {
 
 class _FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
     with SingleTickerProviderStateMixin {
-  final Duration duration = const Duration(milliseconds: 100);
-
   late TransformationController transformationController;
   late AnimationController animationController;
   late Matrix4Tween tween;
@@ -30,7 +29,7 @@ class _FullScreenInteractiveImageState extends State<FullScreenInteractiveImage>
 
     transformationController = TransformationController();
     animationController = AnimationController(
-      duration: duration,
+      duration: Defaults.animationsFaster,
       vsync: this,
     );
 

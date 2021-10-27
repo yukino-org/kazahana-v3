@@ -132,7 +132,6 @@ class _PageState extends State<Page> with DidLoadStater {
   PageArguments? args;
 
   final TextEditingController textController = TextEditingController();
-  final Duration animationDuration = const Duration(milliseconds: 300);
 
   @override
   void initState() {
@@ -264,7 +263,6 @@ class _PageState extends State<Page> with DidLoadStater {
           StatefulBuilder(
         builder: (final BuildContext context, final StateSetter setState) =>
             PageTransitionSwitcher(
-          duration: animationDuration,
           transitionBuilder: (
             final Widget child,
             final Animation<double> animation,
@@ -358,7 +356,7 @@ class _PageState extends State<Page> with DidLoadStater {
                 ),
                 if (results.hasResolved && results.value!.isNotEmpty)
                   Column(
-                    children: getGridded(
+                    children: UiUtils.getGridded(
                       MediaQuery.of(context).size.width.toInt(),
                       results.value!
                           .map(
@@ -393,7 +391,8 @@ class _PageState extends State<Page> with DidLoadStater {
                                                   headers: x.thumbnail!.headers,
                                                   placeholder: Image.asset(
                                                     Assets.placeholderImage(
-                                                      dark: isDarkContext(
+                                                      dark:
+                                                          UiUtils.isDarkContext(
                                                         context,
                                                       ),
                                                     ),
@@ -401,7 +400,7 @@ class _PageState extends State<Page> with DidLoadStater {
                                                 )
                                               : Image.asset(
                                                   Assets.placeholderImage(
-                                                    dark: isDarkContext(
+                                                    dark: UiUtils.isDarkContext(
                                                       context,
                                                     ),
                                                   ),

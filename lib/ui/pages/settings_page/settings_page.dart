@@ -3,6 +3,7 @@ import './about_tile.dart';
 import './setting_labels/anime.dart';
 import './setting_labels/manga.dart';
 import './setting_labels/preference.dart';
+import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/database/schemas/settings/settings.dart';
@@ -36,7 +37,6 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
-  final Duration animationDuration = const Duration(milliseconds: 200);
   Pages currentPage = Pages.home;
 
   final List<SettingsCategory> categories = <SettingsCategory>[
@@ -147,7 +147,7 @@ class _PageState extends State<Page> {
           body: SingleChildScrollView(
             child: AnimatedSwitcher(
               switchOutCurve: Curves.easeInOut,
-              duration: animationDuration,
+              duration: Defaults.animationsNormal,
               child: getPage(currentPage),
               transitionBuilder:
                   (final Widget child, final Animation<double> animation) {

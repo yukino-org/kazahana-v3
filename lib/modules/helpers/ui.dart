@@ -84,8 +84,84 @@ abstract class Palette {
 
 double remToPx(final double rem) => rem * 20;
 
-bool isDarkContext(final BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark;
+class UiUtils {
+  static bool isDarkContext(final BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static List<Widget> getGridded(
+    final int size,
+    final List<Widget> children, {
+    final Map<int, int> breakpoint = const <int, int>{
+      ResponsiveSizes.lg: 2,
+    },
+    final Widget? spacer,
+    final MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+    final CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+  }) {
+    final MapEntry<int, int>? point = (breakpoint.entries.toList()
+          ..sort(
+            (final MapEntry<int, int> a, final MapEntry<int, int> b) =>
+                b.key.compareTo(a.key),
+          ))
+        .firstWhereOrNull((final MapEntry<int, int> x) => size > x.key);
+
+    if (point != null && point.value > 1) {
+      const Widget filler = SizedBox.shrink();
+
+      return ListUtils.chunk(children, point.value, filler).map(
+        (final List<Widget> x) {
+          final List<Widget> children = <Widget>[];
+
+          for (int i = 0; i < x.length; i++) {
+            children.add(Expanded(child: x[i]));
+
+            if (spacer != null && i != 0 && i < x.length) {
+              children.add(spacer);
+            }
+          }
+
+          return Row(
+            mainAxisAlignment: mainAxisAlignment,
+            crossAxisAlignment: crossAxisAlignment,
+            children: children,
+          );
+        },
+      ).toList();
+    }
+
+    return children;
+  }
+
+  static ScrollController createMultiplierScrollController({
+    final int multiplier = 80,
+    final bool enabled = true,
+  }) {
+    final ScrollController controller = ScrollController();
+
+    if (enabled) {
+      controller.addListener(() {
+        final ScrollDirection scrollDirection =
+            controller.position.userScrollDirection;
+
+        if (scrollDirection != ScrollDirection.idle) {
+          double scrollEnd = controller.offset +
+              (scrollDirection == ScrollDirection.reverse
+                  ? multiplier
+                  : -multiplier);
+
+          scrollEnd = min(
+            controller.position.maxScrollExtent,
+            max(controller.position.minScrollExtent, scrollEnd),
+          );
+
+          controller.jumpTo(scrollEnd);
+        }
+      });
+    }
+
+    return controller;
+  }
+}
 
 class MiceScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -93,78 +169,4 @@ class MiceScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       };
-}
-
-List<Widget> getGridded(
-  final int size,
-  final List<Widget> children, {
-  final Map<int, int> breakpoint = const <int, int>{
-    ResponsiveSizes.lg: 2,
-  },
-  final Widget? spacer,
-  final MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
-  final CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
-}) {
-  final MapEntry<int, int>? point = (breakpoint.entries.toList()
-        ..sort(
-          (final MapEntry<int, int> a, final MapEntry<int, int> b) =>
-              b.key.compareTo(a.key),
-        ))
-      .firstWhereOrNull((final MapEntry<int, int> x) => size > x.key);
-
-  if (point != null && point.value > 1) {
-    const Widget filler = SizedBox.shrink();
-
-    return ListUtils.chunk(children, point.value, filler).map(
-      (final List<Widget> x) {
-        final List<Widget> children = <Widget>[];
-
-        for (int i = 0; i < x.length; i++) {
-          children.add(Expanded(child: x[i]));
-
-          if (spacer != null && i != 0 && i < x.length) {
-            children.add(spacer);
-          }
-        }
-
-        return Row(
-          mainAxisAlignment: mainAxisAlignment,
-          crossAxisAlignment: crossAxisAlignment,
-          children: children,
-        );
-      },
-    ).toList();
-  }
-
-  return children;
-}
-
-ScrollController createMultiplierScrollController({
-  final int multiplier = 80,
-  final bool enabled = true,
-}) {
-  final ScrollController controller = ScrollController();
-
-  if (enabled) {
-    controller.addListener(() {
-      final ScrollDirection scrollDirection =
-          controller.position.userScrollDirection;
-
-      if (scrollDirection != ScrollDirection.idle) {
-        double scrollEnd = controller.offset +
-            (scrollDirection == ScrollDirection.reverse
-                ? multiplier
-                : -multiplier);
-
-        scrollEnd = min(
-          controller.position.maxScrollExtent,
-          max(controller.position.minScrollExtent, scrollEnd),
-        );
-
-        controller.jumpTo(scrollEnd);
-      }
-    });
-  }
-
-  return controller;
 }
