@@ -26,7 +26,7 @@ jobs:
               run: |
                   flutter pub get
                   npm ci
-                  npm run hive:generate
+                  npm run build_runner:generate
 
             - name: 🔨 Building ipa
               run: npm run ios:build
