@@ -11,7 +11,7 @@ const logger = new Logger("windows:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await spawn("flutter", ["build", "windows"], config.base);
+    await spawn("flutter", ["build", "windows"], { cwd: config.base });
     logger.log("Finished running build command");
 
     const dllDir = join(__dirname, "dlls");

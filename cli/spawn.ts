@@ -27,11 +27,15 @@ export class SpawnError extends Error {
     }
 }
 
+export interface SpawnOptions {
+    cwd: string;
+    stdio?: StdioOptions;
+}
+
 export const spawn = async (
     cmd: string,
     args: string[],
-    cwd: string,
-    stdio?: StdioOptions
+    { cwd, stdio }: SpawnOptions
 ) =>
     new Promise<SpawnResult>(async (resolve, reject) => {
         const cp = crossSpawn(cmd, args, {

@@ -56,7 +56,7 @@ export const build = async () => {
             `"${outName}"`,
             `"${config.name}.app"`,
         ],
-        buildDir
+        { cwd: buildDir }
     );
 
     const finalPath = join(config.macos.packed, outName);

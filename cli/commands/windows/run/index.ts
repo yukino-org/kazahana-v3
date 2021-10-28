@@ -7,10 +7,8 @@ const logger = new Logger("run:windows");
 export const debug = async () => {
     logger.log("Running debug command...");
 
-    await spawn(
-        "flutter",
-        ["run", "-d", "windows", ...process.argv.slice(2)],
-        config.base,
-        "inherit"
-    );
+    await spawn("flutter", ["run", "-d", "windows", ...process.argv.slice(2)], {
+        cwd: config.base,
+        stdio: "inherit",
+    });
 };

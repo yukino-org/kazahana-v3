@@ -96,7 +96,7 @@ const execute = async (force: boolean) => {
         await spawn(
             "flutter",
             ["packages", "pub", "run", "build_runner", "build", ...flags],
-            config.base
+            { cwd: config.base }
         );
 
         await generated.post.do(true);

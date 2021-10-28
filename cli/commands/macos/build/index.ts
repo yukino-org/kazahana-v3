@@ -9,7 +9,7 @@ const logger = new Logger("macos:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await spawn("flutter", ["build", "macos"], config.base);
+    await spawn("flutter", ["build", "macos"], { cwd: config.base });
     logger.log("Finished running build command");
 
     logger.log(`Generated binaries at ${buildDir}`);

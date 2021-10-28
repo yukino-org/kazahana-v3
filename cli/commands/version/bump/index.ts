@@ -2,8 +2,8 @@ import { join } from "path";
 import chalk from "chalk";
 import { readFile, writeFile } from "fs-extra";
 import semver from "semver";
-import { sync as spawn } from "cross-spawn";
 import { prompt } from "inquirer";
+import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 import { matchRegex } from "../print";
@@ -26,7 +26,7 @@ export const increment = async () => {
         return logger.error(`Invalid 'version' in 'pubspec.yaml'`);
     }
 
-    const result = spawn(
+    const result = await spawn(
         "npx",
         [
             "semver",
@@ -35,18 +35,10 @@ export const increment = async () => {
             previousVersion.version,
             ...process.argv.slice(2),
         ],
-        {
-            env: process.env,
-            shell: true,
-        }
+        { cwd: config.base }
     );
-    if (result.status != 0) {
-        throw new Error(result.stderr.toString());
-    }
 
-    const newVersion = semver.parse(
-        semver.clean(result.stdout.toString().trim())
-    )!;
+    const newVersion = semver.parse(semver.clean(result.stdout.trim()))!;
     if (newVersion.compare(previousVersion) != 1) {
         throw new Error("Cannot bump to same version");
     }

@@ -12,7 +12,9 @@ const logger = new Logger("ios:build");
 
 export const build = async () => {
     logger.log("Running build command...");
-    await spawn("flutter", ["build", "ios", "--no-codesign"], config.base);
+    await spawn("flutter", ["build", "ios", "--no-codesign"], {
+        cwd: config.base,
+    });
     logger.log("Finished running build command");
 
     const zip = new AdmZip();

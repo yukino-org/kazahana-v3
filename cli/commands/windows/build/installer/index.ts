@@ -36,7 +36,7 @@ export const build = async () => {
     logger.log(`Rendered ${installerIss}`);
 
     logger.log("Running iscc command");
-    await spawn("iscc", [installerGIss], config.base);
+    await spawn("iscc", [installerGIss], { cwd: config.base });
     logger.log("Finished running iscc command");
 
     logger.log(

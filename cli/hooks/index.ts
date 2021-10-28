@@ -15,7 +15,10 @@ export interface HooksConfig {
 
 export const executeHook = async (hook: HooksConfig) => {
     for (const cmd of hook.commands) {
-        await spawn("npm", ["run", cmd, "-s"], config.base, "inherit");
+        await spawn("npm", ["run", cmd, "-s"], {
+            cwd: config.base,
+            stdio: "inherit",
+        });
     }
 };
 
