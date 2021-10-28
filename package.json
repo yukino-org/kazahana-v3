@@ -6,7 +6,7 @@
     "author": "Zyrouge",
     "license": "GPL-3.0",
     "scripts": {
-        "push:main": "ts-node ./cli/commands/git/push/main/run.ts",
+        "git:push:main": "ts-node ./cli/commands/git/push/main/run.ts",
         "build_runner:generate": "ts-node ./cli/commands/build_runner/generate/run.ts",
         "meta:generate": "ts-node ./cli/commands/meta/generate/run.ts",
         "version:bump": "ts-node ./cli/commands/version/bump/run.ts",
