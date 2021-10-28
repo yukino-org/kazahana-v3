@@ -231,7 +231,7 @@ packages:
       path: "packages/extensions"
       relative: true
     source: path
-    version: "0.0.15"
+    version: "0.0.16"
   ffi:
     dependency: transitive
     description:
@@ -312,27 +312,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2+5"
-  hive:
-    dependency: "direct main"
-    description:
-      name: hive
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.4"
-  hive_flutter:
-    dependency: "direct main"
-    description:
-      name: hive_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
-  hive_generator:
-    dependency: "direct dev"
-    description:
-      name: hive_generator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.1"
   html:
     dependency: "direct main"
     description:
@@ -431,6 +410,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  objectbox:
+    dependency: "direct main"
+    description:
+      name: objectbox
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
+  objectbox_flutter_libs:
+    dependency: "direct main"
+    description:
+      name: objectbox_flutter_libs
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
+  objectbox_generator:
+    dependency: "direct dev"
+    description:
+      name: objectbox_generator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   ota_update:
     dependency: "direct main"
     description:
@@ -634,13 +634,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
-  source_helper:
-    dependency: transitive
-    description:
-      name: source_helper
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.0"
   source_span:
     dependency: transitive
     description:

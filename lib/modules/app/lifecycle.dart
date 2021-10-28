@@ -91,21 +91,21 @@ abstract class AppLifecycle {
     }
 
     try {
-      await DataStore.initialize();
+      await DatabaseManager.initialize();
     } catch (err, trace) {
-      Logger.of('DataStore').error(
+      Logger.of('DatabaseManager').error(
         '"initialize" failed: $err',
         trace,
       );
     }
 
     final TranslationSentences? settingsLocale =
-        DataStore.settings.locale != null
-            ? Translator.tryGetTranslation(DataStore.settings.locale!)
+        AppState.settings.value.locale != null
+            ? Translator.tryGetTranslation(AppState.settings.value.locale!)
             : null;
     if (settingsLocale == null) {
-      DataStore.settings.locale = null;
-      await DataStore.settings.save();
+      AppState.settings.value.locale = null;
+      await SettingsBox.save(AppState.settings.value);
     }
 
     Translator.t = settingsLocale ?? Translator.getSupportedTranslation();
@@ -194,7 +194,7 @@ abstract class AppLifecycle {
     await LocalServer.dispose();
     Logger.of('LocalServer').info('Finished "dispose"');
 
-    await DataStore.dispose();
-    Logger.of('DataStore').info('Finished "dispose"');
+    await DatabaseManager.dispose();
+    Logger.of('DatabaseManager').info('Finished "dispose"');
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:io';
 import '../database/database.dart';
-import '../database/schemas/settings/settings.dart';
 import '../state/eventer.dart';
 
 abstract class AppState {
@@ -8,7 +7,7 @@ abstract class AppState {
       ReactiveEventer<SettingsSchema>();
 
   static Future<void> initialize() async {
-    AppState.settings.value = DataStore.settings;
+    AppState.settings.value = SettingsBox.get();
   }
 
   static bool get isDesktop =>

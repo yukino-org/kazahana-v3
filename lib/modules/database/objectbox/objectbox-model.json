@@ -1,0 +1,169 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:4",
+      "lastPropertyId": "4:469980762516971311",
+      "name": "CacheSchema",
+      "properties": [
+        {
+          "id": "1:1311862560622130663",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7387446907944354348",
+          "name": "key",
+          "type": 9
+        },
+        {
+          "id": "3:5816507971187265074",
+          "name": "cachedTime",
+          "type": 6
+        },
+        {
+          "id": "4:469980762516971311",
+          "name": "value_",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:2",
+      "lastPropertyId": "1:588855148000686305",
+      "name": "CredentialsSchema",
+      "properties": [
+        {
+          "id": "1:588855148000686305",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:3",
+      "lastPropertyId": "2:1921708900049052479",
+      "name": "PreferencesSchema",
+      "properties": [
+        {
+          "id": "1:2002002972373273367",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1921708900049052479",
+          "name": "lastSelectedSearchType",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:1",
+      "lastPropertyId": "16:3625592503513121933",
+      "name": "SettingsSchema",
+      "properties": [
+        {
+          "id": "1:3995990440330090812",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7259109088868208379",
+          "name": "useSystemPreferredTheme",
+          "type": 1
+        },
+        {
+          "id": "3:2924473886036486806",
+          "name": "useDarkMode",
+          "type": 1
+        },
+        {
+          "id": "4:2010270991837719628",
+          "name": "locale",
+          "type": 9
+        },
+        {
+          "id": "5:1562037616827922058",
+          "name": "introDuration",
+          "type": 6
+        },
+        {
+          "id": "6:8765360801283119193",
+          "name": "seekDuration",
+          "type": 6
+        },
+        {
+          "id": "7:3475745247786699814",
+          "name": "autoNext",
+          "type": 1
+        },
+        {
+          "id": "8:692196073396158915",
+          "name": "autoPlay",
+          "type": 1
+        },
+        {
+          "id": "9:1399732325084062392",
+          "name": "doubleClickSwitchChapter",
+          "type": 1
+        },
+        {
+          "id": "10:2555505691523001225",
+          "name": "animeAutoFullscreen",
+          "type": 1
+        },
+        {
+          "id": "11:8840252602874529054",
+          "name": "mangaAutoFullscreen",
+          "type": 1
+        },
+        {
+          "id": "12:461535158492699321",
+          "name": "animeTrackerWatchPercent",
+          "type": 6
+        },
+        {
+          "id": "13:450262105290459242",
+          "name": "animeForceLandscape",
+          "type": 1
+        },
+        {
+          "id": "14:5250915747518516456",
+          "name": "mangaReaderDirection_",
+          "type": 9
+        },
+        {
+          "id": "15:4213400519418794186",
+          "name": "mangaReaderSwipeDirection_",
+          "type": 9
+        },
+        {
+          "id": "16:3625592503513121933",
+          "name": "mangaReaderMode_",
+          "type": 9
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "4:1",
+  "lastIndexId": "0:0",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

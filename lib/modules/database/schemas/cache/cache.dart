@@ -1,15 +1,38 @@
-import 'package:hive/hive.dart';
 import '../../database.dart';
+import '../../objectbox/objectbox.g.dart';
 
-part 'cache.g.dart';
+export './schema.dart';
 
-@HiveType(typeId: TypeIds.cache)
-class CacheSchema extends HiveObject {
-  CacheSchema(this.value, this.cachedTime);
+abstract class CacheBox {
+  static Box<CacheSchema> get box => Box<CacheSchema>(DatabaseManager.store);
 
-  @HiveField(1)
-  dynamic value;
+  static CacheSchema? get(final String key) =>
+      box.query(CacheSchema_.key.equals(key)).build().findUnique();
 
-  @HiveField(2)
-  final int cachedTime;
+  static Future<void> save(final CacheSchema value) async {
+    await box.putAsync(value);
+  }
+
+  static Future<void> saveKV(
+    final String key,
+    final dynamic value,
+    final int cachedTime,
+  ) async {
+    await save(
+      CacheSchema()
+        ..key = key
+        ..value = value
+        ..cachedTime = cachedTime,
+    );
+  }
+
+  static bool delete(final String key) {
+    final CacheSchema? cache = CacheBox.get(key);
+
+    if (cache != null) {
+      return CacheBox.box.remove(cache.id);
+    }
+
+    return false;
+  }
 }

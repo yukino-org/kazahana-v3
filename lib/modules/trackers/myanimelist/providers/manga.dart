@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../database/database.dart';
-import '../../../database/schemas/cache/cache.dart';
 import '../../../helpers/assets.dart';
 import '../../../translator/translator.dart';
 import '../../provider.dart';
@@ -17,8 +16,7 @@ final TrackerProvider<MangaProgress> mangaProvider =
     final String plugin, {
     final bool force = false,
   }) async {
-    final CacheSchema? cache =
-        DataBox.cache.get('myanimelist-manga-$title-$plugin');
+    final CacheSchema? cache = CacheBox.get('myanimelist-manga-$title-$plugin');
 
     try {
       if (!force && cache != null) {
@@ -43,9 +41,10 @@ final TrackerProvider<MangaProgress> mangaProvider =
         media.first.nodeId,
       );
 
-      await DataBox.cache.put(
+      await CacheBox.saveKV(
         'myanimelist-manga-$title-$plugin',
-        CacheSchema(media.first.nodeId, 0),
+        media.first.nodeId,
+        0,
       );
 
       return ResolvedTrackerItem(
@@ -79,9 +78,10 @@ final TrackerProvider<MangaProgress> mangaProvider =
       int.parse(item.id),
     );
 
-    await DataBox.cache.put(
+    await CacheBox.saveKV(
       'myanimelist-manga-$title-$plugin',
-      CacheSchema(mediaList.nodeId, 0),
+      mediaList.nodeId,
+      0,
     );
 
     _cache[mediaList.nodeId] = mediaList;
@@ -136,15 +136,15 @@ final TrackerProvider<MangaProgress> mangaProvider =
   },
   isLoggedIn: MyAnimeListManager.auth.isValidToken,
   isEnabled: (final String title, final String plugin) =>
-      !DataBox.cache.containsKey('myanimelist-manga-$title-$plugin-disabled'),
+      CacheBox.get('myanimelist-manga-$title-$plugin-disabled') == null,
   setEnabled:
       (final String title, final String plugin, final bool isEnabled) async {
     isEnabled
-        ? await DataBox.cache
-            .delete('myanimelist-manga-$title-$plugin-disabled')
-        : await DataBox.cache.put(
+        ? CacheBox.delete('myanimelist-manga-$title-$plugin-disabled')
+        : await CacheBox.saveKV(
             'myanimelist-manga-$title-$plugin-disabled',
-            CacheSchema(null, 0),
+            null,
+            0,
           );
   },
   getDetailedPage: (

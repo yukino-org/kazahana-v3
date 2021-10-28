@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:extensions/utils/http.dart';
 import 'package:http/http.dart' as http;
 import '../../../database/database.dart';
-import '../../../database/schemas/credentials/credentials.dart'
-    as credentials_schema;
 import '../../../helpers/pkce_challenge.dart';
 import '../../../helpers/querystring.dart';
 
@@ -106,9 +104,9 @@ class Auth {
 
   Future<bool> saveToken() async {
     if (token != null) {
-      final credentials_schema.CredentialsSchema creds = DataStore.credentials;
-      creds.myanimelist = token!.toJson();
-      creds.save();
+      final CredentialsSchema creds = CredentialsBox.get();
+      creds.myanimelist = token;
+      await CredentialsBox.save(creds);
       return true;
     }
 
@@ -116,10 +114,9 @@ class Auth {
   }
 
   Future<bool> deleteToken() async {
-    token = null;
-    final credentials_schema.CredentialsSchema creds = DataStore.credentials;
-    creds.myanimelist = null;
-    creds.save();
+    final CredentialsSchema creds = CredentialsBox.get();
+    creds.myanimelist = token = null;
+    await CredentialsBox.save(creds);
     return true;
   }
 

@@ -274,25 +274,32 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                       status = ExtensionState.installed;
                                     });
 
-                                    if (DataStore
-                                            .preferences
-                                            .lastSelectedSearchPlugins
-                                            ?.isEmpty ??
-                                        true) {
+                                    final PreferencesSchema preferences =
+                                        PreferencesBox.get();
+                                    if (preferences
+                                        .lastSelectedSearch.isEmpty) {
                                       final BaseExtractor? ext =
                                           ExtensionsManager
                                               .animes[widget.ext.id];
-                                      if (ext != null) {
-                                        DataStore.preferences
-                                                .lastSelectedSearchType =
-                                            widget.ext.type.type;
-                                        DataStore.preferences
-                                            .setLastSelectedSearchPlugin(
-                                          widget.ext.type,
-                                          ext,
-                                        );
 
-                                        await DataStore.preferences.save();
+                                      if (ext != null) {
+                                        preferences.lastSelectedSearch
+                                            .lastSelectedType = widget.ext.type;
+                                        switch (widget.ext.type) {
+                                          case ExtensionType.anime:
+                                            preferences.lastSelectedSearch
+                                                    .lastSelectedAnimePlugin =
+                                                ext.id;
+                                            break;
+
+                                          case ExtensionType.manga:
+                                            preferences.lastSelectedSearch
+                                                    .lastSelectedMangaPlugin =
+                                                ext.id;
+                                            break;
+                                        }
+
+                                        await PreferencesBox.save(preferences);
                                       }
                                     }
                                   }

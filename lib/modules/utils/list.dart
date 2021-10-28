@@ -1,5 +1,19 @@
 import 'dart:math';
 
+typedef ListSomeCallback<T> = bool Function(T);
+
+extension ListTypeUtils<T> on List<T> {
+  bool some(final ListSomeCallback<T> cb) {
+    for (final T x in this) {
+      if (cb(x)) {
+        return true;
+      }
+    }
+
+    return true;
+  }
+}
+
 abstract class ListUtils {
   static T random<T>(final List<T> list) => list[Random().nextInt(list.length)];
 

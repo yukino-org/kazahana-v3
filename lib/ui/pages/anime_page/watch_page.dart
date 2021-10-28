@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import './select_source.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
+import '../../../modules/database/database.dart';
 import '../../../modules/helpers/double_value_listenable_builder.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
@@ -398,7 +399,7 @@ class WatchPageState extends State<WatchPage>
                       ...getAnime(
                         AppState.settings.value,
                         () async {
-                          await AppState.settings.value.save();
+                          await SettingsBox.save(AppState.settings.value);
 
                           if (mounted) {
                             setState(() {});
@@ -1024,9 +1025,11 @@ class WatchPageState extends State<WatchPage>
                                                               exitLandscape();
                                                             }
 
-                                                            await AppState
-                                                                .settings.value
-                                                                .save();
+                                                            await SettingsBox
+                                                                .save(
+                                                              AppState.settings
+                                                                  .value,
+                                                            );
 
                                                             if (mounted) {
                                                               setState(() {});
@@ -1075,9 +1078,11 @@ class WatchPageState extends State<WatchPage>
                                                             enterFullscreen();
                                                           }
 
-                                                          await AppState
-                                                              .settings.value
-                                                              .save();
+                                                          await SettingsBox
+                                                              .save(
+                                                            AppState
+                                                                .settings.value,
+                                                          );
                                                         },
                                                         child: Icon(
                                                           isFullscreened

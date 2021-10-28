@@ -28,11 +28,10 @@ abstract class MyAnimeListManager {
   );
 
   static Future<void> initialize() async {
-    final Map<dynamic, dynamic>? _token = DataStore.credentials.myanimelist;
+    final CredentialsSchema creds = CredentialsBox.get();
 
-    if (_token != null) {
-      final MyAnimeListTokenInfo token = MyAnimeListTokenInfo.fromJson(_token);
-      auth.token = token;
+    if (creds.myanimelist != null) {
+      auth.token = creds.myanimelist;
 
       if (auth.hasTokenExpired()) {
         try {

@@ -34,3 +34,4 @@ builder.g.yml
 assets/data/meta.json
 certs
 cli/.cache
+lib/**/*.g.dart

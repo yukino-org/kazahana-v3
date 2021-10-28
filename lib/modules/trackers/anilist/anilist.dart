@@ -35,13 +35,12 @@ abstract class AnilistManager {
   static final AniListAuth auth = AniListAuth(AnilistSecrets.clientId);
 
   static Future<void> initialize() async {
-    final Map<dynamic, dynamic>? _token = DataStore.credentials.anilist;
+    final CredentialsSchema creds = CredentialsBox.get();
 
-    if (_token != null) {
-      final AniListTokenInfo token = AniListTokenInfo.fromJson(_token);
-      auth.token = token;
+    if (creds.anilist != null) {
+      auth.token = creds.anilist;
 
-      if (DateTime.now().isAfter(token.expiresAt)) {
+      if (!auth.isValidToken()) {
         await auth.deleteToken();
       }
     }

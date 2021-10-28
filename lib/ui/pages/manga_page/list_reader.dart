@@ -2,7 +2,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import './update_tracker.dart';
 import '../../../modules/app/state.dart';
-import '../../../modules/database/schemas/settings/settings.dart';
+import '../../../modules/database/database.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
@@ -111,7 +111,7 @@ class _ListReaderState extends State<ListReader>
               children: <Widget>[
                 Column(
                   children: getManga(AppState.settings.value, () async {
-                    await AppState.settings.value.save();
+                    await SettingsBox.save(AppState.settings.value);
 
                     if (AppState.settings.value.mangaReaderMode !=
                         MangaMode.list) {
@@ -185,7 +185,7 @@ class _ListReaderState extends State<ListReader>
                     enterFullscreen();
                   }
 
-                  await AppState.settings.value.save();
+                  await SettingsBox.save(AppState.settings.value);
                 },
                 icon: Icon(
                   isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,

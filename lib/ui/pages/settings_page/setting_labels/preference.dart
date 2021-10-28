@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:utilx/utilities/languages.dart';
-import '../../../../modules/database/schemas/settings/settings.dart';
+import '../../../../modules/database/schemas/settings/schema.dart';
 import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';
 import '../setting_radio.dart';

@@ -157,7 +157,7 @@ class _PageState extends State<Page> with InitialStateLoader {
 
       if (args?.pluginType != null) {
         setState(() {
-          _setCurrentPreferredPlugin(args!.pluginType!.type);
+          _setCurrentPreferredPlugin(args!.pluginType);
         });
       }
 
@@ -176,36 +176,29 @@ class _PageState extends State<Page> with InitialStateLoader {
     }
   }
 
-  void _setCurrentPreferredPlugin([final String? _pluginType]) {
-    final String? pluginType =
-        _pluginType ?? DataStore.preferences.lastSelectedSearchType;
+  void _setCurrentPreferredPlugin([final ExtensionType? _pluginType]) {
+    final PreferencesSchema preferences = PreferencesBox.get();
+    final ExtensionType? pluginType =
+        _pluginType ?? preferences.lastSelectedSearch.lastSelectedType;
 
-    if (DataStore.preferences.lastSelectedSearchType != null &&
-        pluginType != null) {
-      final ExtensionType? type = ExtensionType.values.firstWhereOrNull(
-        (final ExtensionType x) => x.type == pluginType,
-      );
+    if (pluginType != null) {
+      BaseExtractor? ext;
 
-      if (type != null &&
-          DataStore.preferences.lastSelectedSearchPlugins != null) {
-        BaseExtractor? ext;
+      switch (pluginType) {
+        case ExtensionType.anime:
+          ext = ExtensionsManager
+              .animes[preferences.lastSelectedSearch.lastSelectedAnimePlugin];
+          break;
 
-        switch (type) {
-          case ExtensionType.anime:
-            ext = ExtensionsManager.animes[
-                DataStore.preferences.lastSelectedSearchPlugins![type.type]];
-            break;
+        case ExtensionType.manga:
+          ext = ExtensionsManager
+              .mangas[preferences.lastSelectedSearch.lastSelectedMangaPlugin];
+          break;
+      }
 
-          case ExtensionType.manga:
-            ext = ExtensionsManager.mangas[
-                DataStore.preferences.lastSelectedSearchPlugins![type.type]];
-            break;
-        }
-
-        if (ext != null) {
-          currentPlugin = CurrentPlugin(type: type, plugin: ext);
-          popupPluginType = type;
-        }
+      if (ext != null) {
+        currentPlugin = CurrentPlugin(type: pluginType, plugin: ext);
+        popupPluginType = pluginType;
       }
     }
   }
@@ -289,11 +282,22 @@ class _PageState extends State<Page> with InitialStateLoader {
                 currentPlugin = plugin;
               });
 
-              DataStore.preferences.lastSelectedSearchType = plugin.type.type;
-              DataStore.preferences
-                  .setLastSelectedSearchPlugin(plugin.type, plugin.plugin);
+              final PreferencesSchema preferences = PreferencesBox.get();
 
-              await DataStore.preferences.save();
+              preferences.lastSelectedSearch.lastSelectedType = plugin.type;
+              switch (plugin.type) {
+                case ExtensionType.anime:
+                  preferences.lastSelectedSearch.lastSelectedAnimePlugin =
+                      plugin.plugin.id;
+                  break;
+
+                case ExtensionType.manga:
+                  preferences.lastSelectedSearch.lastSelectedMangaPlugin =
+                      plugin.plugin.id;
+                  break;
+              }
+
+              await PreferencesBox.save(preferences);
 
               if (mounted) {
                 this.setState(() {});

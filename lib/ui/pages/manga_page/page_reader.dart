@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import './update_tracker.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
-import '../../../modules/database/schemas/settings/settings.dart';
+import '../../../modules/database/database.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
@@ -251,7 +251,7 @@ class _PageReaderState extends State<PageReader>
               children: <Widget>[
                 Column(
                   children: getManga(AppState.settings.value, () async {
-                    await AppState.settings.value.save();
+                    await SettingsBox.save(AppState.settings.value);
 
                     if (AppState.settings.value.mangaReaderMode !=
                         MangaMode.page) {
@@ -358,7 +358,7 @@ class _PageReaderState extends State<PageReader>
                       });
                     }
 
-                    await AppState.settings.value.save();
+                    await SettingsBox.save(AppState.settings.value);
                   },
                   icon: Icon(
                     isFullscreened ? Icons.fullscreen_exit : Icons.fullscreen,

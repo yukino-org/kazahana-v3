@@ -1,29 +1,15 @@
-import 'package:extensions/extensions.dart';
-import 'package:hive/hive.dart';
 import '../../database.dart';
+import '../../objectbox/objectbox.g.dart';
 
-part 'preferences.g.dart';
+export './schema.dart';
 
-@HiveType(typeId: TypeIds.preferences)
-class PreferencesSchema extends HiveObject {
-  PreferencesSchema({
-    final this.lastSelectedSearchType,
-    final this.lastSelectedSearchPlugins,
-  });
+abstract class PreferencesBox {
+  static Box<PreferencesSchema> get box =>
+      Box<PreferencesSchema>(DatabaseManager.store);
 
-  @HiveField(1)
-  String? lastSelectedSearchType;
+  static PreferencesSchema get() => box.get(0) ?? PreferencesSchema();
 
-  @HiveField(2)
-  Map<String, String>? lastSelectedSearchPlugins;
-
-  void setLastSelectedSearchPlugin(
-    final ExtensionType type,
-    final BaseExtractor ext,
-  ) {
-    lastSelectedSearchPlugins = <String, String>{
-      if (lastSelectedSearchPlugins != null) ...lastSelectedSearchPlugins!,
-      type.type: ext.id,
-    };
+  static Future<void> save(final PreferencesSchema value) async {
+    await box.putAsync(value);
   }
 }

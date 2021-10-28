@@ -6,7 +6,6 @@ import './setting_labels/preference.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
-import '../../../modules/database/schemas/settings/settings.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
 
@@ -57,11 +56,11 @@ class _PageState extends State<Page> {
     ),
   ];
 
-  final SettingsSchema settings = DataStore.settings;
+  final SettingsSchema settings = SettingsBox.get();
 
   Future<void> saveSettings() async {
-    await settings.save();
     AppState.settings.value = settings;
+    await SettingsBox.save(AppState.settings.value);
 
     if (mounted) {
       setState(() {});

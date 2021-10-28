@@ -1,6 +1,4 @@
 import '../../../database/database.dart';
-import '../../../database/schemas/credentials/credentials.dart'
-    as credentials_schema;
 import '../../../helpers/querystring.dart';
 
 class AniListTokenInfo {
@@ -58,9 +56,9 @@ class AniListAuth {
 
   Future<bool> saveToken() async {
     if (token != null) {
-      final credentials_schema.CredentialsSchema creds = DataStore.credentials;
-      creds.anilist = token!.toJson();
-      creds.save();
+      final CredentialsSchema creds = CredentialsBox.get();
+      creds.anilist = token;
+      await CredentialsBox.save(creds);
       return true;
     }
 
@@ -68,10 +66,9 @@ class AniListAuth {
   }
 
   Future<bool> deleteToken() async {
-    token = null;
-    final credentials_schema.CredentialsSchema creds = DataStore.credentials;
-    creds.anilist = null;
-    creds.save();
+    final CredentialsSchema creds = CredentialsBox.get();
+    creds.anilist = token = null;
+    await CredentialsBox.save(creds);
     return true;
   }
 

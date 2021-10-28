@@ -1,7 +1,6 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../database/database.dart';
-import '../../../database/schemas/cache/cache.dart' as cache_schema;
 import '../../../helpers/assets.dart';
 import '../../../translator/translator.dart';
 import '../../provider.dart';
@@ -138,8 +137,7 @@ abstract class AniListProvider {
         final String plugin, {
         final bool force = false,
       }) async {
-        final cache_schema.CacheSchema? cache =
-            DataBox.cache.get('anilist-$title-$plugin');
+        final CacheSchema? cache = CacheBox.get('anilist-$title-$plugin');
 
         try {
           if (!force && cache != null) {
@@ -167,13 +165,7 @@ abstract class AniListProvider {
           final AniListMediaList mediaList =
               await AniListMediaList.getFromMediaId(media.first.id, user.id);
 
-          await DataBox.cache.put(
-            'anilist-$title-$plugin',
-            cache_schema.CacheSchema(
-              media.first.id,
-              0,
-            ),
-          );
+          await CacheBox.saveKV('anilist-$title-$plugin', media.first.id, 0);
 
           return ResolvedTrackerItem(
             title: mediaList.media.titleUserPreferred,
@@ -218,13 +210,7 @@ abstract class AniListProvider {
         final AniListMediaList mediaList =
             await AniListMediaList.getFromMediaId(int.parse(item.id), user.id);
 
-        await DataBox.cache.put(
-          'anilist-$title-$plugin',
-          cache_schema.CacheSchema(
-            mediaList.media.id,
-            0,
-          ),
-        );
+        await CacheBox.saveKV('anilist-$title-$plugin', mediaList.media.id, 0);
 
         _cache[mediaList.media.id] = mediaList;
 
@@ -238,8 +224,9 @@ abstract class AniListProvider {
   static bool Function(String, String) _isEnabled(
     final ExtensionType mediaType,
   ) =>
-      (final String title, final String plugin) => !DataBox.cache
-          .containsKey('anilist-${mediaType.type}-$title-$plugin-disabled');
+      (final String title, final String plugin) =>
+          CacheBox.get('anilist-${mediaType.type}-$title-$plugin-disabled') ==
+          null;
 
   static Future<void> Function(String, String, bool) _setEnabled(
     final ExtensionType mediaType,
@@ -247,16 +234,8 @@ abstract class AniListProvider {
 
       // ignore: avoid_positional_boolean_parameters
       (final String title, final String plugin, final bool isEnabled) async {
-        isEnabled
-            ? await DataBox.cache
-                .delete('anilist-${mediaType.type}-$title-$plugin-disabled')
-            : await DataBox.cache.put(
-                'anilist-${mediaType.type}-$title-$plugin-disabled',
-                cache_schema.CacheSchema(
-                  null,
-                  0,
-                ),
-              );
+        final String key = 'anilist-${mediaType.type}-$title-$plugin-disabled';
+        isEnabled ? CacheBox.delete(key) : await CacheBox.saveKV(key, null, 0);
       };
 
   static Widget _getDetailedPage(

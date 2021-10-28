@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../modules/app/state.dart';
-import '../../../../modules/database/schemas/settings/settings.dart';
+import '../../../../modules/database/schemas/settings/schema.dart';
 import '../../../../modules/translator/translator.dart';
 import '../setting_radio.dart';
 import '../setting_switch.dart';

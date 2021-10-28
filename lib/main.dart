@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import './modules/app/lifecycle.dart';
 import './modules/app/state.dart';
 import './modules/database/database.dart';
-import './modules/database/schemas/settings/settings.dart';
 import './modules/helpers/logger.dart';
 import './modules/helpers/ui.dart';
 import './modules/translator/translator.dart';
+import './modules/utils/list.dart';
 import './ui/router.dart';
 
 Future<void> main(final List<String> args) async {
@@ -50,9 +50,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool useSystemPreferredTheme = DataStore.settings.useSystemPreferredTheme;
-  bool useDarkMode = DataStore.settings.useDarkMode;
-
   @override
   void initState() {
     super.initState();
@@ -71,10 +68,17 @@ class _MainAppState extends State<MainApp> {
     final SettingsSchema current,
     final SettingsSchema previous,
   ) {
-    setState(() {
-      useSystemPreferredTheme = current.useSystemPreferredTheme;
-      useDarkMode = current.useDarkMode;
-    });
+    final List<List<dynamic>> changables = <List<dynamic>>[
+      <dynamic>[
+        current.useSystemPreferredTheme,
+        previous.useSystemPreferredTheme
+      ],
+      <dynamic>[current.useDarkMode, previous.useDarkMode],
+    ];
+
+    if (changables.some((final List<dynamic> x) => x.first != x.last)) {
+      setState(() {});
+    }
   }
 
   @override
@@ -87,9 +91,11 @@ class _MainAppState extends State<MainApp> {
         ],
         theme: Palette.lightTheme,
         darkTheme: Palette.darkTheme,
-        themeMode: useSystemPreferredTheme
+        themeMode: AppState.settings.value.useSystemPreferredTheme
             ? ThemeMode.system
-            : (useDarkMode ? ThemeMode.dark : ThemeMode.light),
+            : (AppState.settings.value.useDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light),
         initialRoute: RouteNames.initialRoute,
         onGenerateRoute: (final RouteSettings settings) {
           if (settings.name == null) {

@@ -6,7 +6,6 @@ import './watch_page.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
-import '../../../modules/database/schemas/cache/cache.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
@@ -137,11 +136,11 @@ class _PageState extends State<Page>
     final String cacheKey = 'anime-${extractor.id}-${args.src}';
 
     if (removeCache) {
-      await DataBox.cache.delete(cacheKey);
+      CacheBox.delete(cacheKey);
     }
 
     final CacheSchema? cachedAnime =
-        removeCache ? null : DataBox.cache.get(cacheKey);
+        removeCache ? null : CacheBox.get(cacheKey);
 
     if (cachedAnime != null &&
         nowMs - cachedAnime.cachedTime <
@@ -164,10 +163,7 @@ class _PageState extends State<Page>
       locale?.name ?? extractor.defaultLocale,
     );
 
-    await DataBox.cache.put(
-      cacheKey,
-      CacheSchema(info!.toJson(), nowMs),
-    );
+    await CacheBox.saveKV(cacheKey, info!.toJson(), nowMs);
 
     if (mounted) {
       setState(() {});
