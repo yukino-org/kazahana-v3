@@ -26,13 +26,9 @@ class Eventer<T> {
 typedef ReactiveEventerSubscriber<T> = void Function(T current, T previous);
 
 class ReactiveEventer<T> {
-  ReactiveEventer([final T? value]) {
-    if (value != null) {
-      _value = value;
-    }
-  }
+  ReactiveEventer(this._value);
 
-  T? _value;
+  T _value;
   final List<ReactiveEventerSubscriber<T>> subscribers =
       <ReactiveEventerSubscriber<T>>[];
 
@@ -41,13 +37,7 @@ class ReactiveEventer<T> {
     _value = modified;
   }
 
-  T get value {
-    if (_value == null) {
-      throw StateError('Missing initialization of value');
-    }
-
-    return _value!;
-  }
+  T get value => _value;
 
   void Function() subscribe(final ReactiveEventerSubscriber<T> sub) {
     subscribers.add(sub);

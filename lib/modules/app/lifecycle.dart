@@ -101,6 +101,16 @@ abstract class AppLifecycle {
       );
     }
 
+    try {
+      await AppState.initialize();
+      Logger.of('AppState').info('Finished "initialize"');
+    } catch (err, trace) {
+      Logger.of('AppState').error(
+        '"initialize" failed: $err',
+        trace,
+      );
+    }
+
     final TranslationSentences? settingsLocale =
         AppState.settings.value.locale != null
             ? Translator.tryGetTranslation(AppState.settings.value.locale!)
@@ -124,16 +134,6 @@ abstract class AppLifecycle {
     } catch (err, trace) {
       Logger.of('InstanceManager').error(
         '"register" failed: $err',
-        trace,
-      );
-    }
-
-    try {
-      await AppState.initialize();
-      Logger.of('AppState').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('AppState').error(
-        '"initialize" failed: $err',
         trace,
       );
     }

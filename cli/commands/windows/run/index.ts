@@ -2,7 +2,7 @@ import { spawn } from "../../../spawn";
 import { config } from "../../../config";
 import { Logger } from "../../../logger";
 
-const logger = new Logger("run:windows");
+const logger = new Logger("windows:run");
 
 export const debug = async () => {
     logger.log("Running debug command...");

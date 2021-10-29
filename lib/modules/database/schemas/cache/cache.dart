@@ -19,7 +19,7 @@ abstract class CacheBox {
     final int cachedTime,
   ) async {
     await save(
-      CacheSchema()
+      (get(key) ?? CacheSchema())
         ..key = key
         ..value = value
         ..cachedTime = cachedTime,

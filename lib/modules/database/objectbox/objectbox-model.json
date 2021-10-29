@@ -34,7 +34,7 @@
     },
     {
       "id": "2:2",
-      "lastPropertyId": "1:588855148000686305",
+      "lastPropertyId": "3:6160269151672726852",
       "name": "CredentialsSchema",
       "properties": [
         {
@@ -42,13 +42,23 @@
           "name": "id",
           "type": 6,
           "flags": 1
+        },
+        {
+          "id": "2:9043178301598374257",
+          "name": "anilist_",
+          "type": 9
+        },
+        {
+          "id": "3:6160269151672726852",
+          "name": "myanimelist_",
+          "type": 9
         }
       ],
       "relations": []
     },
     {
       "id": "3:3",
-      "lastPropertyId": "2:1921708900049052479",
+      "lastPropertyId": "3:5523022497379988698",
       "name": "PreferencesSchema",
       "properties": [
         {
@@ -58,8 +68,8 @@
           "flags": 1
         },
         {
-          "id": "2:1921708900049052479",
-          "name": "lastSelectedSearchType",
+          "id": "3:5523022497379988698",
+          "name": "lastSelectedSearch_",
           "type": 9
         }
       ],
@@ -163,7 +173,9 @@
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    1921708900049052479
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

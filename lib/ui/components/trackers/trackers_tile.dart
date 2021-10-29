@@ -5,6 +5,7 @@ import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
 import '../../router.dart';
@@ -213,7 +214,7 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                     }
                                   },
                                 ),
-                                if (searches.hasResolved &&
+                                if (searches.state.hasResolved &&
                                     searches.value!.isNotEmpty) ...<Widget>[
                                   SizedBox(
                                     height: remToPx(1),
@@ -313,7 +314,8 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                         )
                                         .toList(),
                                   ),
-                                ] else if (searches.isResolving) ...<Widget>[
+                                ] else if (searches
+                                    .state.isResolving) ...<Widget>[
                                   SizedBox(
                                     height: remToPx(3),
                                   ),
@@ -326,9 +328,9 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                   ),
                                   Center(
                                     child: Text(
-                                      searches.hasResolved
+                                      searches.state.hasResolved
                                           ? Translator.t.noResultsFound()
-                                          : searches.isWaiting
+                                          : searches.state.isWaiting
                                               ? Translator.t.enterToSearch()
                                               : Translator.t
                                                   .failedToGetResults(),
@@ -394,7 +396,7 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                      if (item.hasResolved &&
+                      if (item.state.hasResolved &&
                           item.value != null) ...<InlineSpan>[
                         TextSpan(
                           text: '\n${Translator.t.computedAs()} ',
@@ -439,7 +441,7 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                               ),
                         ),
                         openSearchTextSpan(' - ${Translator.t.notThis()}'),
-                      ] else if (item.hasResolved && item.value == null)
+                      ] else if (item.state.hasResolved && item.value == null)
                         openSearchTextSpan('\n${Translator.t.selectAnAnime()}'),
                     ],
                   ),

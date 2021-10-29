@@ -39,7 +39,7 @@ class Sentences extends TranslationSentences {
   String noResultsFound() => 'No results were found.';
 
   @override
-  String failedToGetResults() => 'No results were found.';
+  String failedToGetResults() => 'Failed to get results.';
 
   @override
   String preferences() => 'Preferences';
@@ -387,4 +387,7 @@ class Sentences extends TranslationSentences {
   @override
   String restartAppForChangesToTakeEffect() =>
       'Restart app for the changes to take effect';
+
+  @override
+  String copyError() => 'Copy error';
 }

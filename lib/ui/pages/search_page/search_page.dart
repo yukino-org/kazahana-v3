@@ -8,8 +8,10 @@ import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
+import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
 import '../../router.dart';
 import '../anime_page/anime_page.dart' as anime_page;
@@ -282,27 +284,24 @@ class _PageState extends State<Page> with HooksMixin {
               });
 
               final PreferencesSchema preferences = PreferencesBox.get();
-
-              preferences.lastSelectedSearch.lastSelectedType = plugin.type;
-              switch (plugin.type) {
-                case ExtensionType.anime:
-                  preferences.lastSelectedSearch.lastSelectedAnimePlugin =
-                      plugin.plugin.id;
-                  break;
-
-                case ExtensionType.manga:
-                  preferences.lastSelectedSearch.lastSelectedMangaPlugin =
-                      plugin.plugin.id;
-                  break;
-              }
-
+              preferences.lastSelectedSearch =
+                  preferences.lastSelectedSearch.copyWith(
+                lastSelectedType: plugin.type,
+                lastSelectedAnimePlugin: plugin.type == ExtensionType.anime
+                    ? plugin.plugin.id
+                    : null,
+                lastSelectedMangaPlugin: plugin.type == ExtensionType.manga
+                    ? plugin.plugin.id
+                    : null,
+              );
               await PreferencesBox.save(preferences);
 
               if (mounted) {
                 this.setState(() {});
                 Navigator.of(context).pop();
 
-                if ((textController.text.isNotEmpty && results.hasEnded) ||
+                if ((textController.text.isNotEmpty &&
+                        results.state.hasEnded) ||
                     (args?.autoSearch ?? false)) {
                   if (args != null) {
                     args!.autoSearch = false;
@@ -358,7 +357,7 @@ class _PageState extends State<Page> with HooksMixin {
                 SizedBox(
                   height: remToPx(1.25),
                 ),
-                if (results.hasResolved && results.value!.isNotEmpty)
+                if (results.state.hasResolved && results.value!.isNotEmpty)
                   Column(
                     children: UiUtils.getGridded(
                       MediaQuery.of(context).size.width.toInt(),
@@ -452,7 +451,7 @@ class _PageState extends State<Page> with HooksMixin {
                           .toList(),
                     ),
                   )
-                else if (results.isResolving)
+                else if (results.state.isResolving)
                   Padding(
                     padding: EdgeInsets.only(
                       top: remToPx(1.5),
@@ -462,11 +461,11 @@ class _PageState extends State<Page> with HooksMixin {
                 else
                   Center(
                     child: Text(
-                      results.isWaiting
+                      results.state.isWaiting
                           ? (args?.autoSearch ?? false
                               ? Translator.t.selectAPluginToGetResults()
                               : Translator.t.enterToSearch())
-                          : results.hasResolved
+                          : results.state.hasResolved
                               ? Translator.t.noResultsFound()
                               : Translator.t.failedToGetResults(),
                       style: TextStyle(
@@ -487,9 +486,6 @@ class _PageState extends State<Page> with HooksMixin {
 
 // ignore: avoid_private_typedef_functions
 typedef _SearchPopUpOnPluginSelect = void Function(CurrentPlugin);
-
-// ignore: avoid_private_typedef_functions
-typedef _SearchPopUpOnTypeSelect = void Function(ExtensionType);
 
 class _SearchPopUpTile extends StatelessWidget {
   const _SearchPopUpTile({
@@ -530,7 +526,7 @@ class _SearchPopUp extends StatelessWidget {
   }) : super(key: key);
 
   final _SearchPopUpOnPluginSelect onPluginTap;
-  final _SearchPopUpOnTypeSelect onTypeTap;
+  final void Function(ExtensionType) onTypeTap;
   final CurrentPlugin? currentPlugin;
   final ExtensionType type;
 

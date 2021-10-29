@@ -4,6 +4,7 @@ import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 
 class AuthPage extends StatefulWidget {
@@ -114,7 +115,7 @@ class _AuthPageState extends State<AuthPage> with HooksMixin {
                   SizedBox(
                     height: remToPx(2),
                   ),
-                  if (!status.hasEnded) ...<Widget>[
+                  if (!status.state.hasEnded) ...<Widget>[
                     const CircularProgressIndicator(),
                     SizedBox(
                       height: remToPx(1),

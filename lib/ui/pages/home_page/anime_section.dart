@@ -6,6 +6,7 @@ import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/network_image_fallback.dart';
@@ -57,7 +58,7 @@ class _PageState extends State<Page> with HooksMixin {
         ) {
           final int nodeId = x.id;
 
-          if (mediaCache[nodeId]?.hasResolved ?? false) {
+          if (mediaCache[nodeId]?.state.hasResolved ?? false) {
             return mediaCache[nodeId]!.value!.getDetailedPage(context);
           }
 
@@ -90,14 +91,14 @@ class _PageState extends State<Page> with HooksMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            _cache.hasResolved && AppState.settings.value.locale == 'en'
+            _cache.state.hasResolved && AppState.settings.value.locale == 'en'
                 ? _cache.value!.seasonName
                 : Translator.t.seasonalAnimes(),
             style: Theme.of(context).textTheme.headline5?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          if (_cache.hasResolved) ...<Widget>[
+          if (_cache.state.hasResolved) ...<Widget>[
             SizedBox(
               height: remToPx(0.3),
             ),

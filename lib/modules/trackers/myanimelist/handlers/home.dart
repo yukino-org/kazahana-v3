@@ -47,13 +47,13 @@ class MyAnimeListHomeContent {
 
   String get thumbnail {
     final RegExpMatch? match =
-        RegExp(r'\/images.*\.(jpg|jpeg|png|webp)').firstMatch(url);
+        RegExp(r'\/images.*\.(jpg|jpeg|png|webp)').firstMatch(rawThumbnail);
 
     if (match != null) {
       return 'https://cdn.myanimelist.net${match.group(0)}';
     }
 
-    return url;
+    return rawThumbnail;
   }
 
   int get id => int.parse(

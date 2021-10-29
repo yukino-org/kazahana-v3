@@ -6,6 +6,7 @@ import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 import '../../../modules/trackers/anilist/anilist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -68,7 +69,7 @@ class _PageState extends State<Page> with HooksMixin {
           SizedBox(
             height: remToPx(0.3),
           ),
-          if (_cache.hasResolved)
+          if (_cache.state.hasResolved)
             ...UiUtils.getGridded(
               MediaQuery.of(context).size.width.toInt(),
               _cache.value!
@@ -97,7 +98,7 @@ class _PageState extends State<Page> with HooksMixin {
                             final BuildContext context,
                             final StateSetter setState,
                           ) {
-                            if (mediaCache[x.id]?.hasResolved ?? false) {
+                            if (mediaCache[x.id]?.state.hasResolved ?? false) {
                               return mediaCache[x.id]!
                                   .value!
                                   .getDetailedPage(context);

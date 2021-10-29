@@ -17,7 +17,7 @@ mixin HooksMixin {
   }
 
   Future<void> maybeEmitReady() async {
-    if (hookState.ready != ReactiveStates.waiting &&
+    if (hookState.ready == ReactiveStates.waiting &&
         hookState.onReady != null) {
       hookState.ready = ReactiveStates.resolving;
       try {

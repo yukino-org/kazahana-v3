@@ -31,6 +31,8 @@ You can download the latest version of app from the [releases](https://github.co
 -   [GitHub](https://github.com/yukino-app/yukino/)
 -   [Patreon](https://patreon.com/zyrouge/)
 
+For any queries, contact me at [zyrouge@hotmail.com](mailto:zyrouge@hotmail.com).
+
 ## Branding
 
 ### Colors

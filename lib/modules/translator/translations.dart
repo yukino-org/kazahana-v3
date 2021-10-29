@@ -178,4 +178,5 @@ abstract class TranslationSentences {
   String volumesCompleted();
   String nsfw();
   String restartAppForChangesToTakeEffect();
+  String copyError();
 }

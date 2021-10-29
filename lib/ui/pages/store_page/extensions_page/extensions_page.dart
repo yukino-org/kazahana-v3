@@ -283,22 +283,21 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                               .animes[widget.ext.id];
 
                                       if (ext != null) {
-                                        preferences.lastSelectedSearch
-                                            .lastSelectedType = widget.ext.type;
-                                        switch (widget.ext.type) {
-                                          case ExtensionType.anime:
+                                        preferences.lastSelectedSearch =
                                             preferences.lastSelectedSearch
-                                                    .lastSelectedAnimePlugin =
-                                                ext.id;
-                                            break;
-
-                                          case ExtensionType.manga:
-                                            preferences.lastSelectedSearch
-                                                    .lastSelectedMangaPlugin =
-                                                ext.id;
-                                            break;
-                                        }
-
+                                                .copyWith(
+                                          lastSelectedType: widget.ext.type,
+                                          lastSelectedAnimePlugin:
+                                              widget.ext.type ==
+                                                      ExtensionType.anime
+                                                  ? ext.id
+                                                  : null,
+                                          lastSelectedMangaPlugin:
+                                              widget.ext.type ==
+                                                      ExtensionType.manga
+                                                  ? ext.id
+                                                  : null,
+                                        );
                                         await PreferencesBox.save(preferences);
                                       }
                                     }

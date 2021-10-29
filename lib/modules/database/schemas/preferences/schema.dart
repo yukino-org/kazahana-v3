@@ -3,7 +3,7 @@ import 'package:extensions/extensions.dart';
 import 'package:objectbox/objectbox.dart';
 
 class LastSelectedSearchPlugin {
-  LastSelectedSearchPlugin({
+  const LastSelectedSearchPlugin({
     this.lastSelectedType,
     this.lastSelectedAnimePlugin,
     this.lastSelectedMangaPlugin,
@@ -20,9 +20,22 @@ class LastSelectedSearchPlugin {
         lastSelectedMangaPlugin: json['lastSelectedMangaPlugin'] as String?,
       );
 
-  ExtensionType? lastSelectedType;
-  String? lastSelectedAnimePlugin;
-  String? lastSelectedMangaPlugin;
+  final ExtensionType? lastSelectedType;
+  final String? lastSelectedAnimePlugin;
+  final String? lastSelectedMangaPlugin;
+
+  LastSelectedSearchPlugin copyWith({
+    final ExtensionType? lastSelectedType,
+    final String? lastSelectedAnimePlugin,
+    final String? lastSelectedMangaPlugin,
+  }) =>
+      LastSelectedSearchPlugin(
+        lastSelectedType: lastSelectedType ?? this.lastSelectedType,
+        lastSelectedAnimePlugin:
+            lastSelectedAnimePlugin ?? this.lastSelectedAnimePlugin,
+        lastSelectedMangaPlugin:
+            lastSelectedMangaPlugin ?? this.lastSelectedMangaPlugin,
+      );
 
   bool get isEmpty =>
       lastSelectedType == null &&
@@ -50,9 +63,9 @@ class PreferencesSchema {
       ? LastSelectedSearchPlugin.fromJson(
           json.decode(lastSelectedSearch_!) as Map<dynamic, dynamic>,
         )
-      : LastSelectedSearchPlugin();
+      : const LastSelectedSearchPlugin();
 
-  set lastSelectedSearch(final LastSelectedSearchPlugin? val) {
-    lastSelectedSearch_ = val != null ? json.encode(val.toJson()) : null;
+  set lastSelectedSearch(final LastSelectedSearchPlugin val) {
+    lastSelectedSearch_ = json.encode(val.toJson());
   }
 }

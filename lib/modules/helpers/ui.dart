@@ -11,6 +11,27 @@ abstract class ResponsiveSizes {
   static const int md = 768;
   static const int lg = 1024;
   static const int xl = 1280;
+
+  static bool isXs(final double size) => size > xs;
+  static bool isSm(final double size) => size > sm;
+  static bool isMd(final double size) => size > md;
+  static bool isLg(final double size) => size > lg;
+  static bool isXl(final double size) => size > xl;
+}
+
+class ResponsiveSizeInfo {
+  const ResponsiveSizeInfo(this.size);
+
+  factory ResponsiveSizeInfo.fromContext(final BuildContext context) =>
+      ResponsiveSizeInfo(MediaQuery.of(context).size.width);
+
+  final double size;
+
+  bool get isXs => ResponsiveSizes.isXs(size);
+  bool get isSm => ResponsiveSizes.isSm(size);
+  bool get isMd => ResponsiveSizes.isMd(size);
+  bool get isLg => ResponsiveSizes.isLg(size);
+  bool get isXl => ResponsiveSizes.isXl(size);
 }
 
 abstract class Palette {

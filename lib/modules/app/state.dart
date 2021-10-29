@@ -3,11 +3,10 @@ import '../database/database.dart';
 import '../state/eventer.dart';
 
 abstract class AppState {
-  static final ReactiveEventer<SettingsSchema> settings =
-      ReactiveEventer<SettingsSchema>();
+  static late final ReactiveEventer<SettingsSchema> settings;
 
   static Future<void> initialize() async {
-    AppState.settings.value = SettingsBox.get();
+    settings = ReactiveEventer<SettingsSchema>(SettingsBox.get());
   }
 
   static bool get isDesktop =>

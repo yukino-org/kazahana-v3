@@ -226,8 +226,8 @@ class _ListReaderState extends State<ListReader>
                     images[page] = StatefulValueHolder<ImageDescriber?>(null);
                   }
 
-                  if (!images[page]!.hasValue) {
-                    if (!images[page]!.isResolving) {
+                  if (!images[page]!.state.hasResolved) {
+                    if (!images[page]!.state.isResolving) {
                       getPage(page);
                     }
 

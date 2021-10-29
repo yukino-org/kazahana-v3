@@ -70,7 +70,7 @@ class RouteInfo {
 class RouteKeeper extends NavigatorObserver {
   Route<dynamic>? currentRoute;
   final ReactiveEventer<Route<dynamic>?> observer =
-      ReactiveEventer<Route<dynamic>?>();
+      ReactiveEventer<Route<dynamic>?>(null);
 
   @override
   void didPush(

@@ -3,6 +3,7 @@ import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/states.dart';
 
 class ProfileTab {
   ProfileTab({
@@ -153,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage>
       appBar: AppBar(
         title: Text(widget.title()),
       ),
-      body: user.hasResolved
+      body: user.state.hasResolved
           ? NestedScrollView(
               headerSliverBuilder:
                   (final BuildContext context, final bool isScrolled) =>
