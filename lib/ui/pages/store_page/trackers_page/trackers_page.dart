@@ -5,7 +5,7 @@ import './anilist_page/anilist_page.dart' as anilist_page;
 import './myanimelist_page/myanimelist_page.dart' as myanimelist_page;
 import '../../../../modules/helpers/assets.dart';
 import '../../../../modules/helpers/ui.dart';
-import '../../../../modules/state/loader.dart';
+import '../../../../modules/state/hooks.dart';
 import '../../../../modules/trackers/anilist/anilist.dart';
 import '../../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../../modules/translator/translator.dart';
@@ -38,7 +38,7 @@ class TrackersPage extends StatefulWidget {
 }
 
 class _TrackersPageState extends State<TrackersPage>
-    with RouteAware, InitialStateLoader {
+    with RouteAware, HooksMixin {
   final List<TrackerRoute> connections = <TrackerRoute>[
     ...ExtensionType.values.map(
       (final ExtensionType type) => TrackerRoute(
@@ -73,10 +73,12 @@ class _TrackersPageState extends State<TrackersPage>
   ];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    maybeLoad();
+    onReady(() async {
+      RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
+    });
   }
 
   @override
@@ -91,11 +93,6 @@ class _TrackersPageState extends State<TrackersPage>
     if (mounted) {
       setState(() {});
     }
-  }
-
-  @override
-  Future<void> load() async {
-    RouteManager.observer.subscribe(this, ModalRoute.of(context)!);
   }
 
   @override

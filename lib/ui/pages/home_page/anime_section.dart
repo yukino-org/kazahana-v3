@@ -5,7 +5,7 @@ import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/network_image_fallback.dart';
@@ -24,26 +24,30 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with InitialStateLoader {
+class _PageState extends State<Page> with HooksMixin {
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
   final Map<int, StatefulValueHolder<MyAnimeListAnimeList?>> mediaCache =
       <int, StatefulValueHolder<MyAnimeListAnimeList?>>{};
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    maybeLoad();
+    onReady(() async {
+      _cache.resolve(await MyAnimeListHome.extractHome());
+
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
-  Future<void> load() async {
-    _cache.resolve(await MyAnimeListHome.extractHome());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    if (mounted) {
-      setState(() {});
-    }
+    maybeEmitReady();
   }
 
   Widget buildOpenBuilder(final MyAnimeListHomeContent x) => StatefulBuilder(

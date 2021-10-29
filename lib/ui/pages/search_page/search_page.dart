@@ -7,7 +7,7 @@ import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
 import '../../components/network_image_fallback.dart';
@@ -121,7 +121,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with InitialStateLoader {
+class _PageState extends State<Page> with HooksMixin {
   List<String> animePlugins = ExtensionsManager.animes.keys.toList();
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
@@ -139,41 +139,40 @@ class _PageState extends State<Page> with InitialStateLoader {
     super.initState();
 
     _setCurrentPreferredPlugin();
+
+    onReady(() async {
+      if (mounted) {
+        args = PageArguments.fromJson(
+          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+        );
+
+        if (args?.pluginType != null) {
+          setState(() {
+            _setCurrentPreferredPlugin(args!.pluginType);
+          });
+        }
+
+        if (args?.terms?.isNotEmpty ?? false) {
+          setState(() {
+            textController.text = args!.terms!;
+          });
+
+          if (currentPlugin != null &&
+              currentPlugin!.type == args!.pluginType &&
+              (args?.autoSearch ?? false)) {
+            args!.autoSearch = false;
+            await search();
+          }
+        }
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted) {
-      args = PageArguments.fromJson(
-        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-      );
-
-      if (args?.pluginType != null) {
-        setState(() {
-          _setCurrentPreferredPlugin(args!.pluginType);
-        });
-      }
-
-      if (args?.terms?.isNotEmpty ?? false) {
-        setState(() {
-          textController.text = args!.terms!;
-        });
-
-        if (currentPlugin != null &&
-            currentPlugin!.type == args!.pluginType &&
-            (args?.autoSearch ?? false)) {
-          args!.autoSearch = false;
-          await search();
-        }
-      }
-    }
+    maybeEmitReady();
   }
 
   void _setCurrentPreferredPlugin([final ExtensionType? _pluginType]) {

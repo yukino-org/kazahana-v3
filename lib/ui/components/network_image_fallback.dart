@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../modules/state/loader.dart';
+import '../../modules/state/hooks.dart';
 import '../../modules/state/states.dart';
 
 class FallbackableNetworkImage extends StatefulWidget {
@@ -22,16 +22,44 @@ class FallbackableNetworkImage extends StatefulWidget {
 }
 
 class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
-    with InitialStateLoader {
+    with HooksMixin {
   ReactiveStates state = ReactiveStates.waiting;
   ImageInfo? imageInfo;
   late final NetworkImage networkImage;
 
   @override
+  void initState() {
+    super.initState();
+
+    onReady(() async {
+      networkImage = NetworkImage(widget.url);
+      networkImage.resolve(ImageConfiguration.empty).addListener(
+            ImageStreamListener(
+              (final ImageInfo image, final bool synchronousCall) {
+                if (mounted) {
+                  setState(() {
+                    imageInfo = image;
+                    state = ReactiveStates.resolved;
+                  });
+                }
+              },
+              onError: (final Object exception, final StackTrace? stackTrace) {
+                if (mounted) {
+                  setState(() {
+                    state = ReactiveStates.failed;
+                  });
+                }
+              },
+            ),
+          );
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -39,30 +67,6 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
     imageInfo?.dispose();
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    networkImage = NetworkImage(widget.url);
-    networkImage.resolve(ImageConfiguration.empty).addListener(
-          ImageStreamListener(
-            (final ImageInfo image, final bool synchronousCall) {
-              if (mounted) {
-                setState(() {
-                  imageInfo = image;
-                  state = ReactiveStates.resolved;
-                });
-              }
-            },
-            onError: (final Object exception, final StackTrace? stackTrace) {
-              if (mounted) {
-                setState(() {
-                  state = ReactiveStates.failed;
-                });
-              }
-            },
-          ),
-        );
   }
 
   @override

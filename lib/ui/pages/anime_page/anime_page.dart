@@ -9,7 +9,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -64,8 +64,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page>
-    with TickerProviderStateMixin, InitialStateLoader {
+class _PageState extends State<Page> with TickerProviderStateMixin, HooksMixin {
   AnimeInfo? info;
 
   EpisodeInfo? episode;
@@ -100,13 +99,23 @@ class _PageState extends State<Page>
       vsync: this,
       duration: Defaults.animationsNormal,
     );
+
+    onReady(() async {
+      args = PageArguments.fromJson(
+        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+      );
+
+      // TODO: Error handling
+      extractor = ExtensionsManager.animes[args.plugin]!;
+      getInfo();
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -116,17 +125,6 @@ class _PageState extends State<Page>
     floatingButtonController.dispose();
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    args = PageArguments.fromJson(
-      ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-    );
-
-    // TODO: Error handling
-    extractor = ExtensionsManager.animes[args.plugin]!;
-    getInfo();
   }
 
   Future<void> getInfo({

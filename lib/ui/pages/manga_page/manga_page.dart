@@ -10,7 +10,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -66,7 +66,7 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page>
-    with SingleTickerProviderStateMixin, InitialStateLoader {
+    with SingleTickerProviderStateMixin, HooksMixin {
   MangaInfo? info;
 
   ChapterInfo? chapter;
@@ -105,13 +105,25 @@ class _PageState extends State<Page>
     );
 
     AppState.settings.subscribe(_appStateChange);
+
+    onReady(() async {
+      if (mounted) {
+        args = PageArguments.fromJson(
+          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+        );
+
+        extractor = ExtensionsManager.mangas[args.plugin]!;
+      }
+
+      getInfo();
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -122,19 +134,6 @@ class _PageState extends State<Page>
     AppState.settings.unsubscribe(_appStateChange);
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted) {
-      args = PageArguments.fromJson(
-        ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-      );
-
-      extractor = ExtensionsManager.mangas[args.plugin]!;
-    }
-
-    getInfo();
   }
 
   void _appStateChange(

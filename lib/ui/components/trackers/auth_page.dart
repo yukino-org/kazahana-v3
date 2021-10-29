@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/translator/translator.dart';
 
 class AuthPage extends StatefulWidget {
@@ -24,56 +24,60 @@ class AuthPage extends StatefulWidget {
   _AuthPageState createState() => _AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage> with InitialStateLoader {
+class _AuthPageState extends State<AuthPage> with HooksMixin {
   final StatefulValueHolder<List<InlineSpan>> status =
       StatefulValueHolder<List<InlineSpan>>(<InlineSpan>[
     TextSpan(text: Translator.t.authenticating()),
   ]);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    maybeLoad();
+    onReady(() async {
+      try {
+        await widget.authenticate();
+
+        if (mounted) {
+          setState(() {
+            status.resolve(<InlineSpan>[
+              TextSpan(text: Translator.t.successfullyAuthenticated()),
+            ]);
+          });
+
+          Future<void>.delayed(const Duration(seconds: 4), () {
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          });
+        }
+      } catch (err, stack) {
+        widget.logger.error('Authentication failed: $err', stack);
+
+        if (mounted) {
+          setState(() {
+            status.fail(
+              <InlineSpan>[
+                TextSpan(text: Translator.t.authenticationFailed()),
+                TextSpan(
+                  text: '\n${err.toString()}',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.caption?.color,
+                  ),
+                ),
+              ],
+            );
+          });
+        }
+      }
+    });
   }
 
   @override
-  Future<void> load() async {
-    try {
-      await widget.authenticate();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-      if (mounted) {
-        setState(() {
-          status.resolve(<InlineSpan>[
-            TextSpan(text: Translator.t.successfullyAuthenticated()),
-          ]);
-        });
-
-        Future<void>.delayed(const Duration(seconds: 4), () {
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
-        });
-      }
-    } catch (err, stack) {
-      widget.logger.error('Authentication failed: $err', stack);
-
-      if (mounted) {
-        setState(() {
-          status.fail(
-            <InlineSpan>[
-              TextSpan(text: Translator.t.authenticationFailed()),
-              TextSpan(
-                text: '\n${err.toString()}',
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.caption?.color,
-                ),
-              ),
-            ],
-          );
-        });
-      }
-    }
+    maybeEmitReady();
   }
 
   @override

@@ -6,7 +6,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/full_screen_image.dart';
@@ -38,7 +38,7 @@ class ListReader extends StatefulWidget {
 }
 
 class _ListReaderState extends State<ListReader>
-    with FullscreenMixin, InitialStateLoader {
+    with FullscreenMixin, HooksMixin {
   final Widget loader = const CircularProgressIndicator();
 
   late final Map<PageInfo, StatefulValueHolder<ImageDescriber?>> images =
@@ -52,13 +52,19 @@ class _ListReaderState extends State<ListReader>
     super.initState();
 
     initFullscreen();
+
+    onReady(() async {
+      if (mounted && AppState.settings.value.mangaAutoFullscreen) {
+        enterFullscreen();
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -68,13 +74,6 @@ class _ListReaderState extends State<ListReader>
     }
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted && AppState.settings.value.mangaAutoFullscreen) {
-      enterFullscreen();
-    }
   }
 
   Future<void> getPage(final PageInfo page) async {

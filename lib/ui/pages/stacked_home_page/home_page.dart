@@ -4,7 +4,7 @@ import '../../../modules/app/state.dart';
 import '../../../modules/helpers/deeplink.dart';
 import '../../../modules/helpers/protocol_handler.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../components/bar_item.dart';
 import '../../components/bottom_bar.dart';
 import '../../components/side_bar.dart';
@@ -26,7 +26,7 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with InitialStateLoader {
+class _PageState extends State<Page> with HooksMixin {
   late int currentIndex;
   late PageController controller;
 
@@ -62,24 +62,23 @@ class _PageState extends State<Page> with InitialStateLoader {
             : null) ??
         0;
     controller = PageController(initialPage: currentIndex);
+
+    onReady(() async {
+      final String? link = await Deeplink.getInitialLink();
+      if (link != null) {
+        ProtocolHandler.handle(link);
+      }
+
+      Deeplink.hasHandledInitialLink = true;
+      Deeplink.listen();
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
-  }
-
-  @override
-  Future<void> load() async {
-    final String? link = await Deeplink.getInitialLink();
-    if (link != null) {
-      ProtocolHandler.handle(link);
-    }
-
-    Deeplink.hasHandledInitialLink = true;
-    Deeplink.listen();
+    maybeEmitReady();
   }
 
   Future<void> goToPage(final int page) async {

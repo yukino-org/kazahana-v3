@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 
 class ProfileTab {
   ProfileTab({
@@ -44,7 +44,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin, InitialStateLoader {
+    with SingleTickerProviderStateMixin, HooksMixin {
   StatefulValueHolder<dynamic> user = StatefulValueHolder<dynamic>(null);
 
   late final List<Tab> tabs = widget.tabs
@@ -85,24 +85,23 @@ class _ProfilePageState extends State<ProfilePage>
         );
       }
     });
+
+    onReady(() async {
+      final dynamic _user = await widget.getUserInfo();
+
+      if (mounted) {
+        setState(() {
+          user.resolve(_user);
+        });
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
-  }
-
-  @override
-  Future<void> load() async {
-    final dynamic _user = await widget.getUserInfo();
-
-    if (mounted) {
-      setState(() {
-        user.resolve(_user);
-      });
-    }
+    maybeEmitReady();
   }
 
   Widget getProfile(final dynamic user) {

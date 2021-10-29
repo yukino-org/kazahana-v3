@@ -10,7 +10,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/toggleable_appbar.dart';
@@ -62,7 +62,7 @@ class PageReader extends StatefulWidget {
 }
 
 class _PageReaderState extends State<PageReader>
-    with SingleTickerProviderStateMixin, FullscreenMixin, InitialStateLoader {
+    with SingleTickerProviderStateMixin, FullscreenMixin, HooksMixin {
   late AnimationController overlayController;
   bool showOverlay = true;
 
@@ -117,13 +117,19 @@ class _PageReaderState extends State<PageReader>
     pageController = PageController(
       initialPage: currentIndex,
     );
+
+    onReady(() async {
+      if (mounted && AppState.settings.value.mangaAutoFullscreen) {
+        enterFullscreen();
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -141,13 +147,6 @@ class _PageReaderState extends State<PageReader>
     focusNode.dispose();
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted && AppState.settings.value.mangaAutoFullscreen) {
-      enterFullscreen();
-    }
   }
 
   void handleKeyEvent(final RawKeyEvent event) {

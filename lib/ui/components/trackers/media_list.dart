@@ -3,7 +3,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/translator/translator.dart';
 
 class MediaList extends StatefulWidget {
@@ -28,7 +28,7 @@ class MediaList extends StatefulWidget {
   _MediaListState createState() => _MediaListState();
 }
 
-class _MediaListState extends State<MediaList> with InitialStateLoader {
+class _MediaListState extends State<MediaList> with HooksMixin {
   List<dynamic>? mediaList;
   int page = 0;
 
@@ -37,13 +37,19 @@ class _MediaListState extends State<MediaList> with InitialStateLoader {
   );
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    maybeLoad();
+    onReady(load);
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    maybeEmitReady();
+  }
+
   Future<void> load() async {
     final List<dynamic> _mediaList = await widget.getMediaList(page);
 

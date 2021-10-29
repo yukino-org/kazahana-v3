@@ -2,7 +2,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import './animelist/animelist_page.dart' as animelist_page;
 import './mangalist/mangalist_page.dart' as mangalist_page;
-import '../../../../../modules/state/loader.dart';
+import '../../../../../modules/state/hooks.dart';
 import '../../../../router.dart';
 
 class PageArguments {
@@ -38,21 +38,25 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with InitialStateLoader {
+class _PageState extends State<Page> with HooksMixin {
   late PageArguments args;
+
+  @override
+  void initState() {
+    super.initState();
+
+    onReady(() async {
+      args = PageArguments.fromJson(
+        ParsedRouteInfo.fromURI(ModalRoute.of(context)!.settings.name!).params,
+      );
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
-  }
-
-  @override
-  Future<void> load() async {
-    args = PageArguments.fromJson(
-      ParsedRouteInfo.fromURI(ModalRoute.of(context)!.settings.name!).params,
-    );
+    maybeEmitReady();
   }
 
   Widget getPage() {

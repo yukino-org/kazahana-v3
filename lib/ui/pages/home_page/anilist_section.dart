@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/anilist/anilist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
@@ -24,31 +24,35 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with InitialStateLoader {
+class _PageState extends State<Page> with HooksMixin {
   int? recommendedHoverIndex;
   final Map<int, StatefulValueHolder<AniListMediaList?>> mediaCache =
       <int, StatefulValueHolder<AniListMediaList?>>{};
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    maybeLoad();
+    onReady(() async {
+      _cache.resolve(
+        await AniListRecommendations.getRecommended(
+          0,
+          perPage: 14,
+          onList: false,
+        ),
+      );
+
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
-  Future<void> load() async {
-    _cache.resolve(
-      await AniListRecommendations.getRecommended(
-        0,
-        perPage: 14,
-        onList: false,
-      ),
-    );
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    if (mounted) {
-      setState(() {});
-    }
+    maybeEmitReady();
   }
 
   @override

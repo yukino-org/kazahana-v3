@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/holder.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
 import '../../router.dart';
@@ -62,8 +62,7 @@ class TrackersTileItem extends StatefulWidget {
   _TrackersTileItemState createState() => _TrackersTileItemState();
 }
 
-class _TrackersTileItemState extends State<TrackersTileItem>
-    with InitialStateLoader {
+class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
   StatefulValueHolder<List<ResolvableTrackerItem>?> searches =
       StatefulValueHolder<List<ResolvableTrackerItem>?>(null);
 
@@ -75,13 +74,41 @@ class _TrackersTileItemState extends State<TrackersTileItem>
     super.initState();
 
     onItemUpdateChangeNotifier.subscribe(_onMediaUpdated);
+
+    onReady(() async {
+      if (mounted && widget.tracker.isLoggedIn()) {
+        setState(() {
+          item.resolving(null);
+        });
+
+        ResolvedTrackerItem? computed;
+        try {
+          computed = await widget.tracker.getComputed(
+            widget.title,
+            widget.plugin,
+          );
+        } catch (_) {
+          computed = await widget.tracker.getComputed(
+            widget.title,
+            widget.plugin,
+            force: true,
+          );
+        }
+
+        if (mounted) {
+          setState(() {
+            item.resolve(computed);
+          });
+        }
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -89,35 +116,6 @@ class _TrackersTileItemState extends State<TrackersTileItem>
     onItemUpdateChangeNotifier.unsubscribe(_onMediaUpdated);
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted && widget.tracker.isLoggedIn()) {
-      setState(() {
-        item.resolving(null);
-      });
-
-      ResolvedTrackerItem? computed;
-      try {
-        computed = await widget.tracker.getComputed(
-          widget.title,
-          widget.plugin,
-        );
-      } catch (_) {
-        computed = await widget.tracker.getComputed(
-          widget.title,
-          widget.plugin,
-          force: true,
-        );
-      }
-
-      if (mounted) {
-        setState(() {
-          item.resolve(computed);
-        });
-      }
-    }
   }
 
   void _onMediaUpdated(

@@ -10,7 +10,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/helpers/double_value_listenable_builder.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/loader.dart';
+import '../../../modules/state/hooks.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
@@ -58,7 +58,7 @@ class WatchPageState extends State<WatchPage>
     with
         TickerProviderStateMixin,
         FullscreenMixin,
-        InitialStateLoader,
+        HooksMixin,
         OrientationMixin,
         WakelockMixin {
   List<EpisodeSource>? sources;
@@ -136,13 +136,33 @@ class WatchPageState extends State<WatchPage>
         }
       }
     });
+
+    onReady(() async {
+      if (mounted) {
+        isWakelockEnabled().then((final bool isWakelockEnabled) {
+          if (mounted && !isWakelockEnabled) {
+            enableWakelock();
+          }
+        });
+
+        if (AppState.settings.value.animeAutoFullscreen) {
+          enterFullscreen();
+        }
+
+        if (AppState.settings.value.animeForceLandscape) {
+          enterLandscape();
+        }
+
+        await getSources();
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
+    maybeEmitReady();
   }
 
   @override
@@ -164,27 +184,6 @@ class WatchPageState extends State<WatchPage>
     _mouseOverlayTimer?.cancel();
 
     super.dispose();
-  }
-
-  @override
-  Future<void> load() async {
-    if (mounted) {
-      isWakelockEnabled().then((final bool isWakelockEnabled) {
-        if (mounted && !isWakelockEnabled) {
-          enableWakelock();
-        }
-      });
-
-      if (AppState.settings.value.animeAutoFullscreen) {
-        enterFullscreen();
-      }
-
-      if (AppState.settings.value.animeForceLandscape) {
-        enterLandscape();
-      }
-
-      await getSources();
-    }
   }
 
   Future<void> getSources() async {
