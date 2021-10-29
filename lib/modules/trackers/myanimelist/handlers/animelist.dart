@@ -3,7 +3,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../../ui/components/trackers/detailed_item.dart';
 import '../../../../ui/pages/store_page/trackers_page/myanimelist_page/animelist/edit_modal.dart';
-import '../../../state/loader.dart';
+import '../../../state/hooks.dart';
 import '../../../utils/utils.dart';
 import '../../provider.dart';
 import '../myanimelist.dart';
@@ -249,27 +249,31 @@ class _DetailedItemWrapper extends StatefulWidget {
 }
 
 class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
-    with InitialStateLoader {
+    with HooksMixin {
   late bool fetched = widget.item.details != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    onReady(() async {
+      if (!fetched) {
+        await widget.item.fetch();
+
+        if (mounted) {
+          setState(() {
+            fetched = true;
+          });
+        }
+      }
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeLoad();
-  }
-
-  @override
-  Future<void> load() async {
-    if (!fetched) {
-      await widget.item.fetch();
-
-      if (mounted) {
-        setState(() {
-          fetched = true;
-        });
-      }
-    }
+    maybeEmitReady();
   }
 
   @override

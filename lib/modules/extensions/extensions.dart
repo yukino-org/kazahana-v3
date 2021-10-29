@@ -3,10 +3,15 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as path;
 import '../../config/app.dart';
+import '../../config/paths.dart';
 import '../helpers/logger.dart';
+
+extension BaseExtensionUtils on BaseExtension {
+  String get fullPath =>
+      path.join(PathDirs.extensions, '$id.${type.type}.json');
+}
 
 abstract class ExtensionsManager {
   static late final List<ResolvableExtension> store;
@@ -24,8 +29,7 @@ abstract class ExtensionsManager {
     final ResolvableExtension resolvable,
   ) async {
     final ResolvedExtension resolved = await resolvable.resolve();
-    final String path = await _getExtensionPath(resolved);
-    final File file = File(path);
+    final File file = File(resolved.fullPath);
 
     await file.create(recursive: true);
     await file.writeAsString(json.encode(resolved.toJson()));
@@ -35,8 +39,7 @@ abstract class ExtensionsManager {
   static Future<void> uninstall(
     final BaseExtension ext,
   ) async {
-    final String path = await _getExtensionPath(ext);
-    final File file = File(path);
+    final File file = File(ext.fullPath);
 
     await file.delete();
     await _removeExtension(ext);
@@ -72,8 +75,7 @@ abstract class ExtensionsManager {
   }
 
   static Future<void> _loadLocalExtensions() async {
-    final String path = await _getPath();
-    final Directory dir = Directory(path);
+    final Directory dir = Directory(PathDirs.extensions);
 
     if (await dir.exists()) {
       for (final FileSystemEntity x in await dir.list().toList()) {
@@ -135,18 +137,5 @@ abstract class ExtensionsManager {
         mangas.remove(ext.id);
         break;
     }
-  }
-
-  static Future<String> _getPath() async {
-    final Directory documentsDir =
-        await path_provider.getApplicationDocumentsDirectory();
-    return p.join(documentsDir.path, Config.code, 'extensions');
-  }
-
-  static Future<String> _getExtensionPath(
-    final BaseExtension ext,
-  ) async {
-    final String dir = await _getPath();
-    return p.join(dir, '${ext.id}.${ext.type.type}.json');
   }
 }

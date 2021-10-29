@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:protocol_registry/protocol_registry.dart';
 import './assets.dart';
 import './screen.dart';
@@ -26,7 +26,7 @@ abstract class ProtocolHandler {
       await registry.add(scheme);
     } else if (Platform.isLinux) {
       final File icon = File(
-        p.join(Platform.environment['HOME']!, '.icons/${Config.code}.png'),
+        path.join(Platform.environment['HOME']!, '.icons/${Config.code}.png'),
       );
 
       if (!(await icon.exists())) {
@@ -46,8 +46,8 @@ Icon=${Config.code}
 '''
           .trim();
 
-      final String path = registry.getDesktopFilePath(scheme);
-      final File file = File(path);
+      final String filePath = registry.getDesktopFilePath(scheme);
+      final File file = File(filePath);
 
       if (!(await file.exists())) {
         await file.create(recursive: true);

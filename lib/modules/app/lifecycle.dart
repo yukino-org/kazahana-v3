@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './state.dart';
 import '../../config/app.dart';
+import '../../config/paths.dart';
 import '../database/database.dart';
 import '../extensions/extensions.dart';
 import '../helpers/deeplink.dart';
@@ -45,6 +46,7 @@ abstract class AppLifecycle {
     WidgetsBinding.instance!.addObserver(appLifecycleObserver);
 
     await Config.initialize();
+    await PathDirs.initialize();
     await Logger.initialize();
 
     Logger.of('AppLifecycle').info('Starting "preinitialize"');

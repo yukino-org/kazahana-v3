@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart' as path_provider;
-import '../../config/app.dart';
+import 'package:path/path.dart' as path;
+import '../../config/paths.dart';
 
 class Logger {
   Logger._(this.name);
@@ -37,22 +36,20 @@ class Logger {
     });
   }
 
-  static late String path;
+  static late String filePath;
   static late IOSink file;
   static final Map<String, Logger> instances = <String, Logger>{};
 
   static bool ready = false;
 
   static Future<void> initialize() async {
-    final Directory tmpPath = await path_provider.getTemporaryDirectory();
     final DateTime time = DateTime.now();
-    path = p.join(
-      tmpPath.path,
-      Config.code,
+    filePath = path.join(
+      PathDirs.temp,
       'debug ${time.day}-${time.month}-${time.year}.log',
     );
 
-    final File file = File(path);
+    final File file = File(filePath);
     if (!(await file.exists())) {
       await file.create(recursive: true);
     }

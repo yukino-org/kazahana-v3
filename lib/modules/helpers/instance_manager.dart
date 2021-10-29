@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as path;
 import './logger.dart';
-import '../../config/app.dart';
+import '../../config/paths.dart';
 import '../local_server/routes/ping.dart' as ping_route;
 import '../local_server/routes/protocol.dart' as protocol_route;
 import '../local_server/server.dart';
@@ -32,7 +31,7 @@ class InstanceInfo {
 
 abstract class InstanceManager {
   static Future<InstanceInfo?> check() async {
-    final File file = File(await _getPath());
+    final File file = File(instanceFilePath);
 
     if (await file.exists()) {
       final String content = await file.readAsString();
@@ -59,7 +58,7 @@ abstract class InstanceManager {
   }
 
   static Future<InstanceInfo> register() async {
-    final File file = File(await _getPath());
+    final File file = File(instanceFilePath);
     await file.create(recursive: true);
 
     final InstanceInfo instance = InstanceInfo(
@@ -89,9 +88,6 @@ abstract class InstanceManager {
     }
   }
 
-  static Future<String> _getPath() async {
-    final Directory documentsDir =
-        await path_provider.getApplicationDocumentsDirectory();
-    return p.join(documentsDir.path, Config.code, '.instance');
-  }
+  static String get instanceFilePath =>
+      path.join(PathDirs.documents, '.instance');
 }

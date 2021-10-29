@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as path_provider;
-import '../../../config/app.dart';
+import '../../../config/paths.dart';
 import '../../helpers/http_download.dart';
 import '../../helpers/logger.dart';
 import '../updater.dart';
@@ -23,16 +22,12 @@ class LinuxAppImageUpdater with PlatformUpdater {
   Future<InstallResponse> install(final UpdateInfo update) async {
     progress.dispatch(UpdaterEvent(UpdaterEvents.starting));
 
-    final String tmp = path.join(
-      (await path_provider.getTemporaryDirectory()).path,
-      Config.code,
-    );
     final String newExeName = update.path.split('/').last;
 
-    final File newExeFile = File(path.join(tmp, newExeName));
+    final File newExeFile = File(path.join(PathDirs.temp, newExeName));
 
     if (!(await newExeFile.exists())) {
-      final File partFile = File(path.join(tmp, '$newExeName.part'));
+      final File partFile = File(path.join(PathDirs.temp, '$newExeName.part'));
 
       if (!(await partFile.exists())) {
         await partFile.create(recursive: true);
