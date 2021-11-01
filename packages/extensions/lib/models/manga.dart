@@ -1,3 +1,4 @@
+import 'package:utilx/utilities/locale.dart';
 import './base.dart';
 
 class ChapterInfo {
@@ -38,8 +39,8 @@ class MangaInfo {
     required final this.title,
     required final this.chapters,
     required final this.locale,
+    required final this.availableLocales,
     final this.thumbnail,
-    final this.availableLocales = const <String>[],
   });
 
   factory MangaInfo.fromJson(final Map<dynamic, dynamic> json) => MangaInfo(
@@ -55,8 +56,10 @@ class MangaInfo {
               )
             : null,
         locale: json['locale'] as String,
-        availableLocales:
-            (json['availableLocales'] as List<dynamic>).cast<String>(),
+        availableLocales: (json['availableLocales'] as List<dynamic>)
+            .cast<String>()
+            .map((final String x) => Locale.parse(x))
+            .toList(),
       );
 
   final String title;
@@ -64,7 +67,7 @@ class MangaInfo {
   final List<ChapterInfo> chapters;
   final ImageDescriber? thumbnail;
   final String locale;
-  final List<String> availableLocales;
+  final List<Locale> availableLocales;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
@@ -72,7 +75,8 @@ class MangaInfo {
         'thumbnail': thumbnail?.toJson(),
         'chapters': chapters.map((final ChapterInfo x) => x.toJson()).toList(),
         'locale': locale,
-        'availableLocales': availableLocales,
+        'availableLocales':
+            availableLocales.map((final Locale x) => x.toString()).toList(),
       };
 }
 
@@ -96,7 +100,7 @@ class PageInfo {
       };
 }
 
-typedef GetMangaInfoFn = Future<MangaInfo> Function(String, String);
+typedef GetMangaInfoFn = Future<MangaInfo> Function(String, Locale);
 
 typedef GetChapterFn = Future<List<PageInfo>> Function(ChapterInfo);
 
@@ -107,7 +111,7 @@ class MangaExtractor extends BaseExtractor {
     required final String name,
     required final String id,
     required final SearchFn search,
-    required final String defaultLocale,
+    required final Locale defaultLocale,
     required final this.getInfo,
     required final this.getChapter,
     required final this.getPage,

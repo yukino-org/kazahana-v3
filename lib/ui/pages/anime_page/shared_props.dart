@@ -1,5 +1,5 @@
 import 'package:extensions/extensions.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import '../../../modules/utils/utils.dart';
 
 enum Pages {
@@ -24,7 +24,7 @@ class SharedProps {
   AnimeInfo? info;
   EpisodeInfo? episode;
   int? currentEpisodeIndex;
-  LanguageCodes? locale;
+  Locale? locale;
 
   void Function(int?) setEpisode;
   Future<void> Function(Pages) goToPage;

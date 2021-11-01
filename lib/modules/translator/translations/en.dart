@@ -1,9 +1,9 @@
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import '../translations.dart';
 
 class Sentences extends TranslationSentences {
   @override
-  TranslationLocale get locale => TranslationLocale(LanguageCodes.en);
+  Locale get locale => Locale(LanguageCodes.en);
 
   @override
   String home() => 'Home';

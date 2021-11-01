@@ -1,7 +1,7 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import './list_reader.dart';
 import './page_reader.dart';
 import '../../../config/defaults.dart';
@@ -86,7 +86,7 @@ class _PageState extends State<Page>
   late MangaExtractor extractor;
   late PageArguments args;
 
-  LanguageCodes? locale;
+  Locale? locale;
   MangaMode mangaMode = AppState.settings.value.mangaReaderMode;
 
   final int maxChunkLength = AppState.isDesktop ? 25 : 15;
@@ -187,7 +187,7 @@ class _PageState extends State<Page>
 
     info = await extractor.getInfo(
       args.src,
-      locale?.name ?? extractor.defaultLocale,
+      locale ?? extractor.defaultLocale,
     );
 
     await CacheBox.saveKV(cacheKey, info!.toJson(), nowMs);
@@ -430,38 +430,31 @@ class _PageState extends State<Page>
                 SizedBox(
                   height: remToPx(0.3),
                 ),
-                ...info!.availableLocales.map(
-                  (final String x) {
-                    final LanguageCodes groupVal =
-                        LanguageUtils.languageCodeMap[info!.locale] ??
-                            LanguageCodes.en;
+                ...info!.availableLocales
+                    .map(
+                      (final Locale x) => Material(
+                        type: MaterialType.transparency,
+                        child: RadioListTile<Locale>(
+                          title: Text(x.toString()),
+                          value: x,
+                          groupValue: locale,
+                          activeColor: Theme.of(context).primaryColor,
+                          onChanged: (final Locale? val) async {
+                            if (val != null && val != locale) {
+                              setState(() {
+                                locale = val;
+                                info = null;
+                              });
 
-                    final LanguageCodes lang =
-                        LanguageUtils.languageCodeMap[x] ?? LanguageCodes.en;
+                              getInfo(removeCache: true);
+                            }
 
-                    return Material(
-                      type: MaterialType.transparency,
-                      child: RadioListTile<LanguageCodes>(
-                        title: Text(lang.language),
-                        value: lang,
-                        groupValue: groupVal,
-                        activeColor: Theme.of(context).primaryColor,
-                        onChanged: (final LanguageCodes? val) {
-                          if (val != null && val != groupVal) {
-                            setState(() {
-                              locale = val;
-                              info = null;
-                            });
-
-                            getInfo(removeCache: true);
-                          }
-
-                          Navigator.of(context).pop();
-                        },
+                            Navigator.of(context).pop();
+                          },
+                        ),
                       ),
-                    );
-                  },
-                ).toList(),
+                    )
+                    .toList(),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(

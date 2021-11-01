@@ -23,12 +23,7 @@ export const run = async (fn: () => Promise<void>) => {
         console.error(chalk.redBright(err));
 
         if (err instanceof Error && err.stack) {
-            const stackLines = err.stack.split("\n");
-            if (stackLines[0] === err.toString()) {
-                err.stack = stackLines.slice(1).join("\n");
-            }
-
-            console.error(chalk.gray(err.stack));
+            console.error(chalk.gray(err.stack.replace(err.message, "")));
         }
 
         console.log(

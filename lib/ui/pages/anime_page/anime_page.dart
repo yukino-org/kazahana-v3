@@ -1,6 +1,6 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import './info_page.dart';
 import './shared_props.dart';
 import './watch_page.dart';
@@ -152,7 +152,7 @@ class _PageState extends State<Page> with HooksMixin {
 
       props.info = await props.extractor!.getInfo(
         args.src,
-        props.locale?.name ?? props.extractor!.defaultLocale,
+        props.locale ?? props.extractor!.defaultLocale,
       );
 
       await CacheBox.saveKV(cacheKey, props.info!.toJson(), nowMs);
@@ -195,7 +195,7 @@ class _PageState extends State<Page> with HooksMixin {
 
                     await getInfo(removeCache: true);
                   },
-                  changeLanguage: (final LanguageCodes lang) async {
+                  changeLanguage: (final Locale lang) async {
                     setState(() {
                       props.locale = lang;
                       props.info = null;

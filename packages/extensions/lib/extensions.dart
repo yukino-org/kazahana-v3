@@ -3,6 +3,7 @@ library extensions;
 import 'dart:async';
 import 'package:hetu_script/hetu_script.dart';
 import 'package:http/http.dart' as http;
+import 'package:utilx/utilities/locale.dart';
 import './hetu/hetu.dart';
 import './models/anime.dart';
 import './models/base.dart';
@@ -26,30 +27,36 @@ class BaseExtension {
   BaseExtension({
     required final this.name,
     required final this.id,
+    required final this.author,
     required final this.version,
     required final this.type,
     required final this.image,
     required final this.nsfw,
+    required final this.defaultLocale,
   });
 
   factory BaseExtension.fromJson(final Map<dynamic, dynamic> json) =>
       BaseExtension(
         name: json['name'] as String,
         id: json['id'] as String,
+        author: json['author'] as String,
         version: ExtensionVersion.parse(json['version'] as String),
         type: ExtensionType.values.firstWhere(
           (final ExtensionType type) => type.type == (json['type'] as String),
         ),
         image: json['image'] as String,
         nsfw: json['nsfw'] as bool,
+        defaultLocale: Locale.parse(json['defaultLocale'] as String),
       );
 
   final String name;
   final String id;
+  final String author;
   final ExtensionVersion version;
   final ExtensionType type;
   final String image;
   final bool nsfw;
+  final Locale defaultLocale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
@@ -65,18 +72,22 @@ class ResolvableExtension extends BaseExtension {
   ResolvableExtension({
     required final String name,
     required final String id,
+    required final String author,
     required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
     required final bool nsfw,
+    required final Locale defaultLocale,
     required final this.source,
   }) : super(
           name: name,
           id: id,
+          author: author,
           version: version,
           type: type,
           image: image,
           nsfw: nsfw,
+          defaultLocale: defaultLocale,
         );
 
   factory ResolvableExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -85,11 +96,13 @@ class ResolvableExtension extends BaseExtension {
     return ResolvableExtension(
       name: base.name,
       id: base.id,
+      author: base.author,
       version: base.version,
       type: base.type,
       image: base.image,
       source: json['source'] as String,
       nsfw: base.nsfw,
+      defaultLocale: base.defaultLocale,
     );
   }
 
@@ -101,11 +114,13 @@ class ResolvableExtension extends BaseExtension {
     return ResolvedExtension(
       name: name,
       id: id,
+      author: author,
       version: version,
       type: type,
       image: image,
       code: res.body,
       nsfw: nsfw,
+      defaultLocale: defaultLocale,
     );
   }
 
@@ -120,18 +135,22 @@ class ResolvedExtension extends BaseExtension {
   ResolvedExtension({
     required final String name,
     required final String id,
+    required final String author,
     required final ExtensionVersion version,
     required final ExtensionType type,
     required final String image,
     required final bool nsfw,
+    required final Locale defaultLocale,
     required final this.code,
   }) : super(
           name: name,
           id: id,
+          author: author,
           version: version,
           type: type,
           image: image,
           nsfw: nsfw,
+          defaultLocale: defaultLocale,
         );
 
   factory ResolvedExtension.fromJson(final Map<dynamic, dynamic> json) {
@@ -140,11 +159,13 @@ class ResolvedExtension extends BaseExtension {
     return ResolvedExtension(
       name: base.name,
       id: base.id,
+      author: base.author,
       version: base.version,
       type: base.type,
       image: base.image,
       code: json['code'] as String,
       nsfw: base.nsfw,
+      defaultLocale: base.defaultLocale,
     );
   }
 
@@ -179,19 +200,19 @@ abstract class ExtensionUtils {
       rethrow;
     }
 
-    final String defaultLocale = _getDefaultLocale(runner);
+    final Locale defaultLocale = Locale.parse(_getDefaultLocale(runner));
 
     return AnimeExtractor(
       name: ext.name,
       id: ext.id,
       defaultLocale: defaultLocale,
-      search: (final String terms, final String locale) async {
+      search: (final String terms, final Locale locale) async {
         try {
           final dynamic result = await runner.invoke(
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale,
+              locale.toString(),
             ],
           );
 
@@ -206,13 +227,13 @@ abstract class ExtensionUtils {
           rethrow;
         }
       },
-      getInfo: (final String url, final String locale) async {
+      getInfo: (final String url, final Locale locale) async {
         try {
           final dynamic result = await runner.invoke(
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale,
+              locale.toString(),
             ],
           );
 
@@ -257,19 +278,19 @@ abstract class ExtensionUtils {
       rethrow;
     }
 
-    final String defaultLocale = _getDefaultLocale(runner);
+    final Locale defaultLocale = Locale.parse(_getDefaultLocale(runner));
 
     return MangaExtractor(
       name: ext.name,
       id: ext.id,
       defaultLocale: defaultLocale,
-      search: (final String terms, final String locale) async {
+      search: (final String terms, final Locale locale) async {
         try {
           final dynamic result = await runner.invoke(
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale,
+              locale.toString(),
             ],
           );
 
@@ -284,13 +305,13 @@ abstract class ExtensionUtils {
           rethrow;
         }
       },
-      getInfo: (final String url, final String locale) async {
+      getInfo: (final String url, final Locale locale) async {
         try {
           final dynamic result = await runner.invoke(
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale,
+              locale.toString(),
             ],
           );
 

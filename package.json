@@ -7,8 +7,7 @@
     "license": "GPL-3.0",
     "scripts": {
         "git:push:main": "ts-node ./cli/commands/git/push/main/run.ts",
-        "build_runner:generate": "ts-node ./cli/commands/build_runner/generate/run.ts",
-        "meta:generate": "ts-node ./cli/commands/meta/generate/run.ts",
+        "generator:run": "ts-node ./cli/commands/generator/run/run.ts",
         "version:bump": "ts-node ./cli/commands/version/bump/run.ts",
         "version:print": "ts-node ./cli/commands/version/print/run.ts",
         "actions:update-changelogs": "ts-node ./cli/commands/actions/update-changelogs/run.ts",

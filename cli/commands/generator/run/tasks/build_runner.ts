@@ -8,11 +8,11 @@ import {
     readFile,
     writeFile,
 } from "fs-extra";
-import { SpawnError, spawn } from "../../../spawn";
-import { config } from "../../../config";
-import { Logger } from "../../../logger";
+import { SpawnError, spawn } from "../../../../spawn";
+import { config } from "../../../../config";
+import { Logger } from "../../../../logger";
 
-const logger = new Logger("build_runner:generate");
+const logger = new Logger("generator:run:build_runner");
 
 const generated = {
     from: join(config.base, "lib"),
@@ -106,8 +106,8 @@ const execute = async (force: boolean) => {
     }
 };
 
-export const generate = async () => {
-    logger.log("Running build_runner command...");
+export const runDartBuildRunner = async () => {
+    logger.log("Running dart build_runner command...");
 
     try {
         await execute(process.argv.includes("-f"));
@@ -129,5 +129,5 @@ export const generate = async () => {
         }
     }
 
-    logger.log("Finished running build_runner command");
+    logger.log("Finished running dart build_runner command");
 };

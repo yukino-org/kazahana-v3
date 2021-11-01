@@ -1,21 +1,23 @@
 import { dirname, join } from "path";
+import chalk from "chalk";
 import { ensureDir, readFile, writeFile } from "fs-extra";
 import { parse as yaml } from "yaml";
-import { config } from "../../../config";
-import { Logger } from "../../../logger";
+import { config } from "../../../../config";
+import { Logger } from "../../../../logger";
 
-const logger = new Logger("meta:generate");
+const logger = new Logger("generator:run:meta");
 
-export const generate = async () => {
+const metaFile = join(config.base, "assets/data/meta.json");
+
+export const generateMeta = async () => {
     const pubspecPath = join(config.base, "pubspec.yaml");
     logger.log(`Reading pubspec.yaml from ${pubspecPath}`);
 
     const pubspec = yaml((await readFile(pubspecPath)).toString());
 
-    const outPath = join(config.base, "assets/data/meta.json");
-    await ensureDir(dirname(outPath));
+    await ensureDir(dirname(metaFile));
     await writeFile(
-        outPath,
+        metaFile,
         JSON.stringify({
             name: pubspec.description,
             code: pubspec.name,
@@ -23,5 +25,5 @@ export const generate = async () => {
         })
     );
 
-    logger.log(`Generated ${outPath}`);
+    logger.log(`Generated ${chalk.cyanBright(metaFile)}`);
 };

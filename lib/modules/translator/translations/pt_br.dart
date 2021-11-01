@@ -1,12 +1,9 @@
-import 'package:utilx/utilities/countries.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import './en.dart' as en;
-import '../translations.dart';
 
 class Sentences extends en.Sentences {
   @override
-  TranslationLocale get locale =>
-      TranslationLocale(LanguageCodes.pt, LanguageCountries.br);
+  Locale get locale => Locale(LanguageCodes.pt, CountryCodes.br);
 
   @override
   String home() => 'Menu';

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, avoid_private_typedef_functions
 
 import 'dart:convert';
+import 'package:utilx/utilities/locale.dart';
 import './extensions.dart';
 
 class TestTimer {
@@ -25,7 +26,8 @@ class AnimeExtractorTest {
   Future<void> search(final String terms, final String locale) async {
     final TestTimer timer = TestTimer()..start();
 
-    final List<SearchInfo> result = await extractor.search(terms, locale);
+    final List<SearchInfo> result =
+        await extractor.search(terms, Locale.parse(locale));
 
     for (final SearchInfo x in result) {
       print(encoder.convert(x.toJson()));
@@ -38,7 +40,7 @@ class AnimeExtractorTest {
   Future<void> getInfo(final String url, final String locale) async {
     final TestTimer timer = TestTimer()..start();
 
-    final AnimeInfo result = await extractor.getInfo(url, locale);
+    final AnimeInfo result = await extractor.getInfo(url, Locale.parse(locale));
 
     print(encoder.convert(result.toJson()));
     timer.pass();
@@ -66,7 +68,8 @@ class MangaExtractorTest {
   Future<void> search(final String terms, final String locale) async {
     final TestTimer timer = TestTimer()..start();
 
-    final List<SearchInfo> result = await extractor.search(terms, locale);
+    final List<SearchInfo> result =
+        await extractor.search(terms, Locale.parse(locale));
 
     for (final SearchInfo x in result) {
       print(encoder.convert(x.toJson()));
@@ -79,7 +82,7 @@ class MangaExtractorTest {
   Future<void> getInfo(final String url, final String locale) async {
     final TestTimer timer = TestTimer()..start();
 
-    final MangaInfo result = await extractor.getInfo(url, locale);
+    final MangaInfo result = await extractor.getInfo(url, Locale.parse(locale));
 
     print(encoder.convert(result.toJson()));
     timer.pass();

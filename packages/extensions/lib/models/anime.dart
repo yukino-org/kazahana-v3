@@ -1,3 +1,4 @@
+import 'package:utilx/utilities/locale.dart';
 import './base.dart';
 
 enum Qualities {
@@ -91,25 +92,28 @@ class AnimeInfo {
                 json['thumbnail'] as Map<dynamic, dynamic>,
               )
             : null,
-        locale: json['locale'] as String,
-        availableLocales:
-            (json['availableLocales'] as List<dynamic>).cast<String>(),
+        locale: Locale.parse(json['locale'] as String),
+        availableLocales: (json['availableLocales'] as List<dynamic>)
+            .cast<String>()
+            .map((final String x) => Locale.parse(x))
+            .toList(),
       );
 
   final String title;
   final String url;
   final List<EpisodeInfo> episodes;
   final ImageDescriber? thumbnail;
-  final String locale;
-  final List<String> availableLocales;
+  final Locale locale;
+  final List<Locale> availableLocales;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
         'url': url,
         'thumbnail': thumbnail?.toJson(),
         'episodes': episodes.map((final EpisodeInfo x) => x.toJson()).toList(),
-        'locale': locale,
-        'availableLocales': availableLocales,
+        'locale': locale.toString(),
+        'availableLocales':
+            availableLocales.map((final Locale x) => x.toString()).toList(),
       };
 }
 
@@ -143,7 +147,7 @@ class EpisodeSource {
       };
 }
 
-typedef GetAnimeInfoFn = Future<AnimeInfo> Function(String, String);
+typedef GetAnimeInfoFn = Future<AnimeInfo> Function(String, Locale);
 
 typedef GetSourcesFn = Future<List<EpisodeSource>> Function(EpisodeInfo);
 
@@ -152,7 +156,7 @@ class AnimeExtractor extends BaseExtractor {
     required final String name,
     required final String id,
     required final SearchFn search,
-    required final String defaultLocale,
+    required final Locale defaultLocale,
     required final this.getInfo,
     required final this.getSources,
   }) : super(

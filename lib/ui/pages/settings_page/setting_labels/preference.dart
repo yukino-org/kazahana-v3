@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';

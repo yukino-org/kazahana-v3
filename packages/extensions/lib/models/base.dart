@@ -1,3 +1,5 @@
+import 'package:utilx/utilities/locale.dart';
+
 class ImageDescriber {
   ImageDescriber({
     required final this.url,
@@ -54,7 +56,7 @@ class SearchInfo {
 
 typedef SearchFn = Future<List<SearchInfo>> Function(
   String terms,
-  String locale,
+  Locale locale,
 );
 
 class BaseExtractor {
@@ -67,7 +69,7 @@ class BaseExtractor {
 
   final String name;
   final String id;
-  final String defaultLocale;
+  final Locale defaultLocale;
   final SearchFn search;
 }
 

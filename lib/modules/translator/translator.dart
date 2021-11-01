@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import './translations/en.dart' as en;
 import './translations/pt_br.dart' as pt_br;
 import 'translations.dart';
@@ -13,7 +13,7 @@ abstract class Translator {
   static late TranslationSentences t;
 
   static TranslationSentences? tryGetTranslation(final String _locale) {
-    final TranslationLocale locale = TranslationLocale.parse(_locale);
+    final Locale locale = Locale.parse(_locale);
 
     TranslationSentences? translation;
     int threshold = 0;
@@ -31,8 +31,7 @@ abstract class Translator {
 
   static TranslationSentences getDefaultTranslation() =>
       translations.firstWhere(
-        (final TranslationSentences x) =>
-            x.locale == TranslationLocale(LanguageCodes.en),
+        (final TranslationSentences x) => x.locale == Locale(LanguageCodes.en),
       );
 
   static TranslationSentences getSupportedTranslation() =>

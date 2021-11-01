@@ -13,7 +13,7 @@
             "macos:run",
             "macos:build"
         ],
-        "commands": ["meta:generate", "build_runner:generate"]
+        "commands": ["generator:run"]
     },
     {
         "type": "prerun",

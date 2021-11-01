@@ -1,53 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/countries.dart';
-import 'package:utilx/utilities/languages.dart';
-
-class TranslationLocale {
-  TranslationLocale(this.code, [this.country]);
-
-  factory TranslationLocale.parse(final String locale) {
-    final RegExpMatch match = RegExp('([^_]+)(_(.*))?').firstMatch(locale)!;
-    final LanguageCodes lang = LanguageUtils.languageCodeMap[match.group(1)!]!;
-    final LanguageCountries? country = match.group(3) != null
-        ? LanguageCountryUtils.nameCodeMap[match.group(3)!]
-        : null;
-
-    return TranslationLocale(lang, country);
-  }
-
-  final LanguageCodes code;
-  final LanguageCountries? country;
-
-  int compare(final TranslationLocale locale) {
-    int threshold = 0;
-
-    if (locale.code == code) {
-      threshold += 1;
-    }
-
-    if (locale.country == country) {
-      threshold += 2;
-    }
-
-    return threshold;
-  }
-
-  @override
-  String toString() =>
-      <String>[code.name, if (country != null) country!.name].join('_');
-
-  @override
-  bool operator ==(final Object other) =>
-      other is TranslationLocale &&
-      code == other.code &&
-      country == other.country;
-
-  @override
-  int get hashCode => Object.hash(code, country);
-}
+import 'package:utilx/utilities/locale.dart';
 
 abstract class TranslationSentences {
-  TranslationLocale get locale;
+  Locale get locale;
   TextDirection get textDirection => TextDirection.ltr;
 
   String home();

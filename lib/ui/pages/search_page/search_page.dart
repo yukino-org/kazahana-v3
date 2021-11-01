@@ -215,7 +215,7 @@ class _PageState extends State<Page> with HooksMixin {
       try {
         final List<SearchInfo> searches = await currentPlugin!.plugin.search(
           textController.text,
-          Translator.t.locale.code.name,
+          Translator.t.locale,
         );
 
         if (mounted) {

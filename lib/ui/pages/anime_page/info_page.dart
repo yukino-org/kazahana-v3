@@ -1,7 +1,7 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:utilx/utilities/languages.dart';
+import 'package:utilx/utilities/locale.dart';
 import './shared_props.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
@@ -25,7 +25,7 @@ class InfoPage extends StatefulWidget {
 
   final SharedProps props;
   final void Function() refresh;
-  final void Function(LanguageCodes) changeLanguage;
+  final void Function(Locale) changeLanguage;
 
   @override
   _InfoPageState createState() => _InfoPageState();
@@ -91,33 +91,27 @@ class _InfoPageState extends State<InfoPage>
                 SizedBox(
                   height: remToPx(0.3),
                 ),
-                ...widget.props.info!.availableLocales.map(
-                  (final String x) {
-                    final LanguageCodes groupVal = LanguageUtils
-                            .languageCodeMap[widget.props.info!.locale] ??
-                        LanguageCodes.en;
+                ...widget.props.info!.availableLocales
+                    .map(
+                      (final Locale x) => Material(
+                        type: MaterialType.transparency,
+                        child: RadioListTile<Locale>(
+                          title: Text(x.toString()),
+                          value: x,
+                          groupValue: widget.props.info!.locale,
+                          activeColor: Theme.of(context).primaryColor,
+                          onChanged: (final Locale? val) async {
+                            if (val != null &&
+                                val != widget.props.info!.locale) {
+                              widget.changeLanguage(val);
+                            }
 
-                    final LanguageCodes lang =
-                        LanguageUtils.languageCodeMap[x] ?? LanguageCodes.en;
-
-                    return Material(
-                      type: MaterialType.transparency,
-                      child: RadioListTile<LanguageCodes>(
-                        title: Text(lang.language),
-                        value: lang,
-                        groupValue: groupVal,
-                        activeColor: Theme.of(context).primaryColor,
-                        onChanged: (final LanguageCodes? val) async {
-                          if (val != null && val != groupVal) {
-                            widget.changeLanguage(val);
-                          }
-
-                          Navigator.of(context).pop();
-                        },
+                            Navigator.of(context).pop();
+                          },
+                        ),
                       ),
-                    );
-                  },
-                ).toList(),
+                    )
+                    .toList(),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
