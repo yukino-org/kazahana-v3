@@ -273,7 +273,7 @@ class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override

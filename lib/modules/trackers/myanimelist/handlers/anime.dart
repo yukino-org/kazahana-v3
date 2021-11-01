@@ -18,14 +18,18 @@ class MyAnimeListSearchAnime {
       MyAnimeListSearchAnime(
         nodeId: json['node']['id'] as int,
         title: json['node']['title'] as String,
-        mainPictureMedium: json['node']['main_picture']['medium'] as String,
-        mainPictureLarge: json['node']['main_picture']['large'] as String,
+        mainPictureMedium: json['node']['main_picture'] != null
+            ? json['node']['main_picture']['medium'] as String
+            : null,
+        mainPictureLarge: json['node']['main_picture'] != null
+            ? json['node']['main_picture']['large'] as String
+            : null,
       );
 
   final int nodeId;
   final String title;
-  final String mainPictureMedium;
-  final String mainPictureLarge;
+  final String? mainPictureMedium;
+  final String? mainPictureLarge;
 
   static Future<List<MyAnimeListSearchAnime>> searchAnime(
     final String terms,

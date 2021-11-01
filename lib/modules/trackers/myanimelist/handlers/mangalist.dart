@@ -94,8 +94,12 @@ class MyAnimeListMangaList {
       MyAnimeListMangaList(
         nodeId: json['node']['id'] as int,
         title: json['node']['title'] as String,
-        mainPictureMedium: json['node']['main_picture']['medium'] as String,
-        mainPictureLarge: json['node']['main_picture']['large'] as String,
+        mainPictureMedium: json['node']['main_picture'] != null
+            ? json['node']['main_picture']['medium'] as String
+            : null,
+        mainPictureLarge: json['node']['main_picture'] != null
+            ? json['node']['main_picture']['large'] as String
+            : null,
         status: MyAnimeListMangaListProgress.fromJson(
           json['list_status'] as Map<dynamic, dynamic>,
         ),
@@ -125,8 +129,8 @@ class MyAnimeListMangaList {
 
   final int nodeId;
   final String title;
-  final String mainPictureMedium;
-  final String mainPictureLarge;
+  final String? mainPictureMedium;
+  final String? mainPictureLarge;
   MyAnimeListMangaListProgress? status;
   MyAnimeListMangaListAdditionalDetail? details;
 
@@ -319,7 +323,7 @@ class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
