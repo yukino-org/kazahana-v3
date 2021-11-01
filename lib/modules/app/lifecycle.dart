@@ -160,9 +160,9 @@ abstract class AppLifecycle {
 
     try {
       await VideoPlayerManager.initialize();
-      Logger.of('player.initialize').info('Finished "initialize"');
+      Logger.of('VideoPlayerManager').info('Finished "initialize"');
     } catch (err, trace) {
-      Logger.of('player.initialize').error(
+      Logger.of('VideoPlayerManager').error(
         '"initialize" failed: $err',
         trace,
       );

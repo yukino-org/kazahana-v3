@@ -26,4 +26,6 @@ abstract class FunctionUtils {
 
     throw Error();
   }
+
+  static T withValue<T>(final T value, final T Function(T) fn) => fn(value);
 }

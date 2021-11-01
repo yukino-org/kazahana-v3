@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import './select_source.dart';
+import './shared_props.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
-import '../../../modules/helpers/double_value_listenable_builder.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/reactive_holder.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
@@ -19,123 +19,66 @@ import '../../../modules/video_player/video_player.dart';
 import '../settings_page/setting_labels/anime.dart';
 import '../settings_page/setting_radio.dart';
 
-class VideoDuration {
-  VideoDuration(this.current, this.total);
+class _VideoDuration {
+  _VideoDuration(this.current, this.total);
 
   final Duration current;
   final Duration total;
 }
 
+class _VideoStateProps {
+  bool isReady = false;
+  bool isBuffering = false;
+  bool isPlaying = false;
+  int volume = VideoPlayer.maxVolume;
+  double speed = VideoPlayer.defaultSpeed;
+
+  VideoPlayer? videoPlayer;
+  List<EpisodeSource>? sources;
+  int? currentIndex;
+  bool ignoreScreenChanges = false;
+  bool locked = false;
+  Widget? message;
+
+  final ValueNotifier<_VideoDuration> duration = ValueNotifier<_VideoDuration>(
+    _VideoDuration(Duration.zero, Duration.zero),
+  );
+
+  void dispose() {
+    videoPlayer?.destroy();
+    duration.dispose();
+  }
+}
+
 class WatchPage extends StatefulWidget {
   const WatchPage({
-    required final this.title,
-    required final this.episode,
-    required final this.extractor,
-    required final this.totalEpisodes,
-    required final this.onPop,
-    required final this.previousEpisodeEnabled,
-    required final this.previousEpisode,
-    required final this.nextEpisodeEnabled,
-    required final this.nextEpisode,
+    required final this.props,
+    required final this.pop,
     final Key? key,
   }) : super(key: key);
 
-  final String title;
-  final EpisodeInfo episode;
-  final AnimeExtractor extractor;
-  final int totalEpisodes;
-  final void Function() onPop;
-  final bool previousEpisodeEnabled;
-  final void Function() previousEpisode;
-  final bool nextEpisodeEnabled;
-  final void Function() nextEpisode;
+  final SharedProps props;
+  final void Function() pop;
 
   @override
   WatchPageState createState() => WatchPageState();
 }
 
 class WatchPageState extends State<WatchPage>
-    with
-        TickerProviderStateMixin,
-        FullscreenMixin,
-        HooksMixin,
-        OrientationMixin,
-        WakelockMixin {
-  List<EpisodeSource>? sources;
-  int? currentIndex;
-  VideoPlayer? player;
-  Widget? playerChild;
-
-  bool showControls = true;
-  bool locked = false;
-  bool autoPlay = AppState.settings.value.autoPlay;
-  bool autoNext = AppState.settings.value.autoNext;
-  bool? wasPausedBySlider;
-  double speed = VideoPlayer.defaultSpeed;
-  int seekDuration = AppState.settings.value.seekDuration;
-  int introDuration = AppState.settings.value.introDuration;
-
-  final ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
-  final ValueNotifier<bool> isBuffering = ValueNotifier<bool>(true);
-  late AnimationController playPauseController;
-  late AnimationController overlayController;
-
-  late final ValueNotifier<VideoDuration> duration =
-      ValueNotifier<VideoDuration>(
-    VideoDuration(Duration.zero, Duration.zero),
-  );
-  late final ValueNotifier<int> volume = ValueNotifier<int>(
-    VideoPlayer.maxVolume,
-  );
-
-  final Widget loader = const Center(
-    child: CircularProgressIndicator(),
-  );
+    with FullscreenMixin, HooksMixin, OrientationMixin, WakelockMixin {
+  final ReactiveHolder<_VideoStateProps> videoState =
+      ReactiveHolder<_VideoStateProps>(_VideoStateProps());
 
   Timer? _mouseOverlayTimer;
   bool hasSynced = false;
-  bool ignoreScreenChanges = false;
+  bool showControls = true;
+  Widget? playerChild;
 
   @override
   void initState() {
     super.initState();
 
     initFullscreen();
-
-    playPauseController = AnimationController(
-      vsync: this,
-      duration: Defaults.animationsSlower,
-    );
-
-    overlayController = AnimationController(
-      vsync: this,
-      duration: Defaults.animationsSlower,
-      value: showControls ? 1 : 0,
-    );
-
-    overlayController.addStatusListener((final AnimationStatus status) {
-      if (mounted) {
-        switch (status) {
-          case AnimationStatus.forward:
-            setState(() {
-              showControls = true;
-            });
-            break;
-
-          case AnimationStatus.dismissed:
-            setState(() {
-              showControls = overlayController.isCompleted;
-            });
-            break;
-
-          default:
-            setState(() {
-              showControls = overlayController.value > 0;
-            });
-            break;
-        }
-      }
-    });
 
     onReady(() async {
       if (mounted) {
@@ -162,37 +105,33 @@ class WatchPageState extends State<WatchPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
   void dispose() {
-    if (!ignoreScreenChanges) {
+    if (!videoState.value.ignoreScreenChanges) {
       disableWakelock();
       exitLandscape();
       exitFullscreen();
     }
 
-    player?.destroy();
+    videoState.value.dispose();
     playerChild = null;
 
-    isPlaying.dispose();
-    duration.dispose();
-    volume.dispose();
-    playPauseController.dispose();
-    overlayController.dispose();
     _mouseOverlayTimer?.cancel();
 
     super.dispose();
   }
 
   Future<void> getSources() async {
-    sources = await widget.extractor.getSources(widget.episode);
+    videoState.value.sources =
+        await widget.props.extractor.getSources(widget.props.episode!);
 
     if (mounted) {
       setState(() {});
 
-      if (sources!.isNotEmpty) {
+      if (videoState.value.sources!.isNotEmpty) {
         await showSelectSources();
       }
     }
@@ -201,39 +140,45 @@ class WatchPageState extends State<WatchPage>
   Future<void> setPlayer(final int index) async {
     if (mounted) {
       setState(() {
-        currentIndex = index;
+        videoState.value.currentIndex = index;
         playerChild = null;
       });
 
-      if (player != null) {
-        player!.destroy();
-      }
+      videoState.value.isPlaying = false;
+      videoState.value.videoPlayer?.destroy();
 
-      isPlaying.value = false;
-
-      player = VideoPlayerManager.createPlayer(
+      videoState.value.videoPlayer = VideoPlayerManager.createPlayer(
         VideoPlayerSource(
-          url: sources![currentIndex!].url,
-          headers: sources![currentIndex!].headers,
+          url: videoState.value.sources![videoState.value.currentIndex!].url,
+          headers:
+              videoState.value.sources![videoState.value.currentIndex!].headers,
         ),
-      )..subscribe(_subscriber);
+      )..subscribe(_videoPlayerSubscriber);
 
-      await player!.load();
+      await videoState.value.videoPlayer!.load();
     }
   }
 
-  void _subscriber(final VideoPlayerEvent event) {
+  void _videoPlayerSubscriber(final VideoPlayerEvent event) {
     if (mounted) {
       switch (event.event) {
         case VideoPlayerEvents.load:
-          player!.setVolume(volume.value);
+          videoState.value.isReady = true;
+
+          videoState.value.videoPlayer!.setVolume(videoState.value.volume);
           setState(() {
-            playerChild = player!.getWidget();
+            playerChild = videoState.value.videoPlayer!.getWidget();
           });
+
           _updateDuration();
-          if (autoPlay) {
-            player!.play();
+
+          if (AppState.settings.value.autoPlay) {
+            videoState.value.videoPlayer!.play();
+            setState(() {
+              showControls = false;
+            });
           }
+
           break;
 
         case VideoPlayerEvents.durationUpdate:
@@ -241,63 +186,81 @@ class WatchPageState extends State<WatchPage>
           break;
 
         case VideoPlayerEvents.play:
-          isPlaying.value = true;
+          videoState.modify(() {
+            videoState.value.isPlaying = true;
+          });
           break;
 
         case VideoPlayerEvents.pause:
-          isPlaying.value = false;
+          videoState.modify(() {
+            videoState.value.isPlaying = false;
+          });
           break;
 
         case VideoPlayerEvents.seek:
-          if (wasPausedBySlider == true) {
-            player!.play();
-            wasPausedBySlider = null;
-          }
           break;
 
         case VideoPlayerEvents.volume:
-          volume.value = player!.volume;
+          videoState.value.volume = videoState.value.videoPlayer!.volume;
           break;
 
         case VideoPlayerEvents.end:
-          if (autoNext) {
-            if (widget.nextEpisodeEnabled) {
-              ignoreScreenChanges = true;
-              widget.nextEpisode();
+          if (AppState.settings.value.autoNext) {
+            if (nextEpisodeAvailable) {
+              videoState.value.ignoreScreenChanges = true;
+              nextEpisode();
             }
           }
           break;
 
         case VideoPlayerEvents.speed:
-          speed = player!.speed;
+          videoState.value.speed = videoState.value.videoPlayer!.speed;
           break;
 
         case VideoPlayerEvents.buffering:
-          isBuffering.value = player!.isBuffering;
+          videoState.modify(() {
+            videoState.value.isBuffering =
+                videoState.value.videoPlayer!.isBuffering;
+          });
           break;
 
         case VideoPlayerEvents.error:
-          showDialog(
-            context: context,
-            builder: (final BuildContext context) => Dialog(
-              child: Text(jsonEncode(event.data)),
-            ),
-          );
+          setState(() {
+            videoState.value.message = RichText(
+              text: TextSpan(
+                children: <InlineSpan>[
+                  TextSpan(text: '${Translator.t.somethingWentWrong()}\n'),
+                  TextSpan(
+                    text: event.data as String,
+                    style: FunctionUtils.withValue(
+                      Theme.of(context).textTheme.bodyText1,
+                      (final TextStyle? style) => style?.copyWith(
+                        color: style.color?.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                ],
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              textAlign: TextAlign.center,
+            );
+          });
           break;
       }
     }
   }
 
   Future<void> _updateDuration() async {
-    duration.value = VideoDuration(
-      player?.duration ?? Duration.zero,
-      player?.totalDuration ?? Duration.zero,
+    videoState.value.duration.value = _VideoDuration(
+      videoState.value.videoPlayer?.duration ?? Duration.zero,
+      videoState.value.videoPlayer?.totalDuration ?? Duration.zero,
     );
 
-    if ((duration.value.current.inSeconds / duration.value.total.inSeconds) *
+    if ((videoState.value.duration.value.current.inSeconds /
+                videoState.value.duration.value.total.inSeconds) *
             100 >
         AppState.settings.value.animeTrackerWatchPercent) {
-      final int? episode = int.tryParse(widget.episode.episode);
+      final int? episode = int.tryParse(widget.props.episode!.episode);
 
       if (episode != null && !hasSynced) {
         hasSynced = true;
@@ -306,9 +269,14 @@ class WatchPageState extends State<WatchPage>
 
         for (final TrackerProvider<AnimeProgress> provider in Trackers.anime) {
           if (provider.isLoggedIn() &&
-              provider.isEnabled(widget.title, widget.extractor.id)) {
-            final ResolvedTrackerItem? item =
-                await provider.getComputed(widget.title, widget.extractor.id);
+              provider.isEnabled(
+                widget.props.info!.title,
+                widget.props.extractor.id,
+              )) {
+            final ResolvedTrackerItem? item = await provider.getComputed(
+              widget.props.info!.title,
+              widget.props.extractor.id,
+            );
 
             if (item != null) {
               await provider.updateComputed(
@@ -324,13 +292,13 @@ class WatchPageState extends State<WatchPage>
 
   void pop() {
     exitFullscreen();
-    widget.onPop();
+    widget.pop();
   }
 
   Future<void> showSelectSources() async {
     final dynamic value = await showGeneralDialog(
       context: context,
-      barrierDismissible: currentIndex != null,
+      barrierDismissible: videoState.value.currentIndex != null,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       pageBuilder: (
         final BuildContext context,
@@ -339,90 +307,137 @@ class WatchPageState extends State<WatchPage>
       ) =>
           SafeArea(
         child: SelectSourceWidget(
-          sources: sources!,
-          selected: currentIndex != null ? sources![currentIndex!] : null,
+          sources: videoState.value.sources!,
+          selected: videoState.value.currentIndex != null
+              ? videoState.value.sources![videoState.value.currentIndex!]
+              : null,
         ),
       ),
     );
 
     if (value is EpisodeSource) {
-      final int index = sources!.indexOf(value);
+      final int index = videoState.value.sources!.indexOf(value);
       if (index >= 0) {
         setPlayer(index);
       }
-    } else if (currentIndex == null) {
+    } else if (videoState.value.currentIndex == null) {
       pop();
     }
   }
 
-  void showOptions() {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(remToPx(0.5)),
-          topRight: Radius.circular(remToPx(0.5)),
-        ),
-      ),
-      context: context,
-      builder: (final BuildContext context) => SafeArea(
-        child: StatefulBuilder(
-          builder: (
-            final BuildContext context,
-            final StateSetter setState,
-          ) =>
-              Padding(
-            padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
-            child: SingleChildScrollView(
-              child: Wrap(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      SettingRadio<double>(
-                        title: Translator.t.speed(),
-                        icon: Icons.speed,
-                        value: speed,
-                        labels: VideoPlayer.allowedSpeeds.asMap().map(
-                              (final int k, final double v) =>
-                                  MapEntry<double, String>(v, '${v}x'),
-                            ),
-                        onChanged: (final double val) async {
-                          await player?.setSpeed(val);
+  /// [kind] can be 1 (move) or 2 (tap)
+  void _updateOverlayMovement(final int kind) {
+    switch (kind) {
+      case 1:
+        if (videoState.value.isPlaying) {
+          if (!showControls) {
+            setState(() {
+              showControls = true;
+            });
+          }
 
-                          if (mounted) {
-                            setState(() {
-                              speed = val;
-                            });
-                          }
-                        },
-                      ),
-                      ...getAnime(
-                        AppState.settings.value,
-                        () async {
-                          await SettingsBox.save(AppState.settings.value);
+          _mouseOverlayTimer?.cancel();
+          _mouseOverlayTimer = Timer(Defaults.mouseOverlayDuration, () {
+            setState(() {
+              showControls = false;
+            });
+          });
+        }
+        break;
 
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      case 2:
+        _mouseOverlayTimer?.cancel();
+        setState(() {
+          showControls = !showControls;
+        });
+        break;
+
+      default:
+    }
+  }
+
+  @override
+  Widget build(final BuildContext context) => Material(
+        type: MaterialType.transparency,
+        child: MouseRegion(
+          onEnter: (final PointerEnterEvent event) {
+            _updateOverlayMovement(1);
+          },
+          onHover: (final PointerHoverEvent event) {
+            if (event.kind == PointerDeviceKind.mouse &&
+                event.delta.distance > 1) {
+              _updateOverlayMovement(1);
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              _updateOverlayMovement(2);
+            },
+            child: Stack(
+              children: <Widget>[
+                if (playerChild != null) playerChild!,
+                AnimatedSwitcher(
+                  duration: Defaults.animationsNormal,
+                  child: !videoState.value.isReady || showControls
+                      ? _VideoControls(
+                          props: widget.props,
+                          videoState: videoState,
+                          previousEpisodeAvailable: previousEpisodeAvailable,
+                          nextEpisodeAvailable: nextEpisodeAvailable,
+                          previousEpisode: previousEpisode,
+                          nextEpisode: nextEpisode,
+                          pop: pop,
+                          enableFullscreen: enterFullscreen,
+                          disableFullscreen: exitFullscreen,
+                          enableLandscape: enterLandscape,
+                          disableLandscape: exitLandscape,
+                          showSelectSources: showSelectSources,
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
             ),
           ),
         ),
-      ),
-    );
+      );
+
+  void previousEpisode() {
+    if (previousEpisodeAvailable) {
+      widget.props.setEpisode(widget.props.currentEpisodeIndex! - 1);
+    }
   }
 
-  Widget actionButton({
-    required final IconData icon,
-    required final String label,
-    required final void Function() onPressed,
-    required final bool enabled,
-  }) =>
-      OutlinedButton(
+  void nextEpisode() {
+    if (nextEpisodeAvailable) {
+      widget.props.setEpisode(widget.props.currentEpisodeIndex! + 1);
+    }
+  }
+
+  bool get previousEpisodeAvailable =>
+      widget.props.currentEpisodeIndex! - 1 >= 0;
+
+  bool get nextEpisodeAvailable =>
+      widget.props.currentEpisodeIndex! + 1 <
+      widget.props.info!.episodes.length;
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required final this.icon,
+    required final this.label,
+    required final this.onPressed,
+    required final this.enabled,
+    final Key? key,
+  }) : super(key: key);
+
+  final IconData icon;
+  final String label;
+  final void Function() onPressed;
+  final bool enabled;
+
+  @override
+  Widget build(final BuildContext context) => OutlinedButton(
         style: OutlinedButton.styleFrom(
           padding: EdgeInsets.symmetric(
             horizontal: remToPx(0.2),
@@ -463,8 +478,147 @@ class WatchPageState extends State<WatchPage>
           ),
         ),
       );
+}
 
-  Widget getLayoutedButton(
+class _VideoControls extends StatefulWidget {
+  const _VideoControls({
+    required final this.props,
+    required final this.videoState,
+    required final this.previousEpisodeAvailable,
+    required final this.nextEpisodeAvailable,
+    required final this.enableFullscreen,
+    required final this.disableFullscreen,
+    required final this.enableLandscape,
+    required final this.disableLandscape,
+    required final this.previousEpisode,
+    required final this.nextEpisode,
+    required final this.pop,
+    required final this.showSelectSources,
+    final Key? key,
+  }) : super(key: key);
+
+  final SharedProps props;
+  final ReactiveHolder<_VideoStateProps> videoState;
+
+  final bool previousEpisodeAvailable;
+  final bool nextEpisodeAvailable;
+
+  final void Function() enableFullscreen;
+  final void Function() disableFullscreen;
+  final void Function() enableLandscape;
+  final void Function() disableLandscape;
+  final void Function() previousEpisode;
+  final void Function() nextEpisode;
+  final void Function() pop;
+  final void Function() showSelectSources;
+
+  @override
+  State<_VideoControls> createState() => _VideoControlsState();
+}
+
+class _VideoControlsState extends State<_VideoControls>
+    with SingleTickerProviderStateMixin {
+  bool wasPausedBySlider = false;
+
+  late final AnimationController playPauseController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    playPauseController = AnimationController(
+      vsync: this,
+      duration: Defaults.animationsSlower,
+      value: widget.videoState.value.isPlaying ? 1 : 0,
+    );
+  }
+
+  @override
+  void dispose() {
+    playPauseController.dispose();
+
+    super.dispose();
+  }
+
+  Widget buildLock(final BuildContext context) => Material(
+        type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(remToPx(0.2)),
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              widget.videoState.value.locked = !widget.videoState.value.locked;
+            });
+          },
+          icon: Icon(
+            widget.videoState.value.locked ? Icons.lock : Icons.lock_open,
+          ),
+          color: Colors.white,
+        ),
+      );
+
+  Future<void> showOptions() async {
+    await showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(remToPx(0.5)),
+          topRight: Radius.circular(remToPx(0.5)),
+        ),
+      ),
+      context: context,
+      builder: (final BuildContext context) => SafeArea(
+        child: StatefulBuilder(
+          builder: (
+            final BuildContext context,
+            final StateSetter setState,
+          ) =>
+              Padding(
+            padding: EdgeInsets.symmetric(vertical: remToPx(0.25)),
+            child: SingleChildScrollView(
+              child: Wrap(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      SettingRadio<double>(
+                        title: Translator.t.speed(),
+                        icon: Icons.speed,
+                        value: widget.videoState.value.speed,
+                        labels: VideoPlayer.allowedSpeeds.asMap().map(
+                              (final int k, final double v) =>
+                                  MapEntry<double, String>(v, '${v}x'),
+                            ),
+                        onChanged: (final double val) async {
+                          await widget.videoState.value.videoPlayer
+                              ?.setSpeed(val);
+
+                          if (mounted) {
+                            setState(() {
+                              widget.videoState.value.speed = val;
+                            });
+                          }
+                        },
+                      ),
+                      ...getAnime(
+                        AppState.settings.value,
+                        () async {
+                          await SettingsBox.save(AppState.settings.value);
+
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLayoutedButton(
     final BuildContext context,
     final List<Widget> children,
     final int maxPerWhenSm,
@@ -496,620 +650,441 @@ class WatchPageState extends State<WatchPage>
     );
   }
 
-  void _updateMouseOverlay({
-    final bool isTap = false,
-    final bool isMouse = false,
-  }) {
-    _mouseOverlayTimer?.cancel();
-
-    if (!showControls) {
-      overlayController.forward();
-
-      _mouseOverlayTimer = Timer(Defaults.mouseOverlayDuration, () {
-        overlayController.reverse();
-      });
-    } else if (isTap) {
-      overlayController.reverse();
-      return;
-    }
-  }
-
-  @override
-  Widget build(final BuildContext context) {
-    final Widget lock = IconButton(
-      onPressed: () {
-        setState(() {
-          locked = !locked;
-        });
-      },
-      icon: Icon(
-        locked ? Icons.lock : Icons.lock_open,
-      ),
-      color: Colors.white,
-    );
-
-    return SafeArea(
-      child: Material(
-        type: MaterialType.transparency,
-        child: MouseRegion(
-          onEnter: (final PointerEnterEvent event) {
-            _updateMouseOverlay(isMouse: true);
-          },
-          onHover: (final PointerHoverEvent event) {
-            if (event.kind == PointerDeviceKind.mouse) {
-              _updateMouseOverlay(isMouse: true);
-            }
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              _updateMouseOverlay(isTap: true);
-            },
-            child: Stack(
-              children: <Widget>[
-                if (playerChild != null)
-                  playerChild!
-                else if (sources?.isEmpty ?? false)
-                  Center(
-                    child: Text(
-                      Translator.t.noValidSources(),
+  Widget buildTopBar(final BuildContext context) => Expanded(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: remToPx(0.5),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                tooltip: Translator.t.back(),
+                onPressed: widget.pop,
+                padding: EdgeInsets.only(
+                  right: remToPx(1),
+                  top: remToPx(0.5),
+                  bottom: remToPx(0.5),
+                ),
+                color: Colors.white,
+              ),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      widget.props.info!.title,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize:
-                            Theme.of(context).textTheme.subtitle1?.fontSize,
+                            Theme.of(context).textTheme.headline6?.fontSize,
                         color: Colors.white,
                       ),
                     ),
-                  )
-                else
-                  loader,
-                FadeTransition(
-                  opacity: overlayController,
-                  child: showControls
-                      ? Container(
-                          color: !locked
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.7),
-                            ),
-                            child: Stack(
-                              children: locked
-                                  ? <Widget>[
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: remToPx(0.5),
-                                          ),
-                                          child: lock,
-                                        ),
-                                      ),
-                                    ]
-                                  : <Widget>[
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: remToPx(0.5),
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              IconButton(
-                                                icon: const Icon(
-                                                  Icons.arrow_back,
-                                                ),
-                                                tooltip: Translator.t.back(),
-                                                onPressed: pop,
-                                                padding: EdgeInsets.only(
-                                                  right: remToPx(1),
-                                                  top: remToPx(0.5),
-                                                  bottom: remToPx(0.5),
-                                                ),
-                                                color: Colors.white,
-                                              ),
-                                              Flexible(
-                                                fit: FlexFit.tight,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      widget.title,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            Theme.of(context)
-                                                                .textTheme
-                                                                .headline6
-                                                                ?.fontSize,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${Translator.t.episode()} ${widget.episode.episode} ${Translator.t.of()} ${widget.totalEpisodes}',
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              lock,
-                                              IconButton(
-                                                onPressed: () {
-                                                  showOptions();
-                                                },
-                                                icon:
-                                                    const Icon(Icons.more_vert),
-                                                color: Colors.white,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        child: playerChild != null
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: <Widget>[
-                                                  Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    shape: const CircleBorder(),
-                                                    clipBehavior: Clip.hardEdge,
-                                                    child: IconButton(
-                                                      iconSize: remToPx(2),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final Duration amt =
-                                                              duration.value
-                                                                      .current -
-                                                                  Duration(
-                                                                    seconds:
-                                                                        seekDuration,
-                                                                  );
-                                                          player!.seek(
-                                                            amt <= Duration.zero
-                                                                ? Duration.zero
-                                                                : amt,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.fast_rewind,
-                                                      ),
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  DoubleValueListenableBuilder<
-                                                      bool, bool>(
-                                                    valueListenable1: isPlaying,
-                                                    valueListenable2:
-                                                        isBuffering,
-                                                    builder: (
-                                                      final BuildContext
-                                                          context,
-                                                      final bool isPlaying,
-                                                      final bool isBuffering,
-                                                      final Widget? child,
-                                                    ) {
-                                                      if (isBuffering &&
-                                                          isPlaying) {
-                                                        return loader;
-                                                      } else {
-                                                        isPlaying
-                                                            ? playPauseController
-                                                                .forward()
-                                                            : playPauseController
-                                                                .reverse();
-                                                      }
-                                                      return Material(
-                                                        type: MaterialType
-                                                            .transparency,
-                                                        shape:
-                                                            const CircleBorder(),
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        child: IconButton(
-                                                          iconSize: remToPx(3),
-                                                          onPressed: () {
-                                                            if (player !=
-                                                                    null &&
-                                                                player!.ready) {
-                                                              isPlaying
-                                                                  ? player!
-                                                                      .pause()
-                                                                  : player!
-                                                                      .play();
-                                                            }
-                                                          },
-                                                          icon: AnimatedIcon(
-                                                            icon: AnimatedIcons
-                                                                .play_pause,
-                                                            progress:
-                                                                playPauseController,
-                                                          ),
-                                                          color: Colors.white,
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                  Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    shape: const CircleBorder(),
-                                                    clipBehavior: Clip.hardEdge,
-                                                    child: IconButton(
-                                                      iconSize: remToPx(2),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final Duration amt =
-                                                              duration.value
-                                                                      .current +
-                                                                  Duration(
-                                                                    seconds:
-                                                                        seekDuration,
-                                                                  );
-                                                          player!.seek(
-                                                            amt <
-                                                                    duration
-                                                                        .value
-                                                                        .total
-                                                                ? amt
-                                                                : duration.value
-                                                                    .total,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.fast_forward,
-                                                      ),
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: <Widget>[
-                                            Flexible(
-                                              child: getLayoutedButton(
-                                                context,
-                                                <Widget>[
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.skip_previous,
-                                                      label: Translator.t
-                                                          .previous(),
-                                                      onPressed: () {
-                                                        ignoreScreenChanges =
-                                                            true;
-                                                        widget
-                                                            .previousEpisode();
-                                                      },
-                                                      enabled: widget
-                                                          .previousEpisodeEnabled,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.fast_forward,
-                                                      label: Translator.t
-                                                          .skipIntro(),
-                                                      onPressed: () {
-                                                        if (player?.ready ??
-                                                            false) {
-                                                          final Duration amt =
-                                                              duration.value
-                                                                      .current +
-                                                                  Duration(
-                                                                    seconds:
-                                                                        introDuration,
-                                                                  );
-                                                          player!.seek(
-                                                            amt <
-                                                                    duration
-                                                                        .value
-                                                                        .total
-                                                                ? amt
-                                                                : duration.value
-                                                                    .total,
-                                                          );
-                                                        }
-                                                      },
-                                                      enabled:
-                                                          playerChild != null,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.playlist_play,
-                                                      label: Translator.t
-                                                          .sources(),
-                                                      onPressed:
-                                                          showSelectSources,
-                                                      enabled:
-                                                          sources?.isNotEmpty ??
-                                                              false,
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: actionButton(
-                                                      icon: Icons.skip_next,
-                                                      label:
-                                                          Translator.t.next(),
-                                                      onPressed: () {
-                                                        ignoreScreenChanges =
-                                                            true;
-                                                        widget.nextEpisode();
-                                                      },
-                                                      enabled: widget
-                                                          .nextEpisodeEnabled,
-                                                    ),
-                                                  ),
-                                                ],
-                                                2,
-                                              ),
-                                            ),
-                                            ValueListenableBuilder<
-                                                VideoDuration>(
-                                              valueListenable: duration,
-                                              builder: (
-                                                final BuildContext context,
-                                                final VideoDuration duration,
-                                                final Widget? child,
-                                              ) =>
-                                                  Row(
-                                                children: <Widget>[
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                      minWidth: remToPx(1.8),
-                                                    ),
-                                                    child: Text(
-                                                      DurationUtils.pretty(
-                                                        duration.current,
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: SliderTheme(
-                                                      data: SliderThemeData(
-                                                        thumbShape:
-                                                            RoundSliderThumbShape(
-                                                          enabledThumbRadius:
-                                                              remToPx(0.3),
-                                                        ),
-                                                        showValueIndicator:
-                                                            ShowValueIndicator
-                                                                .always,
-                                                        thumbColor:
-                                                            playerChild == null
-                                                                ? Colors.white
-                                                                    .withOpacity(
-                                                                    0.5,
-                                                                  )
-                                                                : null,
-                                                      ),
-                                                      child: Slider(
-                                                        label: DurationUtils
-                                                            .pretty(
-                                                          duration.current,
-                                                        ),
-                                                        value: duration
-                                                            .current.inSeconds
-                                                            .toDouble(),
-                                                        max: duration
-                                                            .total.inSeconds
-                                                            .toDouble(),
-                                                        onChanged:
-                                                            playerChild != null
-                                                                ? (
-                                                                    final double
-                                                                        value,
-                                                                  ) {
-                                                                    this.duration.value =
-                                                                        VideoDuration(
-                                                                      Duration(
-                                                                        seconds:
-                                                                            value.toInt(),
-                                                                      ),
-                                                                      duration
-                                                                          .total,
-                                                                    );
-                                                                  }
-                                                                : null,
-                                                        onChangeStart:
-                                                            playerChild != null
-                                                                ? (
-                                                                    final double
-                                                                        value,
-                                                                  ) {
-                                                                    if (player
-                                                                            ?.isPlaying ??
-                                                                        false) {
-                                                                      player!
-                                                                          .pause();
-                                                                      wasPausedBySlider =
-                                                                          true;
-                                                                    }
-                                                                  }
-                                                                : null,
-                                                        onChangeEnd:
-                                                            playerChild != null
-                                                                ? (
-                                                                    final double
-                                                                        value,
-                                                                  ) async {
-                                                                    if (player
-                                                                            ?.ready ??
-                                                                        false) {
-                                                                      await player!
-                                                                          .seek(
-                                                                        Duration(
-                                                                          seconds:
-                                                                              value.toInt(),
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                  }
-                                                                : null,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  ConstrainedBox(
-                                                    constraints: BoxConstraints(
-                                                      minWidth: remToPx(1.8),
-                                                    ),
-                                                    child: Text(
-                                                      DurationUtils.pretty(
-                                                        duration.total,
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: remToPx(0.5),
-                                                  ),
-                                                  if (AppState
-                                                      .isMobile) ...<Widget>[
-                                                    StatefulBuilder(
-                                                      builder: (
-                                                        final BuildContext
-                                                            context,
-                                                        final StateSetter
-                                                            setState,
-                                                      ) =>
-                                                          Material(
-                                                        type: MaterialType
-                                                            .transparency,
-                                                        child: InkWell(
-                                                          onTap: () async {
-                                                            AppState
-                                                                    .settings
-                                                                    .value
-                                                                    .animeForceLandscape =
-                                                                !AppState
-                                                                    .settings
-                                                                    .value
-                                                                    .animeForceLandscape;
-
-                                                            if (AppState
-                                                                .settings
-                                                                .value
-                                                                .animeForceLandscape) {
-                                                              enterLandscape();
-                                                            } else {
-                                                              exitLandscape();
-                                                            }
-
-                                                            await SettingsBox
-                                                                .save(
-                                                              AppState.settings
-                                                                  .value,
-                                                            );
-
-                                                            if (mounted) {
-                                                              setState(() {});
-                                                            }
-                                                          },
-                                                          child: Icon(
-                                                            Icons
-                                                                .screen_rotation,
-                                                            size: Theme.of(
-                                                              context,
-                                                            )
-                                                                .textTheme
-                                                                .headline6
-                                                                ?.fontSize,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: remToPx(0.7),
-                                                    ),
-                                                  ],
-                                                  ValueListenableBuilder<bool>(
-                                                    valueListenable:
-                                                        isFullscreened,
-                                                    builder: (
-                                                      final BuildContext
-                                                          builder,
-                                                      final bool isFullscreened,
-                                                      final Widget? child,
-                                                    ) =>
-                                                        Material(
-                                                      type: MaterialType
-                                                          .transparency,
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          AppState
-                                                                  .settings
-                                                                  .value
-                                                                  .animeAutoFullscreen =
-                                                              !isFullscreened;
-
-                                                          if (isFullscreened) {
-                                                            exitFullscreen();
-                                                          } else {
-                                                            enterFullscreen();
-                                                          }
-
-                                                          await SettingsBox
-                                                              .save(
-                                                            AppState
-                                                                .settings.value,
-                                                          );
-                                                        },
-                                                        child: Icon(
-                                                          isFullscreened
-                                                              ? Icons
-                                                                  .fullscreen_exit
-                                                              : Icons
-                                                                  .fullscreen,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                    Text(
+                      '${Translator.t.episode()} ${widget.props.episode!.episode} ${Translator.t.of()} ${widget.props.info!.episodes.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              buildLock(context),
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () {
+                  showOptions();
+                },
+                color: Colors.white,
+              ),
+            ],
           ),
         ),
-      ),
-    );
+      );
+
+  Widget buildMiddleBar(final BuildContext context) {
+    if (widget.videoState.value.sources?.isEmpty ?? false) {
+      return Text(
+        Translator.t.noValidSources(),
+        style: TextStyle(
+          fontSize: Theme.of(context).textTheme.subtitle1?.fontSize,
+          color: Colors.white,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    if (widget.videoState.value.message != null) {
+      return widget.videoState.value.message!;
+    }
+
+    if (widget.videoState.value.isReady &&
+        !widget.videoState.value.isBuffering) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Material(
+            type: MaterialType.transparency,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.hardEdge,
+            child: IconButton(
+              iconSize: remToPx(2),
+              onPressed: () {
+                final Duration amt =
+                    widget.videoState.value.duration.value.current -
+                        Duration(
+                          seconds: AppState.settings.value.seekDuration,
+                        );
+                widget.videoState.value.videoPlayer!.seek(
+                  amt <= Duration.zero ? Duration.zero : amt,
+                );
+              },
+              icon: const Icon(
+                Icons.fast_rewind,
+              ),
+              color: Colors.white,
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.hardEdge,
+            child: IconButton(
+              iconSize: remToPx(3),
+              onPressed: () {
+                widget.videoState.value.isPlaying
+                    ? widget.videoState.value.videoPlayer!.pause()
+                    : widget.videoState.value.videoPlayer!.play();
+              },
+              icon: AnimatedIcon(
+                icon: AnimatedIcons.play_pause,
+                progress: playPauseController,
+              ),
+              color: Colors.white,
+            ),
+          ),
+          Material(
+            type: MaterialType.transparency,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.hardEdge,
+            child: IconButton(
+              iconSize: remToPx(2),
+              onPressed: () {
+                final Duration amt =
+                    widget.videoState.value.duration.value.current +
+                        Duration(
+                          seconds: AppState.settings.value.seekDuration,
+                        );
+
+                widget.videoState.value.videoPlayer!.seek(
+                  amt < widget.videoState.value.duration.value.total
+                      ? amt
+                      : widget.videoState.value.duration.value.total,
+                );
+              },
+              icon: const Icon(
+                Icons.fast_forward,
+              ),
+              color: Colors.white,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return const CircularProgressIndicator();
   }
+
+  Widget buildBottomBar(final BuildContext context) => Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Flexible(
+              child: buildLayoutedButton(
+                context,
+                <Widget>[
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.skip_previous,
+                      label: Translator.t.previous(),
+                      onPressed: () {
+                        widget.videoState.value.ignoreScreenChanges = true;
+                        widget.previousEpisode();
+                      },
+                      enabled: widget.previousEpisodeAvailable,
+                    ),
+                  ),
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.fast_forward,
+                      label: Translator.t.skipIntro(),
+                      onPressed: () {
+                        final Duration amt =
+                            widget.videoState.value.duration.value.current +
+                                Duration(
+                                  seconds:
+                                      AppState.settings.value.introDuration,
+                                );
+
+                        widget.videoState.value.videoPlayer!.seek(
+                          amt < widget.videoState.value.duration.value.total
+                              ? amt
+                              : widget.videoState.value.duration.value.total,
+                        );
+                      },
+                      enabled: widget.videoState.value.isReady,
+                    ),
+                  ),
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.playlist_play,
+                      label: Translator.t.sources(),
+                      onPressed: widget.showSelectSources,
+                      enabled:
+                          widget.videoState.value.sources?.isNotEmpty ?? false,
+                    ),
+                  ),
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.skip_next,
+                      label: Translator.t.next(),
+                      onPressed: () {
+                        widget.videoState.value.ignoreScreenChanges = true;
+                        widget.nextEpisode();
+                      },
+                      enabled: widget.nextEpisodeAvailable,
+                    ),
+                  ),
+                ],
+                2,
+              ),
+            ),
+            ValueListenableBuilder<_VideoDuration>(
+              valueListenable: widget.videoState.value.duration,
+              builder: (
+                final BuildContext context,
+                final _VideoDuration duration,
+                final Widget? child,
+              ) =>
+                  Row(
+                children: <Widget>[
+                  Container(
+                    constraints: BoxConstraints(
+                      minWidth: remToPx(1.8),
+                    ),
+                    child: Text(
+                      DurationUtils.pretty(
+                        duration.current,
+                      ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: remToPx(0.3),
+                        ),
+                        showValueIndicator: ShowValueIndicator.always,
+                        thumbColor: !widget.videoState.value.isReady
+                            ? Colors.white.withOpacity(
+                                0.5,
+                              )
+                            : null,
+                      ),
+                      child: Slider(
+                        label: DurationUtils.pretty(
+                          duration.current,
+                        ),
+                        value: duration.current.inSeconds.toDouble(),
+                        max: duration.total.inSeconds.toDouble(),
+                        onChanged: widget.videoState.value.isReady
+                            ? (
+                                final double value,
+                              ) {
+                                widget.videoState.value.duration.value =
+                                    _VideoDuration(
+                                  Duration(
+                                    seconds: value.toInt(),
+                                  ),
+                                  duration.total,
+                                );
+                              }
+                            : null,
+                        onChangeStart: widget.videoState.value.isReady
+                            ? (
+                                final double value,
+                              ) async {
+                                if (widget.videoState.value.isPlaying) {
+                                  await widget.videoState.value.videoPlayer!
+                                      .pause();
+
+                                  wasPausedBySlider = true;
+                                }
+                              }
+                            : null,
+                        onChangeEnd: widget.videoState.value.isReady
+                            ? (
+                                final double value,
+                              ) async {
+                                await widget.videoState.value.videoPlayer!.seek(
+                                  Duration(
+                                    seconds: value.toInt(),
+                                  ),
+                                );
+
+                                if (wasPausedBySlider) {
+                                  await widget.videoState.value.videoPlayer!
+                                      .play();
+
+                                  wasPausedBySlider = false;
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: remToPx(1.8),
+                    ),
+                    child: Text(
+                      DurationUtils.pretty(
+                        duration.total,
+                      ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: remToPx(0.5),
+                  ),
+                  if (AppState.isMobile) ...<Widget>[
+                    StatefulBuilder(
+                      builder: (
+                        final BuildContext context,
+                        final StateSetter setState,
+                      ) =>
+                          Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(
+                            remToPx(0.2),
+                          ),
+                          onTap: () async {
+                            AppState.settings.value.animeForceLandscape =
+                                !AppState.settings.value.animeForceLandscape;
+
+                            AppState.settings.value.animeForceLandscape
+                                ? widget.enableLandscape()
+                                : widget.disableLandscape();
+
+                            await SettingsBox.save(
+                              AppState.settings.value,
+                            );
+
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                          child: Icon(
+                            Icons.screen_rotation,
+                            size: Theme.of(
+                              context,
+                            ).textTheme.headline6?.fontSize,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: remToPx(0.7),
+                    ),
+                  ],
+                  Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(remToPx(0.2)),
+                      onTap: () async {
+                        AppState.settings.value.animeAutoFullscreen =
+                            !AppState.settings.value.animeAutoFullscreen;
+
+                        AppState.settings.value.animeAutoFullscreen
+                            ? widget.enableFullscreen()
+                            : widget.disableFullscreen();
+
+                        await SettingsBox.save(
+                          AppState.settings.value,
+                        );
+                      },
+                      child: Icon(
+                        AppState.settings.value.animeAutoFullscreen
+                            ? Icons.fullscreen_exit
+                            : Icons.fullscreen,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+
+  @override
+  Widget build(final BuildContext context) =>
+      ValueListenableBuilder<_VideoStateProps>(
+        valueListenable: widget.videoState,
+        builder: (
+          final BuildContext context,
+          final _VideoStateProps videoState,
+          final Widget? child,
+        ) {
+          widget.videoState.value.isPlaying
+              ? playPauseController.forward()
+              : playPauseController.reverse();
+
+          return Container(
+            color: !widget.videoState.value.locked
+                ? Colors.black.withOpacity(0.3)
+                : Colors.transparent,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: remToPx(0.7),
+              ),
+              child: Column(
+                children: widget.videoState.value.locked
+                    ? <Widget>[
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: remToPx(0.5),
+                            ),
+                            child: buildLock(context),
+                          ),
+                        ),
+                      ]
+                    : <Widget>[
+                        buildTopBar(context),
+                        AnimatedSwitcher(
+                          duration: Defaults.animationsFast,
+                          child: buildMiddleBar(context),
+                        ),
+                        buildBottomBar(context),
+                      ],
+              ),
+            ),
+          );
+        },
+      );
 }

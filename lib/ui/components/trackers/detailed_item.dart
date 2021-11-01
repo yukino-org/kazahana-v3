@@ -3,6 +3,7 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../../config/defaults.dart';
+import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
@@ -166,24 +167,25 @@ class _DetailedItemState extends State<DetailedItem> {
                 height: heroHeight,
                 child: Stack(
                   children: <Widget>[
-                    Positioned.fill(
-                      bottom: bannerHeight,
-                      child: ClipRRect(
-                        child: item.banner != null
-                            ? Image.network(
-                                item.banner!,
-                                fit: BoxFit.cover,
-                              )
-                            : ImageFiltered(
-                                imageFilter:
-                                    ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                                child: Image.network(
-                                  item.thumbnail,
+                    if (item.banner != null || item.thumbnail != null)
+                      Positioned.fill(
+                        bottom: bannerHeight,
+                        child: ClipRRect(
+                          child: item.banner != null
+                              ? Image.network(
+                                  item.banner!,
                                   fit: BoxFit.cover,
+                                )
+                              : ImageFiltered(
+                                  imageFilter:
+                                      ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                                  child: Image.network(
+                                    item.thumbnail!,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
-                    ),
                     Positioned.fill(
                       bottom: bannerHeight,
                       child: DecoratedBox(
@@ -218,8 +220,14 @@ class _DetailedItemState extends State<DetailedItem> {
                             ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(remToPx(0.25)),
-                              child: Image.network(
-                                item.thumbnail,
+                              child: Image(
+                                image: item.thumbnail != null
+                                    ? NetworkImage(item.thumbnail!)
+                                    : AssetImage(
+                                        Assets.placeholderImageFromContext(
+                                          context,
+                                        ),
+                                      ) as ImageProvider<Object>,
                                 width: remToPx(9),
                                 fit: BoxFit.fitWidth,
                               ),

@@ -123,7 +123,7 @@ class _PageState extends State<Page>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
@@ -229,9 +229,7 @@ class _PageState extends State<Page>
             width: remToPx(7),
           )
         : Image.asset(
-            Assets.placeholderImage(
-              dark: UiUtils.isDarkContext(context),
-            ),
+            Assets.placeholderImageFromContext(context),
             width: remToPx(7),
           );
 

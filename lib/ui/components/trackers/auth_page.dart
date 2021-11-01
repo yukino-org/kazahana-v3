@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 
@@ -78,7 +78,7 @@ class _AuthPageState extends State<AuthPage> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
@@ -89,7 +89,7 @@ class _AuthPageState extends State<AuthPage> with HooksMixin {
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(
-              vertical: remToPx(1),
+              vertical: remToPx(4),
               horizontal: remToPx(1.25),
             ),
             child: Center(

@@ -8,8 +8,8 @@ import '../../../config/defaults.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/error.dart';
 import '../../components/error_widget.dart';
@@ -55,7 +55,7 @@ class Page extends StatefulWidget {
 class _PageState extends State<Page> with HooksMixin {
   late final SharedProps props;
   late final PageArguments args;
-  late final PageController controller;
+  late final PageController pageController;
 
   final StatefulValueHolder<ErrorInfo?> infoState =
       StatefulValueHolder<ErrorInfo?>(null);
@@ -64,7 +64,7 @@ class _PageState extends State<Page> with HooksMixin {
   void initState() {
     super.initState();
 
-    controller = PageController(
+    pageController = PageController(
       initialPage: Pages.home.index,
     );
 
@@ -81,8 +81,8 @@ class _PageState extends State<Page> with HooksMixin {
         }
       },
       goToPage: (final Pages page) async {
-        if (controller.hasClients) {
-          await controller.animateToPage(
+        if (pageController.hasClients) {
+          await pageController.animateToPage(
             page.index,
             duration: Defaults.animationsNormal,
             curve: Curves.easeInOut,
@@ -106,12 +106,12 @@ class _PageState extends State<Page> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    pageController.dispose();
 
     super.dispose();
   }
@@ -178,7 +178,7 @@ class _PageState extends State<Page> with HooksMixin {
               ),
             ),
             onResolved: (final BuildContext context) => PageView(
-              controller: controller,
+              controller: pageController,
               physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
                 InfoPage(
@@ -204,25 +204,8 @@ class _PageState extends State<Page> with HooksMixin {
                     key: ValueKey<String>(
                       'Episode-${props.currentEpisodeIndex}',
                     ),
-                    title: props.info!.title,
-                    extractor: props.extractor,
-                    episode: props.episode!,
-                    totalEpisodes: props.info!.episodes.length,
-                    previousEpisodeEnabled: props.currentEpisodeIndex! - 1 >= 0,
-                    previousEpisode: () {
-                      if (props.currentEpisodeIndex! - 1 >= 0) {
-                        props.setEpisode(props.currentEpisodeIndex! - 1);
-                      }
-                    },
-                    nextEpisodeEnabled: props.currentEpisodeIndex! + 1 <
-                        props.info!.episodes.length,
-                    nextEpisode: () {
-                      if (props.currentEpisodeIndex! + 1 <
-                          props.info!.episodes.length) {
-                        props.setEpisode(props.currentEpisodeIndex! + 1);
-                      }
-                    },
-                    onPop: () async {
+                    props: props,
+                    pop: () async {
                       await props.goToPage(Pages.home);
                       props.setEpisode(null);
                     },
@@ -240,7 +223,7 @@ class _PageState extends State<Page> with HooksMixin {
                 child: Center(
                   child: KawaiiErrorWidget.fromErrorInfo(
                     message: Translator.t.failedToGetResults(),
-                    error: infoState.value!,
+                    error: infoState.value,
                   ),
                 ),
               ),
@@ -249,7 +232,7 @@ class _PageState extends State<Page> with HooksMixin {
         ),
         onWillPop: () async {
           if (props.info != null &&
-              controller.page?.toInt() != Pages.home.index) {
+              pageController.page?.toInt() != Pages.home.index) {
             await props.goToPage(Pages.home);
             props.setEpisode(null);
             return false;

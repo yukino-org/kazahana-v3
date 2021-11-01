@@ -1,4 +1,5 @@
 import './states.dart';
+import '../utils/error.dart';
 
 class StatefulValueHolder<T> {
   StatefulValueHolder(
@@ -28,5 +29,25 @@ class StatefulValueHolder<T> {
 
   void fail(final T value) {
     _state(value, ReactiveStates.failed);
+  }
+}
+
+class StatefulValueHolderWithError<T> extends StatefulValueHolder<T> {
+  StatefulValueHolderWithError(
+    final T value, {
+    final ReactiveStates state = ReactiveStates.waiting,
+  }) : super(value, state: state);
+
+  ErrorInfo? error;
+
+  @override
+  void fail(final T value, [final ErrorInfo? err]) {
+    _state(value, ReactiveStates.failed);
+    error = err;
+  }
+
+  void failUnknown(final T value, final Object err, [final StackTrace? stack]) {
+    _state(value, ReactiveStates.failed);
+    error = ErrorInfo(err, stack);
   }
 }

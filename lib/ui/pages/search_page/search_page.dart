@@ -6,13 +6,15 @@ import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
 import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
+import '../../components/reactive_state_builder.dart';
+import '../../components/with_child_builder.dart';
 import '../../router.dart';
 import '../anime_page/anime_page.dart' as anime_page;
 import '../manga_page/manga_page.dart' as manga_page;
@@ -128,8 +130,8 @@ class _PageState extends State<Page> with HooksMixin {
   List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
 
   CurrentPlugin? currentPlugin;
-  StatefulValueHolder<List<_SearchInfo>?> results =
-      StatefulValueHolder<List<_SearchInfo>?>(null);
+  StatefulValueHolderWithError<List<_SearchInfo>?> results =
+      StatefulValueHolderWithError<List<_SearchInfo>?>(null);
 
   ExtensionType popupPluginType = ExtensionType.anime;
   PageArguments? args;
@@ -174,7 +176,7 @@ class _PageState extends State<Page> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   void _setCurrentPreferredPlugin([final ExtensionType? _pluginType]) {
@@ -235,10 +237,10 @@ class _PageState extends State<Page> with HooksMixin {
             );
           });
         }
-      } catch (err) {
+      } catch (err, stack) {
         if (mounted) {
           setState(() {
-            results.fail(null);
+            results.failUnknown(null, err, stack);
           });
         }
       }
@@ -357,117 +359,13 @@ class _PageState extends State<Page> with HooksMixin {
                 SizedBox(
                   height: remToPx(1.25),
                 ),
-                if (results.state.hasResolved && results.value!.isNotEmpty)
-                  Column(
-                    children: UiUtils.getGridded(
-                      MediaQuery.of(context).size.width.toInt(),
-                      results.value!
-                          .map(
-                            (final _SearchInfo x) => Card(
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(4),
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                    ParsedRouteInfo(
-                                      x.pluginType.route(),
-                                      x.pluginType.params(
-                                        src: x.url,
-                                        plugin: x.pluginId,
-                                      ),
-                                    ).toString(),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.all(remToPx(0.5)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: remToPx(4),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            remToPx(0.25),
-                                          ),
-                                          child: x.thumbnail != null
-                                              ? FallbackableNetworkImage(
-                                                  url: x.thumbnail!.url,
-                                                  headers: x.thumbnail!.headers,
-                                                  placeholder: Image.asset(
-                                                    Assets.placeholderImage(
-                                                      dark:
-                                                          UiUtils.isDarkContext(
-                                                        context,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : Image.asset(
-                                                  Assets.placeholderImage(
-                                                    dark: UiUtils.isDarkContext(
-                                                      context,
-                                                    ),
-                                                  ),
-                                                ),
-                                        ),
-                                      ),
-                                      SizedBox(width: remToPx(0.75)),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              x.title,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: Theme.of(context)
-                                                    .textTheme
-                                                    .headline6
-                                                    ?.fontSize,
-                                              ),
-                                            ),
-                                            Text(
-                                              x.pluginName,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1
-                                                    ?.fontSize,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  )
-                else if (results.state.isResolving)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: remToPx(1.5),
-                    ),
-                    child: const Center(child: CircularProgressIndicator()),
-                  )
-                else
-                  Center(
+                ReactiveStateBuilder(
+                  state: results.state,
+                  onWaiting: (final BuildContext context) => Center(
                     child: Text(
-                      results.state.isWaiting
-                          ? (args?.autoSearch ?? false
-                              ? Translator.t.selectAPluginToGetResults()
-                              : Translator.t.enterToSearch())
-                          : results.state.hasResolved
-                              ? Translator.t.noResultsFound()
-                              : Translator.t.failedToGetResults(),
+                      args?.autoSearch ?? false
+                          ? Translator.t.selectAPluginToGetResults()
+                          : Translator.t.enterToSearch(),
                       style: TextStyle(
                         color: Theme.of(context)
                             .textTheme
@@ -477,6 +375,138 @@ class _PageState extends State<Page> with HooksMixin {
                       ),
                     ),
                   ),
+                  onResolving: (final BuildContext context) => Padding(
+                    padding: EdgeInsets.only(
+                      top: remToPx(1.5),
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  onResolved: (final BuildContext context) => results
+                          .value!.isNotEmpty
+                      ? Column(
+                          children: UiUtils.getGridded(
+                            MediaQuery.of(context).size.width.toInt(),
+                            results.value!
+                                .map(
+                                  (final _SearchInfo x) => Card(
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(4),
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          ParsedRouteInfo(
+                                            x.pluginType.route(),
+                                            x.pluginType.params(
+                                              src: x.url,
+                                              plugin: x.pluginId,
+                                            ),
+                                          ).toString(),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(remToPx(0.5)),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: remToPx(4),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  remToPx(0.25),
+                                                ),
+                                                child: WithChildBuilder(
+                                                  builder: (
+                                                    final BuildContext context,
+                                                    final Widget child,
+                                                  ) =>
+                                                      x.thumbnail != null
+                                                          ? FallbackableNetworkImage(
+                                                              url: x.thumbnail!
+                                                                  .url,
+                                                              headers: x
+                                                                  .thumbnail!
+                                                                  .headers,
+                                                              placeholder:
+                                                                  child,
+                                                            )
+                                                          : child,
+                                                  child: Image.asset(
+                                                    Assets
+                                                        .placeholderImageFromContext(
+                                                      context,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: remToPx(0.75)),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    x.title,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .headline6
+                                                              ?.fontSize,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    x.pluginName,
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1
+                                                              ?.fontSize,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.only(
+                            top: remToPx(1.5),
+                          ),
+                          child: Center(
+                            child: KawaiiErrorWidget(
+                              message: Translator.t.noResultsFound(),
+                            ),
+                          ),
+                        ),
+                  onFailed: (final BuildContext context) => Padding(
+                    padding: EdgeInsets.only(
+                      top: remToPx(1.5),
+                    ),
+                    child: Center(
+                      child: KawaiiErrorWidget.fromErrorInfo(
+                        message: Translator.t.failedToGetResults(),
+                        error: results.error,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

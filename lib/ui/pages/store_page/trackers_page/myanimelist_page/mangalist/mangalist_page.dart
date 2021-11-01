@@ -118,9 +118,13 @@ class Page extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                             remToPx(0.25),
                           ),
-                          child: Image.network(
-                            x.mainPictureMedium,
-                          ),
+                          child: x.mainPictureMedium != null
+                              ? Image.network(
+                                  x.mainPictureMedium!,
+                                )
+                              : Image.asset(
+                                  Assets.placeholderImageFromContext(context),
+                                ),
                         ),
                       ),
                       SizedBox(width: remToPx(0.75)),

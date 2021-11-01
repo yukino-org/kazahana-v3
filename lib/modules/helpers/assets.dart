@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import './ui.dart';
+
 abstract class Assets {
   static const String yukinoIcon = 'assets/images/yukino-icon.png';
 
@@ -13,4 +16,7 @@ abstract class Assets {
     required final bool dark,
   }) =>
       dark ? darkPlaceHolderImage : lightPlaceHolderImage;
+
+  static String placeholderImageFromContext(final BuildContext context) =>
+      placeholderImage(dark: UiUtils.isDarkContext(context));
 }

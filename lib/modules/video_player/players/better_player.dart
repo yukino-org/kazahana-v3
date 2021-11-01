@@ -77,7 +77,10 @@ class BetterPlayer extends VideoPlayer {
 
             case better_player.BetterPlayerEventType.exception:
               dispatch(
-                VideoPlayerEvent(VideoPlayerEvents.error, e.parameters),
+                VideoPlayerEvent(
+                  VideoPlayerEvents.error,
+                  e.parameters?['exception'] as String,
+                ),
               );
               break;
 

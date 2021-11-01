@@ -179,4 +179,5 @@ abstract class TranslationSentences {
   String nsfw();
   String restartAppForChangesToTakeEffect();
   String copyError();
+  String somethingWentWrong();
 }

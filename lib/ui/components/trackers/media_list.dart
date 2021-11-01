@@ -47,7 +47,7 @@ class _MediaListState extends State<MediaList> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   Future<void> load() async {

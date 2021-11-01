@@ -3,8 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
@@ -109,7 +109,7 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override
@@ -279,11 +279,8 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                                             )
                                                           : Image.asset(
                                                               Assets
-                                                                  .placeholderImage(
-                                                                dark: UiUtils
-                                                                    .isDarkContext(
-                                                                  context,
-                                                                ),
+                                                                  .placeholderImageFromContext(
+                                                                context,
                                                               ),
                                                               height:
                                                                   remToPx(5),
@@ -365,112 +362,100 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
       );
 
   @override
-  Widget build(final BuildContext context) => Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: widget.tracker.isLoggedIn()
-              ? null
-              : () {
-                  Navigator.of(context).pushNamed(RouteNames.store);
-                },
-          child: Row(
-            children: <Widget>[
-              CircleAvatar(
-                radius: remToPx(1),
-                backgroundColor: Colors.black,
-                child: Image.asset(
-                  widget.tracker.image,
-                  height: remToPx(1.5),
-                ),
-              ),
-              SizedBox(
-                width: remToPx(1),
-              ),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    children: <InlineSpan>[
-                      TextSpan(
-                        text: widget.tracker.name,
-                        style: Theme.of(context).textTheme.headline6?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      if (item.state.hasResolved &&
-                          item.value != null) ...<InlineSpan>[
-                        TextSpan(
-                          text: '\n${Translator.t.computedAs()} ',
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle2
-                              ?.copyWith(
-                                color:
-                                    Theme.of(context).textTheme.caption?.color,
-                              ),
-                        ),
-                        TextSpan(
-                          text: item.value!.title,
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              await showGeneralDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                barrierLabel: MaterialLocalizations.of(context)
-                                    .modalBarrierDismissLabel,
-                                pageBuilder: (
-                                  final BuildContext context,
-                                  final Animation<double> a1,
-                                  final Animation<double> a2,
-                                ) =>
-                                    FadeScaleTransition(
-                                  animation: a1,
-                                  child: SafeArea(
-                                    child: widget.tracker
-                                        .getDetailedPage(context, item.value!),
-                                  ),
-                                ),
-                              );
-                            },
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle2
-                              ?.copyWith(
-                                color:
-                                    Theme.of(context).textTheme.caption?.color,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        openSearchTextSpan(' - ${Translator.t.notThis()}'),
-                      ] else if (item.state.hasResolved && item.value == null)
-                        openSearchTextSpan('\n${Translator.t.selectAnAnime()}'),
-                    ],
-                  ),
-                ),
-              ),
-              if (widget.tracker.isLoggedIn())
-                Switch(
-                  activeColor: Theme.of(context).primaryColor,
-                  value: widget.tracker.isEnabled(widget.title, widget.plugin),
-                  onChanged: (final bool enabled) async {
-                    await widget.tracker
-                        .setEnabled(widget.title, widget.plugin, enabled);
-
-                    if (mounted) {
-                      setState(() {});
-                    }
-                  },
-                )
-              else
-                Icon(
-                  Icons.login,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      ?.color
-                      ?.withOpacity(0.5),
-                ),
-            ],
+  Widget build(final BuildContext context) => Row(
+        children: <Widget>[
+          CircleAvatar(
+            radius: remToPx(1),
+            backgroundColor: Colors.black,
+            child: Image.asset(
+              widget.tracker.image,
+              height: remToPx(1.5),
+            ),
           ),
-        ),
+          SizedBox(
+            width: remToPx(1),
+          ),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                children: <InlineSpan>[
+                  TextSpan(
+                    text: widget.tracker.name,
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  if (item.state.hasResolved &&
+                      item.value != null) ...<InlineSpan>[
+                    TextSpan(
+                      text: '\n${Translator.t.computedAs()} ',
+                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                            color: Theme.of(context).textTheme.caption?.color,
+                          ),
+                    ),
+                    TextSpan(
+                      text: item.value!.title,
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          await showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            pageBuilder: (
+                              final BuildContext context,
+                              final Animation<double> a1,
+                              final Animation<double> a2,
+                            ) =>
+                                FadeScaleTransition(
+                              animation: a1,
+                              child: SafeArea(
+                                child: widget.tracker
+                                    .getDetailedPage(context, item.value!),
+                              ),
+                            ),
+                          );
+                        },
+                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                            color: Theme.of(context).textTheme.caption?.color,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    openSearchTextSpan(' - ${Translator.t.notThis()}'),
+                  ] else if (item.state.hasResolved && item.value == null)
+                    openSearchTextSpan('\n${Translator.t.selectAnAnime()}'),
+                ],
+              ),
+            ),
+          ),
+          if (widget.tracker.isLoggedIn())
+            Switch(
+              activeColor: Theme.of(context).primaryColor,
+              value: widget.tracker.isEnabled(widget.title, widget.plugin),
+              onChanged: (final bool enabled) async {
+                await widget.tracker
+                    .setEnabled(widget.title, widget.plugin, enabled);
+
+                if (mounted) {
+                  setState(() {});
+                }
+              },
+            )
+          else
+            IconButton(
+              splashRadius: remToPx(1),
+              icon: Icon(
+                Icons.login,
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.color
+                    ?.withOpacity(0.5),
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(RouteNames.store);
+              },
+            ),
+        ],
       );
 }

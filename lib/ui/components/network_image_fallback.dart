@@ -59,7 +59,7 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override

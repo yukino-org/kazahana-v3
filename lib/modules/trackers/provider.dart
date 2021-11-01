@@ -57,7 +57,7 @@ class DetailedInfo {
   final String title;
   final String? description;
   final ExtensionType type;
-  final String thumbnail;
+  final String? thumbnail;
   final String? banner;
   final String? status;
   final Progress progress;

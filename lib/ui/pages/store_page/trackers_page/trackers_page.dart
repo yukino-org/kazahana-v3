@@ -82,6 +82,13 @@ class _TrackersPageState extends State<TrackersPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    hookState.markReady();
+  }
+
+  @override
   void dispose() {
     RouteManager.observer.unsubscribe(this);
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 
 class ProfileTab {
@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   Widget getProfile(final dynamic user) {

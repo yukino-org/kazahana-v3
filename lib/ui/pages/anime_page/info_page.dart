@@ -377,9 +377,7 @@ class _Hero extends StatelessWidget {
             width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
           )
         : Image.asset(
-            Assets.placeholderImage(
-              dark: UiUtils.isDarkContext(context),
-            ),
+            Assets.placeholderImageFromContext(context),
             width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
           );
 

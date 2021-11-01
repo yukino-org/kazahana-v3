@@ -78,7 +78,7 @@ class _PageState extends State<Page> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   Future<void> goToPage(final int page) async {

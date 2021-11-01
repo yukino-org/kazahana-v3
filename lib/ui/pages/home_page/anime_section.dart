@@ -4,8 +4,8 @@ import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
@@ -48,7 +48,7 @@ class _PageState extends State<Page> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   Widget buildOpenBuilder(final MyAnimeListHomeContent x) => StatefulBuilder(
@@ -220,10 +220,8 @@ class _HorizontalEntityList extends StatelessWidget {
                                   child: FallbackableNetworkImage(
                                     url: x.thumbnail,
                                     placeholder: Image.asset(
-                                      Assets.placeholderImage(
-                                        dark: UiUtils.isDarkContext(
-                                          context,
-                                        ),
+                                      Assets.placeholderImageFromContext(
+                                        context,
                                       ),
                                     ),
                                   ),

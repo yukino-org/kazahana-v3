@@ -390,4 +390,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String copyError() => 'Copy error';
+
+  @override
+  String somethingWentWrong() => 'Something went wrong.';
 }

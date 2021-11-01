@@ -5,8 +5,8 @@ import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/holder.dart';
 import '../../../modules/state/hooks.dart';
+import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/full_screen_image.dart';
@@ -64,7 +64,7 @@ class _ListReaderState extends State<ListReader>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    maybeEmitReady();
+    hookState.markReady();
   }
 
   @override

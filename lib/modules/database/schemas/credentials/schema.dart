@@ -14,11 +14,15 @@ class CredentialsSchema {
 
   String? anilist_;
 
-  AniListTokenInfo? get anilist => anilist_ != null
-      ? AniListTokenInfo.fromJson(
-          json.decode(anilist_!) as Map<dynamic, dynamic>,
-        )
-      : null;
+  AniListTokenInfo? get anilist {
+    if (anilist_ != null) {
+      final dynamic parsed = json.decode(anilist_!);
+
+      if (parsed is Map<dynamic, dynamic>) {
+        return AniListTokenInfo.fromJson(parsed);
+      }
+    }
+  }
 
   set anilist(final AniListTokenInfo? val) {
     anilist_ = val != null ? json.encode(val.toJson()) : null;
@@ -26,11 +30,15 @@ class CredentialsSchema {
 
   String? myanimelist_;
 
-  MyAnimeListTokenInfo? get myanimelist => myanimelist_ != null
-      ? MyAnimeListTokenInfo.fromJson(
-          json.decode(anilist_!) as Map<dynamic, dynamic>,
-        )
-      : null;
+  MyAnimeListTokenInfo? get myanimelist {
+    if (myanimelist_ != null) {
+      final dynamic parsed = json.decode(myanimelist_!);
+
+      if (parsed is Map<dynamic, dynamic>) {
+        return MyAnimeListTokenInfo.fromJson(parsed);
+      }
+    }
+  }
 
   set myanimelist(final MyAnimeListTokenInfo? val) {
     myanimelist_ = val != null ? json.encode(val.toJson()) : null;
