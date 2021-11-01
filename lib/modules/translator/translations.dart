@@ -180,4 +180,5 @@ abstract class TranslationSentences {
   String restartAppForChangesToTakeEffect();
   String copyError();
   String somethingWentWrong();
+  String unknownExtension(final String name);
 }

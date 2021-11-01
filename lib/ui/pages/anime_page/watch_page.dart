@@ -126,7 +126,7 @@ class WatchPageState extends State<WatchPage>
 
   Future<void> getSources() async {
     videoState.value.sources =
-        await widget.props.extractor.getSources(widget.props.episode!);
+        await widget.props.extractor!.getSources(widget.props.episode!);
 
     if (mounted) {
       setState(() {});
@@ -271,11 +271,11 @@ class WatchPageState extends State<WatchPage>
           if (provider.isLoggedIn() &&
               provider.isEnabled(
                 widget.props.info!.title,
-                widget.props.extractor.id,
+                widget.props.extractor!.id,
               )) {
             final ResolvedTrackerItem? item = await provider.getComputed(
               widget.props.info!.title,
-              widget.props.extractor.id,
+              widget.props.extractor!.id,
             );
 
             if (item != null) {

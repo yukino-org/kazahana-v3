@@ -241,7 +241,7 @@ class _InfoPageState extends State<InfoPage>
                             ),
                             TrackersTile(
                               title: widget.props.info!.title,
-                              plugin: widget.props.extractor.id,
+                              plugin: widget.props.extractor!.id,
                               providers: Trackers.anime,
                             ),
                             SizedBox(
@@ -397,7 +397,7 @@ class _Hero extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         Text(
-          props.extractor.name,
+          props.extractor!.name,
           style: TextStyle(
             color: Theme.of(context).primaryColor,
             fontSize: Theme.of(context).textTheme.headline6?.fontSize,

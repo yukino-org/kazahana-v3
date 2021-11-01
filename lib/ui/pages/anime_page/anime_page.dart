@@ -96,9 +96,10 @@ class _PageState extends State<Page> with HooksMixin {
         ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
       );
 
-      // TODO: Error handling
-      props.extractor = ExtensionsManager.animes[args.plugin]!;
-      await getInfo();
+      props.extractor = ExtensionsManager.animes[args.plugin];
+      if (props.extractor != null) {
+        await getInfo();
+      }
     });
   }
 
@@ -123,7 +124,7 @@ class _PageState extends State<Page> with HooksMixin {
       infoState.resolving(null);
 
       final int nowMs = DateTime.now().millisecondsSinceEpoch;
-      final String cacheKey = 'anime-${props.extractor.id}-${args.src}';
+      final String cacheKey = 'anime-${props.extractor!.id}-${args.src}';
 
       if (removeCache) {
         CacheBox.delete(cacheKey);
@@ -149,9 +150,9 @@ class _PageState extends State<Page> with HooksMixin {
         } catch (_) {}
       }
 
-      props.info = await props.extractor.getInfo(
+      props.info = await props.extractor!.getInfo(
         args.src,
-        props.locale?.name ?? props.extractor.defaultLocale,
+        props.locale?.name ?? props.extractor!.defaultLocale,
       );
 
       await CacheBox.saveKV(cacheKey, props.info!.toJson(), nowMs);
@@ -171,10 +172,14 @@ class _PageState extends State<Page> with HooksMixin {
         child: SafeArea(
           child: ReactiveStateBuilder(
             state: infoState.state,
-            onResolving: (final BuildContext context) => const Scaffold(
-              appBar: PlaceholderAppBar(),
+            onResolving: (final BuildContext context) => Scaffold(
+              appBar: const PlaceholderAppBar(),
               body: Center(
-                child: CircularProgressIndicator(),
+                child: props.extractor == null
+                    ? KawaiiErrorWidget(
+                        message: Translator.t.unknownExtension(args.plugin),
+                      )
+                    : const CircularProgressIndicator(),
               ),
             ),
             onResolved: (final BuildContext context) => PageView(

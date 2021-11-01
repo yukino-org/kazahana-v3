@@ -20,7 +20,7 @@ class SharedProps {
     required final this.goToPage,
   });
 
-  late AnimeExtractor extractor;
+  AnimeExtractor? extractor;
   AnimeInfo? info;
   EpisodeInfo? episode;
   int? currentEpisodeIndex;

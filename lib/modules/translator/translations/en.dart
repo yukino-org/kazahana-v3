@@ -393,4 +393,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String somethingWentWrong() => 'Something went wrong.';
+
+  @override
+  String unknownExtension(final String name) => 'Unknown extension: $name';
 }
