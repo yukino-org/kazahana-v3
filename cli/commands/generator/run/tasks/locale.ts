@@ -91,7 +91,7 @@ ${Object.keys(languages)
       
 extension LanguageCodesUtils on LanguageCodes {
     String get code => name.replaceFirst(RegExp(r'_$'), '');
-    String get language => LanguageCodesUtils.codeNameMap[this]!;
+    String get language => LanguageUtils.codeNameMap[this]!;
 }
 
 abstract class LanguageUtils {
@@ -130,7 +130,7 @@ ${Object.keys(countries)
       
 extension CountryCodesUtils on CountryCodes {
     String get code => name.replaceFirst(RegExp(r'_$'), '');
-    String get language => CountryCodesUtils.codeNameMap[this]!;
+    String get country => CountryUtils.codeNameMap[this]!;
 }
 
 abstract class CountryUtils {

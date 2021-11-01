@@ -1,5 +1,5 @@
-// SHA: 578ed4fc4a128f6bf75acb5bce8b48ce0dba489d
-// ID: MTYzNTc3NjgwNDczOS4wNDk2LTE2MzU3NzY4MDQ3MzkuMDQ5Ng==
+// SHA: f5800e351bb4dc722698a4ef2b894b3ff44f773c
+// ID: MTYzNTc3OTE0OTExMi4yOTE3LTE2MzU3NzkxNDkxMTIuMjkxNw==
 // Generated file. Do not edit.
 
 enum LanguageCodes {
@@ -190,7 +190,7 @@ enum LanguageCodes {
       
 extension LanguageCodesUtils on LanguageCodes {
     String get code => name.replaceFirst(RegExp(r'_$'), '');
-    String get language => LanguageCodesUtils.codeNameMap[this]!;
+    String get language => LanguageUtils.codeNameMap[this]!;
 }
 
 abstract class LanguageUtils {
@@ -636,7 +636,7 @@ enum CountryCodes {
       
 extension CountryCodesUtils on CountryCodes {
     String get code => name.replaceFirst(RegExp(r'_$'), '');
-    String get language => CountryCodesUtils.codeNameMap[this]!;
+    String get country => CountryUtils.codeNameMap[this]!;
 }
 
 abstract class CountryUtils {

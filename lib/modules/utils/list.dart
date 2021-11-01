@@ -35,14 +35,14 @@ abstract class ListUtils {
     return chunked;
   }
 
-  static List<T> insertBetween<T>(final List<T> elements, final T insert) {
+  static List<T> insertBetween<T>(final List<T> elements, final T filler) {
     final List<T> inserted = <T>[];
     final int size = elements.length;
     for (int i = 0; i < size; i++) {
-      if (i != 0 && i < size) {
-        inserted.add(insert);
-      }
       inserted.add(elements[i]);
+      if (i < size - 1) {
+        inserted.add(filler);
+      }
     }
     return inserted;
   }

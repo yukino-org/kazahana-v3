@@ -32,6 +32,11 @@ class Locale {
     return threshold;
   }
 
+  String toPrettyString() => <String>[
+        code.language,
+        if (country != null) '(${country!.country})'
+      ].join(' ');
+
   @override
   String toString() =>
       <String>[code.code, if (country != null) country!.code].join('_');

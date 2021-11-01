@@ -91,9 +91,9 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                         Expanded(
                           child: RichText(
                             text: TextSpan(
-                              children: <TextSpan>[
+                              children: <InlineSpan>[
                                 TextSpan(
-                                  text: ext.name,
+                                  text: '${ext.name}\n',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline6
@@ -102,20 +102,30 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                                       ),
                                 ),
                                 TextSpan(
-                                  text:
-                                      '\n${StringUtils.capitalize(ext.type.type)}${ext.nsfw ? '(18+)' : ''}',
+                                  children: ListUtils.insertBetween(
+                                    <InlineSpan>[
+                                      TextSpan(
+                                        text: StringUtils.capitalize(
+                                          ext.type.type,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            ext.defaultLocale.toPrettyString(),
+                                      ),
+                                      if (ext.nsfw)
+                                        TextSpan(
+                                          text: Translator.t.nsfw(),
+                                          style: TextStyle(
+                                            color: Colors.red.shade400,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                    ],
+                                    const TextSpan(text: ' — '),
+                                  ),
                                   style: Theme.of(context).textTheme.caption,
                                 ),
-                                if (ext.nsfw)
-                                  TextSpan(
-                                    text: ' (${Translator.t.nsfw()})',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .caption
-                                        ?.copyWith(
-                                          color: Colors.red.shade400,
-                                        ),
-                                  ),
                               ],
                             ),
                           ),
@@ -192,29 +202,44 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                       ),
                     ),
                     SizedBox(
-                      width: remToPx(0.7),
+                      width: remToPx(1),
                     ),
                     RichText(
                       text: TextSpan(
                         children: <TextSpan>[
                           TextSpan(
                             text: widget.ext.name,
-                            style:
-                                Theme.of(context).textTheme.headline6?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            style: FunctionUtils.withValue(
+                              Theme.of(context).textTheme.headline6,
+                              (final TextStyle? style) => style?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          if (widget.ext.nsfw)
+                            TextSpan(
+                              text: '  (${Translator.t.nsfw()})',
+                              style: FunctionUtils.withValue(
+                                Theme.of(context).textTheme.bodyText2,
+                                (final TextStyle? style) => style?.copyWith(
+                                  color: Colors.red.shade400,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          TextSpan(
+                            text: '\n${Translator.t.by()} ${widget.ext.author}',
                           ),
                           TextSpan(
                             text:
-                                '\n${Translator.t.by()} ${widget.ext.id.split('.').first}',
-                            style: Theme.of(context).textTheme.caption,
+                                '\n${Translator.t.language()}: ${widget.ext.defaultLocale.toPrettyString()}',
                           ),
                           TextSpan(
                             text:
                                 '\n${Translator.t.version()}: ${widget.ext.version.toString()}',
-                            style: Theme.of(context).textTheme.caption,
                           ),
                         ],
+                        style: Theme.of(context).textTheme.caption,
                       ),
                     ),
                   ],
