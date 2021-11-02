@@ -17,9 +17,9 @@ import '../../components/trackers/trackers_tile.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({
-    required this.props,
-    required this.refresh,
-    required this.changeLanguage,
+    required final this.props,
+    required final this.refresh,
+    required final this.changeLanguage,
     final Key? key,
   }) : super(key: key);
 
@@ -360,7 +360,7 @@ class _InfoPageState extends State<InfoPage>
 
 class _Hero extends StatelessWidget {
   const _Hero({
-    required this.props,
+    required final this.props,
     final Key? key,
   }) : super(key: key);
 

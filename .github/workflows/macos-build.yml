@@ -28,7 +28,7 @@ jobs:
                   flutter config --enable-macos-desktop
                   flutter pub get
                   npm ci
-                  npm run build_runner:generate
+                  npm run generator:run
 
             - name: 🔨 Building binaries
               run: npm run macos:build

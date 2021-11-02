@@ -27,7 +27,7 @@ jobs:
                   flutter config --enable-windows-desktop
                   flutter pub get
                   npm ci
-                  npm run build_runner:generate
+                  npm run generator:run
 
             - name: 🚩 Check for existing releases
               run: npm run actions:check-release -- '-windows.zip' '-windows.exe'

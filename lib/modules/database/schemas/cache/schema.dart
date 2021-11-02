@@ -6,9 +6,9 @@ const int _cachedTime = 0;
 @Entity()
 class CacheSchema {
   CacheSchema({
-    this.key = '__unassigned__',
-    this.value_,
-    this.cachedTime = _cachedTime,
+    final this.key = '__unassigned__',
+    final this.value_,
+    final this.cachedTime = _cachedTime,
   });
 
   int id = 0;

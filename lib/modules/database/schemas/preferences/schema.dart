@@ -4,9 +4,9 @@ import 'package:objectbox/objectbox.dart';
 
 class LastSelectedSearchPlugin {
   const LastSelectedSearchPlugin({
-    this.lastSelectedType,
-    this.lastSelectedAnimePlugin,
-    this.lastSelectedMangaPlugin,
+    final this.lastSelectedType,
+    final this.lastSelectedAnimePlugin,
+    final this.lastSelectedMangaPlugin,
   });
 
   factory LastSelectedSearchPlugin.fromJson(final Map<dynamic, dynamic> json) =>

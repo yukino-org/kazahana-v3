@@ -2,7 +2,7 @@ import { config } from "../../../../config";
 import { Logger } from "../../../../logger";
 import { spawn } from "../../../../spawn";
 
-const logger = new Logger("push:main");
+const logger = new Logger("git:push:main");
 
 const next = "next";
 const main = "main";
