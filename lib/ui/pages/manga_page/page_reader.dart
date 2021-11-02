@@ -326,6 +326,8 @@ class _PageReaderState extends State<PageReader>
           visible: showOverlay,
           child: AppBar(
             elevation: 0,
+            backgroundColor:
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               tooltip: Translator.t.back(),

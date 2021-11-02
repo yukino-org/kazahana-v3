@@ -74,8 +74,6 @@ class DartVlc extends VideoPlayer {
       ),
       autoStart: false,
     );
-
-    dispatch(VideoPlayerEvent(VideoPlayerEvents.error, 'hello bro'));
   }
 
   @override

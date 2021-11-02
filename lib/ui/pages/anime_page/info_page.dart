@@ -32,7 +32,7 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final int maxChunkLength = AppState.isDesktop ? 100 : 30;
 
   ScrollDirection? lastScrollDirection;
@@ -148,179 +148,39 @@ class _InfoPageState extends State<InfoPage>
   }
 
   @override
-  Widget build(final BuildContext context) => SizeAwareBuilder(
-        builder: (
-          final BuildContext context,
-          final ResponsiveSizeInfo rSize,
-        ) {
-          final double paddingHorizontal = remToPx(rSize.isMd ? 3 : 1.25);
+  Widget build(final BuildContext context) {
+    super.build(context);
 
-          return NotificationListener<ScrollNotification>(
-            onNotification: (final ScrollNotification notification) {
-              if (notification is UserScrollNotification) {
-                showFloatingButton.value =
-                    notification.direction != ScrollDirection.reverse &&
-                        lastScrollDirection != ScrollDirection.reverse;
+    return SizeAwareBuilder(
+      builder: (
+        final BuildContext context,
+        final ResponsiveSizeInfo rSize,
+      ) {
+        final double paddingHorizontal = remToPx(rSize.isMd ? 3 : 1.25);
 
-                if (notification.direction == ScrollDirection.forward ||
-                    notification.direction == ScrollDirection.reverse) {
-                  lastScrollDirection = notification.direction;
-                }
+        return NotificationListener<ScrollNotification>(
+          onNotification: (final ScrollNotification notification) {
+            if (notification is UserScrollNotification) {
+              showFloatingButton.value =
+                  notification.direction != ScrollDirection.reverse &&
+                      lastScrollDirection != ScrollDirection.reverse;
+
+              if (notification.direction == ScrollDirection.forward ||
+                  notification.direction == ScrollDirection.reverse) {
+                lastScrollDirection = notification.direction;
               }
+            }
 
-              return false;
-            },
-            child: Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: PreferredSizeWrapper(
-                builder: (
-                  final BuildContext context,
-                  final PreferredSizeWidget child,
-                ) =>
-                    ValueListenableBuilder<bool>(
-                  valueListenable: showFloatingButton,
-                  builder: (
-                    final BuildContext context,
-                    final bool showFloatingButton,
-                    final Widget? child,
-                  ) =>
-                      ToggleableSlideWidget(
-                    controller: floatingButtonController,
-                    visible: showFloatingButton,
-                    curve: Curves.easeInOut,
-                    offsetBegin: Offset.zero,
-                    offsetEnd: const Offset(0, -1),
-                    child: child!,
-                  ),
-                  child: child,
-                ),
-                child: AppBar(
-                  backgroundColor: Theme.of(context)
-                      .scaffoldBackgroundColor
-                      .withOpacity(0.3),
-                  elevation: 0,
-                  iconTheme: IconTheme.of(context).copyWith(
-                    color: Theme.of(context).textTheme.headline6?.color,
-                  ),
-                  actions: <Widget>[
-                    IconButton(
-                      onPressed: widget.refresh,
-                      tooltip: Translator.t.refetch(),
-                      icon: const Icon(Icons.refresh),
-                    ),
-                  ],
-                ),
-              ),
-              body: DefaultTabController(
-                length: tabCount,
-                child: NestedScrollView(
-                  headerSliverBuilder: (
-                    final BuildContext context,
-                    final bool innerBoxIsScrolled,
-                  ) =>
-                      <Widget>[
-                    SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: paddingHorizontal,
-                      ),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate.fixed(
-                          <Widget>[
-                            const SizedBox(
-                              height: kToolbarHeight,
-                            ),
-                            _Hero(props: widget.props),
-                            SizedBox(
-                              height: remToPx(1.5),
-                            ),
-                            TrackersTile(
-                              title: widget.props.info!.title,
-                              plugin: widget.props.extractor!.id,
-                              providers: Trackers.anime,
-                            ),
-                            SizedBox(
-                              height: remToPx(1.5),
-                            ),
-                            Text(
-                              Translator.t.episodes(),
-                              style: TextStyle(
-                                fontSize: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.fontSize,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.color
-                                    ?.withOpacity(0.7),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (tabCount > 1)
-                      SliverPadding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: paddingHorizontal,
-                        ),
-                        sliver: SliverAppBar(
-                          primary: false,
-                          pinned: true,
-                          floating: true,
-                          automaticallyImplyLeading: false,
-                          backgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
-                          titleSpacing: 0,
-                          centerTitle: true,
-                          title: ScrollConfiguration(
-                            behavior: MiceScrollBehavior(),
-                            child: TabBar(
-                              isScrollable: true,
-                              tabs: List<Widget>.generate(
-                                tabCount,
-                                (final int i) {
-                                  final int start = i * maxChunkLength;
-                                  return Tab(
-                                    text: '$start - ${start + maxChunkLength}',
-                                  );
-                                },
-                              ),
-                              labelColor:
-                                  Theme.of(context).textTheme.bodyText1?.color,
-                              indicatorColor: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                  body: TabBarView(
-                    children: List<Widget>.generate(
-                      tabCount,
-                      (final int i) {
-                        final int start = i * maxChunkLength;
-                        final int totalLength =
-                            widget.props.info!.sortedEpisodes.length;
-                        final int end = start + maxChunkLength;
-                        final int extra =
-                            end > totalLength ? end - totalLength : 0;
-
-                        return Builder(
-                          builder: (final BuildContext context) => _Episodes(
-                            start: start,
-                            end: end - extra,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: paddingHorizontal,
-                            ),
-                            props: widget.props,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              floatingActionButton: ValueListenableBuilder<bool>(
+            return false;
+          },
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PreferredSizeWrapper(
+              builder: (
+                final BuildContext context,
+                final PreferredSizeWidget child,
+              ) =>
+                  ValueListenableBuilder<bool>(
                 valueListenable: showFloatingButton,
                 builder: (
                   final BuildContext context,
@@ -332,21 +192,167 @@ class _InfoPageState extends State<InfoPage>
                   visible: showFloatingButton,
                   curve: Curves.easeInOut,
                   offsetBegin: Offset.zero,
-                  offsetEnd: const Offset(0, 1.5),
+                  offsetEnd: const Offset(0, -1),
                   child: child!,
                 ),
-                child: FloatingActionButton.extended(
-                  icon: const Icon(Icons.language),
-                  label: Text(Translator.t.language()),
-                  onPressed: () {
-                    showLanguageDialog();
-                  },
+                child: child,
+              ),
+              child: AppBar(
+                backgroundColor:
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+                elevation: 0,
+                iconTheme: IconTheme.of(context).copyWith(
+                  color: Theme.of(context).textTheme.headline6?.color,
+                ),
+                actions: <Widget>[
+                  IconButton(
+                    onPressed: widget.refresh,
+                    tooltip: Translator.t.refetch(),
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+            ),
+            body: DefaultTabController(
+              length: tabCount,
+              child: NestedScrollView(
+                headerSliverBuilder: (
+                  final BuildContext context,
+                  final bool innerBoxIsScrolled,
+                ) =>
+                    <Widget>[
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: paddingHorizontal,
+                    ),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate.fixed(
+                        <Widget>[
+                          const SizedBox(
+                            height: kToolbarHeight,
+                          ),
+                          _Hero(props: widget.props),
+                          SizedBox(
+                            height: remToPx(1.5),
+                          ),
+                          TrackersTile(
+                            title: widget.props.info!.title,
+                            plugin: widget.props.extractor!.id,
+                            providers: Trackers.anime,
+                          ),
+                          SizedBox(
+                            height: remToPx(1.5),
+                          ),
+                          Text(
+                            Translator.t.episodes(),
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  ?.fontSize,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  ?.color
+                                  ?.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (tabCount > 1)
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: paddingHorizontal,
+                      ),
+                      sliver: SliverAppBar(
+                        primary: false,
+                        pinned: true,
+                        floating: true,
+                        automaticallyImplyLeading: false,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        titleSpacing: 0,
+                        centerTitle: true,
+                        title: ScrollConfiguration(
+                          behavior: MiceScrollBehavior(),
+                          child: TabBar(
+                            isScrollable: true,
+                            tabs: List<Widget>.generate(
+                              tabCount,
+                              (final int i) {
+                                final int start = i * maxChunkLength;
+                                return Tab(
+                                  text: '$start - ${start + maxChunkLength}',
+                                );
+                              },
+                            ),
+                            labelColor:
+                                Theme.of(context).textTheme.bodyText1?.color,
+                            indicatorColor: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+                body: TabBarView(
+                  children: List<Widget>.generate(
+                    tabCount,
+                    (final int i) {
+                      final int start = i * maxChunkLength;
+                      final int totalLength =
+                          widget.props.info!.sortedEpisodes.length;
+                      final int end = start + maxChunkLength;
+                      final int extra =
+                          end > totalLength ? end - totalLength : 0;
+
+                      return Builder(
+                        builder: (final BuildContext context) => _Episodes(
+                          start: start,
+                          end: end - extra,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: paddingHorizontal,
+                          ),
+                          props: widget.props,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-          );
-        },
-      );
+            floatingActionButton: ValueListenableBuilder<bool>(
+              valueListenable: showFloatingButton,
+              builder: (
+                final BuildContext context,
+                final bool showFloatingButton,
+                final Widget? child,
+              ) =>
+                  ToggleableSlideWidget(
+                controller: floatingButtonController,
+                visible: showFloatingButton,
+                curve: Curves.easeInOut,
+                offsetBegin: Offset.zero,
+                offsetEnd: const Offset(0, 1.5),
+                child: child!,
+              ),
+              child: FloatingActionButton.extended(
+                icon: const Icon(Icons.language),
+                label: Text(Translator.t.language()),
+                onPressed: () {
+                  showLanguageDialog();
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 
   int get tabCount =>
       (widget.props.info!.sortedEpisodes.length / maxChunkLength).ceil();

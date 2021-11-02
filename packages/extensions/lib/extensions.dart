@@ -61,10 +61,12 @@ class BaseExtension {
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'name': name,
         'id': id,
+        'author': author,
         'version': version.toString(),
         'type': type.type,
         'image': image,
         'nsfw': nsfw,
+        'defaultLocale': defaultLocale.toString(),
       };
 }
 
