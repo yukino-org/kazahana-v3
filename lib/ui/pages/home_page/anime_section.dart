@@ -183,7 +183,7 @@ class _HorizontalEntityList extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => SizedBox(
-        height: remToPx(11),
+        height: remToPx(10),
         child: ScrollConfiguration(
           behavior: MiceScrollBehavior(),
           child: ListView(
@@ -213,7 +213,7 @@ class _HorizontalEntityList extends StatelessWidget {
                             ClipRRect(
                           borderRadius: BorderRadius.circular(remToPx(0.3)),
                           child: SizedBox(
-                            width: remToPx(8),
+                            width: remToPx(7.1),
                             child: Stack(
                               children: <Widget>[
                                 Positioned.fill(
