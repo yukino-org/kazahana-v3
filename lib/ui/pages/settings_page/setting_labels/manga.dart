@@ -5,7 +5,8 @@ import '../../../../modules/translator/translator.dart';
 import '../setting_radio.dart';
 import '../setting_switch.dart';
 
-List<Widget> getManga(
+List<Widget> getSettingsManga(
+  final BuildContext context,
   final SettingsSchema settings,
   final Future<void> Function() save,
 ) =>

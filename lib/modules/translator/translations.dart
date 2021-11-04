@@ -136,4 +136,7 @@ abstract class TranslationSentences {
   String copyError();
   String somethingWentWrong();
   String unknownExtension(final String name);
+  String about();
+  String copyLogsToClipboard();
+  String copiedLogsToClipboard();
 }

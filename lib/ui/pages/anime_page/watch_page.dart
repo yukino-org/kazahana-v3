@@ -597,7 +597,8 @@ class _VideoControlsState extends State<_VideoControls>
                           }
                         },
                       ),
-                      ...getAnime(
+                      ...getSettingsAnime(
+                        context,
                         AppState.settings.value,
                         () async {
                           await SettingsBox.save(AppState.settings.value);

@@ -7,19 +7,18 @@ import '../../modules/utils/error.dart';
 import '../../modules/utils/list.dart';
 
 class KawaiiErrorWidget extends StatelessWidget {
-  KawaiiErrorWidget({
+  const KawaiiErrorWidget({
     final this.showFace = true,
     final this.child,
     final this.message,
     final this.error,
     final this.stack,
     final Key? key,
-  }) : super(key: key) {
-    // ignore: prefer_asserts_in_initializer_lists
-    assert(
-      (child == null && message != null) || (child != null && message == null),
-    );
-  }
+  })  : assert(
+          (child == null && message != null) ||
+              (child != null && message == null),
+        ),
+        super(key: key);
 
   factory KawaiiErrorWidget.fromErrorInfo({
     final bool showFace = true,

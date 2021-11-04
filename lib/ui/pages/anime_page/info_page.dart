@@ -154,9 +154,9 @@ class _InfoPageState extends State<InfoPage>
     return SizeAwareBuilder(
       builder: (
         final BuildContext context,
-        final ResponsiveSizeInfo rSize,
+        final ResponsiveSize size,
       ) {
-        final double paddingHorizontal = remToPx(rSize.isMd ? 3 : 1.25);
+        final double paddingHorizontal = remToPx(size.isMd ? 3 : 1.25);
 
         return NotificationListener<ScrollNotification>(
           onNotification: (final ScrollNotification notification) {

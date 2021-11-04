@@ -3,7 +3,7 @@ import '../../../modules/helpers/ui.dart';
 
 typedef SizeAwareWidgetBuilder = Widget Function(
   BuildContext,
-  ResponsiveSizeInfo,
+  ResponsiveSize,
 );
 
 class SizeAwareBuilder extends StatelessWidget {
@@ -16,5 +16,5 @@ class SizeAwareBuilder extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) =>
-      builder(context, ResponsiveSizeInfo.fromContext(context));
+      builder(context, ResponsiveSize.fromContext(context));
 }

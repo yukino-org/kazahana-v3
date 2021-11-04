@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './about_tile.dart';
+import './setting_labels/about.dart';
 import './setting_labels/anime.dart';
 import './setting_labels/manga.dart';
 import './setting_labels/preference.dart';
@@ -8,20 +8,27 @@ import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
+import '../../../modules/utils/function.dart';
+import '../../components/size_aware_builder.dart';
 
 enum Pages {
-  home,
   preference,
   anime,
   manga,
+  about,
 }
 
 class SettingsCategory {
-  SettingsCategory(this.name, this.page, this.icon);
+  SettingsCategory(this.name, this.page, this.icon, this.builder);
 
   final String name;
   final Pages page;
   final IconData icon;
+  final List<Widget> Function(
+    BuildContext,
+    SettingsSchema,
+    Future<void> Function(),
+  ) builder;
 }
 
 class Page extends StatefulWidget {
@@ -36,25 +43,34 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
-  Pages currentPage = Pages.home;
-
   final List<SettingsCategory> categories = <SettingsCategory>[
     SettingsCategory(
       Translator.t.preferences(),
       Pages.preference,
       Icons.invert_colors,
+      getSettingsPreference,
     ),
     SettingsCategory(
       Translator.t.anime(),
       Pages.anime,
       Icons.play_arrow,
+      getSettingsAnime,
     ),
     SettingsCategory(
       Translator.t.manga(),
       Pages.manga,
       Icons.book,
+      getSettingsManga,
+    ),
+    SettingsCategory(
+      Translator.t.about(),
+      Pages.about,
+      Icons.info,
+      getSettingsAbout,
     ),
   ];
+
+  late SettingsCategory currentCategory = categories.first;
 
   final SettingsSchema settings = SettingsBox.get();
 
@@ -67,133 +83,235 @@ class _PageState extends State<Page> {
     }
   }
 
-  Widget getLayouted(final Pages page, final List<Widget> children) =>
-      SingleChildScrollView(
-        key: ValueKey<Pages>(page),
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: remToPx(0.25),
-            ),
-            ...children,
-          ],
-        ),
-      );
-
-  Widget getPage(final Pages page) {
-    switch (page) {
-      case Pages.home:
-        return getLayouted(Pages.home, <Widget>[
-          SizedBox(height: remToPx(1)),
-          const AboutTile(),
-          SizedBox(height: remToPx(1)),
-          ...categories
-              .map(
-                (final SettingsCategory x) => ListTile(
-                  leading: Icon(
-                    x.icon,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  title: Text(x.name),
-                  onTap: () {
-                    goToPage(x.page);
-                  },
+  List<Widget> buildCategoryChildren(
+    final BuildContext context, {
+    final bool disableBackgroundColor = false,
+    final bool popOnPressed = false,
+  }) =>
+      <Widget>[
+        SizedBox(height: remToPx(0.3)),
+        ...categories
+            .map(
+              (final SettingsCategory x) => ListTile(
+                tileColor: !disableBackgroundColor && currentCategory == x
+                    ? Theme.of(context).cardColor
+                    : null,
+                leading: Icon(
+                  x.icon,
+                  color: Theme.of(context).primaryColor,
                 ),
-              )
-              .toList(),
-        ]);
+                title: Text(x.name),
+                onTap: () {
+                  goToPage(x);
 
-      case Pages.preference:
-        return getLayouted(
-          Pages.preference,
-          getPreference(settings, saveSettings),
-        );
+                  if (popOnPressed) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            )
+            .toList()
+      ];
 
-      case Pages.anime:
-        return getLayouted(
-          Pages.anime,
-          getAnime(settings, saveSettings),
-        );
-
-      case Pages.manga:
-        return getLayouted(
-          Pages.manga,
-          getManga(settings, saveSettings),
-        );
-    }
-  }
-
-  void goToPage(final Pages page) {
+  void goToPage(final SettingsCategory category) {
     if (mounted) {
       setState(() {
-        currentPage = page;
+        currentCategory = category;
       });
     }
   }
 
-  @override
-  Widget build(final BuildContext context) => WillPopScope(
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
+  Future<void> showCategories(final BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (final BuildContext context) => ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              left: remToPx(1),
+              right: remToPx(1),
+              top: remToPx(0.6),
+            ),
+            child: Text(
               Translator.t.settings(),
-            ),
-            backgroundColor: Theme.of(context).primaryColor,
-            iconTheme: IconTheme.of(context).copyWith(
-              color: Colors.white,
-            ),
-          ),
-          body: SingleChildScrollView(
-            child: AnimatedSwitcher(
-              switchOutCurve: Curves.easeInOut,
-              duration: Defaults.animationsNormal,
-              child: getPage(currentPage),
-              transitionBuilder:
-                  (final Widget child, final Animation<double> animation) {
-                final Widget fade = FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-
-                if (child.key == const ValueKey<Pages>(Pages.home)) {
-                  return fade;
-                }
-
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.1),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOutCubic,
-                    ),
-                  ),
-                  child: fade,
-                );
-              },
-              layoutBuilder: (
-                final Widget? currentChild,
-                final List<Widget> previousChildren,
-              ) =>
-                  Stack(
-                alignment: Alignment.topLeft,
-                children: <Widget>[
-                  ...previousChildren,
-                  if (currentChild != null) currentChild,
-                ],
+              style: FunctionUtils.withValue(
+                Theme.of(context),
+                (final ThemeData theme) => TextStyle(
+                  color: theme.primaryColor,
+                  fontSize: theme.textTheme.headline6?.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-        onWillPop: () async {
-          if (currentPage == Pages.home) {
-            Navigator.of(context).pop();
-            return true;
-          }
+          ...buildCategoryChildren(
+            context,
+            disableBackgroundColor: true,
+            popOnPressed: true,
+          ),
+        ],
+      ),
+    );
+  }
 
-          goToPage(Pages.home);
-          return false;
+  @override
+  Widget build(final BuildContext context) => SizeAwareBuilder(
+        builder: (final BuildContext context, final ResponsiveSize size) {
+          final double sideBarWidth =
+              size.isMd ? size.width / (size.isLg ? 4.5 : 4) : 0;
+          final double seperatorWidth = remToPx(0.05);
+          final double pageHeight = size.height - kToolbarHeight;
+          final double pageWidth = size.width - sideBarWidth - seperatorWidth;
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    '${Translator.t.settings()} - ',
+                    key: ValueKey<Pages>(currentCategory.page),
+                  ),
+                  AnimatedSwitcher(
+                    duration: Defaults.animationsSlower,
+                    child: Text(
+                      currentCategory.name,
+                      key: ValueKey<Pages>(currentCategory.page),
+                    ),
+                    transitionBuilder: (
+                      final Widget child,
+                      final Animation<double> animation,
+                    ) {
+                      final Widget fade = FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+
+                      if (child.key != ValueKey<Pages>(currentCategory.page)) {
+                        return fade;
+                      }
+
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(1, 0),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          ),
+                        ),
+                        child: fade,
+                      );
+                    },
+                    layoutBuilder: (
+                      final Widget? currentChild,
+                      final List<Widget> previousChildren,
+                    ) =>
+                        Stack(
+                      alignment: Alignment.topLeft,
+                      children: <Widget>[
+                        ...previousChildren,
+                        if (currentChild != null) currentChild,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Theme.of(context).primaryColor,
+              iconTheme: IconTheme.of(context).copyWith(
+                color: Colors.white,
+              ),
+            ),
+            body: Row(
+              children: <Widget>[
+                if (sideBarWidth != 0)
+                  SizedBox(
+                    height: pageHeight,
+                    width: sideBarWidth,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: buildCategoryChildren(context),
+                      ),
+                    ),
+                  ),
+                Container(
+                  height: pageHeight,
+                  width: seperatorWidth,
+                  color: Theme.of(context).cardColor,
+                  child: const SizedBox.expand(),
+                ),
+                SizedBox(
+                  height: pageHeight,
+                  width: pageWidth,
+                  child: SingleChildScrollView(
+                    child: AnimatedSwitcher(
+                      switchOutCurve: Curves.easeInOut,
+                      duration: Defaults.animationsNormal,
+                      child: Column(
+                        key: ValueKey<Pages>(currentCategory.page),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: remToPx(0.3)),
+                          ...currentCategory.builder(
+                            context,
+                            settings,
+                            saveSettings,
+                          ),
+                        ],
+                      ),
+                      transitionBuilder: (
+                        final Widget child,
+                        final Animation<double> animation,
+                      ) {
+                        final Widget fade = FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+
+                        if (child.key !=
+                            ValueKey<Pages>(currentCategory.page)) {
+                          return fade;
+                        }
+
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.1),
+                            end: Offset.zero,
+                          ).animate(
+                            CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeOutCubic,
+                            ),
+                          ),
+                          child: fade,
+                        );
+                      },
+                      layoutBuilder: (
+                        final Widget? currentChild,
+                        final List<Widget> previousChildren,
+                      ) =>
+                          Stack(
+                        alignment: Alignment.topLeft,
+                        children: <Widget>[
+                          ...previousChildren,
+                          if (currentChild != null) currentChild,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            floatingActionButton: !size.isMd
+                ? FloatingActionButton(
+                    child: const Icon(Icons.list),
+                    onPressed: () async {
+                      await showCategories(context);
+                    },
+                  )
+                : null,
+          );
         },
       );
 }

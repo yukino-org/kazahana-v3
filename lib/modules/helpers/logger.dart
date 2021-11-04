@@ -66,5 +66,7 @@ class Logger {
     file.write('$msg\n');
   }
 
+  static Future<String> read() => File(filePath).readAsString();
+
   static String get time => DateTime.now().toIso8601String();
 }

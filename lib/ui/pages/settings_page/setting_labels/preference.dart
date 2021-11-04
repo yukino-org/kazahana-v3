@@ -5,7 +5,8 @@ import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';
 import '../setting_radio.dart';
 
-List<Widget> getPreference(
+List<Widget> getSettingsPreference(
+  final BuildContext context,
   final SettingsSchema settings,
   final Future<void> Function() save,
 ) =>

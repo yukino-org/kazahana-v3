@@ -19,19 +19,23 @@ abstract class ResponsiveSizes {
   static bool isXl(final double size) => size > xl;
 }
 
-class ResponsiveSizeInfo {
-  const ResponsiveSizeInfo(this.size);
+class ResponsiveSize extends Size {
+  const ResponsiveSize({
+    required final double width,
+    required final double height,
+  }) : super(width, height);
 
-  factory ResponsiveSizeInfo.fromContext(final BuildContext context) =>
-      ResponsiveSizeInfo(MediaQuery.of(context).size.width);
+  factory ResponsiveSize.fromSize(final Size size) =>
+      ResponsiveSize(height: size.height, width: size.width);
 
-  final double size;
+  factory ResponsiveSize.fromContext(final BuildContext context) =>
+      ResponsiveSize.fromSize(MediaQuery.of(context).size);
 
-  bool get isXs => ResponsiveSizes.isXs(size);
-  bool get isSm => ResponsiveSizes.isSm(size);
-  bool get isMd => ResponsiveSizes.isMd(size);
-  bool get isLg => ResponsiveSizes.isLg(size);
-  bool get isXl => ResponsiveSizes.isXl(size);
+  bool get isXs => ResponsiveSizes.isXs(width);
+  bool get isSm => ResponsiveSizes.isSm(width);
+  bool get isMd => ResponsiveSizes.isMd(width);
+  bool get isLg => ResponsiveSizes.isLg(width);
+  bool get isXl => ResponsiveSizes.isXl(width);
 }
 
 abstract class Palette {

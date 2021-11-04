@@ -396,4 +396,13 @@ class Sentences extends TranslationSentences {
 
   @override
   String unknownExtension(final String name) => 'Unknown extension: $name';
+
+  @override
+  String about() => 'About';
+
+  @override
+  String copyLogsToClipboard() => 'Copy logs to clipboard';
+
+  @override
+  String copiedLogsToClipboard() => 'Copied logs to clipboard.';
 }

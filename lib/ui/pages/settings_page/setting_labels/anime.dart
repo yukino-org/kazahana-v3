@@ -7,7 +7,8 @@ import '../../../../modules/video_player/video_player.dart';
 import '../setting_dialog.dart';
 import '../setting_switch.dart';
 
-List<Widget> getAnime(
+List<Widget> getSettingsAnime(
+  final BuildContext context,
   final SettingsSchema settings,
   final Future<void> Function() save,
 ) =>

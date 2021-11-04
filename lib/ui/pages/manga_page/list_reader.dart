@@ -109,7 +109,8 @@ class _ListReaderState extends State<ListReader>
             child: Wrap(
               children: <Widget>[
                 Column(
-                  children: getManga(AppState.settings.value, () async {
+                  children: getSettingsManga(context, AppState.settings.value,
+                      () async {
                     await SettingsBox.save(AppState.settings.value);
 
                     if (AppState.settings.value.mangaReaderMode !=
