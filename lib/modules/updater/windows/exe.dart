@@ -32,7 +32,7 @@ echo Copy updated files
 robocopy "{{{ updatedDir }}}" "{{{ installDir }}}" /s /e
 
 echo Spawn updated app
-start {{{ exePath }}}
+start "" "{{{ exePath }}}"
 
 echo Finished updating
 ''';
