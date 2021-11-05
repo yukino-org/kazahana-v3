@@ -28,4 +28,11 @@ abstract class Config {
 
   static const String releasesURL =
       'https://api.github.com/repos/$repoAuthor/$repoName/releases?per_page=20';
+
+  static const String gitHubURL = 'https://github.com/$repoAuthor/$repoName';
+  static const String gitHubIssuesURL = '$gitHubURL/issues';
+  static const String websiteURL = 'https://yukino-app.github.io';
+  static const String discordURL = 'https://yukino-app.github.io/discord';
+  static const String wikiURL = 'https://yukino-app.github.io/wiki';
+  static const String patreonURL = 'https://yukino-app.github.io/patreon';
 }

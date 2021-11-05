@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './setting_labels/about.dart';
 import './setting_labels/anime.dart';
+import './setting_labels/developers.dart';
 import './setting_labels/manga.dart';
 import './setting_labels/preference.dart';
 import '../../../config/defaults.dart';
@@ -15,6 +16,7 @@ enum Pages {
   preference,
   anime,
   manga,
+  developers,
   about,
 }
 
@@ -34,9 +36,7 @@ class SettingsCategory {
 class Page extends StatefulWidget {
   const Page({
     final Key? key,
-  }) : super(
-          key: key,
-        );
+  }) : super(key: key);
 
   @override
   _PageState createState() => _PageState();
@@ -61,6 +61,12 @@ class _PageState extends State<Page> {
       Pages.manga,
       Icons.book,
       getSettingsManga,
+    ),
+    SettingsCategory(
+      Translator.t.developers(),
+      Pages.developers,
+      Icons.developer_mode,
+      getSettingsDevelopers,
     ),
     SettingsCategory(
       Translator.t.about(),

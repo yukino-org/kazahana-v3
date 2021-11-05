@@ -405,4 +405,25 @@ class Sentences extends TranslationSentences {
 
   @override
   String copiedLogsToClipboard() => 'Copied logs to clipboard.';
+
+  @override
+  String github() => 'GitHub';
+
+  @override
+  String patreon() => 'Patreon';
+
+  @override
+  String website() => 'Website';
+
+  @override
+  String wiki() => 'Wiki';
+
+  @override
+  String discord() => 'Discord';
+
+  @override
+  String developers() => 'Developers';
+
+  @override
+  String reportABug() => 'Report a bug';
 }

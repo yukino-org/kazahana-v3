@@ -56,8 +56,13 @@ class _ProfilePageState extends State<ProfilePage>
       )
       .toList();
 
-  late final TabController tabController;
-  late final PageController pageController;
+  late final TabController tabController = TabController(
+    length: tabs.length,
+    vsync: this,
+  );
+  late final PageController pageController = PageController(
+    initialPage: tabController.index,
+  );
 
   final Widget loader = const Center(
     child: CircularProgressIndicator(),
@@ -67,23 +72,20 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
 
-    tabController = TabController(
-      length: tabs.length,
-      vsync: this,
-    );
-
-    pageController = PageController(
-      initialPage: tabController.index,
-    );
-
-    tabController.addListener(() {
+    tabController.addListener(() async {
       if (tabController.index != pageController.page &&
           pageController.hasClients) {
-        pageController.animateToPage(
+        await pageController.animateToPage(
           tabController.index,
           duration: Defaults.animationsSlower,
           curve: Curves.easeInOut,
         );
+      }
+    });
+
+    pageController.addListener(() {
+      if (tabController.index != pageController.page) {
+        tabController.animateTo(pageController.page!.toInt());
       }
     });
 

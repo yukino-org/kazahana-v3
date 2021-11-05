@@ -1,15 +1,29 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/app.dart';
-import '../../../../modules/app/state.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/assets.dart';
-import '../../../../modules/helpers/logger.dart';
 import '../../../../modules/helpers/ui.dart';
 import '../../../../modules/translator/translator.dart';
 import '../../../../modules/utils/function.dart';
 import '../../../components/size_aware_builder.dart';
+
+class _Link {
+  const _Link(this.text, this.url, [this.icon = Icons.link]);
+
+  final String url;
+  final String text;
+  final IconData icon;
+}
+
+final List<_Link> _links = <_Link>[
+  _Link(Translator.t.website(), Config.websiteURL, Icons.language),
+  _Link(Translator.t.wiki(), Config.wikiURL, Icons.article),
+  _Link(Translator.t.patreon(), Config.patreonURL, Icons.favorite),
+  _Link(Translator.t.reportABug(), Config.gitHubIssuesURL, Icons.bug_report),
+  _Link(Translator.t.github(), Config.gitHubURL),
+  _Link(Translator.t.discord(), Config.discordURL),
+];
 
 List<Widget> getSettingsAbout(
   final BuildContext context,
@@ -97,30 +111,16 @@ List<Widget> getSettingsAbout(
           ),
         ),
       ),
-      ListTile(
-        leading: Icon(
-          Icons.feed,
-          color: Theme.of(context).primaryColor,
+      ..._links.map(
+        (final _Link x) => ListTile(
+          leading: Icon(
+            x.icon,
+            color: Theme.of(context).primaryColor,
+          ),
+          title: Text(x.text),
+          onTap: () async {
+            await launch(x.url);
+          },
         ),
-        title: Text(Translator.t.copyLogsToClipboard()),
-        onTap: () async {
-          final String logs = await Logger.read();
-          await FlutterClipboard.copy(logs);
-
-          // ignore: use_build_context_synchronously
-          FunctionUtils.withValue(
-            context,
-            (final BuildContext context) =>
-                ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  Translator.t.copiedLogsToClipboard(),
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                backgroundColor: Theme.of(context).cardColor,
-              ),
-            ),
-          );
-        },
       ),
     ];

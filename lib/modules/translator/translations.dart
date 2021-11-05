@@ -139,4 +139,11 @@ abstract class TranslationSentences {
   String about();
   String copyLogsToClipboard();
   String copiedLogsToClipboard();
+  String github();
+  String patreon();
+  String website();
+  String wiki();
+  String discord();
+  String developers();
+  String reportABug();
 }
