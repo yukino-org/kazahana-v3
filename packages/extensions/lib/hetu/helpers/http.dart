@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/http.dart';
 
 const String httpDefinitions = '''
-external fun fetch(data: Map);
+external fun fetch(data: Map); // (data: { method: 'get' | 'head' | 'post' | 'patch' | 'delete' | 'put', url: String, body: String? }) -> { body: String, status: int, headers: Map<String, String> }
 external fun httpUserAgent() -> str;
 external fun ensureURL(url: str) -> str;
 ''';
@@ -63,3 +63,7 @@ Future<Map<dynamic, dynamic>> fetch(
     'headers': res.headers,
   };
 }
+
+String httpUserAgent() => HttpUtils.userAgent;
+
+const String Function(String) ensureURL = HttpUtils.ensureURL;

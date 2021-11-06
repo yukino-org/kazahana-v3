@@ -12,10 +12,12 @@ dependencies:
     encrypt: ^5.0.0
     flutter:
         sdk: flutter
+    flutter_webview_plugin: ^0.4.0
     fuzzy: ^0.4.0-nullsafety.0
     hetu_script: ^0.1.2+5
     html: ^0.15.0
     http: ^0.13.3
+    puppeteer: ^2.3.0
     utilx:
         git:
             url: https://github.com/yukino-app/yukino.git

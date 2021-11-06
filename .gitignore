@@ -27,11 +27,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 node_modules/
-installer.g.iss
 AppDir/
 appimage-builder-cache/
-builder.g.yml
 assets/data/meta.json
 certs
 cli/.cache
-lib/**/*.g.dart
+*.g.*
+.local-chromium

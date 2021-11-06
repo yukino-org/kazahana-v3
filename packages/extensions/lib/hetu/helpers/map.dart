@@ -1,7 +1,7 @@
 import 'package:hetu_script/hetu_script.dart';
 
 const String mapDefinitions = '''
-const MapEachCb: type = fun(key: any, item: any) -> any;
+const MapEachCb: type = fun(key, item) -> any;
 external fun eachMap(data: Map, cb: ListEachCb) -> void;
 external fun mergeMap(m1: Map, m2: Map) -> Map;
 ''';

@@ -14,6 +14,10 @@ class TestTimer {
   void pass() {
     print('Passed in ${DateTime.now().millisecondsSinceEpoch - started}ms');
   }
+
+  void fail() {
+    print('Failed in ${DateTime.now().millisecondsSinceEpoch - started}ms');
+  }
 }
 
 const JsonEncoder encoder = JsonEncoder.withIndent('  ');
@@ -34,6 +38,12 @@ class AnimeExtractorTest {
     }
 
     print('\nTotal results: ${result.length}');
+
+    if (result.isEmpty) {
+      timer.fail();
+      throw Exception('Empty result');
+    }
+
     timer.pass();
   }
 
@@ -56,6 +66,12 @@ class AnimeExtractorTest {
     }
 
     print('\nTotal results: ${result.length}');
+
+    if (result.isEmpty) {
+      timer.fail();
+      throw Exception('Empty result');
+    }
+
     timer.pass();
   }
 }
@@ -76,6 +92,12 @@ class MangaExtractorTest {
     }
 
     print('\nTotal results: ${result.length}');
+
+    if (result.isEmpty) {
+      timer.fail();
+      throw Exception('Empty result');
+    }
+
     timer.pass();
   }
 
@@ -98,6 +120,12 @@ class MangaExtractorTest {
     }
 
     print('\nTotal results: ${result.length}');
+
+    if (result.isEmpty) {
+      timer.fail();
+      throw Exception('Empty result');
+    }
+
     timer.pass();
   }
 

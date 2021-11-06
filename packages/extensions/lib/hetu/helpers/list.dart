@@ -1,20 +1,20 @@
 import 'package:hetu_script/hetu_script.dart';
 
 const String listDefinitions = '''
-const ListMapper: type = fun(i: num, item: any) -> any;
-external fun mapList(data: List<any>, mapper: ListMapper) -> str;
+const ListMapper: type = fun(i: num, item) -> bool; // -> bool
+external fun mapList(data: List, mapper: ListMapper) -> List; // -> List<dynamic>
 
-const ListFilterer: type = fun(i: num, item: any) -> bool;
-external fun filterList(data: List<any>, filterer: ListFilterer) -> List<any>;
-external fun findList(data: List<any>, filterer: ListFilterer); // returns any or null
+const ListFilterer: type = fun(i: num, item) -> bool;
+external fun filterList(data: List, filterer: ListFilterer) -> List; // -> List<dynamic>
+external fun findList(data: List, filterer: ListFilterer); // -> dynamic?
 
-const ListEachCb: type = fun(i: num, item: any) -> any;
-external fun eachList(data: List<any>, cb: ListEachCb) -> void;
+const ListEachCb: type = fun(i: num, item);
+external fun eachList(data: List, cb: ListEachCb) -> void;
 
-external fun mergeList(m1: List<any>, m2: List<any>) -> List<any>;
-external fun rangeList(a: num, b: num) -> List<int>;
-external fun flattenList(data: List, level: num) -> List;
-external fun deepFlattenList(data: List) -> List;
+external fun mergeList(m1: List, m2: List) -> List; // -> List<dynamic>
+external fun rangeList(a: num, b: num) -> List<num>;
+external fun flattenList(data: List, level: num) -> List; // -> List<dynamic>
+external fun deepFlattenList(data: List) -> List; // -> List<dynamic>
 ''';
 
 List<int> rangeList(final int a, final int b) {

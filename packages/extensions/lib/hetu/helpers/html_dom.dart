@@ -3,17 +3,11 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 
 const String htmlDefinitions = '''
-external class HtmlElement {
-  const classes: List<str>;
-  const id; // -> String?
-  const text; // -> String?
-  const innerHtml: str;
-  const outerHtml: str;
-  const attributes: Map<str>;
-  fun querySelector(selector: str); // -> HtmlElement?
-  fun querySelectorAll(selector: str) -> List<HtmlElement>;
+external class HtmlDom {
+  fun getHtml(); // -> Future<String?>
+  fun evalJavascript(code: str); // -> dynamic
 }
-external fun parseHtml(html: str) -> HtmlElement;
+external fun createDOM(url: str) -> HtmlDom;
 ''';
 
 Map<String, String> _mapElementAttributes(

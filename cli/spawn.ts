@@ -42,7 +42,6 @@ export const spawn = async (
             stdio: stdio,
             env: process.env,
             cwd: cwd,
-            // shell: true,
         });
 
         let stdout = "";

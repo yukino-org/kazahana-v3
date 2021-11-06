@@ -1,6 +1,5 @@
 import 'package:hetu_script/hetu_script.dart';
 import './helpers/helpers.dart' as helpers;
-import '../utils/http.dart';
 
 abstract class HetuManager {
   static final String definitions = <String>[
@@ -35,7 +34,7 @@ abstract class HetuManager {
         'parseHtml': helpers.parseHtml,
         'jsonEncode': helpers.jsonEncode,
         'jsonDecode': helpers.jsonDecode,
-        'httpUserAgent': () => HttpUtils.userAgent,
+        'httpUserAgent': helpers.httpUserAgent,
         'regexMatch': helpers.regexMatch,
         'regexMatchAll': helpers.regexMatchAll,
         'mapList': helpers.mapList,
@@ -45,7 +44,7 @@ abstract class HetuManager {
         'regexReplaceFirst': helpers.regexReplaceFirst,
         'resolveFuture': helpers.resolveFuture,
         'throwError': helpers.throwError,
-        'ensureURL': HttpUtils.ensureURL,
+        'ensureURL': helpers.ensureURL,
         'eachList': helpers.eachList,
         'eachMap': helpers.eachMap,
         'mergeMap': helpers.mergeMap,
