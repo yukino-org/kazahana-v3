@@ -5,9 +5,9 @@ import '../../../../../modules/helpers/ui.dart';
 import '../../../../../modules/trackers/anilist/anilist.dart';
 import '../../../../../modules/translator/translator.dart';
 import '../../../../../modules/utils/utils.dart';
+import '../../../../components/material_tiles/dialog.dart';
+import '../../../../components/material_tiles/radio.dart';
 import '../../../../components/trackers/detailed_item.dart';
-import '../../../settings_page/setting_dialog.dart';
-import '../../../settings_page/setting_radio.dart';
 
 class EditModal extends StatefulWidget {
   const EditModal({
@@ -80,9 +80,9 @@ class _EditModalState extends State<EditModal> {
             SizedBox(
               height: remToPx(0.3),
             ),
-            SettingRadio<AniListMediaListStatus>(
-              title: Translator.t.status(),
-              icon: Icons.play_arrow,
+            RadioMaterialTile<AniListMediaListStatus>(
+              title: Text(Translator.t.status()),
+              icon: const Icon(Icons.play_arrow),
               value: status,
               labels: AniListMediaListStatus.values.asMap().map(
                     (final int k, final AniListMediaListStatus status) =>
@@ -100,13 +100,15 @@ class _EditModalState extends State<EditModal> {
             SizedBox(
               height: remToPx(0.3),
             ),
-            SettingDialog(
-              title: widget.media.media.type == ExtensionType.anime
-                  ? Translator.t.episodesWatched()
-                  : Translator.t.chaptersRead(),
-              icon: Icons.sync_alt,
-              subtitle: '$progress / ${totalProgress ?? '?'}',
-              builder: (
+            MaterialDialogTile(
+              title: Text(
+                widget.media.media.type == ExtensionType.anime
+                    ? Translator.t.episodesWatched()
+                    : Translator.t.chaptersRead(),
+              ),
+              icon: const Icon(Icons.sync_alt),
+              subtitle: Text('$progress / ${totalProgress ?? '?'}'),
+              dialogBuilder: (
                 final BuildContext context,
                 final StateSetter setState,
               ) =>
@@ -174,12 +176,13 @@ class _EditModalState extends State<EditModal> {
               height: remToPx(0.3),
             ),
             if (widget.media.media.type == ExtensionType.manga) ...<Widget>[
-              SettingDialog(
-                title: Translator.t.volumesCompleted(),
-                icon: Icons.sync_alt,
-                subtitle:
-                    '$progressVolumes / ${widget.media.media.volumes ?? '?'}',
-                builder: (
+              MaterialDialogTile(
+                title: Text(Translator.t.volumesCompleted()),
+                icon: const Icon(Icons.sync_alt),
+                subtitle: Text(
+                  '$progressVolumes / ${widget.media.media.volumes ?? '?'}',
+                ),
+                dialogBuilder: (
                   final BuildContext context,
                   final StateSetter setState,
                 ) =>
@@ -244,11 +247,11 @@ class _EditModalState extends State<EditModal> {
                 height: remToPx(0.3),
               ),
             ],
-            SettingDialog(
-              title: Translator.t.score(),
-              icon: Icons.sync_alt,
-              subtitle: score?.toString() ?? '?',
-              builder: (
+            MaterialDialogTile(
+              title: Text(Translator.t.score()),
+              icon: const Icon(Icons.sync_alt),
+              subtitle: Text(score?.toString() ?? '?'),
+              dialogBuilder: (
                 final BuildContext context,
                 final StateSetter setState,
               ) =>

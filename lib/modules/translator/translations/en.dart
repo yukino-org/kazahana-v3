@@ -426,4 +426,34 @@ class Sentences extends TranslationSentences {
 
   @override
   String reportABug() => 'Report a bug';
+
+  @override
+  String disableAnimations() => 'Disable animations';
+
+  @override
+  String keyboardShortcuts() => 'Keyboard Shortcuts';
+
+  @override
+  String waitingForKeyStrokes() => 'Waiting for keystrokes...';
+
+  @override
+  String playPause() => 'Play/Pause';
+
+  @override
+  String fullscreen() => 'Fullscreen';
+
+  @override
+  String seekBackward() => 'Seek backward';
+
+  @override
+  String seekForward() => 'Seek forward';
+
+  @override
+  String goBack() => 'Go back';
+
+  @override
+  String previousEpisode() => 'Previous episode';
+
+  @override
+  String nextEpisode() => 'Next episode';
 }

@@ -4,9 +4,9 @@ import '../../../../../../modules/helpers/ui.dart';
 import '../../../../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../../../../modules/translator/translator.dart';
 import '../../../../../../modules/utils/utils.dart';
+import '../../../../../components/material_tiles/dialog.dart';
+import '../../../../../components/material_tiles/radio.dart';
 import '../../../../../components/trackers/detailed_item.dart';
-import '../../../../settings_page/setting_dialog.dart';
-import '../../../../settings_page/setting_radio.dart';
 
 class EditModal extends StatefulWidget {
   const EditModal({
@@ -70,9 +70,9 @@ class _EditModalState extends State<EditModal> {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              SettingRadio<MyAnimeListAnimeListStatus>(
-                title: Translator.t.status(),
-                icon: Icons.play_arrow,
+              RadioMaterialTile<MyAnimeListAnimeListStatus>(
+                title: Text(Translator.t.status()),
+                icon: const Icon(Icons.play_arrow),
                 value: status,
                 labels: MyAnimeListAnimeListStatus.values.asMap().map(
                       (final int k, final MyAnimeListAnimeListStatus status) =>
@@ -90,12 +90,13 @@ class _EditModalState extends State<EditModal> {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              SettingDialog(
-                title: Translator.t.episodesWatched(),
-                icon: Icons.sync_alt,
-                subtitle:
-                    '$progress / ${widget.media.details?.totalEpisodes ?? '?'}',
-                builder: (
+              MaterialDialogTile(
+                title: Text(Translator.t.episodesWatched()),
+                icon: const Icon(Icons.sync_alt),
+                subtitle: Text(
+                  '$progress / ${widget.media.details?.totalEpisodes ?? '?'}',
+                ),
+                dialogBuilder: (
                   final BuildContext context,
                   final StateSetter setState,
                 ) =>
@@ -160,11 +161,11 @@ class _EditModalState extends State<EditModal> {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              SettingDialog(
-                title: Translator.t.score(),
-                icon: Icons.sync_alt,
-                subtitle: score?.toString() ?? '?',
-                builder: (
+              MaterialDialogTile(
+                title: Text(Translator.t.score()),
+                icon: const Icon(Icons.sync_alt),
+                subtitle: Text(score?.toString() ?? '?'),
+                dialogBuilder: (
                   final BuildContext context,
                   final StateSetter setState,
                 ) =>

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:objectbox/objectbox.dart';
+import '../../../schemas/settings/anime_keyboard_shortcuts.dart';
 import '../../../video_player/video_player.dart';
 
 const bool _useSystemPreferredTheme = true;
@@ -17,6 +19,7 @@ const bool _animeAutoFullscreen = true;
 const bool _mangaAutoFullscreen = true;
 const int _animeTrackerWatchPercent = 80;
 const bool _animeForceLandscape = true;
+const bool _disableAnimations = false;
 
 @Entity()
 class SettingsSchema {
@@ -36,6 +39,8 @@ class SettingsSchema {
     final this.mangaAutoFullscreen = _mangaAutoFullscreen,
     final this.animeTrackerWatchPercent = _animeTrackerWatchPercent,
     final this.animeForceLandscape = _animeForceLandscape,
+    final this.disableAnimations = _disableAnimations,
+    final this.animeShortcuts_,
   });
 
   int id = 0;
@@ -51,6 +56,7 @@ class SettingsSchema {
   bool mangaAutoFullscreen;
   int animeTrackerWatchPercent;
   bool animeForceLandscape;
+  bool disableAnimations;
 
   MangaDirections mangaReaderDirection;
   String get mangaReaderDirection_ => mangaReaderDirection.name;
@@ -72,6 +78,15 @@ class SettingsSchema {
     mangaReaderMode =
         MangaMode.values.firstWhere((final MangaMode x) => x.name == val);
   }
+
+  String? animeShortcuts_;
+  AnimeKeyboardShortcuts get animeShortcuts => animeShortcuts_ != null
+      ? AnimeKeyboardShortcuts.fromJson(
+          json.decode(animeShortcuts_!) as Map<dynamic, dynamic>,
+        )
+      : AnimeKeyboardShortcuts.fromPartial();
+  set animeShortcuts(final AnimeKeyboardShortcuts shortcuts) =>
+      animeShortcuts_ = json.encode(shortcuts.toJson());
 }
 
 enum MangaDirections {

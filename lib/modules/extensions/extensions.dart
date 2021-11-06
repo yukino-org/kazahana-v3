@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
+import 'package:extensions/utils/html_dom/html_dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../../config/app.dart';
@@ -21,6 +22,10 @@ abstract class ExtensionsManager {
   static Map<String, MangaExtractor> mangas = <String, MangaExtractor>{};
 
   static Future<void> initialize() async {
+    await ExtensionInternals.initialize(
+      htmlDomOptions: HtmlDOMOptions(dataDirectory: PathDirs.otherData),
+    );
+
     await _loadStore();
     await _loadLocalExtensions();
   }
@@ -112,13 +117,13 @@ abstract class ExtensionsManager {
   ) async {
     switch (ext.type) {
       case ExtensionType.anime:
-        animes[ext.id] = await ExtensionUtils.transpileToAnimeExtractor(
+        animes[ext.id] = await ExtensionInternals.transpileToAnimeExtractor(
           ext,
         );
         break;
 
       case ExtensionType.manga:
-        mangas[ext.id] = await ExtensionUtils.transpileToMangaExtractor(
+        mangas[ext.id] = await ExtensionInternals.transpileToMangaExtractor(
           ext,
         );
         break;

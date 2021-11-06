@@ -10,6 +10,7 @@ import '../../../modules/database/database.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/function.dart';
+import '../../components/material_tiles/base.dart';
 import '../../components/size_aware_builder.dart';
 
 enum Pages {
@@ -91,22 +92,19 @@ class _PageState extends State<Page> {
 
   List<Widget> buildCategoryChildren(
     final BuildContext context, {
-    final bool disableBackgroundColor = false,
     final bool popOnPressed = false,
   }) =>
       <Widget>[
         SizedBox(height: remToPx(0.3)),
         ...categories
             .map(
-              (final SettingsCategory x) => ListTile(
-                tileColor: !disableBackgroundColor && currentCategory == x
-                    ? Theme.of(context).cardColor
-                    : null,
-                leading: Icon(
+              (final SettingsCategory x) => MaterialTile(
+                icon: Icon(
                   x.icon,
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(x.name),
+                active: currentCategory == x,
                 onTap: () {
                   goToPage(x);
 
@@ -152,7 +150,6 @@ class _PageState extends State<Page> {
           ),
           ...buildCategoryChildren(
             context,
-            disableBackgroundColor: true,
             popOnPressed: true,
           ),
         ],
@@ -264,6 +261,7 @@ class _PageState extends State<Page> {
                             settings,
                             saveSettings,
                           ),
+                          SizedBox(height: remToPx(0.3)),
                         ],
                       ),
                       transitionBuilder: (

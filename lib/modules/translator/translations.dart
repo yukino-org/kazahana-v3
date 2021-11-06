@@ -146,4 +146,14 @@ abstract class TranslationSentences {
   String discord();
   String developers();
   String reportABug();
+  String disableAnimations();
+  String keyboardShortcuts();
+  String waitingForKeyStrokes();
+  String playPause();
+  String fullscreen();
+  String seekBackward();
+  String seekForward();
+  String goBack();
+  String previousEpisode();
+  String nextEpisode();
 }

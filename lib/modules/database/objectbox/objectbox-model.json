@@ -77,7 +77,7 @@
     },
     {
       "id": "4:1",
-      "lastPropertyId": "16:3625592503513121933",
+      "lastPropertyId": "26:8547498297673923244",
       "name": "SettingsSchema",
       "properties": [
         {
@@ -160,6 +160,16 @@
           "id": "16:3625592503513121933",
           "name": "mangaReaderMode_",
           "type": 9
+        },
+        {
+          "id": "25:2078169098439781657",
+          "name": "animeShortcuts_",
+          "type": 9
+        },
+        {
+          "id": "26:8547498297673923244",
+          "name": "disableAnimations",
+          "type": 1
         }
       ],
       "relations": []
@@ -174,7 +184,15 @@
   "retiredEntityUids": [],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
-    1921708900049052479
+    1921708900049052479,
+    6807925679093099115,
+    278991453586192045,
+    4800538878419601913,
+    3208763458658997463,
+    7236699100241270147,
+    5432917366629577766,
+    3743096892862510591,
+    591995873535278834
   ],
   "retiredRelationUids": [],
   "version": 1

@@ -4,6 +4,8 @@ import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/logger.dart';
 import '../../../../modules/translator/translator.dart';
 import '../../../../modules/utils/function.dart';
+import '../../../components/material_tiles/base.dart';
+import '../../../components/material_tiles/switch.dart';
 
 List<Widget> getSettingsDevelopers(
   final BuildContext context,
@@ -11,12 +13,9 @@ List<Widget> getSettingsDevelopers(
   final Future<void> Function() save,
 ) =>
     <Widget>[
-      ListTile(
-        leading: Icon(
-          Icons.feed,
-          color: Theme.of(context).primaryColor,
-        ),
+      MaterialTile(
         title: Text(Translator.t.copyLogsToClipboard()),
+        icon: const Icon(Icons.feed),
         onTap: () async {
           final String logs = await Logger.read();
           await FlutterClipboard.copy(logs);
@@ -35,6 +34,16 @@ List<Widget> getSettingsDevelopers(
               ),
             ),
           );
+        },
+      ),
+      MaterialSwitchTile(
+        title: Text(Translator.t.disableAnimations()),
+        icon: const Icon(Icons.animation),
+        value: settings.disableAnimations,
+        onChanged: (final bool val) async {
+          settings.disableAnimations = val;
+
+          await save();
         },
       ),
     ];

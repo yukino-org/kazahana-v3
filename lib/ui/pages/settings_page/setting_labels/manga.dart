@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../modules/app/state.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/translator/translator.dart';
-import '../setting_radio.dart';
-import '../setting_switch.dart';
+import '../../../components/material_tiles/radio.dart';
+import '../../../components/material_tiles/switch.dart';
 
 List<Widget> getSettingsManga(
   final BuildContext context,
@@ -11,9 +11,9 @@ List<Widget> getSettingsManga(
   final Future<void> Function() save,
 ) =>
     <Widget>[
-      SettingRadio<MangaDirections>(
-        title: Translator.t.mangaReaderDirection(),
-        icon: Icons.auto_stories,
+      RadioMaterialTile<MangaDirections>(
+        title: Text(Translator.t.mangaReaderDirection()),
+        icon: const Icon(Icons.auto_stories),
         value: settings.mangaReaderDirection,
         labels: <MangaDirections, String>{
           MangaDirections.leftToRight: Translator.t.leftToRight(),
@@ -26,9 +26,9 @@ List<Widget> getSettingsManga(
         },
       ),
       if (AppState.isMobile)
-        SettingRadio<MangaSwipeDirections>(
-          title: Translator.t.mangaReaderSwipeDirection(),
-          icon: Icons.swipe,
+        RadioMaterialTile<MangaSwipeDirections>(
+          title: Text(Translator.t.mangaReaderSwipeDirection()),
+          icon: const Icon(Icons.swipe),
           value: settings.mangaReaderSwipeDirection,
           labels: <MangaSwipeDirections, String>{
             MangaSwipeDirections.horizontal: Translator.t.horizontal(),
@@ -40,9 +40,9 @@ List<Widget> getSettingsManga(
             await save();
           },
         ),
-      SettingRadio<MangaMode>(
-        title: Translator.t.mangaReaderMode(),
-        icon: Icons.pageview,
+      RadioMaterialTile<MangaMode>(
+        title: Text(Translator.t.mangaReaderMode()),
+        icon: const Icon(Icons.pageview),
         value: settings.mangaReaderMode,
         labels: <MangaMode, String>{
           MangaMode.list: Translator.t.list(),
@@ -54,10 +54,10 @@ List<Widget> getSettingsManga(
           await save();
         },
       ),
-      SettingSwitch(
-        title: Translator.t.doubleTapToSwitchChapter(),
-        icon: Icons.double_arrow,
-        desc: Translator.t.doubleTapToSwitchChapterDetail(),
+      MaterialSwitchTile(
+        title: Text(Translator.t.doubleTapToSwitchChapter()),
+        icon: const Icon(Icons.double_arrow),
+        subtitle: Text(Translator.t.doubleTapToSwitchChapterDetail()),
         value: settings.doubleClickSwitchChapter,
         onChanged: (final bool val) async {
           settings.doubleClickSwitchChapter = val;
@@ -65,12 +65,12 @@ List<Widget> getSettingsManga(
           await save();
         },
       ),
-      SettingSwitch(
-        title: Translator.t.autoMangaFullscreen(),
+      MaterialSwitchTile(
+        title: Text(Translator.t.autoMangaFullscreen()),
         icon: settings.mangaAutoFullscreen
-            ? Icons.fullscreen
-            : Icons.fullscreen_exit,
-        desc: Translator.t.autoMangaFullscreenDetail(),
+            ? const Icon(Icons.fullscreen)
+            : const Icon(Icons.fullscreen_exit),
+        subtitle: Text(Translator.t.autoMangaFullscreenDetail()),
         value: settings.mangaAutoFullscreen,
         onChanged: (final bool val) async {
           settings.mangaAutoFullscreen = val;

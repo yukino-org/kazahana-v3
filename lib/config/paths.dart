@@ -20,5 +20,7 @@ abstract class PathDirs {
 
   static String get data => path.join(documents, 'data');
 
+  static String get otherData => path.join(documents, 'other-data');
+
   static String get extensions => path.join(documents, 'extensions');
 }

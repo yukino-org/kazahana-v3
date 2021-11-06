@@ -3,7 +3,7 @@ import 'package:utilx/utilities/locale.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';
-import '../setting_radio.dart';
+import '../../../components/material_tiles/radio.dart';
 
 List<Widget> getSettingsPreference(
   final BuildContext context,
@@ -12,10 +12,10 @@ List<Widget> getSettingsPreference(
 ) =>
     <Widget>[
       Builder(
-        builder: (final BuildContext context) => SettingRadio<String>(
-          title: Translator.t.language(),
-          dialogTitle: Translator.t.chooseLanguage(),
-          icon: Icons.language,
+        builder: (final BuildContext context) => RadioMaterialTile<String>(
+          title: Text(Translator.t.language()),
+          dialogTitle: Text(Translator.t.chooseLanguage()),
+          icon: const Icon(Icons.language),
           value: Translator.t.locale.toString(),
           labels: <String, String>{
             for (final TranslationSentences lang in Translator.translations)
@@ -38,10 +38,10 @@ List<Widget> getSettingsPreference(
           },
         ),
       ),
-      SettingRadio<int>(
-        title: Translator.t.theme(),
-        dialogTitle: Translator.t.chooseTheme(),
-        icon: Icons.palette,
+      RadioMaterialTile<int>(
+        title: Text(Translator.t.theme()),
+        dialogTitle: Text(Translator.t.chooseTheme()),
+        icon: const Icon(Icons.palette),
         value: settings.useSystemPreferredTheme
             ? 0
             : !settings.useDarkMode

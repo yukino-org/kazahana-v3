@@ -7,8 +7,10 @@ import './shared_props.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
+import '../../../modules/helpers/keyboard.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
+import '../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
 import '../../../modules/state/hooks.dart';
 import '../../../modules/state/reactive_holder.dart';
 import '../../../modules/trackers/provider.dart';
@@ -16,8 +18,8 @@ import '../../../modules/trackers/trackers.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/utils.dart';
 import '../../../modules/video_player/video_player.dart';
+import '../../components/material_tiles/radio.dart';
 import '../settings_page/setting_labels/anime.dart';
-import '../settings_page/setting_radio.dart';
 
 class _VideoDuration {
   _VideoDuration(this.current, this.total);
@@ -50,6 +52,12 @@ class _VideoStateProps {
   }
 }
 
+enum _SeekType {
+  forward,
+  backward,
+  intro,
+}
+
 class WatchPage extends StatefulWidget {
   const WatchPage({
     required final this.props,
@@ -69,6 +77,9 @@ class WatchPageState extends State<WatchPage>
   final ReactiveHolder<_VideoStateProps> videoState =
       ReactiveHolder<_VideoStateProps>(_VideoStateProps());
 
+  final FocusNode keyBoardFocusNode = FocusNode();
+  late final KeyboardHandler keyboardHandler;
+
   Timer? _mouseOverlayTimer;
   bool hasSynced = false;
   bool showControls = true;
@@ -79,6 +90,72 @@ class WatchPageState extends State<WatchPage>
     super.initState();
 
     initFullscreen();
+
+    final AnimeKeyboardShortcuts shortcuts =
+        AppState.settings.value.animeShortcuts;
+
+    keyboardHandler = KeyboardHandler(
+      onKeyDown: <KeyboardKeyHandler>[
+        KeyboardKeyHandler(
+          shortcuts.fullscreen,
+          (final RawKeyEvent event) async {
+            await setFullscreen(
+              enabled: !AppState.settings.value.animeAutoFullscreen,
+            );
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.playPause,
+          (final RawKeyEvent event) async {
+            if (videoState.value.isReady) {
+              await (videoState.value.videoPlayer!.isPlaying
+                  ? videoState.value.videoPlayer!.pause()
+                  : videoState.value.videoPlayer!.play());
+            }
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.seekBackward,
+          (final RawKeyEvent event) async {
+            await seek(_SeekType.backward);
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.seekForward,
+          (final RawKeyEvent event) async {
+            await seek(_SeekType.forward);
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.skipIntro,
+          (final RawKeyEvent event) async {
+            await seek(_SeekType.intro);
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.exit,
+          (final RawKeyEvent event) async {
+            pop();
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.previousEpisode,
+          (final RawKeyEvent event) async {
+            if (previousEpisodeAvailable) {
+              previousEpisode();
+            }
+          },
+        ),
+        KeyboardKeyHandler(
+          shortcuts.nextEpisode,
+          (final RawKeyEvent event) async {
+            if (nextEpisodeAvailable) {
+              nextEpisode();
+            }
+          },
+        ),
+      ],
+    );
 
     onReady(() async {
       if (mounted) {
@@ -116,9 +193,9 @@ class WatchPageState extends State<WatchPage>
       exitFullscreen();
     }
 
-    videoState.value.dispose();
     playerChild = null;
-
+    videoState.value.dispose();
+    keyBoardFocusNode.dispose();
     _mouseOverlayTimer?.cancel();
 
     super.dispose();
@@ -357,50 +434,111 @@ class WatchPageState extends State<WatchPage>
   }
 
   @override
-  Widget build(final BuildContext context) => Material(
-        type: MaterialType.transparency,
-        child: MouseRegion(
-          onEnter: (final PointerEnterEvent event) {
-            _updateOverlayMovement(1);
-          },
-          onHover: (final PointerHoverEvent event) {
-            if (event.kind == PointerDeviceKind.mouse &&
-                event.delta.distance > 1) {
+  Widget build(final BuildContext context) => RawKeyboardListener(
+        focusNode: keyBoardFocusNode,
+        autofocus: true,
+        onKey: (final RawKeyEvent event) =>
+            keyboardHandler.onRawKeyEvent(event),
+        child: Material(
+          type: MaterialType.transparency,
+          child: MouseRegion(
+            onEnter: (final PointerEnterEvent event) {
               _updateOverlayMovement(1);
-            }
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              _updateOverlayMovement(2);
             },
-            child: Stack(
-              children: <Widget>[
-                if (playerChild != null) playerChild!,
-                AnimatedSwitcher(
-                  duration: Defaults.animationsNormal,
-                  child: !videoState.value.isReady || showControls
-                      ? _VideoControls(
-                          props: widget.props,
-                          videoState: videoState,
-                          previousEpisodeAvailable: previousEpisodeAvailable,
-                          nextEpisodeAvailable: nextEpisodeAvailable,
-                          previousEpisode: previousEpisode,
-                          nextEpisode: nextEpisode,
-                          pop: pop,
-                          enableFullscreen: enterFullscreen,
-                          disableFullscreen: exitFullscreen,
-                          enableLandscape: enterLandscape,
-                          disableLandscape: exitLandscape,
-                          showSelectSources: showSelectSources,
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ],
+            onHover: (final PointerHoverEvent event) {
+              if (event.kind == PointerDeviceKind.mouse &&
+                  event.delta.distance > 1) {
+                _updateOverlayMovement(1);
+              }
+            },
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _updateOverlayMovement(2);
+              },
+              child: Stack(
+                children: <Widget>[
+                  if (playerChild != null) playerChild!,
+                  AnimatedSwitcher(
+                    duration: Defaults.animationsNormal,
+                    child: !videoState.value.isReady || showControls
+                        ? _VideoControls(
+                            props: widget.props,
+                            videoState: videoState,
+                            previousEpisodeAvailable: previousEpisodeAvailable,
+                            nextEpisodeAvailable: nextEpisodeAvailable,
+                            previousEpisode: previousEpisode,
+                            nextEpisode: nextEpisode,
+                            pop: pop,
+                            setFullscreen: setFullscreen,
+                            seek: seek,
+                            enableLandscape: enterLandscape,
+                            disableLandscape: exitLandscape,
+                            showSelectSources: showSelectSources,
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       );
+
+  Future<void> setFullscreen({
+    required final bool enabled,
+  }) async {
+    AppState.settings.value.animeAutoFullscreen = enabled;
+
+    await (AppState.settings.value.animeAutoFullscreen
+        ? enterFullscreen()
+        : exitFullscreen());
+
+    await SettingsBox.save(AppState.settings.value);
+  }
+
+  Future<void> seek(final _SeekType type) async {
+    if (videoState.value.isReady) {
+      switch (type) {
+        case _SeekType.forward:
+          final Duration amt = videoState.value.duration.value.current +
+              Duration(
+                seconds: AppState.settings.value.seekDuration,
+              );
+
+          await videoState.value.videoPlayer!.seek(
+            amt < videoState.value.duration.value.total
+                ? amt
+                : videoState.value.duration.value.total,
+          );
+          break;
+
+        case _SeekType.backward:
+          final Duration amt = videoState.value.duration.value.current -
+              Duration(
+                seconds: AppState.settings.value.seekDuration,
+              );
+          await videoState.value.videoPlayer!.seek(
+            amt <= Duration.zero ? Duration.zero : amt,
+          );
+
+          break;
+
+        case _SeekType.intro:
+          final Duration amt = videoState.value.duration.value.current +
+              Duration(
+                seconds: AppState.settings.value.introDuration,
+              );
+
+          await videoState.value.videoPlayer!.seek(
+            amt < videoState.value.duration.value.total
+                ? amt
+                : videoState.value.duration.value.total,
+          );
+          break;
+      }
+    }
+  }
 
   void previousEpisode() {
     if (previousEpisodeAvailable) {
@@ -486,8 +624,8 @@ class _VideoControls extends StatefulWidget {
     required final this.videoState,
     required final this.previousEpisodeAvailable,
     required final this.nextEpisodeAvailable,
-    required final this.enableFullscreen,
-    required final this.disableFullscreen,
+    required final this.setFullscreen,
+    required final this.seek,
     required final this.enableLandscape,
     required final this.disableLandscape,
     required final this.previousEpisode,
@@ -503,8 +641,10 @@ class _VideoControls extends StatefulWidget {
   final bool previousEpisodeAvailable;
   final bool nextEpisodeAvailable;
 
-  final void Function() enableFullscreen;
-  final void Function() disableFullscreen;
+  final Future<void> Function({
+    required bool enabled,
+  }) setFullscreen;
+  final Future<void> Function(_SeekType type) seek;
   final void Function() enableLandscape;
   final void Function() disableLandscape;
   final void Function() previousEpisode;
@@ -578,9 +718,9 @@ class _VideoControlsState extends State<_VideoControls>
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      SettingRadio<double>(
-                        title: Translator.t.speed(),
-                        icon: Icons.speed,
+                      RadioMaterialTile<double>(
+                        title: Text(Translator.t.speed()),
+                        icon: const Icon(Icons.speed),
                         value: widget.videoState.value.speed,
                         labels: VideoPlayer.allowedSpeeds.asMap().map(
                               (final int k, final double v) =>
@@ -735,15 +875,8 @@ class _VideoControlsState extends State<_VideoControls>
             clipBehavior: Clip.hardEdge,
             child: IconButton(
               iconSize: remToPx(2),
-              onPressed: () {
-                final Duration amt =
-                    widget.videoState.value.duration.value.current -
-                        Duration(
-                          seconds: AppState.settings.value.seekDuration,
-                        );
-                widget.videoState.value.videoPlayer!.seek(
-                  amt <= Duration.zero ? Duration.zero : amt,
-                );
+              onPressed: () async {
+                await widget.seek(_SeekType.backward);
               },
               icon: const Icon(
                 Icons.fast_rewind,
@@ -775,18 +908,8 @@ class _VideoControlsState extends State<_VideoControls>
             clipBehavior: Clip.hardEdge,
             child: IconButton(
               iconSize: remToPx(2),
-              onPressed: () {
-                final Duration amt =
-                    widget.videoState.value.duration.value.current +
-                        Duration(
-                          seconds: AppState.settings.value.seekDuration,
-                        );
-
-                widget.videoState.value.videoPlayer!.seek(
-                  amt < widget.videoState.value.duration.value.total
-                      ? amt
-                      : widget.videoState.value.duration.value.total,
-                );
+              onPressed: () async {
+                await widget.seek(_SeekType.forward);
               },
               icon: const Icon(
                 Icons.fast_forward,
@@ -824,19 +947,8 @@ class _VideoControlsState extends State<_VideoControls>
                     child: _ActionButton(
                       icon: Icons.fast_forward,
                       label: Translator.t.skipIntro(),
-                      onPressed: () {
-                        final Duration amt =
-                            widget.videoState.value.duration.value.current +
-                                Duration(
-                                  seconds:
-                                      AppState.settings.value.introDuration,
-                                );
-
-                        widget.videoState.value.videoPlayer!.seek(
-                          amt < widget.videoState.value.duration.value.total
-                              ? amt
-                              : widget.videoState.value.duration.value.total,
-                        );
+                      onPressed: () async {
+                        await widget.seek(_SeekType.intro);
                       },
                       enabled: widget.videoState.value.isReady,
                     ),
@@ -990,9 +1102,7 @@ class _VideoControlsState extends State<_VideoControls>
                                 ? widget.enableLandscape()
                                 : widget.disableLandscape();
 
-                            await SettingsBox.save(
-                              AppState.settings.value,
-                            );
+                            await SettingsBox.save(AppState.settings.value);
 
                             if (mounted) {
                               setState(() {});
@@ -1016,15 +1126,8 @@ class _VideoControlsState extends State<_VideoControls>
                     child: InkWell(
                       borderRadius: BorderRadius.circular(remToPx(0.2)),
                       onTap: () async {
-                        AppState.settings.value.animeAutoFullscreen =
-                            !AppState.settings.value.animeAutoFullscreen;
-
-                        AppState.settings.value.animeAutoFullscreen
-                            ? widget.enableFullscreen()
-                            : widget.disableFullscreen();
-
-                        await SettingsBox.save(
-                          AppState.settings.value,
+                        await widget.setFullscreen(
+                          enabled: !AppState.settings.value.animeAutoFullscreen,
                         );
                       },
                       child: Icon(

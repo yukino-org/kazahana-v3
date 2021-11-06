@@ -6,6 +6,7 @@ import '../../../../modules/helpers/assets.dart';
 import '../../../../modules/helpers/ui.dart';
 import '../../../../modules/translator/translator.dart';
 import '../../../../modules/utils/function.dart';
+import '../../../components/material_tiles/base.dart';
 import '../../../components/size_aware_builder.dart';
 
 class _Link {
@@ -112,11 +113,8 @@ List<Widget> getSettingsAbout(
         ),
       ),
       ..._links.map(
-        (final _Link x) => ListTile(
-          leading: Icon(
-            x.icon,
-            color: Theme.of(context).primaryColor,
-          ),
+        (final _Link x) => MaterialTile(
+          icon: Icon(x.icon),
           title: Text(x.text),
           onTap: () async {
             await launch(x.url);
