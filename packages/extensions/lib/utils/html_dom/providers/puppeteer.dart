@@ -4,7 +4,7 @@ import '../html_dom.dart';
 
 class Puppeteer extends HtmlDOMProvider {
   late Browser browser;
-  late Page page;
+  Page? page;
   String? chromiumPath;
 
   @override
@@ -37,17 +37,17 @@ class Puppeteer extends HtmlDOMProvider {
     isClean = false;
 
     page = await browser.newPage();
-    await page.goto(url);
+    await page!.goto(url);
   }
 
   @override
   Future<dynamic> evalJavascript(final String code) async =>
-      page.evaluate(code);
+      page?.evaluate(code);
 
   @override
   Future<void> clean() async {
     if (!isClean) {
-      await page.close();
+      await page?.close();
       isClean = true;
     }
   }
