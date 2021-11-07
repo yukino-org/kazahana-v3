@@ -9,7 +9,7 @@ external class HtmlDOM {
   fun clearCookies(); // -> Future<void>
   fun dispose(); // -> Future<void> /// Dispose this if you are going to use it anymore
 }
-external fun createDOM(url: str) // -> Future<HtmlDOM>;
+external fun createDOM() // -> Future<HtmlDOM>;
 ''';
 
 class HtmlDOMTabClassBinding extends HTExternalClass {
