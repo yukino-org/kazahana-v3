@@ -43,10 +43,12 @@ class FlutterWebviewTab extends HtmlDOMTab {
 
   @override
   Future<void> dispose() async {
-    await webview!.close();
-    webview = null;
+    if (disposed) {
+      await webview!.close();
+      webview = null;
 
-    super.dispose();
+      super.dispose();
+    }
   }
 }
 

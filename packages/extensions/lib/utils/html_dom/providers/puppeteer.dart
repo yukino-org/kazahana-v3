@@ -10,6 +10,7 @@ class PuppeteerTab extends HtmlDOMTab {
 
   @override
   Future<void> open(final String url) async {
+    print('opening');
     beforeMethod();
 
     await page!.goto(url);
@@ -44,10 +45,14 @@ class PuppeteerTab extends HtmlDOMTab {
 
   @override
   Future<void> dispose() async {
-    await page!.close();
-    page = null;
+    print('disposed');
 
-    super.dispose();
+    if (!disposed) {
+      await page!.close();
+      page = null;
+
+      super.dispose();
+    }
   }
 }
 
