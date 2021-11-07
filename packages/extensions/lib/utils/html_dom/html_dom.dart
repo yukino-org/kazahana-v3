@@ -1,18 +1,7 @@
 import './providers/flutter_webview_plugin.dart';
 import './providers/puppeteer.dart';
 
-class HtmlDOMOptions {
-  const HtmlDOMOptions({
-    required final this.puppeteerOptions,
-  });
-
-  final PuppeteerOptions puppeteerOptions;
-}
-
 abstract class HtmlDOMProvider {
-  HtmlDOMProvider(this.options);
-
-  final HtmlDOMOptions options;
   bool isClean = false;
   bool ready = false;
 
@@ -34,11 +23,11 @@ abstract class HtmlDOMProvider {
 abstract class HtmlDOMManager {
   static late final HtmlDOMProvider provider;
 
-  static Future<void> initialize(final HtmlDOMOptions options) async {
+  static Future<void> initialize() async {
     if (FlutterWebview.isSupported()) {
-      provider = FlutterWebview(options);
+      provider = FlutterWebview();
     } else if (Puppeteer.isSupported()) {
-      provider = Puppeteer(options);
+      provider = Puppeteer();
     } else {
       throw Exception('No DOM provider was found');
     }

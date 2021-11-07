@@ -2,17 +2,7 @@ import 'dart:io';
 import 'package:puppeteer/puppeteer.dart';
 import '../html_dom.dart';
 
-class PuppeteerOptions {
-  const PuppeteerOptions({
-    required final this.userDirectory,
-  });
-
-  final String userDirectory;
-}
-
 class Puppeteer extends HtmlDOMProvider {
-  Puppeteer(final HtmlDOMOptions options) : super(options);
-
   late Browser browser;
   late Page page;
   String? chromiumPath;
@@ -27,6 +17,7 @@ class Puppeteer extends HtmlDOMProvider {
     for (final String? x in chromiumPaths) {
       try {
         await _launch(x);
+        print(x);
       } catch (_) {}
     }
 
@@ -35,7 +26,6 @@ class Puppeteer extends HtmlDOMProvider {
 
   Future<void> _launch(final String? executablePath) async {
     browser = await puppeteer.launch(
-      userDataDir: options.puppeteerOptions.userDirectory,
       executablePath: executablePath,
     );
     page = await browser.newPage();

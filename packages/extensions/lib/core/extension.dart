@@ -12,10 +12,8 @@ export './resolvable.dart';
 export './resolved.dart';
 
 abstract class ExtensionInternals {
-  static Future<void> initialize({
-    required final HtmlDOMOptions htmlDomOptions,
-  }) async {
-    await HtmlDOMManager.initialize(htmlDomOptions);
+  static Future<void> initialize() async {
+    await HtmlDOMManager.initialize();
   }
 
   static Future<void> dispose() async {

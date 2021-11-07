@@ -4,8 +4,6 @@ import '../../../../utils/http.dart';
 import '../html_dom.dart';
 
 class FlutterWebview extends HtmlDOMProvider {
-  FlutterWebview(final HtmlDOMOptions options) : super(options);
-
   late final FlutterWebviewPlugin webview;
 
   @override
