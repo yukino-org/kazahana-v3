@@ -3,7 +3,43 @@ import 'package:puppeteer/protocol/network.dart';
 import 'package:puppeteer/puppeteer.dart';
 import '../html_dom.dart';
 
-class Puppeteer extends HtmlDOMProvider {
+class PuppeteerTab extends HtmlDOMTab {
+  PuppeteerTab(this.page) : super();
+
+  Page? page;
+
+  @override
+  Future<void> open(final String url) async {
+    await page!.goto(url);
+  }
+
+  @override
+  Future<dynamic> evalJavascript(final String code) async =>
+      page!.evaluate(code);
+
+  @override
+  Future<Map<String, String>> getCookies() async =>
+      (await page!.cookies()).asMap().map(
+            (final int i, final Cookie x) =>
+                MapEntry<String, String>(x.name, x.value),
+          );
+
+  @override
+  Future<void> clearCookies() async {
+    await Future.wait(
+      (await page!.cookies())
+          .map((final Cookie x) => page!.deleteCookie(x.name)),
+    );
+  }
+
+  @override
+  Future<void> dispose() async {
+    await page!.close();
+    page = null;
+  }
+}
+
+class PuppeteerProvider extends HtmlDOMProvider {
   late Browser browser;
   Page? page;
   String? chromiumPath;
@@ -11,7 +47,7 @@ class Puppeteer extends HtmlDOMProvider {
   @override
   Future<void> initialize() async {
     final List<String?> chromiumPaths = <String?>[
-      ...await Puppeteer.getChromiumPaths(),
+      ...await PuppeteerProvider.getChromiumPaths(),
       null,
     ];
 
@@ -34,42 +70,7 @@ class Puppeteer extends HtmlDOMProvider {
   }
 
   @override
-  Future<void> goto(final String url) async {
-    isClean = false;
-
-    page = await browser.newPage();
-    await page!.goto(url);
-  }
-
-  @override
-  Future<dynamic> evalJavascript(final String code) async =>
-      page?.evaluate(code);
-
-  @override
-  Future<Map<String, String>> getCookies() async =>
-      (await page?.cookies())?.asMap().map(
-            (final int i, final Cookie x) =>
-                MapEntry<String, String>(x.name, x.value),
-          ) ??
-      <String, String>{};
-
-  @override
-  Future<void> clearCookies() async {
-    if (page != null) {
-      await Future.wait(
-        (await page!.cookies())
-            .map((final Cookie x) => page!.deleteCookie(x.name)),
-      );
-    }
-  }
-
-  @override
-  Future<void> clean() async {
-    if (!isClean) {
-      await page?.close();
-      isClean = true;
-    }
-  }
+  Future<PuppeteerTab> create() async => PuppeteerTab(await browser.newPage());
 
   @override
   Future<void> dispose() async {

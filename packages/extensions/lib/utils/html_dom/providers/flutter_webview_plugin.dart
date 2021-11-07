@@ -3,20 +3,14 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import '../../../../utils/http.dart';
 import '../html_dom.dart';
 
-class FlutterWebview extends HtmlDOMProvider {
-  late final FlutterWebviewPlugin webview;
+class FlutterWebviewTab extends HtmlDOMTab {
+  FlutterWebviewTab(this.webview) : super();
+
+  FlutterWebviewPlugin? webview;
 
   @override
-  Future<void> initialize() async {
-    webview = FlutterWebviewPlugin();
-    ready = true;
-  }
-
-  @override
-  Future<void> goto(final String url) async {
-    isClean = false;
-
-    await webview.launch(
+  Future<void> open(final String url) async {
+    await webview!.launch(
       url,
       hidden: true,
       userAgent: HttpUtils.userAgent,
@@ -26,26 +20,33 @@ class FlutterWebview extends HtmlDOMProvider {
 
   @override
   Future<dynamic> evalJavascript(final String code) async =>
-      webview.evalJavascript(code);
+      webview!.evalJavascript(code);
 
   @override
-  Future<Map<String, String>> getCookies() async => webview.getCookies();
+  Future<Map<String, String>> getCookies() async => webview!.getCookies();
 
   @override
-  Future<void> clearCookies() async => webview.cleanCookies();
-
-  @override
-  Future<void> clean() async {
-    if (!isClean) {
-      await webview.close();
-      isClean = true;
-    }
-  }
+  Future<void> clearCookies() async => webview!.cleanCookies();
 
   @override
   Future<void> dispose() async {
-    webview.dispose();
+    await webview!.close();
+    webview = null;
   }
+}
+
+class FlutterWebviewProvider extends HtmlDOMProvider {
+  @override
+  Future<void> initialize() async {
+    ready = true;
+  }
+
+  @override
+  Future<FlutterWebviewTab> create() async =>
+      FlutterWebviewTab(FlutterWebviewPlugin());
+
+  @override
+  Future<void> dispose() async {}
 
   static bool isSupported() => Platform.isAndroid || Platform.isIOS;
 }

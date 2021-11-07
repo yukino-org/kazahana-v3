@@ -20,10 +20,6 @@ abstract class ExtensionInternals {
     await HtmlDOMManager.dispose();
   }
 
-  static Future<void> _cleanAfterMethod() async {
-    await HtmlDOMManager.provider.clean();
-  }
-
   static String _getDefaultLocale(final Hetu runner) {
     try {
       return runner.invoke('defaultLocale') as String;
@@ -61,7 +57,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return (result as List<dynamic>)
               .cast<Map<dynamic, dynamic>>()
               .map(
@@ -83,7 +78,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return AnimeInfo.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
           HetuManager.editError(err);
@@ -99,7 +93,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return (result as List<dynamic>)
               .cast<Map<dynamic, dynamic>>()
               .map(
@@ -142,7 +135,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return (result as List<dynamic>)
               .cast<Map<dynamic, dynamic>>()
               .map(
@@ -164,7 +156,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return MangaInfo.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
           HetuManager.editError(err);
@@ -180,7 +171,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return (result as List<dynamic>)
               .cast<Map<dynamic, dynamic>>()
               .map(
@@ -201,7 +191,6 @@ abstract class ExtensionInternals {
             ],
           );
 
-          await _cleanAfterMethod();
           return ImageDescriber.fromJson(result as Map<dynamic, dynamic>);
         } on HTError catch (err) {
           HetuManager.editError(err);

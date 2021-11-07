@@ -5,31 +5,19 @@ const String htmlDomDefinitions = '''
 external class HtmlDOM {
   fun getHtml(); // -> Future<String?>
   fun evalJavascript(code: str); // -> Future<dynamic>
+  fun getCookies(); // -> Future<Map<String, String>>
+  fun clearCookies(); // -> Future<void>
+  fun dispose(); // -> Future<void> /// Dispose this if you are going to use it anymore
 }
 external fun createDOM(url: str) // -> Future<HtmlDOM>;
 ''';
 
-class HtmlDOM {
-  HtmlDOM({
-    required final this.getHtml,
-    required final this.evaluateJavascript,
-  });
-
-  factory HtmlDOM.fromProvider(final HtmlDOMProvider provider) => HtmlDOM(
-        getHtml: provider.getHtml,
-        evaluateJavascript: provider.evalJavascript,
-      );
-
-  final Future<String?> Function() getHtml;
-  final Future<dynamic> Function(String) evaluateJavascript;
-}
-
-class HtmlDOMClassBinding extends HTExternalClass {
-  HtmlDOMClassBinding() : super('HtmlDOM');
+class HtmlDOMTabClassBinding extends HTExternalClass {
+  HtmlDOMTabClassBinding() : super('HtmlDOMTab');
 
   @override
   dynamic instanceMemberGet(final dynamic object, final String varName) {
-    final HtmlDOM dom = object as HtmlDOM;
+    final HtmlDOMTab tab = object as HtmlDOMTab;
     switch (varName) {
       case 'getHtml':
         return ({
@@ -37,15 +25,39 @@ class HtmlDOMClassBinding extends HTExternalClass {
           final Map<String, dynamic> namedArgs = const <String, dynamic>{},
           final List<HTType> typeArgs = const <HTType>[],
         }) =>
-            dom.getHtml();
+            tab.getHtml();
 
-      case 'evaluateJavascript':
+      case 'evalJavascript':
         return ({
           final List<dynamic> positionalArgs = const <dynamic>[],
           final Map<String, dynamic> namedArgs = const <String, dynamic>{},
           final List<HTType> typeArgs = const <HTType>[],
         }) =>
-            dom.evaluateJavascript(positionalArgs.first as String);
+            tab.evalJavascript(positionalArgs.first as String);
+
+      case 'getCookies':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            tab.getCookies();
+
+      case 'clearCookies':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            tab.clearCookies();
+
+      case 'dispose':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            tab.dispose();
 
       default:
         throw HTError.undefined(varName);
@@ -53,7 +65,4 @@ class HtmlDOMClassBinding extends HTExternalClass {
   }
 }
 
-Future<HtmlDOM> createDOM(final String url) async {
-  await HtmlDOMManager.provider.goto(url);
-  return HtmlDOM.fromProvider(HtmlDOMManager.provider);
-}
+Future<HtmlDOMTab> createDOM() async => HtmlDOMManager.provider.create();
