@@ -17,7 +17,6 @@ class Puppeteer extends HtmlDOMProvider {
     for (final String? x in chromiumPaths) {
       try {
         await _launch(x);
-        print(x);
         break;
       } catch (_) {}
     }
@@ -29,7 +28,6 @@ class Puppeteer extends HtmlDOMProvider {
     browser = await puppeteer.launch(
       executablePath: executablePath,
     );
-    page = await browser.newPage();
 
     chromiumPath = executablePath;
   }
@@ -38,6 +36,7 @@ class Puppeteer extends HtmlDOMProvider {
   Future<void> goto(final String url) async {
     isClean = false;
 
+    page = await browser.newPage();
     await page.goto(url);
   }
 
