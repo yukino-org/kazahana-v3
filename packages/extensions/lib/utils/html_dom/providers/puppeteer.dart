@@ -74,10 +74,8 @@ class Puppeteer extends HtmlDOMProvider {
     r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\App Paths',
   ];
 
-  static const List<String> chromiumAppNames = <String>[
-    'chrome.exe',
-    'msedge.exe'
-  ];
+  static final RegExp chromiumAppMatcher =
+      RegExp(r'\(Default\)\s+REG_SZ\s+(.*?\\(chrome|msedge)\.exe)');
 
   static bool isSupported() =>
       Platform.isWindows || Platform.isLinux || Platform.isMacOS;
@@ -88,16 +86,14 @@ class Puppeteer extends HtmlDOMProvider {
     for (final String regKey in regKeys) {
       final ProcessResult result = await Process.run(
         'REG',
-        <String>['QUERY', regKey],
+        <String>['QUERY', regKey, '/s'],
         runInShell: true,
       );
 
-      final List<String> paths = result.stdout.toString().trim().split('\n');
       chromiumPaths.addAll(
-        paths.where(
-          (final String x) =>
-              chromiumAppNames.any((final String y) => x.endsWith('/$y')),
-        ),
+        chromiumAppMatcher
+            .allMatches(result.stdout.toString())
+            .map((final RegExpMatch x) => x.group(1)!),
       );
     }
 

@@ -7,7 +7,6 @@ class FlutterWebview extends HtmlDOMProvider {
   FlutterWebview(final HtmlDOMOptions options) : super(options);
 
   late final FlutterWebviewPlugin webview;
-  bool ready = false;
 
   @override
   Future<void> initialize() async {
