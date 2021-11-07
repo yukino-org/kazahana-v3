@@ -10,6 +10,8 @@ class FlutterWebviewTab extends HtmlDOMTab {
 
   @override
   Future<void> open(final String url) async {
+    beforeMethod();
+
     await webview!.launch(
       url,
       hidden: true,
@@ -19,19 +21,32 @@ class FlutterWebviewTab extends HtmlDOMTab {
   }
 
   @override
-  Future<dynamic> evalJavascript(final String code) async =>
-      webview!.evalJavascript(code);
+  Future<dynamic> evalJavascript(final String code) async {
+    beforeMethod();
+
+    return webview!.evalJavascript(code);
+  }
 
   @override
-  Future<Map<String, String>> getCookies() async => webview!.getCookies();
+  Future<Map<String, String>> getCookies() async {
+    beforeMethod();
+
+    return webview!.getCookies();
+  }
 
   @override
-  Future<void> clearCookies() async => webview!.cleanCookies();
+  Future<void> clearCookies() async {
+    beforeMethod();
+
+    return webview!.cleanCookies();
+  }
 
   @override
   Future<void> dispose() async {
     await webview!.close();
     webview = null;
+
+    super.dispose();
   }
 }
 

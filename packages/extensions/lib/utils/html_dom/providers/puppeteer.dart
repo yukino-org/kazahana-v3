@@ -10,22 +10,32 @@ class PuppeteerTab extends HtmlDOMTab {
 
   @override
   Future<void> open(final String url) async {
+    beforeMethod();
+
     await page!.goto(url);
   }
 
   @override
-  Future<dynamic> evalJavascript(final String code) async =>
-      page!.evaluate(code);
+  Future<dynamic> evalJavascript(final String code) async {
+    beforeMethod();
+
+    return page!.evaluate(code);
+  }
 
   @override
-  Future<Map<String, String>> getCookies() async =>
-      (await page!.cookies()).asMap().map(
-            (final int i, final Cookie x) =>
-                MapEntry<String, String>(x.name, x.value),
-          );
+  Future<Map<String, String>> getCookies() async {
+    beforeMethod();
+
+    return (await page!.cookies()).asMap().map(
+          (final int i, final Cookie x) =>
+              MapEntry<String, String>(x.name, x.value),
+        );
+  }
 
   @override
   Future<void> clearCookies() async {
+    beforeMethod();
+
     await Future.wait(
       (await page!.cookies())
           .map((final Cookie x) => page!.deleteCookie(x.name)),
@@ -36,6 +46,8 @@ class PuppeteerTab extends HtmlDOMTab {
   Future<void> dispose() async {
     await page!.close();
     page = null;
+
+    super.dispose();
   }
 }
 

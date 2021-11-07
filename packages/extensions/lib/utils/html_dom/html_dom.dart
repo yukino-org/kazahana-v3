@@ -1,20 +1,19 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
+
 import './providers/flutter_webview_plugin.dart';
 import './providers/puppeteer.dart';
 
 abstract class HtmlDOMTab {
-  HtmlDOMTab() {
-    Timer.periodic(expireCheckDuration, (final Timer timer) async {
-      if (lastUsed == null ||
-          DateTime.now().millisecond >
-              (lastUsed! + expireDuration.inMilliseconds)) {
-        await dispose();
-        timer.cancel();
-      }
-    });
-  }
+  int lastUsed = DateTime.now().millisecondsSinceEpoch;
+  bool disposed = false;
 
-  int? lastUsed;
+  late Timer? timer =
+      Timer.periodic(expireCheckDuration, (final Timer timer) async {
+    if (hasExpired && !disposed) {
+      await dispose();
+    }
+  });
 
   Future<void> open(final String url);
   Future<dynamic> evalJavascript(final String code);
@@ -28,7 +27,24 @@ abstract class HtmlDOMTab {
     return result is String ? result : null;
   }
 
-  Future<void> dispose();
+  @mustCallSuper
+  Future<void> dispose() async {
+    timer?.cancel();
+    timer = null;
+    disposed = true;
+  }
+
+  void beforeMethod() {
+    if (disposed) {
+      throw StateError('DOM has been disposed');
+    }
+
+    lastUsed = DateTime.now().microsecondsSinceEpoch;
+  }
+
+  bool get hasExpired =>
+      DateTime.now().millisecondsSinceEpoch >
+      (lastUsed + expireDuration.inMilliseconds);
 
   static const Duration expireDuration = Duration(minutes: 2);
   static const Duration expireCheckDuration = Duration(minutes: 1);

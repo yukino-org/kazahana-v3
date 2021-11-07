@@ -3,11 +3,12 @@ import '../../utils/html_dom/html_dom.dart';
 
 const String htmlDomDefinitions = '''
 external class HtmlDOM {
+  const disposed: bool;
   fun getHtml(); // -> Future<String?>
   fun evalJavascript(code: str); // -> Future<dynamic>
   fun getCookies(); // -> Future<Map<String, String>>
   fun clearCookies(); // -> Future<void>
-  fun dispose(); // -> Future<void> /// Dispose this if you are going to use it anymore
+  fun dispose(); // -> Future<void> /// Dispose if you are going to use it anymore
 }
 external fun createDOM() // -> Future<HtmlDOM>;
 ''';
@@ -19,6 +20,9 @@ class HtmlDOMTabClassBinding extends HTExternalClass {
   dynamic instanceMemberGet(final dynamic object, final String varName) {
     final HtmlDOMTab tab = object as HtmlDOMTab;
     switch (varName) {
+      case 'disposed':
+        return tab.disposed;
+
       case 'getHtml':
         return ({
           final List<dynamic> positionalArgs = const <dynamic>[],
