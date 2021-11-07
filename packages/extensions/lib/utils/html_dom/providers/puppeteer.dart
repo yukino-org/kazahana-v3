@@ -91,6 +91,8 @@ class PuppeteerProvider extends HtmlDOMProvider {
 
   @override
   Future<void> dispose() async {
+    await Future.wait((await browser.pages).map((final Page x) => x.close()));
+
     await browser.close();
   }
 
