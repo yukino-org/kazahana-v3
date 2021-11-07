@@ -3,17 +3,16 @@ import './providers/puppeteer.dart';
 
 class HtmlDOMOptions {
   const HtmlDOMOptions({
-    required final this.dataDirectory,
+    required final this.puppeteerOptions,
   });
 
-  final String dataDirectory;
+  final PuppeteerOptions puppeteerOptions;
 }
 
 abstract class HtmlDOMProvider {
   HtmlDOMProvider(this.options);
 
   final HtmlDOMOptions options;
-
   bool isClean = false;
 
   Future<void> initialize();

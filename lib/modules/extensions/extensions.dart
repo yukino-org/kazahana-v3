@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:extensions/utils/html_dom/html_dom.dart';
+import 'package:extensions/utils/html_dom/providers/puppeteer.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../../config/app.dart';
@@ -23,7 +24,9 @@ abstract class ExtensionsManager {
 
   static Future<void> initialize() async {
     await ExtensionInternals.initialize(
-      htmlDomOptions: HtmlDOMOptions(dataDirectory: PathDirs.otherData),
+      htmlDomOptions: HtmlDOMOptions(
+        puppeteerOptions: PuppeteerOptions(userDirectory: PathDirs.otherData),
+      ),
     );
 
     await _loadStore();

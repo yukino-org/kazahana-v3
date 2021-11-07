@@ -8,6 +8,7 @@ abstract class HetuManager {
     helpers.futureDefinitions,
     helpers.fuzzyDefinitions,
     helpers.htmlDefinitions,
+    helpers.htmlDomDefinitions,
     helpers.httpDefinitions,
     helpers.jsonDefinitions,
     helpers.languagesDefinitions,
@@ -26,6 +27,7 @@ abstract class HetuManager {
       externalClasses: <HTExternalClass>[
         helpers.HtmlElementClassBinding(),
         helpers.RegExpMatchResultClassBinding(),
+        helpers.HtmlDOMClassBinding(),
       ],
       externalFunctions: <String, Function>{
         'decryptCryptoJsAES': helpers.decryptCryptoJsAES,
@@ -58,6 +60,7 @@ abstract class HetuManager {
         'qsDecode': helpers.qsDecode,
         'allLanguages': helpers.allLanguages,
         'isValidLanguages': helpers.isValidLanguages,
+        'createDOM': helpers.createDOM,
       },
     );
 
