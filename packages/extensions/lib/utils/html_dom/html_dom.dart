@@ -8,6 +8,8 @@ abstract class HtmlDOMProvider {
   Future<void> initialize();
   Future<void> goto(final String url);
   Future<dynamic> evalJavascript(final String code);
+  Future<Map<String, String>> getCookies();
+  Future<void> clearCookies();
 
   Future<String?> getHtml() async {
     final dynamic result =

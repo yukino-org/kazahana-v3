@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:puppeteer/protocol/network.dart';
 import 'package:puppeteer/puppeteer.dart';
 import '../html_dom.dart';
 
@@ -43,6 +44,24 @@ class Puppeteer extends HtmlDOMProvider {
   @override
   Future<dynamic> evalJavascript(final String code) async =>
       page?.evaluate(code);
+
+  @override
+  Future<Map<String, String>> getCookies() async =>
+      (await page?.cookies())?.asMap().map(
+            (final int i, final Cookie x) =>
+                MapEntry<String, String>(x.name, x.value),
+          ) ??
+      <String, String>{};
+
+  @override
+  Future<void> clearCookies() async {
+    if (page != null) {
+      await Future.wait(
+        (await page!.cookies())
+            .map((final Cookie x) => page!.deleteCookie(x.name)),
+      );
+    }
+  }
 
   @override
   Future<void> clean() async {

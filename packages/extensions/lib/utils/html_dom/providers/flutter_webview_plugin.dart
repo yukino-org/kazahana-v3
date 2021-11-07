@@ -29,6 +29,12 @@ class FlutterWebview extends HtmlDOMProvider {
       webview.evalJavascript(code);
 
   @override
+  Future<Map<String, String>> getCookies() async => webview.getCookies();
+
+  @override
+  Future<void> clearCookies() async => webview.cleanCookies();
+
+  @override
   Future<void> clean() async {
     if (!isClean) {
       await webview.close();
