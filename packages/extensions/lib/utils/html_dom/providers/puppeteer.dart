@@ -16,7 +16,6 @@ class Puppeteer extends HtmlDOMProvider {
   late Browser browser;
   late Page page;
   String? chromiumPath;
-  bool ready = false;
 
   @override
   Future<void> initialize() async {

@@ -14,6 +14,7 @@ abstract class HtmlDOMProvider {
 
   final HtmlDOMOptions options;
   bool isClean = false;
+  bool ready = false;
 
   Future<void> initialize();
   Future<void> goto(final String url);
