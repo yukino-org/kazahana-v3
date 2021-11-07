@@ -18,6 +18,7 @@ class Puppeteer extends HtmlDOMProvider {
       try {
         await _launch(x);
         print(x);
+        break;
       } catch (_) {}
     }
 
