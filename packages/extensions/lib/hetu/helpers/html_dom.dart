@@ -4,7 +4,7 @@ import '../../utils/html_dom/html_dom.dart';
 const String htmlDomDefinitions = '''
 external class HtmlDOMTab {
   const disposed: bool;
-  fun open(); // -> Future<void>
+  fun open(url: str); // -> Future<void>
   fun getHtml(); // -> Future<String?>
   fun evalJavascript(code: str); // -> Future<dynamic>
   fun getCookies(url: str); // -> Future<Map<String, String>>
