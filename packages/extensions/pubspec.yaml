@@ -12,7 +12,7 @@ dependencies:
     encrypt: ^5.0.0
     flutter:
         sdk: flutter
-    flutter_webview_plugin: ^0.4.0
+    flutter_inappwebview: ^5.3.2
     fuzzy: ^0.4.0-nullsafety.0
     hetu_script: ^0.1.2+5
     html: ^0.15.0

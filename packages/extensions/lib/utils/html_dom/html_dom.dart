@@ -1,50 +1,92 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-
-import './providers/flutter_webview_plugin.dart';
+import './providers/flutter_inappwebview.dart';
 import './providers/puppeteer.dart';
 
-abstract class HtmlDOMTab {
-  int lastUsed = DateTime.now().millisecondsSinceEpoch;
+class HtmlDOMTabImpl {
+  HtmlDOMTabImpl({
+    required final this.open,
+    required final this.evalJavascript,
+    required final this.getCookies,
+    required final this.deleteCookie,
+    required final this.clearAllCookies,
+    required final this.getHtml,
+    required final this.dispose,
+  });
+
+  final Future<void> Function(String url) open;
+  final Future<dynamic> Function(String code) evalJavascript;
+  final Future<Map<String, String>> Function(String url) getCookies;
+  final Future<void> Function(String url, String name) deleteCookie;
+  final Future<void> Function() clearAllCookies;
+  final Future<String?> Function() getHtml;
+  final Future<void> Function() dispose;
+}
+
+class HtmlDOMTab {
+  HtmlDOMTab(this._impl);
+
+  int _lastUsed = DateTime.now().millisecondsSinceEpoch;
   bool disposed = false;
 
-  late Timer? timer =
+  final HtmlDOMTabImpl _impl;
+  late final Timer timer =
       Timer.periodic(expireCheckDuration, (final Timer timer) async {
-    if (hasExpired && !disposed) {
+    if (expired && !disposed) {
       await dispose();
+      timer.cancel();
+      disposed = true;
     }
   });
 
-  Future<void> open(final String url);
-  Future<dynamic> evalJavascript(final String code);
-  Future<Map<String, String>> getCookies();
-  Future<void> clearCookies();
-
-  Future<String?> getHtml() async {
-    final dynamic result =
-        await evalJavascript('() => document.documentElement.outerHTML;');
-
-    return result is String ? result : null;
-  }
-
-  @mustCallSuper
-  Future<void> dispose() async {
-    timer?.cancel();
-    timer = null;
-    disposed = true;
-  }
-
-  void beforeMethod() {
+  void _beforeMethod() {
     if (disposed) {
       throw StateError('DOM has been disposed');
     }
 
-    lastUsed = DateTime.now().microsecondsSinceEpoch;
+    _lastUsed = DateTime.now().microsecondsSinceEpoch;
   }
 
-  bool get hasExpired =>
+  Future<void> open(final String url) {
+    _beforeMethod();
+    return _impl.open(url);
+  }
+
+  Future<dynamic> evalJavascript(final String code) {
+    _beforeMethod();
+    return _impl.evalJavascript(code);
+  }
+
+  Future<Map<String, String>> getCookies(final String url) {
+    _beforeMethod();
+    return _impl.getCookies(url);
+  }
+
+  Future<void> deleteCookie(final String url, final String name) {
+    _beforeMethod();
+    return _impl.deleteCookie(url, name);
+  }
+
+  Future<void> clearAllCookies() {
+    _beforeMethod();
+    return _impl.clearAllCookies();
+  }
+
+  Future<String?> getHtml() {
+    _beforeMethod();
+    return _impl.getHtml();
+  }
+
+  Future<void> dispose() async {
+    if (!disposed) {
+      await dispose();
+      timer.cancel();
+      disposed = true;
+    }
+  }
+
+  bool get expired =>
       DateTime.now().millisecondsSinceEpoch >
-      (lastUsed + expireDuration.inMilliseconds);
+      (_lastUsed + expireDuration.inMilliseconds);
 
   static const Duration expireDuration = Duration(minutes: 2);
   static const Duration expireCheckDuration = Duration(minutes: 1);

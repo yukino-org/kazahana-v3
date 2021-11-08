@@ -2,15 +2,16 @@ import 'package:hetu_script/hetu_script.dart';
 import '../../utils/html_dom/html_dom.dart';
 
 const String htmlDomDefinitions = '''
-external class HtmlDOM {
+external class HtmlDOMTab {
   const disposed: bool;
   fun getHtml(); // -> Future<String?>
   fun evalJavascript(code: str); // -> Future<dynamic>
-  fun getCookies(); // -> Future<Map<String, String>>
-  fun clearCookies(); // -> Future<void>
+  fun getCookies(url: str); // -> Future<Map<String, String>>
+  fun deleteCookie(url: str, name: str); // -> Future<void>
+  fun clearAllCookies(); // -> Future<void>
   fun dispose(); // -> Future<void> /// Dispose if you are going to use it anymore
 }
-external fun createDOM() // -> Future<HtmlDOM>;
+external fun createDOM() // -> Future<HtmlDOMTab>;
 ''';
 
 class HtmlDOMTabClassBinding extends HTExternalClass {
@@ -45,15 +46,26 @@ class HtmlDOMTabClassBinding extends HTExternalClass {
           final Map<String, dynamic> namedArgs = const <String, dynamic>{},
           final List<HTType> typeArgs = const <HTType>[],
         }) =>
-            tab.getCookies();
+            tab.getCookies(positionalArgs.first as String);
 
-      case 'clearCookies':
+      case 'deleteCookie':
         return ({
           final List<dynamic> positionalArgs = const <dynamic>[],
           final Map<String, dynamic> namedArgs = const <String, dynamic>{},
           final List<HTType> typeArgs = const <HTType>[],
         }) =>
-            tab.clearCookies();
+            tab.deleteCookie(
+              positionalArgs.first as String,
+              positionalArgs[1] as String,
+            );
+
+      case 'clearAllCookies':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            tab.clearAllCookies();
 
       case 'dispose':
         return ({

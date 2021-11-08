@@ -3,59 +3,6 @@ import 'package:puppeteer/protocol/network.dart';
 import 'package:puppeteer/puppeteer.dart';
 import '../html_dom.dart';
 
-class PuppeteerTab extends HtmlDOMTab {
-  PuppeteerTab(this.page) : super();
-
-  Page? page;
-
-  @override
-  Future<void> open(final String url) async {
-    print('opening');
-    beforeMethod();
-
-    await page!.goto(url);
-  }
-
-  @override
-  Future<dynamic> evalJavascript(final String code) async {
-    beforeMethod();
-
-    return page!.evaluate(code);
-  }
-
-  @override
-  Future<Map<String, String>> getCookies() async {
-    beforeMethod();
-
-    return (await page!.cookies()).asMap().map(
-          (final int i, final Cookie x) =>
-              MapEntry<String, String>(x.name, x.value),
-        );
-  }
-
-  @override
-  Future<void> clearCookies() async {
-    beforeMethod();
-
-    await Future.wait(
-      (await page!.cookies())
-          .map((final Cookie x) => page!.deleteCookie(x.name)),
-    );
-  }
-
-  @override
-  Future<void> dispose() async {
-    print('disposed');
-
-    if (!disposed) {
-      await page!.close();
-      page = null;
-
-      super.dispose();
-    }
-  }
-}
-
 class PuppeteerProvider extends HtmlDOMProvider {
   late Browser browser;
   Page? page;
@@ -87,7 +34,61 @@ class PuppeteerProvider extends HtmlDOMProvider {
   }
 
   @override
-  Future<PuppeteerTab> create() async => PuppeteerTab(await browser.newPage());
+  Future<HtmlDOMTab> create() async {
+    Page? page = await browser.newPage();
+
+    return HtmlDOMTab(
+      HtmlDOMTabImpl(
+        open: (final String url) async {
+          await page!.goto(url);
+        },
+        evalJavascript: (final String code) => page!.evaluate(code),
+        getHtml: () async {
+          final dynamic result =
+              page!.evaluate('() => document.documentElement.outerHTML');
+          return result is String ? result : null;
+        },
+        getCookies: (final String url) async {
+          final Uri uri = Uri.parse(url);
+          final String domain = uri.authority;
+          final List<Cookie> cookies = await page!.cookies();
+
+          return cookies
+              .where((final Cookie x) => x.domain == domain)
+              .toList()
+              .asMap()
+              .map(
+                (final int i, final Cookie x) =>
+                    MapEntry<String, String>(x.name, x.value),
+              );
+        },
+        deleteCookie: (final String url, final String name) async {
+          final Uri uri = Uri.parse(url);
+          final String domain = uri.authority;
+          final List<Cookie> cookies = await page!.cookies();
+
+          await Future.wait(
+            cookies.where((final Cookie x) => x.domain == domain).toList().map(
+                  (final Cookie x) => page!.deleteCookie(
+                    x.name,
+                    domain: domain,
+                  ),
+                ),
+          );
+        },
+        clearAllCookies: () async {
+          await Future.wait(
+            (await page!.cookies())
+                .map((final Cookie x) => page!.deleteCookie(x.name)),
+          );
+        },
+        dispose: () async {
+          await page?.close();
+          page = null;
+        },
+      ),
+    );
+  }
 
   @override
   Future<void> dispose() async {
