@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../../http.dart';
 import '../html_dom.dart';
 
 class _FlutterWebviewEventer {
@@ -43,6 +44,11 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
   @override
   Future<HtmlDOMTab> create() async {
     HeadlessInAppWebView? webview = HeadlessInAppWebView(
+      initialOptions: InAppWebViewGroupOptions(
+        crossPlatform: InAppWebViewOptions(
+          userAgent: HttpUtils.userAgent,
+        ),
+      ),
       onLoadStop: (final InAppWebViewController controller, final Uri? uri) {
         if (uri != null) {
           eventer!.onLoadController.add(uri);

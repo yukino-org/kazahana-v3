@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:puppeteer/protocol/network.dart';
 import 'package:puppeteer/puppeteer.dart';
+import '../../http.dart';
 import '../html_dom.dart';
 
 class PuppeteerProvider extends HtmlDOMProvider {
@@ -38,6 +39,7 @@ class PuppeteerProvider extends HtmlDOMProvider {
   @override
   Future<HtmlDOMTab> create() async {
     Page? page = await context!.newPage();
+    await page.setUserAgent(HttpUtils.userAgent);
 
     return HtmlDOMTab(
       HtmlDOMTabImpl(
