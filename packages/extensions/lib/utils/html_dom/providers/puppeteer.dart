@@ -4,8 +4,8 @@ import 'package:puppeteer/puppeteer.dart';
 import '../html_dom.dart';
 
 class PuppeteerProvider extends HtmlDOMProvider {
-  late Browser browser;
-  Page? page;
+  Browser? browser;
+  BrowserContext? context;
   String? chromiumPath;
 
   @override
@@ -30,12 +30,14 @@ class PuppeteerProvider extends HtmlDOMProvider {
       executablePath: executablePath,
     );
 
+    context = await browser!.createIncognitoBrowserContext();
+
     chromiumPath = executablePath;
   }
 
   @override
   Future<HtmlDOMTab> create() async {
-    Page? page = await browser.newPage();
+    Page? page = await context!.newPage();
 
     return HtmlDOMTab(
       HtmlDOMTabImpl(
@@ -90,11 +92,21 @@ class PuppeteerProvider extends HtmlDOMProvider {
     );
   }
 
+  Future<void> _disposePages(final List<Page> pages) => Future.wait(
+        pages.map((final Page x) => x.close()),
+      );
+
   @override
   Future<void> dispose() async {
-    await Future.wait((await browser.pages).map((final Page x) => x.close()));
+    if (browser != null) {
+      await _disposePages(await context!.pages);
+      context!.close();
+      context = null;
 
-    await browser.close();
+      await _disposePages(await browser!.pages);
+      await browser!.close();
+      browser = null;
+    }
   }
 
   bool get isUsingInbuiltBrowser => chromiumPath != null;

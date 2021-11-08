@@ -4,6 +4,7 @@ import '../../utils/html_dom/html_dom.dart';
 const String htmlDomDefinitions = '''
 external class HtmlDOMTab {
   const disposed: bool;
+  fun open(); // -> Future<void>
   fun getHtml(); // -> Future<String?>
   fun evalJavascript(code: str); // -> Future<dynamic>
   fun getCookies(url: str); // -> Future<Map<String, String>>
@@ -11,7 +12,7 @@ external class HtmlDOMTab {
   fun clearAllCookies(); // -> Future<void>
   fun dispose(); // -> Future<void> /// Dispose if you are going to use it anymore
 }
-external fun createDOM() // -> Future<HtmlDOMTab>;
+external fun createDOM(); // -> Future<HtmlDOMTab>;
 ''';
 
 class HtmlDOMTabClassBinding extends HTExternalClass {
@@ -23,6 +24,14 @@ class HtmlDOMTabClassBinding extends HTExternalClass {
     switch (varName) {
       case 'disposed':
         return tab.disposed;
+
+      case 'open':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            tab.open(positionalArgs.first as String);
 
       case 'getHtml':
         return ({
