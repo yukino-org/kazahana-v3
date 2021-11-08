@@ -90,7 +90,7 @@ class HtmlDOMTab {
 
   Future<void> dispose() async {
     if (!disposed) {
-      await dispose();
+      await _impl.dispose();
       timer.cancel();
       disposed = true;
     }
