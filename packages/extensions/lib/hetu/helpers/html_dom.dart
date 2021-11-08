@@ -31,7 +31,10 @@ class HtmlDOMTabClassBinding extends HTExternalClass {
           final Map<String, dynamic> namedArgs = const <String, dynamic>{},
           final List<HTType> typeArgs = const <HTType>[],
         }) =>
-            tab.open(positionalArgs.first as String);
+            tab.open(
+              positionalArgs.first as String,
+              positionalArgs[1] as String,
+            );
 
       case 'getHtml':
         return ({

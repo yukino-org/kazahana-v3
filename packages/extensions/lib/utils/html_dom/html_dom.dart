@@ -2,6 +2,12 @@ import 'dart:async';
 import './providers/flutter_inappwebview.dart';
 import './providers/puppeteer.dart';
 
+enum HtmlDOMTabGotoWait {
+  none,
+  load,
+  domContentLoaded,
+}
+
 class HtmlDOMTabImpl {
   HtmlDOMTabImpl({
     required final this.open,
@@ -13,7 +19,7 @@ class HtmlDOMTabImpl {
     required final this.dispose,
   });
 
-  final Future<void> Function(String url) open;
+  final Future<void> Function(String url, HtmlDOMTabGotoWait wait) open;
   final Future<dynamic> Function(String code) evalJavascript;
   final Future<Map<String, String>> Function(String url) getCookies;
   final Future<void> Function(String url, String name) deleteCookie;
@@ -46,9 +52,15 @@ class HtmlDOMTab {
     _lastUsed = DateTime.now().microsecondsSinceEpoch;
   }
 
-  Future<void> open(final String url) {
+  Future<void> open(final String url, final String wait) {
     _beforeMethod();
-    return _impl.open(url);
+    return _impl.open(
+      url,
+      HtmlDOMTabGotoWait.values.firstWhere(
+        (final HtmlDOMTabGotoWait x) => x.name == wait,
+        orElse: () => HtmlDOMTabGotoWait.load,
+      ),
+    );
   }
 
   Future<dynamic> evalJavascript(final String code) {

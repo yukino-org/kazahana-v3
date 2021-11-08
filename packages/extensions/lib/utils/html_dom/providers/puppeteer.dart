@@ -41,8 +41,24 @@ class PuppeteerProvider extends HtmlDOMProvider {
 
     return HtmlDOMTab(
       HtmlDOMTabImpl(
-        open: (final String url) async {
-          await page!.goto(url);
+        open: (final String url, final HtmlDOMTabGotoWait wait) async {
+          final Until? until;
+
+          switch (wait) {
+            case HtmlDOMTabGotoWait.none:
+              until = null;
+              break;
+
+            case HtmlDOMTabGotoWait.load:
+              until = Until.load;
+              break;
+
+            case HtmlDOMTabGotoWait.domContentLoaded:
+              until = Until.domContentLoaded;
+              break;
+          }
+
+          await page!.goto(url, wait: until);
         },
         evalJavascript: (final String code) => page!.evaluate(code),
         getHtml: () async {
