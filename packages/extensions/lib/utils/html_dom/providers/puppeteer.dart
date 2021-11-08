@@ -63,7 +63,7 @@ class PuppeteerProvider extends HtmlDOMProvider {
         evalJavascript: (final String code) => page!.evaluate(code),
         getHtml: () async {
           final dynamic result =
-              page!.evaluate('() => document.documentElement.outerHTML');
+              await page!.evaluate('() => document.documentElement.outerHTML');
           return result is String ? result : null;
         },
         getCookies: (final String url) async {
