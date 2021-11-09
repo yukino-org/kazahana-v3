@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:hetu_script/hetu_script.dart';
 
 const String futureDefinitions = '''
@@ -12,7 +13,7 @@ external fun wait(duration: num, fn: WaitCallback);
 ''';
 
 Future<dynamic> resolveFuture(
-  final Future<dynamic> future,
+  final FutureOr<dynamic> future,
   final HTFunction fn,
 ) async {
   dynamic result;
