@@ -11,17 +11,20 @@ external fun throwError(err: str, [trace]); // (String, TaskTrace?) -> never
 ''';
 
 void throwError(final String err, [final TaskTrace? trace]) {
-  throw _HetuErrorWithTaskTrace(err, trace);
+  throw _ErrorWithTaskTrace(err, trace);
 }
 
-class _HetuErrorWithTaskTrace implements Error {
-  _HetuErrorWithTaskTrace(this.err, [this.trace]);
+class _ErrorWithTaskTrace implements Error {
+  _ErrorWithTaskTrace(this.err, [this.trace]);
 
   final String err;
   final TaskTrace? trace;
 
   @override
-  StackTrace? get stackTrace => StackTrace.fromString(trace.toString());
+  StackTrace get stackTrace => StackTrace.fromString(trace.toString());
+
+  @override
+  String toString() => 'Error: $err\nTrace: ${trace != null ? '\n${trace!.indentedString()}' : '-'}';
 }
 
 class TaskTrace {
@@ -32,6 +35,9 @@ class TaskTrace {
     _traces.add('#$_n $line');
     _n++;
   }
+
+  String indentedString([final String prefix = '  ']) =>
+      _traces.map((final String x) => '$prefix$x').join('\n');
 
   @override
   String toString() => _traces.join('\n');
