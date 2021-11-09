@@ -28,7 +28,7 @@ abstract class HetuManager {
         helpers.HtmlElementClassBinding(),
         helpers.RegExpMatchResultClassBinding(),
         helpers.HtmlDOMTabClassBinding(),
-        helpers.HetuTaskTraceClassBinding(),
+        helpers.TaskTraceClassBinding(),
       ],
       externalFunctions: <String, Function>{
         'decryptCryptoJsAES': helpers.decryptCryptoJsAES,
