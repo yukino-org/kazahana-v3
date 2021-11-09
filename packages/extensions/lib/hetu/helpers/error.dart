@@ -1,4 +1,5 @@
 import 'package:hetu_script/hetu_script.dart';
+import '../../utils/string.dart';
 
 const String errorDefinitions = '''
 external class TaskTrace {
@@ -24,7 +25,11 @@ class _ErrorWithTaskTrace implements Error {
   StackTrace get stackTrace => StackTrace.fromString(trace.toString());
 
   @override
-  String toString() => 'Error: $err\nTrace: ${trace != null ? '\n${trace!.indentedString()}' : '-'}';
+  String toString() {
+    final String trace = indentString(stackTrace.toString(), '  ');
+
+    return '$err\nTask Trace:\n$trace';
+  }
 }
 
 class TaskTrace {
@@ -35,9 +40,6 @@ class TaskTrace {
     _traces.add('#$_n $line');
     _n++;
   }
-
-  String indentedString([final String prefix = '  ']) =>
-      _traces.map((final String x) => '$prefix$x').join('\n');
 
   @override
   String toString() => _traces.join('\n');

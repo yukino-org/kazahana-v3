@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:hetu_script/hetu_script.dart';
+import '../../utils/string.dart';
 
 const String futureDefinitions = '''
 const ResolveFutureCallback: type = fun(err, result); // -> (String?, dynamic)
@@ -17,16 +18,16 @@ Future<dynamic> resolveFuture(
   final HTFunction fn,
 ) async {
   dynamic result;
-  String? err;
+  String? error;
 
   try {
     result = await future;
-  } catch (e) {
-    err = e.toString();
+  } catch (err, stack) {
+    error = errorToString(err, stack);
   }
 
   return await fn.call(
-    positionalArgs: <dynamic>[err, result],
+    positionalArgs: <dynamic>[error, result],
   );
 }
 
@@ -35,17 +36,17 @@ Future<dynamic> resolveFutureAll(
   final HTFunction fn,
 ) async {
   List<dynamic>? result;
-  String? err;
+  String? error;
 
   try {
     result = await Future.wait(futures.cast<Future<dynamic>>())
         .timeout(const Duration(seconds: 30));
-  } catch (e) {
-    err = e.toString();
+  } catch (err, stack) {
+    error = errorToString(err, stack);
   }
 
   return await fn.call(
-    positionalArgs: <dynamic>[err, result],
+    positionalArgs: <dynamic>[error, result],
   );
 }
 

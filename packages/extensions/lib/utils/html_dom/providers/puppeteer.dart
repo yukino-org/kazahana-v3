@@ -43,16 +43,9 @@ class PuppeteerProvider extends HtmlDOMProvider {
 
   @override
   Future<HtmlDOMTab> create() async {
-    Page? page;
+    Page? page = await context!.newPage();
+    await page.setUserAgent(HttpUtils.userAgent);
 
-    Future<void> ensure() async {
-      if (page == null || (page?.isClosed ?? true)) {
-        page = await context!.newPage();
-        await page!.setUserAgent(HttpUtils.userAgent);
-      }
-    }
-
-    await ensure();
     return HtmlDOMTab(
       HtmlDOMTabImpl(
         open: (final String url, final HtmlDOMTabGotoWait wait) async {
@@ -72,12 +65,10 @@ class PuppeteerProvider extends HtmlDOMProvider {
               break;
           }
 
-          await ensure();
           await page!.goto(url, wait: until);
         },
         evalJavascript: (final String code) => page!.evaluate(code),
         getHtml: () async {
-          await ensure();
           final dynamic result =
               await page!.evaluate('() => document.documentElement.outerHTML');
 
@@ -86,8 +77,6 @@ class PuppeteerProvider extends HtmlDOMProvider {
         getCookies: (final String url) async {
           final Uri uri = Uri.parse(url);
           final String domain = uri.authority;
-
-          await ensure();
           final List<Cookie> cookies = await page!.cookies();
 
           return cookies
@@ -105,8 +94,6 @@ class PuppeteerProvider extends HtmlDOMProvider {
         deleteCookie: (final String url, final String name) async {
           final Uri uri = Uri.parse(url);
           final String domain = uri.authority;
-
-          await ensure();
           final List<Cookie> cookies = await page!.cookies();
 
           await Future.wait(
@@ -119,7 +106,6 @@ class PuppeteerProvider extends HtmlDOMProvider {
           );
         },
         clearAllCookies: () async {
-          await ensure();
           await Future.wait(
             (await page!.cookies())
                 .map((final Cookie x) => page!.deleteCookie(x.name)),
