@@ -1,7 +1,7 @@
 import './html_dom.dart';
 
 abstract class HtmlDOMUtils {
-  static const Duration _cloudflareCheckDuration = Duration(seconds: 5);
+  static const Duration _cloudflareCheckDuration = Duration(seconds: 6);
   static const Duration _cloudflarePostCheckDuration = Duration(seconds: 1);
 
   static bool _isItCloudflareCheck(final String html) {

@@ -2,6 +2,7 @@ import 'package:hetu_script/hetu_script.dart';
 
 const String errorDefinitions = '''
 external class TaskTrace {
+  construct();
   fun add(line: str); // -> void
   fun toString() -> str;
 }
@@ -9,7 +10,7 @@ external class TaskTrace {
 external fun throwError(err: str, [trace]); // (String, TaskTrace?) -> never
 ''';
 
-void throwError(final String err, [final HetuTaskTrace? trace]) {
+void throwError(final String err, [final TaskTrace? trace]) {
   throw _HetuErrorWithTaskTrace(err, trace);
 }
 
@@ -17,13 +18,13 @@ class _HetuErrorWithTaskTrace implements Error {
   _HetuErrorWithTaskTrace(this.err, [this.trace]);
 
   final String err;
-  final HetuTaskTrace? trace;
+  final TaskTrace? trace;
 
   @override
   StackTrace? get stackTrace => StackTrace.fromString(trace.toString());
 }
 
-class HetuTaskTrace {
+class TaskTrace {
   int _n = 0;
   final List<String> _traces = <String>[];
 
@@ -40,8 +41,28 @@ class HetuTaskTraceClassBinding extends HTExternalClass {
   HetuTaskTraceClassBinding() : super('TaskTrace');
 
   @override
+  dynamic memberGet(
+    final String varName, {
+    final String from = HTLexicon.global,
+    final bool error = true,
+  }) {
+    switch (varName) {
+      case 'TaskTrace':
+        return ({
+          final List<dynamic> positionalArgs = const <dynamic>[],
+          final Map<String, dynamic> namedArgs = const <String, dynamic>{},
+          final List<HTType> typeArgs = const <HTType>[],
+        }) =>
+            TaskTrace();
+
+      default:
+        throw HTError.undefined(varName);
+    }
+  }
+
+  @override
   dynamic instanceMemberGet(final dynamic object, final String varName) {
-    final HetuTaskTrace element = object as HetuTaskTrace;
+    final TaskTrace element = object as TaskTrace;
     switch (varName) {
       case 'add':
         return ({
