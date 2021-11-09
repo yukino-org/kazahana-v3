@@ -1,5 +1,6 @@
 import 'package:hetu_script/hetu_script.dart';
 import '../../utils/html_dom/html_dom.dart';
+import '../../utils/html_dom/utils.dart';
 
 const String htmlDomDefinitions = '''
 external class HtmlDOMTab {
@@ -13,7 +14,13 @@ external class HtmlDOMTab {
   fun dispose(); // -> Future<void> /// Dispose if you are going to use it anymore
 }
 external fun createDOM(); // -> Future<HtmlDOMTab>;
+external fun tryBypassCloudflareCheck(tab: HtmlDOMTab); // -> Future<bool>
 ''';
+
+Future<HtmlDOMTab> createDOM() async => HtmlDOMManager.provider.create();
+
+Future<bool> tryBypassCloudflareCheck(final HtmlDOMTab tab) async =>
+    HtmlDOMUtils.tryBypassCloudflare(tab);
 
 class HtmlDOMTabClassBinding extends HTExternalClass {
   HtmlDOMTabClassBinding() : super('HtmlDOMTab');
@@ -92,5 +99,3 @@ class HtmlDOMTabClassBinding extends HTExternalClass {
     }
   }
 }
-
-Future<HtmlDOMTab> createDOM() async => HtmlDOMManager.provider.create();

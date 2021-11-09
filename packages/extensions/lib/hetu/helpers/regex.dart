@@ -2,8 +2,8 @@ import 'package:hetu_script/hetu_script.dart';
 
 const String regexDefinitions = '''
 external class RegExpMatchResult {
-    const input: str;
-    fun group(group: num); // -> String?
+  const input: str;
+  fun group(group: num); // -> String?
 }
 external fun regexMatch(regex: str, text: str); // -> RegExpMatchResult?
 external fun regexMatchAll(regex: str, text: str) -> List<RegExpMatchResult>;

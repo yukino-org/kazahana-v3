@@ -1,6 +1,18 @@
+import 'dart:io';
+
 abstract class HttpUtils {
-  static const String userAgent =
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+  static const String userAgentWindows =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36';
+  static const String userAgentLinux =
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36';
+  static const String userAgentMacOS =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15';
+
+  static String get userAgent => Platform.isWindows
+      ? userAgentWindows
+      : Platform.isMacOS
+          ? userAgentMacOS
+          : userAgentLinux;
 
   static const Duration timeout = Duration(seconds: 10);
   static const Duration extendedTimeout = Duration(seconds: 20);
@@ -18,8 +30,11 @@ abstract class HttpUtils {
           : url;
 
   static String tryEncodeURL(final String url) {
-    if (url == Uri.decodeFull(url)) return Uri.encodeFull(url);
-    return url;
+    try {
+      if (url != Uri.decodeFull(url)) return url;
+    } catch (_) {}
+
+    return Uri.encodeFull(url);
   }
 
   static String domainFromURL(final String url) =>

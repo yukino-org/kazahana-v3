@@ -28,6 +28,7 @@ abstract class HetuManager {
         helpers.HtmlElementClassBinding(),
         helpers.RegExpMatchResultClassBinding(),
         helpers.HtmlDOMTabClassBinding(),
+        helpers.HetuTaskTraceClassBinding(),
       ],
       externalFunctions: <String, Function>{
         'decryptCryptoJsAES': helpers.decryptCryptoJsAES,
@@ -61,6 +62,7 @@ abstract class HetuManager {
         'allLanguages': helpers.allLanguages,
         'isValidLanguages': helpers.isValidLanguages,
         'createDOM': helpers.createDOM,
+        'tryBypassCloudflareCheck': helpers.tryBypassCloudflareCheck,
       },
     );
 
