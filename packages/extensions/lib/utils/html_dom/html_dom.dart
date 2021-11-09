@@ -113,18 +113,23 @@ abstract class HtmlDOMProvider {
 }
 
 abstract class HtmlDOMManager {
+  static bool ready = false;
+
   static late final HtmlDOMProvider provider;
 
   static Future<void> initialize() async {
-    if (FlutterWebviewProvider.isSupported()) {
-      provider = FlutterWebviewProvider();
-    } else if (PuppeteerProvider.isSupported()) {
-      provider = PuppeteerProvider();
-    } else {
-      throw Exception('No DOM provider was found');
-    }
+    if (!ready) {
+      if (FlutterWebviewProvider.isSupported()) {
+        provider = FlutterWebviewProvider();
+      } else if (PuppeteerProvider.isSupported()) {
+        provider = PuppeteerProvider();
+      } else {
+        throw Exception('No DOM provider was found');
+      }
 
-    await provider.initialize();
+      await provider.initialize();
+      ready = true;
+    }
   }
 
   static Future<void> dispose() async {
