@@ -14,6 +14,7 @@ external class HtmlElement {
   fun querySelectorAll(selector: str) -> List<HtmlElement>;
 }
 external fun parseHtml(html: str) -> HtmlElement;
+external fun joinCookieMap(cookies: Map<str>) -> str;
 ''';
 
 Map<String, String> _mapElementAttributes(
@@ -136,3 +137,9 @@ HtmlElement parseHtml(final String _html) {
         .toList(),
   );
 }
+
+String joinCookieMap(final Map<dynamic, dynamic> cookies) => cookies
+    .cast<String, String>()
+    .entries
+    .map((final MapEntry<String, String> x) => '${x.key}=${x.value}')
+    .join('; ');

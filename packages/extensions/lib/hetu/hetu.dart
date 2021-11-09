@@ -63,6 +63,7 @@ abstract class HetuManager {
         'isValidLanguages': helpers.isValidLanguages,
         'createDOM': helpers.createDOM,
         'tryBypassCloudflareCheck': helpers.tryBypassCloudflareCheck,
+        'joinCookieMap': helpers.joinCookieMap,
       },
     );
 

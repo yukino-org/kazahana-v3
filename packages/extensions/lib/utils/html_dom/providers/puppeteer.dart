@@ -74,7 +74,10 @@ class PuppeteerProvider extends HtmlDOMProvider {
           final List<Cookie> cookies = await page!.cookies();
 
           return cookies
-              .where((final Cookie x) => x.domain == domain)
+              .where(
+                (final Cookie x) =>
+                    x.domain == domain || '.${x.domain}' == domain,
+              )
               .toList()
               .asMap()
               .map(
