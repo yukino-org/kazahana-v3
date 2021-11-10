@@ -1,6 +1,21 @@
 name: Code Analysis
 
-on: [push, pull_request, workflow_dispatch]
+on:
+    push:
+        branches:
+            - main
+            - next
+        paths:
+            - packages
+            - lib
+    pull_request:
+        branches:
+            - main
+            - next
+        paths:
+            - packages
+            - lib
+    workflow_dispatch:
 
 jobs:
     build:
