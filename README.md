@@ -13,6 +13,7 @@ The developer of this application does not have any affiliation with any of the 
 [![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg?style=flat)](https://github.com/zyrouge/yukino-app/releases/)
 [![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg?style=flat)](https://github.com/zyrouge/yukino-app/releases/)
 [![CodeFactor](https://www.codefactor.io/repository/github/yukino-app/yukino/badge/next)](https://www.codefactor.io/repository/github/yukino-app/yukino/overview/next)
+[![Code Analysis](https://github.com/yukino-app/yukino/actions/workflows/code-analysis.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/code-analysis.yml)
 [![Android (Apk)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml)
 [![Linux (AppImage & tar)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/linux-build.yml)
 [![MacOS (Dmg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/macos-build.yml)
