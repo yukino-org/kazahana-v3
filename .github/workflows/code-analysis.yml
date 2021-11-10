@@ -31,7 +31,11 @@ jobs:
                       const { sync: spawn } = require("cross-spawn");
 
                       const { stdout, status } = spawn(
-                          "flutter format --output=none --set-exit-if-changed ."
+                          "flutter",
+                          ["format", "--output=none", "--set-exit-if-changed", "."],
+                          {
+                              encoding: "utf-8"
+                          }
                       );
 
                       if (status !== 0) {
