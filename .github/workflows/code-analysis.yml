@@ -49,9 +49,11 @@ jobs:
                           "flutter",
                           ["format", "--output=none", "--set-exit-if-changed", "."],
                           {
-                              encoding: "utf-8"
+                              encoding: "utf-8",
                           }
                       );
+
+                      let exitCode = status;
 
                       if (status !== 0) {
                           const files = [...stdout.toString().matchAll(/Changed (.*)/g)].map(
@@ -61,10 +63,12 @@ jobs:
 
                           if (filtered.length) {
                               console.error(filtered.map((x) => `Invalid file: ${x}`).join("\n"));
+                          } else {
+                              exitCode = 0;
                           }
-
-                          process.exit(status);
                       }
+
+                      process.exit(exitCode);
 
             - name: 🩺 Analyze code
               run: dart analyze
