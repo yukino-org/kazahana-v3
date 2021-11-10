@@ -1,0 +1,51 @@
+name: Android (Apk)
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 16.x
+                  cache: npm
+
+            - uses: subosito/flutter-action@v1.5.3
+              with:
+                  channel: master
+
+            - name: 🚧 Do prerequisites
+              run: |
+                  flutter pub get
+                  npm ci
+                  npm run generator:run
+
+            - name: 🩺 Check code format
+              uses: actions/github-script@v4
+              with:
+                  script: |
+                      const { sync: spawn } = require("cross-spawn");
+
+                      const { stdout, status } = spawn(
+                          "flutter format --output=none --set-exit-if-changed ."
+                      );
+
+                      if (status !== 0) {
+                          const files = [...stdout.toString().matchAll(/Changed (.*)/g)].map(
+                              (x) => x[1]
+                          );
+                          const filtered = files.filter((x) => !/\.g\.dart$/.test(x));
+
+                          if (filtered.length) {
+                              console.error(filtered.map((x) => `Invalid file: ${x}`).join("\n"));
+                          }
+
+                          process.exit(status);
+                      }
+
+            - name: 🩺 Analyze code
+              run: dart analyze
