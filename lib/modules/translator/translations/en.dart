@@ -456,4 +456,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String nextEpisode() => 'Next episode';
+
+  @override
+  String ignoreBadHttpSslCertificates() => 'Ignore bad HTTP SSL certificates';
 }

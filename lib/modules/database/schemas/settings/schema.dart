@@ -20,6 +20,7 @@ const bool _mangaAutoFullscreen = true;
 const int _animeTrackerWatchPercent = 80;
 const bool _animeForceLandscape = true;
 const bool _disableAnimations = false;
+const bool _ignoreBadHttpCertificate = false;
 
 @Entity()
 class SettingsSchema {
@@ -41,6 +42,7 @@ class SettingsSchema {
     final this.animeForceLandscape = _animeForceLandscape,
     final this.disableAnimations = _disableAnimations,
     final this.animeShortcuts_,
+    final this.ignoreBadHttpCertificate = _ignoreBadHttpCertificate,
   });
 
   int id = 0;
@@ -57,6 +59,7 @@ class SettingsSchema {
   int animeTrackerWatchPercent;
   bool animeForceLandscape;
   bool disableAnimations;
+  bool ignoreBadHttpCertificate;
 
   MangaDirections mangaReaderDirection;
   String get mangaReaderDirection_ => mangaReaderDirection.name;

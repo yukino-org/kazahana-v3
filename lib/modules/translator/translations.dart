@@ -156,4 +156,5 @@ abstract class TranslationSentences {
   String goBack();
   String previousEpisode();
   String nextEpisode();
+  String ignoreBadHttpSslCertificates();
 }

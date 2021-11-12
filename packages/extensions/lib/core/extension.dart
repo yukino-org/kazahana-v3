@@ -4,6 +4,7 @@ import './resolved.dart';
 import '../../models/anime.dart';
 import '../../models/base.dart';
 import '../../models/manga.dart';
+import '../hetu/helpers/http.dart';
 import '../hetu/hetu.dart';
 import '../utils/html_dom/html_dom.dart';
 
@@ -12,8 +13,11 @@ export './resolvable.dart';
 export './resolved.dart';
 
 abstract class ExtensionInternals {
-  static Future<void> initialize() async {
+  static Future<void> initialize({
+    required final HetuHttpClient httpOptions,
+  }) async {
     await HtmlDOMManager.initialize();
+    HetuHttpClient.set(httpOptions);
   }
 
   static Future<void> dispose() async {

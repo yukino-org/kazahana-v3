@@ -46,4 +46,14 @@ List<Widget> getSettingsDevelopers(
           await save();
         },
       ),
+      MaterialSwitchTile(
+        title: Text(Translator.t.ignoreBadHttpSslCertificates()),
+        icon: const Icon(Icons.https),
+        value: settings.ignoreBadHttpCertificate,
+        onChanged: (final bool val) async {
+          settings.ignoreBadHttpCertificate = val;
+
+          await save();
+        },
+      ),
     ];

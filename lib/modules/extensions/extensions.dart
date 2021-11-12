@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
+import 'package:extensions/hetu/helpers/helpers.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../../config/app.dart';
 import '../../config/paths.dart';
+import '../app/state.dart';
 import '../helpers/logger.dart';
 
 extension BaseExtensionUtils on BaseExtension {
@@ -21,7 +23,11 @@ abstract class ExtensionsManager {
   static Map<String, MangaExtractor> mangas = <String, MangaExtractor>{};
 
   static Future<void> initialize() async {
-    await ExtensionInternals.initialize();
+    await ExtensionInternals.initialize(
+      httpOptions: HetuHttpClient(
+        ignoreSSLCertificate: AppState.settings.value.ignoreBadHttpCertificate,
+      ),
+    );
 
     await _loadStore();
     await _loadLocalExtensions();

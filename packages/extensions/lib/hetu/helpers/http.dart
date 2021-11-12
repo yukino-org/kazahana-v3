@@ -1,4 +1,6 @@
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 import '../../utils/http.dart';
 
 const String httpDefinitions = '''
@@ -6,6 +8,30 @@ external fun fetch(data: Map); // (data: { method: 'get' | 'head' | 'post' | 'pa
 external fun httpUserAgent() -> str;
 external fun ensureURL(url: str) -> str;
 ''';
+
+late Client http;
+
+class HetuHttpClient {
+  const HetuHttpClient({
+    required final this.ignoreSSLCertificate,
+  });
+
+  final bool ignoreSSLCertificate;
+
+  static late HetuHttpClient options;
+
+  static void set(final HetuHttpClient options) {
+    final HttpClient client = HttpClient();
+
+    if (options.ignoreSSLCertificate) {
+      client.badCertificateCallback =
+          (final X509Certificate cert, final String host, final int port) =>
+              true;
+    }
+
+    http = IOClient(client);
+  }
+}
 
 Future<Map<dynamic, dynamic>> fetch(
   final Map<dynamic, dynamic> data,
@@ -15,7 +41,7 @@ Future<Map<dynamic, dynamic>> fetch(
       (data['headers'] as Map<dynamic, dynamic>).cast<String, String>();
   final String? body = data['body'] as String?;
 
-  final http.Response res;
+  final Response res;
   switch (data['method']) {
     case 'get':
       res = await http
