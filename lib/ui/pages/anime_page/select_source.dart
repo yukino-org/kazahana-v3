@@ -1,5 +1,6 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
 
@@ -48,6 +49,7 @@ class SelectSourceWidget extends StatelessWidget {
                         activeColor: Theme.of(context).primaryColor,
                         onChanged: (final EpisodeSource? val) {
                           Navigator.of(context).pop(val);
+                          Logger.of('select_source').info('Popping with value');
                         },
                       ),
                     ),
@@ -76,6 +78,7 @@ class SelectSourceWidget extends StatelessWidget {
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
+                      Logger.of('select_source').info('Popping with no value');
                     },
                   ),
                 ),

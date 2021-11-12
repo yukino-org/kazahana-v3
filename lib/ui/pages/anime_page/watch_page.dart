@@ -8,6 +8,7 @@ import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/helpers/keyboard.dart';
+import '../../../modules/helpers/logger.dart';
 import '../../../modules/helpers/screen.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
@@ -398,6 +399,8 @@ class WatchPageState extends State<WatchPage>
         setPlayer(index);
       }
     } else if (videoState.value.currentIndex == null) {
+      Logger.of('watch_page')
+          .info('Popping page due to "currentIndex == null"');
       pop();
     }
   }
