@@ -7,7 +7,7 @@ import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/string.dart';
+import '../../../modules/utils/utils.dart';
 import '../../pages/search_page/search_page.dart' as search_page;
 import '../../router.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/logger.dart';
 import '../../../../modules/translator/translator.dart';
-import '../../../../modules/utils/function.dart';
+import '../../../../modules/utils/utils.dart';
 import '../../../components/material_tiles/base.dart';
 import '../../../components/material_tiles/switch.dart';
 

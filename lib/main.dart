@@ -6,7 +6,7 @@ import './modules/database/database.dart';
 import './modules/helpers/logger.dart';
 import './modules/helpers/ui.dart';
 import './modules/translator/translator.dart';
-import './modules/utils/list.dart';
+import './modules/utils/utils.dart';
 import './ui/router.dart';
 
 Future<void> main(final List<String> args) async {

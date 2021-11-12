@@ -459,4 +459,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String ignoreBadHttpSslCertificates() => 'Ignore bad HTTP SSL certificates';
+
+  @override
+  String copiedErrorToClipboard() => 'Copied error to clipboard';
 }

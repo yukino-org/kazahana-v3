@@ -49,17 +49,20 @@ class HError implements Error {
   ]) =>
       HError(err.err, stack ?? err.stack, task ?? err.task);
 
-  @override
-  StackTrace? get stackTrace =>
-      stack != null ? StackTrace.fromString(stack!) : null;
+  String prettyString() => '$err\n$stackTrace';
 
   @override
-  String toString() {
-    final String stack = indentString(stackTrace?.toString() ?? '-', '  ');
-    final String task = indentString(this.task?.toString() ?? '-', '  ');
+  StackTrace get stackTrace {
+    final String stackString = indentString(stack?.toString() ?? '-', '  ');
+    final String taskString = indentString(task?.toString() ?? '-', '  ');
 
-    return 'Error: $err\nStack Trace:\n$stack\nTask Trace:\n$task';
+    return StackTrace.fromString(
+      'Stack Trace:\n$stackString\nTask Trace:\n$taskString',
+    );
   }
+
+  @override
+  String toString() => err;
 }
 
 class HErrorClassBinding extends HTExternalClass {

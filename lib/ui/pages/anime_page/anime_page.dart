@@ -11,7 +11,7 @@ import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/hooks.dart';
 import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/error.dart';
+import '../../../modules/utils/utils.dart';
 import '../../components/error_widget.dart';
 import '../../components/placeholder_appbar.dart';
 import '../../components/reactive_state_builder.dart';

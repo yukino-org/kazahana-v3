@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../../modules/helpers/faces.dart';
 import '../../modules/helpers/ui.dart';
 import '../../modules/translator/translator.dart';
-import '../../modules/utils/error.dart';
-import '../../modules/utils/list.dart';
+import '../../modules/utils/utils.dart';
 
 class KawaiiErrorWidget extends StatelessWidget {
   const KawaiiErrorWidget({
@@ -131,8 +130,22 @@ class KawaiiErrorWidget extends StatelessWidget {
                         <String>[
                           'Message: $message',
                           if (error != null) 'Error: $error',
-                          if (stack != null) 'Stack trace: $stack',
+                          if (stack != null) 'Stack trace:\n$stack',
                         ].join('\n'),
+                      );
+
+                      FunctionUtils.withValue(
+                        context,
+                        (final BuildContext context) =>
+                            ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              Translator.t.copiedErrorToClipboard(),
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            backgroundColor: Theme.of(context).cardColor,
+                          ),
+                        ),
                       );
                     },
                   ),

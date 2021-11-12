@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../modules/helpers/keyboard.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/function.dart';
+import '../../../modules/utils/utils.dart';
 import '../material_tiles/base.dart';
 
 class SettingsKeyboardTile extends StatefulWidget {
