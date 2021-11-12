@@ -39,7 +39,7 @@ export const spawn = async (
 ) =>
     new Promise<SpawnResult>(async (resolve, reject) => {
         const cp = crossSpawn(cmd, args, {
-            stdio: stdio,
+            stdio: stdio ?? (isVerbose() ? "inherit" : undefined),
             env: process.env,
             cwd: cwd,
         });
@@ -69,3 +69,25 @@ export const spawn = async (
             }
         });
     });
+
+export const defaultArgs = {
+    verbose: ["--verbose", "-v"],
+    force: ["--force", "-f"],
+};
+
+export const getArgsInfo = () => ({
+    args: getArgs(),
+    verbose: isVerbose(),
+    force: isForce(),
+});
+
+export const isVerbose = () =>
+    process.argv.slice(2).some((x) => defaultArgs.verbose.includes(x));
+
+export const isForce = () =>
+    process.argv.slice(2).some((x) => defaultArgs.force.includes(x));
+
+export const getArgs = () =>
+    process.argv
+        .slice(2)
+        .filter((x) => !Object.values(defaultArgs).flat().includes(x));

@@ -5,7 +5,7 @@ import '../../http.dart';
 import '../html_dom.dart';
 
 class _FlutterWebviewEventer {
-  StreamController<Uri> onLoadController = StreamController<Uri>();
+  StreamController<Uri> onLoadController = StreamController<Uri>.broadcast();
   late Stream<Uri> onLoad = onLoadController.stream;
 
   Future<T> waitUntil<T>(
@@ -55,6 +55,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
         }
       },
     );
+    await webview.run();
 
     return HtmlDOMTab(
       HtmlDOMTabImpl(
@@ -64,20 +65,26 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
 
           switch (wait) {
             case HtmlDOMTabGotoWait.load:
-              await eventer!.waitUntil(
+              eventer!
+                  .waitUntil(
                 eventer!.onLoad,
                 (final Uri receivedUri) => uri == receivedUri,
-              );
-              future.complete();
+              )
+                  .then((final Uri uri) {
+                future.complete();
+              });
+
               break;
 
             case HtmlDOMTabGotoWait.domContentLoaded:
-              await eventer!.waitUntil(
+              eventer!
+                  .waitUntil(
                 eventer!.onLoad,
                 (final Uri receivedUri) => uri == receivedUri,
-              );
-              await webview?.webViewController.callAsyncJavaScript(
-                functionBody: '''
+              )
+                  .then((final Uri uri) async {
+                await webview!.webViewController.callAsyncJavaScript(
+                  functionBody: '''
                   return new Promise((resolve) => {
                     if (document.readyState === 'complete') {
                       return resolve();
@@ -88,8 +95,9 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
                     });
                   });
                   ''',
-              );
-              future.complete();
+                );
+                future.complete();
+              });
               break;
 
             case HtmlDOMTabGotoWait.none:
@@ -109,7 +117,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
 
           return result?.value;
         },
-        getHtml: () => webview!.webViewController.getHtml(),
+        getHtml: () async => webview!.webViewController.getHtml(),
         getCookies: (final String url) async {
           final List<Cookie> got =
               await cookies!.getCookies(url: Uri.parse(url));

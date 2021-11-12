@@ -35,7 +35,7 @@ abstract class ExtensionInternals {
     final Hetu runner = await HetuManager.create();
 
     try {
-      await runner.eval(HetuManager.appendDefinitions(ext.code));
+      await runner.eval(HetuManager.prependDefinitions(ext.code));
     } on HTError catch (err) {
       HetuManager.editError(err);
       rethrow;
@@ -113,7 +113,7 @@ abstract class ExtensionInternals {
     final Hetu runner = await HetuManager.create();
 
     try {
-      await runner.eval(HetuManager.appendDefinitions(ext.code));
+      await runner.eval(HetuManager.prependDefinitions(ext.code));
     } on HTError catch (err) {
       HetuManager.editError(err);
       rethrow;

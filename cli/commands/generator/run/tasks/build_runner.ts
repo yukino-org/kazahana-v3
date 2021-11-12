@@ -8,7 +8,7 @@ import {
     readFile,
     writeFile,
 } from "fs-extra";
-import { SpawnError, spawn } from "../../../../spawn";
+import { SpawnError, spawn, isForce } from "../../../../spawn";
 import { config } from "../../../../config";
 import { Logger } from "../../../../logger";
 
@@ -110,7 +110,7 @@ export const runDartBuildRunner = async () => {
     logger.log("Running dart build_runner command...");
 
     try {
-        await execute(process.argv.includes("-f"));
+        await execute(isForce());
     } catch (err: any) {
         if (
             err instanceof SpawnError &&

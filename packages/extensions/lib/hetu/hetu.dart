@@ -71,14 +71,15 @@ abstract class HetuManager {
     return hetu;
   }
 
-  static String appendDefinitions(final String code) => '''
+  static String prependDefinitions(final String code) => '''
 $definitions
 
 $code
 ''';
 
   static void editError(final HTError error) {
-    _hetuDepLines ??= RegExp('\n').allMatches(appendDefinitions('')).length - 1;
+    _hetuDepLines ??=
+        RegExp('\n').allMatches(prependDefinitions('')).length - 1;
 
     if (error.line != null) {
       error.line = error.line! - _hetuDepLines!;

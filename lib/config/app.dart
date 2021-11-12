@@ -23,8 +23,11 @@ abstract class Config {
   static const String repoAuthor = 'yukino-app';
   static const String repoName = 'yukino';
 
+  // static const String storeURL =
+  //     'https://raw.githubusercontent.com/$repoAuthor/extensions-store/dist/extensions.json';
+
   static const String storeURL =
-      'https://raw.githubusercontent.com/$repoAuthor/extensions-store/dist/extensions.json';
+      'https://raw.githubusercontent.com/$repoAuthor/this-is-kek/main/store.json';
 
   static const String releasesURL =
       'https://api.github.com/repos/$repoAuthor/$repoName/releases?per_page=20';
