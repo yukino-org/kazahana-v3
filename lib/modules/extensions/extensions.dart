@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:extensions/hetu/helpers/helpers.dart';
+import 'package:extensions/utils/html_dom/html_dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../../config/app.dart';
@@ -26,6 +27,9 @@ abstract class ExtensionsManager {
     await ExtensionInternals.initialize(
       httpOptions: HetuHttpClient(
         ignoreSSLCertificate: AppState.settings.value.ignoreBadHttpCertificate,
+      ),
+      htmlDOMOptions: HtmlDOMOptions(
+        localChromiumPath: path.join(PathDirs.otherData, 'local-chromium'),
       ),
     );
 

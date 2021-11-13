@@ -37,7 +37,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
   _FlutterWebviewEventer? eventer = _FlutterWebviewEventer();
 
   @override
-  Future<void> initialize() async {
+  Future<void> initialize(final HtmlDOMOptions options) async {
     ready = true;
   }
 

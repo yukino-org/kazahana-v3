@@ -107,9 +107,17 @@ class HtmlDOMTab {
 abstract class HtmlDOMProvider {
   bool ready = false;
 
-  Future<void> initialize();
+  Future<void> initialize(final HtmlDOMOptions options);
   Future<HtmlDOMTab> create();
   Future<void> dispose();
+}
+
+class HtmlDOMOptions {
+  const HtmlDOMOptions({
+    required final this.localChromiumPath,
+  });
+
+  final String localChromiumPath;
 }
 
 abstract class HtmlDOMManager {
@@ -117,7 +125,7 @@ abstract class HtmlDOMManager {
 
   static late final HtmlDOMProvider provider;
 
-  static Future<void> initialize() async {
+  static Future<void> initialize(final HtmlDOMOptions options) async {
     if (!ready) {
       if (FlutterWebviewProvider.isSupported()) {
         provider = FlutterWebviewProvider();
@@ -127,7 +135,7 @@ abstract class HtmlDOMManager {
         throw Exception('No DOM provider was found');
       }
 
-      await provider.initialize();
+      await provider.initialize(options);
       ready = true;
     }
   }

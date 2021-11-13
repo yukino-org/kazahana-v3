@@ -8,18 +8,29 @@ import '../../html_dom.dart';
 class PuppeteerProvider extends HtmlDOMProvider {
   Browser? browser;
   BrowserContext? context;
-  String? chromiumPath;
+  String? chromePath;
 
   @override
-  Future<void> initialize() async {
-    final Set<String?> chromiumPaths = <String?>{
-      await ChromeFinder.find(),
-      null,
-    };
+  Future<void> initialize(final HtmlDOMOptions options) async {
+    final String? foundPath = await ChromeFinder.find();
 
-    for (final String? x in chromiumPaths) {
+    final List<Future<bool> Function()> tasks = <Future<bool> Function()>[
+      if (foundPath != null)
+        () async {
+          await _launch(foundPath);
+          return true;
+        },
+      () async {
+        final RevisionInfo revision =
+            await downloadChrome(cachePath: options.localChromiumPath);
+        await _launch(revision.executablePath);
+        return true;
+      }
+    ];
+
+    for (final Future<bool> Function() x in tasks) {
       try {
-        await _launch(x);
+        await x();
         break;
       } catch (_) {}
     }
@@ -27,7 +38,7 @@ class PuppeteerProvider extends HtmlDOMProvider {
     ready = true;
   }
 
-  Future<void> _launch(final String? executablePath) async {
+  Future<void> _launch(final String executablePath) async {
     browser = await puppeteer.launch(
       executablePath: executablePath,
       args: <String>[
@@ -39,7 +50,7 @@ class PuppeteerProvider extends HtmlDOMProvider {
 
     context = await browser!.createIncognitoBrowserContext();
 
-    chromiumPath = executablePath;
+    chromePath = executablePath;
   }
 
   @override
@@ -136,8 +147,6 @@ class PuppeteerProvider extends HtmlDOMProvider {
       browser = null;
     }
   }
-
-  bool get isUsingInbuiltBrowser => chromiumPath != null;
 
   static bool isSupported() =>
       Platform.isWindows || Platform.isLinux || Platform.isMacOS;

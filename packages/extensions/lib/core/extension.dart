@@ -15,8 +15,9 @@ export './resolved.dart';
 abstract class ExtensionInternals {
   static Future<void> initialize({
     required final HetuHttpClient httpOptions,
+    required final HtmlDOMOptions htmlDOMOptions,
   }) async {
-    await HtmlDOMManager.initialize();
+    await HtmlDOMManager.initialize(htmlDOMOptions);
     HetuHttpClient.set(httpOptions);
   }
 
