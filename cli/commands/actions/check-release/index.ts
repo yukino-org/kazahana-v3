@@ -11,7 +11,6 @@ export const checkRelease = async () => {
     logger.log("Checking for previous releases");
 
     const ends = getArgs()
-        .slice(2)
         .map((x) => {
             let y: string = x;
             if (y.startsWith("'")) y = y.slice(1);
