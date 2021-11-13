@@ -13,20 +13,22 @@ abstract class Translator {
   static late TranslationSentences t;
 
   static TranslationSentences? tryGetTranslation(final String _locale) {
-    final Locale locale = Locale.parse(_locale);
+    final Locale? locale = Locale.tryParse(_locale);
 
-    TranslationSentences? translation;
-    int threshold = 0;
+    if (locale != null) {
+      TranslationSentences? translation;
+      int threshold = 0;
 
-    for (final TranslationSentences x in translations) {
-      final int nThresh = x.locale.compare(locale);
-      if (nThresh > threshold) {
-        translation = x;
-        threshold = nThresh;
+      for (final TranslationSentences x in translations) {
+        final int nThresh = x.locale.compare(locale);
+        if (nThresh > threshold) {
+          translation = x;
+          threshold = nThresh;
+        }
       }
-    }
 
-    return translation;
+      return translation;
+    }
   }
 
   static TranslationSentences getDefaultTranslation() =>

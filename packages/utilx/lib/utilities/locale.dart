@@ -15,6 +15,12 @@ class Locale {
     return Locale(lang, country);
   }
 
+  static Locale? tryParse(final String locale) {
+    try {
+      return Locale.parse(locale);
+    } catch (_) {}
+  }
+
   final LanguageCodes code;
   final CountryCodes? country;
 
