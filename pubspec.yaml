@@ -10,7 +10,7 @@ environment:
 dependencies:
     animations: ^2.0.1
     archive: ^3.1.5
-    better_player: ^0.0.75
+    better_player: ^0.0.79
     clipboard: ^0.1.3
     collection: ^1.15.0
     crypto: ^3.0.1
