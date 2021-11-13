@@ -60,7 +60,7 @@ class DartVlc extends VideoPlayer {
           if (_prevBuffering != bufferingProgress) {
             dispatch(VideoPlayerEvent(VideoPlayerEvents.buffering, null));
           }
-        })
+        }),
       ],
     );
 

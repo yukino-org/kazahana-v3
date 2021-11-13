@@ -1,6 +1,6 @@
 import 'dart:async';
 import './providers/flutter_inappwebview.dart';
-import './providers/puppeteer.dart';
+import './providers/puppeteer/puppeteer.dart';
 
 enum HtmlDOMTabGotoWait {
   none,
