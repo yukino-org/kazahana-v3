@@ -194,8 +194,8 @@ abstract class Screen {
     }
   }
 
-  static Future<bool> isWakelockEnabled() =>
-      !Platform.isLinux && Wakelock.enabled;
+  static Future<bool> isWakelockEnabled() async =>
+      !Platform.isLinux && await Wakelock.enabled;
 
   static Future<void> enableWakelock() async {
     if (!Platform.isLinux) {

@@ -77,7 +77,7 @@
     },
     {
       "id": "4:1",
-      "lastPropertyId": "26:8547498297673923244",
+      "lastPropertyId": "27:1713392882459328993",
       "name": "SettingsSchema",
       "properties": [
         {
@@ -169,6 +169,11 @@
         {
           "id": "26:8547498297673923244",
           "name": "disableAnimations",
+          "type": 1
+        },
+        {
+          "id": "27:1713392882459328993",
+          "name": "ignoreBadHttpCertificate",
           "type": 1
         }
       ],

@@ -6,15 +6,15 @@ on:
             - main
             - next
         paths:
-            - packages
-            - lib
+            - "packages/**"
+            - "lib/**"
     pull_request:
         branches:
             - main
             - next
         paths:
-            - packages
-            - lib
+            - "packages/**"
+            - "lib/**"
     workflow_dispatch:
 
 jobs:
