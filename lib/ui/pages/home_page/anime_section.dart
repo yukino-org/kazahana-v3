@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:yukino_app/ui/components/error_widget.dart';
+import 'package:utilx/utilities/locale.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
@@ -11,10 +11,12 @@ import '../../../modules/state/states.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/utils/error.dart';
+import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
+import '../../components/reactive_state_builder.dart';
 
-final StatefulValueHolder<MyAnimeListHome?> _cache =
-    StatefulValueHolder<MyAnimeListHome?>(null);
+final StatefulValueHolderWithError<MyAnimeListHome?> _cache =
+    StatefulValueHolderWithError<MyAnimeListHome?>(null);
 
 final bool _useHoverTitle = AppState.isDesktop;
 
@@ -38,10 +40,8 @@ class _PageState extends State<Page> with HooksMixin {
     super.initState();
 
     onReady(() async {
-      _cache.resolve(await MyAnimeListHome.extractHome());
-
-      if (mounted) {
-        setState(() {});
+      if (_cache.state.isWaiting) {
+        await fetchAnimes();
       }
     });
   }
@@ -51,6 +51,24 @@ class _PageState extends State<Page> with HooksMixin {
     super.didChangeDependencies();
 
     hookState.markReady();
+  }
+
+  Future<void> fetchAnimes() async {
+    if (!mounted) return;
+
+    setState(() {
+      _cache.resolving(null);
+    });
+
+    try {
+      _cache.resolve(await MyAnimeListHome.extractHome());
+    } catch (err, stack) {
+      _cache.fail(null, ErrorInfo(err, stack));
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> getNodeId(
@@ -136,76 +154,98 @@ class _PageState extends State<Page> with HooksMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            _cache.state.hasResolved && AppState.settings.value.locale == 'en'
+            _cache.state.hasResolved &&
+                    AppState.settings.value.locale == LanguageCodes.en.code
                 ? _cache.value!.seasonName
                 : Translator.t.seasonalAnimes(),
             style: Theme.of(context).textTheme.headline5?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          if (_cache.state.hasResolved) ...<Widget>[
-            SizedBox(
-              height: remToPx(0.3),
-            ),
-            _HorizontalEntityList(
-              entities: _cache.value!.seasonEntities,
-              active: (final int i) =>
-                  !_useHoverTitle || seasonAnimeHoverIndex == i,
-              onHover: (final int i, final bool hovered) {
-                if (_useHoverTitle) {
-                  setState(() {
-                    seasonAnimeHoverIndex = hovered ? i : null;
-                  });
-                }
-              },
-              onTap: (final int i, final VoidCallback openContainer) {
-                openContainer();
-              },
-              openBuilder: (
-                final int i,
-                final BuildContext context,
-              ) =>
-                  buildOpenBuilder(_cache.value!.seasonEntities[i]),
-            ),
-            SizedBox(
-              height: remToPx(1.5),
-            ),
-            Text(
-              Translator.t.recentlyUpdated(),
-              style: Theme.of(context).textTheme.headline5?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            SizedBox(
-              height: remToPx(0.3),
-            ),
-            _HorizontalEntityList(
-              entities: _cache.value!.recentlyUpdated,
-              active: (final int i) =>
-                  !_useHoverTitle || recentlyUpdatedHoverIndex == i,
-              onHover: (final int i, final bool hovered) {
-                if (_useHoverTitle) {
-                  setState(() {
-                    recentlyUpdatedHoverIndex = hovered ? i : null;
-                  });
-                }
-              },
-              onTap: (final int i, final VoidCallback openContainer) {
-                openContainer();
-              },
-              openBuilder: (
-                final int i,
-                final BuildContext context,
-              ) =>
-                  buildOpenBuilder(_cache.value!.recentlyUpdated[i]),
-            ),
-          ] else
-            SizedBox(
+          ReactiveStateBuilder(
+            state: _cache.state,
+            onResolving: (final BuildContext context) => SizedBox(
               height: remToPx(8),
               child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
+            onResolved: (final BuildContext context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: remToPx(0.3),
+                ),
+                _HorizontalEntityList(
+                  entities: _cache.value!.seasonEntities,
+                  active: (final int i) =>
+                      !_useHoverTitle || seasonAnimeHoverIndex == i,
+                  onHover: (final int i, final bool hovered) {
+                    if (_useHoverTitle) {
+                      setState(() {
+                        seasonAnimeHoverIndex = hovered ? i : null;
+                      });
+                    }
+                  },
+                  onTap: (final int i, final VoidCallback openContainer) {
+                    openContainer();
+                  },
+                  openBuilder: (
+                    final int i,
+                    final BuildContext context,
+                  ) =>
+                      buildOpenBuilder(_cache.value!.seasonEntities[i]),
+                ),
+                SizedBox(
+                  height: remToPx(1.5),
+                ),
+                Text(
+                  Translator.t.recentlyUpdated(),
+                  style: Theme.of(context).textTheme.headline5?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                SizedBox(
+                  height: remToPx(0.3),
+                ),
+                _HorizontalEntityList(
+                  entities: _cache.value!.recentlyUpdated,
+                  active: (final int i) =>
+                      !_useHoverTitle || recentlyUpdatedHoverIndex == i,
+                  onHover: (final int i, final bool hovered) {
+                    if (_useHoverTitle) {
+                      setState(() {
+                        recentlyUpdatedHoverIndex = hovered ? i : null;
+                      });
+                    }
+                  },
+                  onTap: (final int i, final VoidCallback openContainer) {
+                    openContainer();
+                  },
+                  openBuilder: (
+                    final int i,
+                    final BuildContext context,
+                  ) =>
+                      buildOpenBuilder(_cache.value!.recentlyUpdated[i]),
+                ),
+              ],
+            ),
+            onFailed: (final BuildContext context) => Center(
+              child: KawaiiErrorWidget.fromErrorInfo(
+                message: Translator.t.failedToGetResults(),
+                error: _cache.error,
+                actions: <InlineSpan>[
+                  KawaiiErrorWidget.buildActionButton(
+                    context: context,
+                    icon: const Icon(Icons.refresh),
+                    child: Text(Translator.t.refetch()),
+                    color: Theme.of(context).primaryColor,
+                    onTap: fetchAnimes,
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       );
 }
@@ -262,11 +302,14 @@ class _HorizontalEntityList extends StatelessWidget {
                             child: Stack(
                               children: <Widget>[
                                 Positioned.fill(
-                                  child: FallbackableNetworkImage(
-                                    url: x.thumbnail,
-                                    placeholder: Image.asset(
-                                      Assets.placeholderImageFromContext(
-                                        context,
+                                  child: FittedBox(
+                                    fit: BoxFit.cover,
+                                    child: FallbackableNetworkImage(
+                                      url: x.thumbnail,
+                                      placeholder: Image.asset(
+                                        Assets.placeholderImageFromContext(
+                                          context,
+                                        ),
                                       ),
                                     ),
                                   ),
