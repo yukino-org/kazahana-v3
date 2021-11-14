@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:yukino_app/ui/components/error_widget.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
@@ -9,6 +10,7 @@ import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
+import '../../../modules/utils/error.dart';
 import '../../components/network_image_fallback.dart';
 
 final StatefulValueHolder<MyAnimeListHome?> _cache =
@@ -28,8 +30,8 @@ class Page extends StatefulWidget {
 class _PageState extends State<Page> with HooksMixin {
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
-  final Map<int, StatefulValueHolder<MyAnimeListAnimeList?>> mediaCache =
-      <int, StatefulValueHolder<MyAnimeListAnimeList?>>{};
+  final Map<int, StatefulValueHolderWithError<MyAnimeListAnimeList?>>
+      mediaCache = <int, StatefulValueHolderWithError<MyAnimeListAnimeList?>>{};
 
   @override
   void initState() {
@@ -51,6 +53,34 @@ class _PageState extends State<Page> with HooksMixin {
     hookState.markReady();
   }
 
+  Future<void> getNodeId(
+    final int nodeId,
+    final StateSetter setState,
+  ) async {
+    if (!mounted) return;
+
+    setState(() {
+      mediaCache[nodeId]!.resolving(null);
+    });
+
+    try {
+      final MyAnimeListAnimeList anime =
+          await MyAnimeListAnimeList.getFromNodeId(nodeId);
+
+      if (mounted) {
+        setState(() {
+          mediaCache[nodeId]!.resolve(anime);
+        });
+      }
+    } catch (err, stack) {
+      if (mounted) {
+        setState(() {
+          mediaCache[nodeId]!.fail(null, ErrorInfo(err, stack));
+        });
+      }
+    }
+  }
+
   Widget buildOpenBuilder(final MyAnimeListHomeContent x) => StatefulBuilder(
         builder: (
           final BuildContext context,
@@ -64,17 +94,32 @@ class _PageState extends State<Page> with HooksMixin {
 
           if (mediaCache[nodeId] == null) {
             mediaCache[nodeId] =
-                StatefulValueHolder<MyAnimeListAnimeList?>(null);
+                StatefulValueHolderWithError<MyAnimeListAnimeList?>(null);
+            getNodeId(nodeId, setState);
+          }
 
-            MyAnimeListAnimeList.getFromNodeId(
-              nodeId,
-            ).then((final MyAnimeListAnimeList m) {
-              if (mounted) {
-                setState(() {
-                  mediaCache[nodeId]!.resolve(m);
-                });
-              }
-            });
+          if (mediaCache[nodeId]?.state.hasFailed ?? false) {
+            return Scaffold(
+              appBar: AppBar(
+                actions: <Widget>[
+                  IconButton(
+                    onPressed: () {
+                      if (mounted) {
+                        getNodeId(nodeId, setState);
+                      }
+                    },
+                    icon: const Icon(Icons.refresh),
+                    tooltip: Translator.t.refetch(),
+                  ),
+                ],
+              ),
+              body: Center(
+                child: KawaiiErrorWidget.fromErrorInfo(
+                  message: Translator.t.somethingWentWrong(),
+                  error: mediaCache[nodeId]!.error,
+                ),
+              ),
+            );
           }
 
           return Scaffold(
