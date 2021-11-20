@@ -72,23 +72,6 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
 
-    tabController.addListener(() async {
-      if (tabController.index != pageController.page &&
-          pageController.hasClients) {
-        await pageController.animateToPage(
-          tabController.index,
-          duration: Defaults.animationsSlower,
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-
-    pageController.addListener(() {
-      if (tabController.index != pageController.page) {
-        tabController.animateTo(pageController.page!.toInt());
-      }
-    });
-
     onReady(() async {
       final dynamic _user = await widget.getUserInfo();
 
@@ -150,6 +133,13 @@ class _ProfilePageState extends State<ProfilePage>
       tabs: tabs,
       labelColor: Theme.of(context).textTheme.bodyText1?.color,
       indicatorColor: Theme.of(context).primaryColor,
+      onTap: (final int index) async {
+        await pageController.animateToPage(
+          index,
+          duration: Defaults.animationsSlower,
+          curve: Curves.easeInOut,
+        );
+      },
     );
 
     return Scaffold(
@@ -197,6 +187,9 @@ class _ProfilePageState extends State<ProfilePage>
                   itemCount: tabs.length,
                   itemBuilder: (final BuildContext context, final int index) =>
                       widget.getMediaList(widget.tabs[index]),
+                  onPageChanged: (final int page) {
+                    tabController.animateTo(page);
+                  },
                 ),
               ),
             )
