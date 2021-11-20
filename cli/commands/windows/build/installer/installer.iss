@@ -9,6 +9,7 @@
 #define MyAppSourceDir "{%- rootDir %}"
 #define MyAppOutputFileName "{%- setupName %}"
 #define MyAppOutputDir "{%- outputDir %}"
+#define MyAppPublisher "yukino-app.github.io"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -17,6 +18,7 @@ AppId={{888060E5-9312-450D-91E1-C15DD1376FC0}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
