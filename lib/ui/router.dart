@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import './pages/anime_page/anime_page.dart' as anime_page;
+import 'pages/anime_page/view.dart' as anime_page;
 import './pages/home_page/home_page.dart' as home_page;
 import './pages/manga_page/manga_page.dart' as manga_page;
 import './pages/search_page/search_page.dart' as search_page;

@@ -1,6 +1,6 @@
 import 'package:extensions/extensions.dart';
 import 'package:utilx/utilities/locale.dart';
-import '../../../modules/utils/utils.dart';
+import '../../../../modules/utils/utils.dart';
 
 enum Pages {
   home,

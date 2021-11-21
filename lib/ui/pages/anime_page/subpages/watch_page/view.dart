@@ -2,64 +2,29 @@ import 'dart:async';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import './select_source.dart';
-import './shared_props.dart';
-import '../../../config/defaults.dart';
-import '../../../modules/app/state.dart';
-import '../../../modules/database/database.dart';
-import '../../../modules/helpers/keyboard.dart';
-import '../../../modules/helpers/logger.dart';
-import '../../../modules/helpers/screen.dart';
-import '../../../modules/helpers/ui.dart';
-import '../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
-import '../../../modules/state/hooks.dart';
-import '../../../modules/state/reactive_holder.dart';
-import '../../../modules/trackers/provider.dart';
-import '../../../modules/trackers/trackers.dart';
-import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
-import '../../../modules/video_player/video_player.dart';
-import '../../components/material_tiles/radio.dart';
-import '../settings_page/setting_labels/anime.dart';
+import '../../widgets/select_source.dart';
+import '../../widgets/shared_props.dart';
+import '../../../../../config/defaults.dart';
+import '../../../../../modules/app/state.dart';
+import '../../../../../modules/database/database.dart';
+import '../../../../../modules/helpers/keyboard.dart';
+import '../../../../../modules/helpers/logger.dart';
+import '../../../../../modules/helpers/screen.dart';
+import '../../../../../modules/helpers/ui.dart';
+import '../../../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
+import '../../../../../modules/state/hooks.dart';
+import '../../../../../modules/state/reactive_holder.dart';
+import '../../../../../modules/trackers/provider.dart';
+import '../../../../../modules/trackers/trackers.dart';
+import '../../../../../modules/translator/translator.dart';
+import '../../../../../modules/utils/utils.dart';
+import '../../../../../modules/video_player/video_player.dart';
+import '../../../../components/material_tiles/radio.dart';
+import '../../../settings_page/setting_labels/anime.dart';
+import './controller.dart';
+import '../../../../models/view.dart';
 
 final Logger logger = Logger.of('watch_page');
-
-class _VideoDuration {
-  _VideoDuration(this.current, this.total);
-
-  final Duration current;
-  final Duration total;
-}
-
-class _VideoStateProps {
-  bool isReady = false;
-  bool isBuffering = false;
-  bool isPlaying = false;
-  int volume = VideoPlayer.maxVolume;
-  double speed = VideoPlayer.defaultSpeed;
-
-  VideoPlayer? videoPlayer;
-  List<EpisodeSource>? sources;
-  int? currentIndex;
-  bool ignoreScreenChanges = false;
-  bool locked = false;
-  Widget? message;
-
-  final ValueNotifier<_VideoDuration> duration = ValueNotifier<_VideoDuration>(
-    _VideoDuration(Duration.zero, Duration.zero),
-  );
-
-  void dispose() {
-    videoPlayer?.destroy();
-    duration.dispose();
-  }
-}
-
-enum _SeekType {
-  forward,
-  backward,
-  intro,
-}
 
 class WatchPage extends StatefulWidget {
   const WatchPage({
@@ -72,16 +37,14 @@ class WatchPage extends StatefulWidget {
   final void Function() pop;
 
   @override
-  WatchPageState createState() => WatchPageState();
+  _WatchPageState createState() => _WatchPageState();
 }
 
-class WatchPageState extends State<WatchPage>
+class _WatchPageState extends State<WatchPage>
     with FullscreenMixin, HooksMixin, OrientationMixin, WakelockMixin {
-  final ReactiveHolder<_VideoStateProps> videoState =
-      ReactiveHolder<_VideoStateProps>(_VideoStateProps());
+  final WatchPageController watchController = WatchPageController();
 
   final FocusNode keyBoardFocusNode = FocusNode();
-  late final KeyboardHandler keyboardHandler;
 
   Timer? _mouseOverlayTimer;
   bool hasSynced = false;
@@ -93,72 +56,6 @@ class WatchPageState extends State<WatchPage>
     super.initState();
 
     initFullscreen();
-
-    final AnimeKeyboardShortcuts shortcuts =
-        AppState.settings.value.animeShortcuts;
-
-    keyboardHandler = KeyboardHandler(
-      onKeyDown: <KeyboardKeyHandler>[
-        KeyboardKeyHandler(
-          shortcuts.fullscreen,
-          (final RawKeyEvent event) async {
-            await setFullscreen(
-              enabled: !AppState.settings.value.animeAutoFullscreen,
-            );
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.playPause,
-          (final RawKeyEvent event) async {
-            if (videoState.value.isReady) {
-              await (videoState.value.videoPlayer!.isPlaying
-                  ? videoState.value.videoPlayer!.pause()
-                  : videoState.value.videoPlayer!.play());
-            }
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.seekBackward,
-          (final RawKeyEvent event) async {
-            await seek(_SeekType.backward);
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.seekForward,
-          (final RawKeyEvent event) async {
-            await seek(_SeekType.forward);
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.skipIntro,
-          (final RawKeyEvent event) async {
-            await seek(_SeekType.intro);
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.exit,
-          (final RawKeyEvent event) async {
-            pop();
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.previousEpisode,
-          (final RawKeyEvent event) async {
-            if (previousEpisodeAvailable) {
-              previousEpisode();
-            }
-          },
-        ),
-        KeyboardKeyHandler(
-          shortcuts.nextEpisode,
-          (final RawKeyEvent event) async {
-            if (nextEpisodeAvailable) {
-              nextEpisode();
-            }
-          },
-        ),
-      ],
-    );
 
     onReady(() async {
       if (mounted) {
@@ -509,10 +406,10 @@ class WatchPageState extends State<WatchPage>
     await SettingsBox.save(AppState.settings.value);
   }
 
-  Future<void> seek(final _SeekType type) async {
+  Future<void> seek(final SeekType type) async {
     if (videoState.value.isReady) {
       switch (type) {
-        case _SeekType.forward:
+        case SeekType.forward:
           final Duration amt = videoState.value.duration.value.current +
               Duration(
                 seconds: AppState.settings.value.seekDuration,
@@ -525,7 +422,7 @@ class WatchPageState extends State<WatchPage>
           );
           break;
 
-        case _SeekType.backward:
+        case SeekType.backward:
           final Duration amt = videoState.value.duration.value.current -
               Duration(
                 seconds: AppState.settings.value.seekDuration,
@@ -536,7 +433,7 @@ class WatchPageState extends State<WatchPage>
 
           break;
 
-        case _SeekType.intro:
+        case SeekType.intro:
           final Duration amt = videoState.value.duration.value.current +
               Duration(
                 seconds: AppState.settings.value.introDuration,
@@ -656,7 +553,7 @@ class _VideoControls extends StatefulWidget {
   final Future<void> Function({
     required bool enabled,
   }) setFullscreen;
-  final Future<void> Function(_SeekType type) seek;
+  final Future<void> Function(SeekType type) seek;
   final void Function() enableLandscape;
   final void Function() disableLandscape;
   final void Function() previousEpisode;
@@ -888,7 +785,7 @@ class _VideoControlsState extends State<_VideoControls>
             child: IconButton(
               iconSize: remToPx(2),
               onPressed: () async {
-                await widget.seek(_SeekType.backward);
+                await widget.seek(SeekType.backward);
               },
               icon: const Icon(
                 Icons.fast_rewind,
@@ -921,7 +818,7 @@ class _VideoControlsState extends State<_VideoControls>
             child: IconButton(
               iconSize: remToPx(2),
               onPressed: () async {
-                await widget.seek(_SeekType.forward);
+                await widget.seek(SeekType.forward);
               },
               icon: const Icon(
                 Icons.fast_forward,
@@ -960,7 +857,7 @@ class _VideoControlsState extends State<_VideoControls>
                       icon: Icons.fast_forward,
                       label: Translator.t.skipIntro(),
                       onPressed: () async {
-                        await widget.seek(_SeekType.intro);
+                        await widget.seek(SeekType.intro);
                       },
                       enabled: widget.videoState.value.isReady,
                     ),
@@ -1178,7 +1075,7 @@ class _VideoControlsState extends State<_VideoControls>
                 horizontal: remToPx(0.7),
               ),
               child: Column(
-                children: widget.videoState.value.locked
+                children: watchController
                     ? <Widget>[
                         Align(
                           alignment: Alignment.topRight,

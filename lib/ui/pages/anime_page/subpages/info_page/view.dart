@@ -2,30 +2,29 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:utilx/utilities/locale.dart';
-import './shared_props.dart';
-import '../../../config/defaults.dart';
-import '../../../modules/app/state.dart';
-import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/ui.dart';
-import '../../../modules/trackers/trackers.dart';
-import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
-import '../../components/preferred_size_wrapper.dart';
-import '../../components/size_aware_builder.dart';
-import '../../components/toggleable_slide_widget.dart';
-import '../../components/trackers/trackers_tile.dart';
+import '../../widgets/shared_props.dart';
+import '../../../../../config/defaults.dart';
+import '../../../../../modules/app/state.dart';
+import '../../../../../modules/helpers/assets.dart';
+import '../../../../../modules/helpers/ui.dart';
+import '../../../../../modules/trackers/trackers.dart';
+import '../../../../../modules/translator/translator.dart';
+import '../../../../../modules/utils/utils.dart';
+import '../../../../components/preferred_size_wrapper.dart';
+import '../../../../components/size_aware_builder.dart';
+import '../../../../components/toggleable_slide_widget.dart';
+import '../../../../components/trackers/trackers_tile.dart';
+import '../../controller.dart';
+import './widgets/episodes.dart';
+import './widgets/hero.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({
-    required final this.props,
-    required final this.refresh,
-    required final this.changeLanguage,
+    required final this.controller,
     final Key? key,
   }) : super(key: key);
 
-  final SharedProps props;
-  final void Function() refresh;
-  final void Function(Locale) changeLanguage;
+  final AnimeViewController controller;
 
   @override
   _InfoPageState createState() => _InfoPageState();
@@ -91,19 +90,20 @@ class _InfoPageState extends State<InfoPage>
                 SizedBox(
                   height: remToPx(0.3),
                 ),
-                ...widget.props.info!.availableLocales
+                ...widget.controller.info.value!.availableLocales
                     .map(
                       (final Locale x) => Material(
                         type: MaterialType.transparency,
                         child: RadioListTile<Locale>(
                           title: Text(x.toString()),
                           value: x,
-                          groupValue: widget.props.info!.locale,
+                          groupValue: widget.controller.info.value!.locale,
                           activeColor: Theme.of(context).primaryColor,
                           onChanged: (final Locale? val) async {
                             if (val != null &&
-                                val != widget.props.info!.locale) {
-                              widget.changeLanguage(val);
+                                val != widget.controller.info.value!.locale) {
+                              widget.controller.locale = val;
+                              widget.controller.getInfo(removeCache: true);
                             }
 
                             Navigator.of(context).pop();
@@ -206,7 +206,9 @@ class _InfoPageState extends State<InfoPage>
                 ),
                 actions: <Widget>[
                   IconButton(
-                    onPressed: widget.refresh,
+                    onPressed: () async {
+                      await widget.controller.getInfo(removeCache: true);
+                    },
                     tooltip: Translator.t.refetch(),
                     icon: const Icon(Icons.refresh),
                   ),
@@ -231,13 +233,13 @@ class _InfoPageState extends State<InfoPage>
                           const SizedBox(
                             height: kToolbarHeight,
                           ),
-                          _Hero(props: widget.props),
+                          AnimeHero(controller: widget.controller),
                           SizedBox(
                             height: remToPx(1.5),
                           ),
                           TrackersTile(
-                            title: widget.props.info!.title,
-                            plugin: widget.props.extractor!.id,
+                            title: widget.controller.info.value!.title,
+                            plugin: widget.controller.extractor!.id,
                             providers: Trackers.anime,
                           ),
                           SizedBox(
@@ -302,19 +304,19 @@ class _InfoPageState extends State<InfoPage>
                     (final int i) {
                       final int start = i * maxChunkLength;
                       final int totalLength =
-                          widget.props.info!.sortedEpisodes.length;
+                          widget.controller.info.value!.sortedEpisodes.length;
                       final int end = start + maxChunkLength;
                       final int extra =
                           end > totalLength ? end - totalLength : 0;
 
                       return Builder(
-                        builder: (final BuildContext context) => _Episodes(
+                        builder: (final BuildContext context) => Episodes(
                           start: start,
                           end: end - extra,
                           padding: EdgeInsets.symmetric(
                             horizontal: paddingHorizontal,
                           ),
-                          props: widget.props,
+                          controller: widget.controller,
                         ),
                       );
                     },
@@ -355,174 +357,6 @@ class _InfoPageState extends State<InfoPage>
   bool get wantKeepAlive => true;
 
   int get tabCount =>
-      (widget.props.info!.sortedEpisodes.length / maxChunkLength).ceil();
-}
-
-class _Hero extends StatelessWidget {
-  const _Hero({
-    required final this.props,
-    final Key? key,
-  }) : super(key: key);
-
-  final SharedProps props;
-
-  @override
-  Widget build(final BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-
-    final Widget image = props.info!.thumbnail != null
-        ? Image.network(
-            props.info!.thumbnail!.url,
-            headers: props.info!.thumbnail!.headers,
-            width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
-          )
-        : Image.asset(
-            Assets.placeholderImageFromContext(context),
-            width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
-          );
-
-    final Widget left = ClipRRect(
-      borderRadius: BorderRadius.circular(remToPx(0.5)),
-      child: image,
-    );
-
-    final Widget right = Column(
-      children: <Widget>[
-        Text(
-          props.info!.title,
-          style: TextStyle(
-            fontSize: Theme.of(context).textTheme.headline4?.fontSize,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          props.extractor!.name,
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: Theme.of(context).textTheme.headline6?.fontSize,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-
-    if (width > ResponsiveSizes.md) {
-      return Row(
-        children: <Widget>[
-          left,
-          SizedBox(
-            width: remToPx(1),
-          ),
-          Expanded(child: right),
-        ],
-      );
-    } else {
-      return Column(
-        children: <Widget>[
-          left,
-          SizedBox(
-            height: remToPx(1),
-          ),
-          right,
-        ],
-      );
-    }
-  }
-}
-
-class _Episodes extends StatelessWidget {
-  const _Episodes({
-    required final this.start,
-    required final this.end,
-    required final this.padding,
-    required final this.props,
-    final Key? key,
-  }) : super(key: key);
-
-  final int start;
-  final int end;
-  final EdgeInsets padding;
-  final SharedProps props;
-
-  @override
-  Widget build(final BuildContext context) => MediaQuery.removePadding(
-        removeTop: true,
-        context: context,
-        child: ListView(
-          padding: padding,
-          children: ListUtils.chunk<Widget>(
-            props.info!.sortedEpisodes
-                .sublist(
-                  start,
-                  end,
-                )
-                .asMap()
-                .map(
-                  (
-                    final int k,
-                    final EpisodeInfo x,
-                  ) =>
-                      MapEntry<int, Widget>(
-                    k,
-                    Expanded(
-                      child: Card(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(
-                            4,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.4),
-                              vertical: remToPx(0.3),
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                children: <InlineSpan>[
-                                  TextSpan(
-                                    text: '${Translator.t.episode()} ',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.subtitle2,
-                                  ),
-                                  TextSpan(
-                                    text: x.episode.padLeft(
-                                      2,
-                                      '0',
-                                    ),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.subtitle2?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          onTap: () async {
-                            props.setEpisode(start + k);
-                            await props.goToPage(Pages.player);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-                .values
-                .toList(),
-            MediaQuery.of(context).size.width ~/ remToPx(8),
-            const Expanded(
-              child: SizedBox.shrink(),
-            ),
-          )
-              .map(
-                (final List<Widget> x) => Row(
-                  children: x,
-                ),
-              )
-              .toList(),
-        ),
-      );
+      (widget.controller.info.value!.sortedEpisodes.length / maxChunkLength)
+          .ceil();
 }

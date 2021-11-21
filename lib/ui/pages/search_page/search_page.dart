@@ -16,7 +16,7 @@ import '../../components/network_image_fallback.dart';
 import '../../components/reactive_state_builder.dart';
 import '../../components/with_child_builder.dart';
 import '../../router.dart';
-import '../anime_page/anime_page.dart' as anime_page;
+import '../anime_page/view.dart' as anime_page;
 import '../manga_page/manga_page.dart' as manga_page;
 
 extension PluginRoutes on ExtensionType {

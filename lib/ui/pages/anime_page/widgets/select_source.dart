@@ -1,8 +1,8 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import '../../../modules/helpers/logger.dart';
-import '../../../modules/helpers/ui.dart';
-import '../../../modules/translator/translator.dart';
+import '../../../../modules/helpers/logger.dart';
+import '../../../../modules/helpers/ui.dart';
+import '../../../../modules/translator/translator.dart';
 
 class SelectSourceWidget extends StatelessWidget {
   const SelectSourceWidget({
