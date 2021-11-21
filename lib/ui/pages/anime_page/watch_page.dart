@@ -22,6 +22,8 @@ import '../../../modules/video_player/video_player.dart';
 import '../../components/material_tiles/radio.dart';
 import '../settings_page/setting_labels/anime.dart';
 
+final Logger logger = Logger.of('watch_page');
+
 class _VideoDuration {
   _VideoDuration(this.current, this.total);
 
@@ -160,18 +162,26 @@ class WatchPageState extends State<WatchPage>
 
     onReady(() async {
       if (mounted) {
-        isWakelockEnabled().then((final bool isWakelockEnabled) {
+        logger.info('0 - Wakelock');
+        isWakelockEnabled().then((final bool isWakelockEnabled) async {
+          logger.info('1 - Wakelock');
           if (mounted && !isWakelockEnabled) {
-            enableWakelock();
+            logger.info('2 - Wakelock');
+            await enableWakelock();
+            logger.info('3 - Wakelock');
           }
         });
 
         if (AppState.settings.value.animeAutoFullscreen) {
+          logger.info('0 - Fullscreen');
           enterFullscreen();
+          logger.info('1 - Fullscreen');
         }
 
-        if (AppState.settings.value.animeForceLandscape) {
+        if (AppState.isMobile && AppState.settings.value.animeForceLandscape) {
+          logger.info('0 - Landscape');
           enterLandscape();
+          logger.info('1 - Landscape');
         }
 
         await getSources();
@@ -399,8 +409,7 @@ class WatchPageState extends State<WatchPage>
         setPlayer(index);
       }
     } else if (videoState.value.currentIndex == null) {
-      Logger.of('watch_page')
-          .info('Popping page due to "currentIndex == null"');
+      logger.info('Popping page due to "currentIndex == null"');
       pop();
     }
   }
