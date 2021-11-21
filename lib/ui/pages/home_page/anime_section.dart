@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:utilx/utilities/locale.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/app/state.dart';
 import '../../../modules/helpers/assets.dart';
@@ -10,7 +11,6 @@ import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/error.dart';
 import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
 import '../../components/reactive_state_builder.dart';

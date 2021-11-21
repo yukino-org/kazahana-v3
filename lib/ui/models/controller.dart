@@ -7,7 +7,24 @@ enum ControllerState {
   destroyed,
 }
 
+class ControllerInternals {
+  const ControllerInternals({
+    required final this.isMounted,
+    required final this.getCurrentContext,
+  });
+
+  factory ControllerInternals.fromState(final State state) =>
+      ControllerInternals(
+        isMounted: () => state.mounted,
+        getCurrentContext: () => state.context,
+      );
+
+  final bool Function() isMounted;
+  final BuildContext Function() getCurrentContext;
+}
+
 abstract class Controller extends ChangeNotifier {
+  ControllerInternals? internals;
   ControllerState state = ControllerState.waiting;
 
   @mustCallSuper
@@ -16,7 +33,7 @@ abstract class Controller extends ChangeNotifier {
   }
 
   @mustCallSuper
-  Future<void> ready(final BuildContext context) async {
+  Future<void> ready() async {
     state = ControllerState.ready;
   }
 
@@ -24,10 +41,14 @@ abstract class Controller extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   @mustCallSuper
-  Future<void> destroy() async {
+  Future<void> dispose() async {
     state = ControllerState.destroyed;
 
     super.dispose();
   }
+
+  bool get mounted => internals?.isMounted() ?? false;
+  BuildContext? get context => internals?.getCurrentContext();
 }

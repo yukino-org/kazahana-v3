@@ -1,22 +1,18 @@
-import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:utilx/utilities/locale.dart';
-import '../../widgets/shared_props.dart';
+import './widgets/episodes.dart';
+import './widgets/hero.dart';
 import '../../../../../config/defaults.dart';
 import '../../../../../modules/app/state.dart';
-import '../../../../../modules/helpers/assets.dart';
 import '../../../../../modules/helpers/ui.dart';
 import '../../../../../modules/trackers/trackers.dart';
 import '../../../../../modules/translator/translator.dart';
-import '../../../../../modules/utils/utils.dart';
 import '../../../../components/preferred_size_wrapper.dart';
 import '../../../../components/size_aware_builder.dart';
 import '../../../../components/toggleable_slide_widget.dart';
 import '../../../../components/trackers/trackers_tile.dart';
 import '../../controller.dart';
-import './widgets/episodes.dart';
-import './widgets/hero.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({
@@ -24,7 +20,7 @@ class InfoPage extends StatefulWidget {
     final Key? key,
   }) : super(key: key);
 
-  final AnimeViewController controller;
+  final AnimePageController controller;
 
   @override
   _InfoPageState createState() => _InfoPageState();

@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/helpers/assets.dart';
@@ -10,13 +11,12 @@ import '../../../modules/state/hooks.dart';
 import '../../../modules/state/stateful_holder.dart';
 import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
 import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
 import '../../components/reactive_state_builder.dart';
 import '../../components/with_child_builder.dart';
 import '../../router.dart';
-import '../anime_page/view.dart' as anime_page;
+import '../anime_page/controller.dart';
 import '../manga_page/manga_page.dart' as manga_page;
 
 extension PluginRoutes on ExtensionType {
@@ -36,7 +36,7 @@ extension PluginRoutes on ExtensionType {
   }) {
     switch (this) {
       case ExtensionType.anime:
-        return anime_page.PageArguments(src: src, plugin: plugin).toJson();
+        return AnimePageArguments(src: src, plugin: plugin).toJson();
 
       case ExtensionType.manga:
         return manga_page.PageArguments(src: src, plugin: plugin).toJson();

@@ -1,8 +1,8 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:yukino_app/modules/helpers/ui.dart';
-import 'package:yukino_app/modules/translator/translator.dart';
-import '../../../../../../modules/utils/utils.dart';
+import 'package:utilx/utilities/utils.dart';
+import '../../../../../../modules/helpers/ui.dart';
+import '../../../../../../modules/translator/translator.dart';
 import '../../../controller.dart';
 
 class Episodes extends StatelessWidget {
@@ -17,7 +17,7 @@ class Episodes extends StatelessWidget {
   final int start;
   final int end;
   final EdgeInsets padding;
-  final AnimeViewController controller;
+  final AnimePageController controller;
 
   @override
   Widget build(final BuildContext context) => MediaQuery.removePadding(

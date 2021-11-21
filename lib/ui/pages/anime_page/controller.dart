@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:extensions/extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:utilx/utilities/locale.dart';
-import 'package:yukino_app/config/defaults.dart';
-import 'package:yukino_app/modules/database/database.dart';
-import 'package:yukino_app/modules/extensions/extensions.dart';
-import 'package:yukino_app/modules/state/stateful_holder.dart';
-import 'package:yukino_app/ui/router.dart';
-import '../../../modules/utils/utils.dart';
+import 'package:utilx/utilities/utils.dart';
+import '../../../config/defaults.dart';
+import '../../../modules/database/database.dart';
+import '../../../modules/extensions/extensions.dart';
+import '../../../modules/state/stateful_holder.dart';
+import '../../../ui/router.dart';
 import '../../models/controller.dart';
 
 enum SubPages {
@@ -48,7 +48,7 @@ class AnimePageArguments {
       };
 }
 
-class AnimeViewController extends Controller {
+class AnimePageController extends Controller {
   AnimePageArguments? args;
   AnimeExtractor? extractor;
   EpisodeInfo? episode;
@@ -62,17 +62,17 @@ class AnimeViewController extends Controller {
   );
 
   @override
-  Future<void> ready(final BuildContext context) async {
-    super.ready(context);
-
+  Future<void> ready() async {
     args = AnimePageArguments.fromJson(
-      ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
+      ParsedRouteInfo.fromSettings(ModalRoute.of(context!)!.settings).params,
     );
 
     extractor = ExtensionsManager.animes[args!.plugin];
     if (extractor != null) {
       await getInfo();
     }
+
+    super.ready();
   }
 
   int? _currentEpisodeIndex;

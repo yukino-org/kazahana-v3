@@ -1,9 +1,9 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/logger.dart';
 import '../../../../modules/translator/translator.dart';
-import '../../../../modules/utils/utils.dart';
 import '../../../components/material_tiles/base.dart';
 import '../../../components/material_tiles/switch.dart';
 

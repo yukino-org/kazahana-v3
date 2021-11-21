@@ -1,10 +1,10 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/extensions/extensions.dart';
 import '../../../../modules/helpers/ui.dart';
 import '../../../../modules/translator/translator.dart';
-import '../../../../modules/utils/utils.dart';
 
 class ExtensionsPage extends StatefulWidget {
   const ExtensionsPage({

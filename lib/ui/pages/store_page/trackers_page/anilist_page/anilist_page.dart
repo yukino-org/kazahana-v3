@@ -1,9 +1,9 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../../modules/helpers/ui.dart';
 import '../../../../../modules/trackers/anilist/anilist.dart';
 import '../../../../../modules/translator/translator.dart';
-import '../../../../../modules/utils/utils.dart';
 import '../../../../components/trackers/media_list.dart';
 import '../../../../components/trackers/profile_page.dart';
 import '../../../../router.dart';

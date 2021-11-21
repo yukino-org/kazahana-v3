@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yukino_app/modules/helpers/assets.dart';
-import 'package:yukino_app/modules/helpers/ui.dart';
+import '../../../../../../modules/helpers/assets.dart';
+import '../../../../../../modules/helpers/ui.dart';
 import '../../../controller.dart';
 
 class AnimeHero extends StatelessWidget {
@@ -9,7 +9,7 @@ class AnimeHero extends StatelessWidget {
     final Key? key,
   }) : super(key: key);
 
-  final AnimeViewController controller;
+  final AnimePageController controller;
 
   @override
   Widget build(final BuildContext context) {

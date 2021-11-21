@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../ui/components/trackers/detailed_item.dart';
 import '../../../../ui/pages/store_page/trackers_page/myanimelist_page/animelist/edit_modal.dart';
 import '../../../state/hooks.dart';
-import '../../../utils/utils.dart';
 import '../../provider.dart';
 import '../myanimelist.dart';
 

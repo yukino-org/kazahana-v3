@@ -1,5 +1,5 @@
+import 'package:utilx/utilities/utils.dart';
 import './states.dart';
-import '../utils/error.dart';
 
 class StatefulValueHolder<T> {
   StatefulValueHolder(

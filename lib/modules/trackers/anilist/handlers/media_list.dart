@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import './fuzzy_date.dart';
 import '../../../../ui/components/trackers/detailed_item.dart';
 import '../../../../ui/pages/store_page/trackers_page/anilist_page/edit_modal.dart';
-import '../../../utils/utils.dart';
 import '../../provider.dart';
 import '../anilist.dart';
 

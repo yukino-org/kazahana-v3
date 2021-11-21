@@ -24,21 +24,23 @@ class _ViewState<T extends Controller> extends State<View<T>> {
 
     widget.controller
       ..setup()
-      ..addListener(_controllerListener);
+      ..addListener(_controllerListener)
+      ..internals = ControllerInternals.fromState(this);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    widget.controller.ready(context);
+    widget.controller.ready();
   }
 
   @override
   void dispose() {
     widget.controller
       ..removeListener(_controllerListener)
-      ..dispose();
+      ..dispose()
+      ..internals = null;
 
     super.dispose();
   }

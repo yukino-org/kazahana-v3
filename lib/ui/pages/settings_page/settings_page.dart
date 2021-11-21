@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import './setting_labels/about.dart';
 import './setting_labels/anime.dart';
 import './setting_labels/developers.dart';
@@ -9,7 +10,6 @@ import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
 import '../../components/material_tiles/base.dart';
 import '../../components/size_aware_builder.dart';
 

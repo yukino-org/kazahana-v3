@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import './modules/app/lifecycle.dart';
 import './modules/app/state.dart';
 import './modules/database/database.dart';
 import './modules/helpers/logger.dart';
 import './modules/helpers/ui.dart';
 import './modules/translator/translator.dart';
-import './modules/utils/utils.dart';
 import './ui/router.dart';
 
 Future<void> main(final List<String> args) async {

@@ -1,9 +1,9 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../modules/helpers/faces.dart';
 import '../../modules/helpers/ui.dart';
 import '../../modules/translator/translator.dart';
-import '../../modules/utils/utils.dart';
 
 typedef ActionsBuilder = List<InlineSpan> Function(
   BuildContext,
