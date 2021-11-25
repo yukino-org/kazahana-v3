@@ -74,60 +74,59 @@ class OverlayTop extends StatelessWidget {
   }
 
   @override
-  Widget build(final BuildContext context) => Expanded(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: remToPx(0.5),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-                tooltip: Translator.t.back(),
-                onPressed: controller.exit,
-                padding: EdgeInsets.only(
-                  right: remToPx(1),
-                  top: remToPx(0.5),
-                  bottom: remToPx(0.5),
-                ),
-                color: Colors.white,
+  Widget build(final BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+          top: remToPx(0.5),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
               ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      controller.animeController.info.value!.title,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize:
-                            Theme.of(context).textTheme.headline6?.fontSize,
-                        color: Colors.white,
-                      ),
+              tooltip: Translator.t.back(),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              padding: EdgeInsets.only(
+                right: remToPx(1),
+                top: remToPx(0.5),
+                bottom: remToPx(0.5),
+              ),
+              color: Colors.white,
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    controller.animeController.info.value!.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.headline6?.fontSize,
+                      color: Colors.white,
                     ),
-                    Text(
-                      '${Translator.t.episode()} ${controller.animeController.episode!.episode} ${Translator.t.of()} ${controller.animeController.info.value!.episodes.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
+                  ),
+                  Text(
+                    '${Translator.t.episode()} ${controller.animeController.episode!.episode} ${Translator.t.of()} ${controller.animeController.info.value!.episodes.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              PlayerOverlay.buildLock(context, controller),
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () async {
-                  await showOptions(context);
-                },
-                color: Colors.white,
-              ),
-            ],
-          ),
+            ),
+            PlayerOverlay.buildLock(context, controller),
+            IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () async {
+                await showOptions(context);
+              },
+              color: Colors.white,
+            ),
+          ],
         ),
       );
 }

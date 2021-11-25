@@ -21,6 +21,12 @@ class AnimePage extends StatelessWidget {
         child: SafeArea(
           child: View<AnimePageController>(
             controller: controller,
+            afterReady: (
+              final AnimePageController controller,
+              final bool done,
+            ) async {
+              await controller.initController(context);
+            },
             builder: (
               final BuildContext context,
               final AnimePageController controller,
@@ -30,7 +36,7 @@ class AnimePage extends StatelessWidget {
               onResolving: (final BuildContext context) => Scaffold(
                 appBar: const PlaceholderAppBar(),
                 body: Center(
-                  child: controller.extractor == null
+                  child: controller.initialized && controller.extractor == null
                       ? KawaiiErrorWidget(
                           message: Translator.t
                               .unknownExtension(controller.args!.plugin),
@@ -51,7 +57,10 @@ class AnimePage extends StatelessWidget {
                       animeController: controller,
                     )
                   else
-                    const SizedBox.shrink(),
+                    Scaffold(
+                      appBar: AppBar(),
+                      body: Text('poop'),
+                    ),
                 ],
               ),
               onFailed: (final BuildContext context) => Scaffold(
@@ -75,6 +84,7 @@ class AnimePage extends StatelessWidget {
           if (controller.pageController.page?.toInt() != SubPages.home.index) {
             await controller.goToPage(SubPages.home);
             controller.currentEpisodeIndex = null;
+            controller.rebuild();
             return false;
           }
 

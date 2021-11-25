@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 enum ControllerState {
@@ -7,48 +8,70 @@ enum ControllerState {
   destroyed,
 }
 
-class ControllerInternals {
-  const ControllerInternals({
-    required final this.isMounted,
-    required final this.getCurrentContext,
-  });
+typedef ControllerSubscriber = void Function();
 
-  factory ControllerInternals.fromState(final State state) =>
-      ControllerInternals(
-        isMounted: () => state.mounted,
-        getCurrentContext: () => state.context,
-      );
-
-  final bool Function() isMounted;
-  final BuildContext Function() getCurrentContext;
-}
-
-abstract class Controller extends ChangeNotifier {
-  ControllerInternals? internals;
+abstract class Controller {
+  bool _didSetup = false;
+  bool _didReady = false;
   ControllerState state = ControllerState.waiting;
 
+  final List<ControllerSubscriber> _subs = <ControllerSubscriber>[];
+  bool _didDestroy = false;
+
   @mustCallSuper
-  Future<void> setup() async {
-    state = ControllerState.setup;
+  Future<bool> setup() async {
+    if (!_didSetup) {
+      state = ControllerState.setup;
+      _didSetup = true;
+      return true;
+    }
+
+    return false;
   }
 
   @mustCallSuper
-  Future<void> ready() async {
-    state = ControllerState.ready;
+  Future<bool> ready() async {
+    if (!_didReady) {
+      state = ControllerState.ready;
+      _didReady = true;
+      return true;
+    }
+
+    return false;
+  }
+
+  void subscribe(final ControllerSubscriber sub) {
+    _subs.add(sub);
+  }
+
+  void unsubscribe(final ControllerSubscriber sub) {
+    _subs.remove(sub);
   }
 
   void rebuild() {
-    notifyListeners();
+    if (state == ControllerState.ready) {
+      for (final ControllerSubscriber sub in _subs) {
+        sub();
+      }
+    }
   }
 
-  @override
   @mustCallSuper
-  Future<void> dispose() async {
-    state = ControllerState.destroyed;
+  Future<bool> maybeDispose() async {
+    if (!_didDestroy && disposable) {
+      state = ControllerState.destroyed;
+      _didDestroy = true;
+      return true;
+    }
 
-    super.dispose();
+    return false;
   }
 
-  bool get mounted => internals?.isMounted() ?? false;
-  BuildContext? get context => internals?.getCurrentContext();
+  @mustCallSuper
+  Future<bool> dispose() async {
+    _subs.clear();
+    return maybeDispose();
+  }
+
+  bool get disposable => _subs.isEmpty;
 }

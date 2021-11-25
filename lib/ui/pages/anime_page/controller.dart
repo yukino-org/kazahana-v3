@@ -49,6 +49,7 @@ class AnimePageArguments {
 }
 
 class AnimePageController extends Controller {
+  bool initialized = false;
   AnimePageArguments? args;
   AnimeExtractor? extractor;
   EpisodeInfo? episode;
@@ -61,10 +62,9 @@ class AnimePageController extends Controller {
     initialPage: SubPages.home.index,
   );
 
-  @override
-  Future<void> ready() async {
+  Future<void> initController(final BuildContext context) async {
     args = AnimePageArguments.fromJson(
-      ParsedRouteInfo.fromSettings(ModalRoute.of(context!)!.settings).params,
+      ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
     );
 
     extractor = ExtensionsManager.animes[args!.plugin];
@@ -72,7 +72,7 @@ class AnimePageController extends Controller {
       await getInfo();
     }
 
-    super.ready();
+    initialized = true;
   }
 
   int? _currentEpisodeIndex;

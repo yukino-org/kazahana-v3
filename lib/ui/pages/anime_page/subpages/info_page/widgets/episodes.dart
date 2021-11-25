@@ -74,6 +74,7 @@ class Episodes extends StatelessWidget {
                           ),
                           onTap: () async {
                             controller.currentEpisodeIndex = start + k;
+                            controller.rebuild();
                             await controller.goToPage(SubPages.player);
                           },
                         ),

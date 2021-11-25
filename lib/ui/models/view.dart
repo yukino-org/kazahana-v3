@@ -3,14 +3,22 @@ import './controller.dart';
 
 typedef ViewBuilder<T extends Controller> = Widget Function(BuildContext, T);
 
+typedef ViewListener<T extends Controller> = void Function(T, bool);
+
 class View<T extends Controller> extends StatefulWidget {
   const View({
     required final this.controller,
     required final this.builder,
+    final this.afterSetup,
+    final this.afterReady,
+    final this.afterDispose,
     final Key? key,
   }) : super(key: key);
 
   final T controller;
+  final ViewListener<T>? afterSetup;
+  final ViewListener<T>? afterReady;
+  final ViewListener<T>? afterDispose;
   final ViewBuilder<T> builder;
 
   @override
@@ -23,24 +31,34 @@ class _ViewState<T extends Controller> extends State<View<T>> {
     super.initState();
 
     widget.controller
-      ..setup()
-      ..addListener(_controllerListener)
-      ..internals = ControllerInternals.fromState(this);
+      ..subscribe(_controllerListener)
+      ..setup().then((final bool done) {
+        if (mounted) {
+          widget.afterSetup?.call(widget.controller, done);
+        }
+      });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    widget.controller.ready();
+    widget.controller.ready().then((final bool done) {
+      if (mounted) {
+        widget.afterReady?.call(widget.controller, done);
+      }
+    });
   }
 
   @override
   void dispose() {
     widget.controller
-      ..removeListener(_controllerListener)
-      ..dispose()
-      ..internals = null;
+      ..unsubscribe(_controllerListener)
+      ..dispose().then((final bool disposed) {
+        if (mounted) {
+          widget.afterDispose?.call(widget.controller, disposed);
+        }
+      });
 
     super.dispose();
   }

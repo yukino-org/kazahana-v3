@@ -28,24 +28,30 @@ class PlayerOverlay extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     if (controller.locked) {
-      return Stack(
-        children: <Widget>[
-          Align(
-            alignment: AlignmentDirectional.topEnd,
-            child: Material(
-              type: MaterialType.transparency,
-              borderRadius: BorderRadius.circular(remToPx(0.2)),
-              child: IconButton(
-                onPressed: () {
-                  controller.locked = !controller.locked;
-                  controller.rebuild();
-                },
-                icon: const Icon(Icons.lock),
-                color: Colors.white,
+      return buildOverlay(
+        context: context,
+        firstChild: Stack(
+          children: <Widget>[
+            Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: Padding(
+                padding: EdgeInsets.all(remToPx(0.5)),
+                child: Material(
+                  type: MaterialType.transparency,
+                  borderRadius: BorderRadius.circular(remToPx(0.2)),
+                  child: IconButton(
+                    onPressed: () {
+                      controller.locked = !controller.locked;
+                      controller.rebuild();
+                    },
+                    icon: const Icon(Icons.lock),
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
@@ -57,18 +63,24 @@ class PlayerOverlay extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            buildOverlay(
-              context: context,
-              firstChild: OverlayTop(controller: controller),
+            Expanded(
+              child: buildOverlay(
+                context: context,
+                firstChild: OverlayTop(controller: controller),
+              ),
             ),
-            buildOverlay(
-              context: context,
-              firstChild: OverlayMiddle(controller: controller),
-              enabled: showControls || controller.currentPlayerWidget == null,
+            Expanded(
+              child: buildOverlay(
+                context: context,
+                firstChild: OverlayMiddle(controller: controller),
+                enabled: showControls || controller.currentPlayerWidget == null,
+              ),
             ),
-            buildOverlay(
-              context: context,
-              firstChild: OverlayBottom(controller: controller),
+            Expanded(
+              child: buildOverlay(
+                context: context,
+                firstChild: OverlayBottom(controller: controller),
+              ),
             ),
           ],
         ),
@@ -76,25 +88,18 @@ class PlayerOverlay extends StatelessWidget {
     );
   }
 
-  bool get showControls => controller.isReady || controller.showControls;
+  bool get showControls => !controller.isReady || controller.showControls;
 
   static Widget buildLock(
     final BuildContext context,
     final WatchPageController controller,
   ) =>
-      Align(
-        alignment: AlignmentDirectional.topEnd,
-        child: Material(
-          type: MaterialType.transparency,
-          borderRadius: BorderRadius.circular(remToPx(0.2)),
-          child: IconButton(
-            onPressed: () {
-              controller.locked = !controller.locked;
-              controller.rebuild();
-            },
-            icon: Icon(controller.locked ? Icons.lock : Icons.lock_open),
-            color: Colors.white,
-          ),
-        ),
+      IconButton(
+        onPressed: () {
+          controller.locked = !controller.locked;
+          controller.rebuild();
+        },
+        icon: Icon(controller.locked ? Icons.lock : Icons.lock_open),
+        color: Colors.white,
       );
 }

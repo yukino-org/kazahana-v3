@@ -33,9 +33,9 @@ class _WatchPageState extends State<WatchPage>
 
   @override
   void dispose() {
-    controller.dispose();
     keyBoardFocusNode.dispose();
     mouseOverlayTimer?.cancel();
+    controller.dispose();
 
     super.dispose();
   }
@@ -71,6 +71,15 @@ class _WatchPageState extends State<WatchPage>
   @override
   Widget build(final BuildContext context) => View<WatchPageController>(
         controller: controller,
+        afterReady: (
+          final WatchPageController controller,
+          final bool done,
+        ) async {
+          await controller.showSelectSources(context);
+          if (mounted && controller.currentSourceIndex == null) {
+            Navigator.of(context).pop();
+          }
+        },
         builder: (
           final BuildContext context,
           final WatchPageController controller,
@@ -79,7 +88,7 @@ class _WatchPageState extends State<WatchPage>
           focusNode: keyBoardFocusNode,
           autofocus: true,
           onKey: (final RawKeyEvent event) =>
-              controller.keyboard.onRawKeyEvent(event),
+              controller.getKeyboard(context).onRawKeyEvent(event),
           child: Material(
             type: MaterialType.transparency,
             child: MouseRegion(

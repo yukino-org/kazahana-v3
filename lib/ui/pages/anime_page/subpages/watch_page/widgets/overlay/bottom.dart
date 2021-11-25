@@ -49,200 +49,197 @@ class OverlayBottom extends StatelessWidget {
   }
 
   @override
-  Widget build(final BuildContext context) => Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Flexible(
-              child: buildLayoutedButton(
-                context,
-                <Widget>[
-                  Expanded(
-                    child: ActionButton(
-                      icon: Icons.skip_previous,
-                      label: Translator.t.previous(),
-                      onPressed: () {
-                        controller.ignoreScreenChanges = true;
-                        controller.previousEpisode();
-                      },
-                      enabled: controller.previousEpisodeAvailable,
-                    ),
+  Widget build(final BuildContext context) => Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Flexible(
+            child: buildLayoutedButton(
+              context,
+              <Widget>[
+                Expanded(
+                  child: ActionButton(
+                    icon: Icons.skip_previous,
+                    label: Translator.t.previous(),
+                    onPressed: () {
+                      controller.ignoreScreenChanges = true;
+                      controller.previousEpisode();
+                    },
+                    enabled: controller.previousEpisodeAvailable,
                   ),
-                  Expanded(
-                    child: ActionButton(
-                      icon: Icons.fast_forward,
-                      label: Translator.t.skipIntro(),
-                      onPressed: () async {
-                        await controller.seek(SeekType.intro);
-                      },
-                      enabled: controller.isReady,
-                    ),
+                ),
+                Expanded(
+                  child: ActionButton(
+                    icon: Icons.fast_forward,
+                    label: Translator.t.skipIntro(),
+                    onPressed: () async {
+                      await controller.seek(SeekType.intro);
+                    },
+                    enabled: controller.isReady,
                   ),
-                  Expanded(
-                    child: ActionButton(
-                      icon: Icons.playlist_play,
-                      label: Translator.t.sources(),
-                      onPressed: () async {
-                        await controller.showSelectSources(context);
-                      },
-                      enabled: controller.sources?.isNotEmpty ?? false,
-                    ),
+                ),
+                Expanded(
+                  child: ActionButton(
+                    icon: Icons.playlist_play,
+                    label: Translator.t.sources(),
+                    onPressed: () async {
+                      await controller.showSelectSources(context);
+                    },
+                    enabled: controller.sources?.isNotEmpty ?? false,
                   ),
-                  Expanded(
-                    child: ActionButton(
-                      icon: Icons.skip_next,
-                      label: Translator.t.next(),
-                      onPressed: () {
-                        controller.ignoreScreenChanges = true;
-                        controller.nextEpisode();
-                      },
-                      enabled: controller.nextEpisodeAvailable,
-                    ),
+                ),
+                Expanded(
+                  child: ActionButton(
+                    icon: Icons.skip_next,
+                    label: Translator.t.next(),
+                    onPressed: () {
+                      controller.ignoreScreenChanges = true;
+                      controller.nextEpisode();
+                    },
+                    enabled: controller.nextEpisodeAvailable,
                   ),
-                ],
-                2,
-              ),
+                ),
+              ],
+              2,
             ),
-            ValueListenableBuilder<VideoDuration>(
-              valueListenable: controller.duration,
-              builder: (
-                final BuildContext context,
-                final VideoDuration duration,
-                final Widget? child,
-              ) =>
-                  Row(
-                children: <Widget>[
-                  Container(
-                    constraints: BoxConstraints(
-                      minWidth: remToPx(1.8),
+          ),
+          ValueListenableBuilder<VideoDuration>(
+            valueListenable: controller.duration,
+            builder: (
+              final BuildContext context,
+              final VideoDuration duration,
+              final Widget? child,
+            ) =>
+                Row(
+              children: <Widget>[
+                Container(
+                  constraints: BoxConstraints(
+                    minWidth: remToPx(1.8),
+                  ),
+                  child: Text(
+                    DurationUtils.pretty(
+                      duration.current,
                     ),
-                    child: Text(
-                      DurationUtils.pretty(
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      thumbShape: RoundSliderThumbShape(
+                        enabledThumbRadius: remToPx(0.3),
+                      ),
+                      showValueIndicator: ShowValueIndicator.always,
+                      thumbColor: !controller.isReady
+                          ? Colors.white.withOpacity(
+                              0.5,
+                            )
+                          : null,
+                    ),
+                    child: Slider(
+                      label: DurationUtils.pretty(
                         duration.current,
                       ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
+                      value: duration.current.inSeconds.toDouble(),
+                      max: duration.total.inSeconds.toDouble(),
+                      onChanged: controller.isReady
+                          ? (
+                              final double value,
+                            ) {
+                              controller.duration.value = VideoDuration(
+                                Duration(seconds: value.toInt()),
+                                duration.total,
+                              );
+                            }
+                          : null,
+                      onChangeStart: controller.isReady
+                          ? (
+                              final double value,
+                            ) async {
+                              if (controller.isPlaying) {
+                                await controller.videoPlayer!.pause();
+
+                                wasPausedBySlider.value = true;
+                              }
+                            }
+                          : null,
+                      onChangeEnd: controller.isReady
+                          ? (
+                              final double value,
+                            ) async {
+                              await controller.videoPlayer!.seek(
+                                Duration(seconds: value.toInt()),
+                              );
+
+                              if (wasPausedBySlider.value) {
+                                await controller.videoPlayer!.play();
+                                wasPausedBySlider.value = false;
+                              }
+                            }
+                          : null,
                     ),
                   ),
-                  Expanded(
-                    child: SliderTheme(
-                      data: SliderThemeData(
-                        thumbShape: RoundSliderThumbShape(
-                          enabledThumbRadius: remToPx(0.3),
-                        ),
-                        showValueIndicator: ShowValueIndicator.always,
-                        thumbColor: !controller.isReady
-                            ? Colors.white.withOpacity(
-                                0.5,
-                              )
-                            : null,
-                      ),
-                      child: Slider(
-                        label: DurationUtils.pretty(
-                          duration.current,
-                        ),
-                        value: duration.current.inSeconds.toDouble(),
-                        max: duration.total.inSeconds.toDouble(),
-                        onChanged: controller.isReady
-                            ? (
-                                final double value,
-                              ) {
-                                controller.duration.value = VideoDuration(
-                                  Duration(seconds: value.toInt()),
-                                  duration.total,
-                                );
-                              }
-                            : null,
-                        onChangeStart: controller.isReady
-                            ? (
-                                final double value,
-                              ) async {
-                                if (controller.isPlaying) {
-                                  await controller.videoPlayer!.pause();
-
-                                  wasPausedBySlider.value = true;
-                                }
-                              }
-                            : null,
-                        onChangeEnd: controller.isReady
-                            ? (
-                                final double value,
-                              ) async {
-                                await controller.videoPlayer!.seek(
-                                  Duration(seconds: value.toInt()),
-                                );
-
-                                if (wasPausedBySlider.value) {
-                                  await controller.videoPlayer!.play();
-                                  wasPausedBySlider.value = false;
-                                }
-                              }
-                            : null,
-                      ),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: remToPx(1.8),
+                  ),
+                  child: Text(
+                    DurationUtils.pretty(
+                      duration.total,
+                    ),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
                   ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: remToPx(1.8),
-                    ),
-                    child: Text(
-                      DurationUtils.pretty(
-                        duration.total,
+                ),
+                SizedBox(
+                  width: remToPx(0.5),
+                ),
+                if (AppState.isMobile) ...<Widget>[
+                  Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        remToPx(0.2),
                       ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      onTap: () async {
+                        await controller.setLandscape(
+                          enabled: AppState.settings.value.animeForceLandscape,
+                        );
+                      },
+                      child: Icon(
+                        Icons.screen_rotation,
+                        size: Theme.of(context).textTheme.headline6?.fontSize,
                       ),
                     ),
                   ),
                   SizedBox(
-                    width: remToPx(0.5),
-                  ),
-                  if (AppState.isMobile) ...<Widget>[
-                    Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(
-                          remToPx(0.2),
-                        ),
-                        onTap: () async {
-                          await controller.setLandscape(
-                            enabled:
-                                AppState.settings.value.animeForceLandscape,
-                          );
-                        },
-                        child: Icon(
-                          Icons.screen_rotation,
-                          size: Theme.of(context).textTheme.headline6?.fontSize,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: remToPx(0.7),
-                    ),
-                  ],
-                  Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(remToPx(0.2)),
-                      onTap: () async {
-                        await controller.setFullscreen(
-                          enabled: !AppState.settings.value.animeAutoFullscreen,
-                        );
-                      },
-                      child: Icon(
-                        AppState.settings.value.animeAutoFullscreen
-                            ? Icons.fullscreen_exit
-                            : Icons.fullscreen,
-                      ),
-                    ),
+                    width: remToPx(0.7),
                   ),
                 ],
-              ),
-            )
-          ],
-        ),
+                Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(remToPx(0.2)),
+                    onTap: () async {
+                      await controller.setFullscreen(
+                        enabled: !AppState.settings.value.animeAutoFullscreen,
+                      );
+                    },
+                    child: Icon(
+                      AppState.settings.value.animeAutoFullscreen
+                          ? Icons.fullscreen_exit
+                          : Icons.fullscreen,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       );
 }
