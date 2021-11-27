@@ -462,4 +462,7 @@ class Sentences extends TranslationSentences {
 
   @override
   String copiedErrorToClipboard() => 'Copied error to clipboard';
+
+  @override
+  String noMoreChaptersLeft() => 'No more chapters left';
 }

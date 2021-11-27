@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
-import '../../helpers/keyboard.dart';
+import '../../../../../helpers/keyboard.dart';
+import '../_utils.dart';
 
 class AnimeKeyboardShortcuts {
   AnimeKeyboardShortcuts({
@@ -15,46 +16,14 @@ class AnimeKeyboardShortcuts {
 
   factory AnimeKeyboardShortcuts.fromJson(final Map<dynamic, dynamic> json) =>
       AnimeKeyboardShortcuts.fromPartial(
-        fullscreen: json['fullscreen'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['fullscreen'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        playPause: json['playPause'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['playPause'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        seekBackward: json['seekBackward'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['seekBackward'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        seekForward: json['seekForward'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['seekForward'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        skipIntro: json['skipIntro'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['skipIntro'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        exit: json['exit'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['exit'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        previousEpisode: json['previousEpisode'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['previousEpisode'] as List<dynamic>).cast<String>(),
-              )
-            : null,
-        nextEpisode: json['nextEpisode'] != null
-            ? KeyboardHandler.fromLabels(
-                (json['nextEpisode'] as List<dynamic>).cast<String>(),
-              )
-            : null,
+        fullscreen: pickKeySetFromJson(json, 'fullscreen'),
+        playPause: pickKeySetFromJson(json, 'playPause'),
+        seekBackward: pickKeySetFromJson(json, 'seekBackward'),
+        seekForward: pickKeySetFromJson(json, 'seekForward'),
+        skipIntro: pickKeySetFromJson(json, 'skipIntro'),
+        exit: pickKeySetFromJson(json, 'exit'),
+        previousEpisode: pickKeySetFromJson(json, 'previousEpisode'),
+        nextEpisode: pickKeySetFromJson(json, 'nextEpisode'),
       );
 
   factory AnimeKeyboardShortcuts.fromPartial({
@@ -68,19 +37,14 @@ class AnimeKeyboardShortcuts {
     final Set<LogicalKeyboardKey>? nextEpisode,
   }) =>
       AnimeKeyboardShortcuts(
-        fullscreen: fullscreen?.isNotEmpty ?? false ? fullscreen! : _fullscreen,
-        playPause: playPause?.isNotEmpty ?? false ? playPause! : _playPause,
-        seekBackward:
-            seekBackward?.isNotEmpty ?? false ? seekBackward! : _seekBackward,
-        seekForward:
-            seekForward?.isNotEmpty ?? false ? seekForward! : _seekForward,
-        skipIntro: skipIntro?.isNotEmpty ?? false ? skipIntro! : _skipIntro,
-        exit: exit?.isNotEmpty ?? false ? exit! : _exit,
-        previousEpisode: previousEpisode?.isNotEmpty ?? false
-            ? previousEpisode!
-            : _previousEpisode,
-        nextEpisode:
-            nextEpisode?.isNotEmpty ?? false ? nextEpisode! : _nextEpisode,
+        fullscreen: pickNonNullKeySet(fullscreen, _fullscreen),
+        playPause: pickNonNullKeySet(playPause, _playPause),
+        seekBackward: pickNonNullKeySet(seekBackward, _seekBackward),
+        seekForward: pickNonNullKeySet(seekForward, _seekForward),
+        skipIntro: pickNonNullKeySet(skipIntro, _skipIntro),
+        exit: pickNonNullKeySet(exit, _exit),
+        previousEpisode: pickNonNullKeySet(previousEpisode, _previousEpisode),
+        nextEpisode: pickNonNullKeySet(nextEpisode, _nextEpisode),
       );
 
   Set<LogicalKeyboardKey> fullscreen;
@@ -99,8 +63,8 @@ class AnimeKeyboardShortcuts {
         'seekForward': KeyboardHandler.toLabels(seekForward),
         'skipIntro': KeyboardHandler.toLabels(skipIntro),
         'exit': KeyboardHandler.toLabels(exit),
-        'previous': KeyboardHandler.toLabels(previousEpisode),
-        'next': KeyboardHandler.toLabels(nextEpisode),
+        'previousEpisode': KeyboardHandler.toLabels(previousEpisode),
+        'nextEpisode': KeyboardHandler.toLabels(nextEpisode),
       };
 
   static final Set<LogicalKeyboardKey> _fullscreen = <LogicalKeyboardKey>{

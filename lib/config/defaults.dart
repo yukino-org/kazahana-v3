@@ -1,7 +1,8 @@
 import '../modules/app/state.dart';
 
 abstract class Defaults {
-  static const Duration mouseOverlayDuration = Duration(seconds: 5);
+  static const Duration notifyInfoDuration = Duration(seconds: 2);
+  static const Duration mouseOverlayDuration = Duration(seconds: 3);
 
   static const Duration _noAnimation = Duration(microseconds: 1);
   static const Duration _animationsSlower = Duration(milliseconds: 300);

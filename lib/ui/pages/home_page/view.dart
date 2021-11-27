@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './anilist_section.dart' as anilist_section;
-import './anime_section.dart' as anime_section;
+import './sections/anilist_section/view.dart';
+import './sections/myanimelist_section/view.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
 
@@ -9,29 +9,22 @@ enum Pages {
   manga,
 }
 
-class Page extends StatefulWidget {
-  const Page({
+class HomePage extends StatefulWidget {
+  const HomePage({
     final Key? key,
   }) : super(key: key);
 
   @override
-  _PageState createState() => _PageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _PageState extends State<Page> {
-  late Pages currentPage;
+class _HomePageState extends State<HomePage> {
+  Pages currentPage = Pages.values.first;
   final Map<Pages, Widget> stack = <Pages, Widget>{
     Pages.anime: Builder(
-      builder: (final BuildContext context) => const anime_section.Page(),
+      builder: (final BuildContext context) => const MyAnimeListSection(),
     ),
   };
-
-  @override
-  void initState() {
-    super.initState();
-
-    currentPage = Pages.values.first;
-  }
 
   @override
   Widget build(final BuildContext context) => SingleChildScrollView(
@@ -54,16 +47,12 @@ class _PageState extends State<Page> {
               SizedBox(
                 height: remToPx(1),
               ),
-              if (anilist_section.enabled()) ...<Widget>[
-                const anilist_section.Page(),
-                SizedBox(
-                  height: remToPx(1),
-                ),
+              if (AnilistSection.enabled()) ...<Widget>[
+                const AnilistSection(),
+                SizedBox(height: remToPx(1)),
               ],
               stack[currentPage]!,
-              SizedBox(
-                height: remToPx(2),
-              ),
+              SizedBox(height: remToPx(2)),
             ],
           ),
         ),

@@ -596,18 +596,16 @@ class _DetailedItemState extends State<DetailedItem> {
                     ) =>
                         SafeArea(
                       child: widget.onEdit((final DetailedInfo info) {
-                        if (mounted) {
-                          setState(() {
-                            item = info;
-                          });
-                        }
+                        if (!mounted) return;
+                        setState(() {
+                          item = info;
+                        });
                       }),
                     ),
                   );
 
-                  if (mounted) {
-                    setState(() {});
-                  }
+                  if (!mounted) return;
+                  setState(() {});
                 },
                 tooltip: Translator.t.edit(),
                 child: const Icon(Icons.edit),

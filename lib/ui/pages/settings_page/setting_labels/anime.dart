@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '../../../../modules/app/state.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/ui.dart';
-import '../../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
 import '../../../../modules/translator/translator.dart';
 import '../../../../modules/video_player/video_player.dart';
 import '../../../components/material_tiles/dialog.dart';

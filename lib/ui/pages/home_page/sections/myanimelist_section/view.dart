@@ -2,60 +2,49 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:utilx/utilities/locale.dart';
 import 'package:utilx/utilities/utils.dart';
-import '../../../config/defaults.dart';
-import '../../../modules/app/state.dart';
-import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/hooks.dart';
-import '../../../modules/state/stateful_holder.dart';
-import '../../../modules/state/states.dart';
-import '../../../modules/trackers/myanimelist/myanimelist.dart';
-import '../../../modules/translator/translator.dart';
-import '../../components/error_widget.dart';
-import '../../components/network_image_fallback.dart';
-import '../../components/reactive_state_builder.dart';
+import '../../../../../config/defaults.dart';
+import '../../../../../modules/app/state.dart';
+import '../../../../../modules/helpers/assets.dart';
+import '../../../../../modules/helpers/ui.dart';
+import '../../../../../modules/state/stateful_holder.dart';
+import '../../../../../modules/state/states.dart';
+import '../../../../../modules/trackers/myanimelist/myanimelist.dart';
+import '../../../../../modules/translator/translator.dart';
+import '../../../../components/error_widget.dart';
+import '../../../../components/network_image_fallback.dart';
+import '../../../../components/reactive_state_builder.dart';
 
 final StatefulValueHolderWithError<MyAnimeListHome?> _cache =
     StatefulValueHolderWithError<MyAnimeListHome?>(null);
 
 final bool _useHoverTitle = AppState.isDesktop;
 
-class Page extends StatefulWidget {
-  const Page({
+class MyAnimeListSection extends StatefulWidget {
+  const MyAnimeListSection({
     final Key? key,
   }) : super(key: key);
 
   @override
-  _PageState createState() => _PageState();
+  _MyAnimeListSectionState createState() => _MyAnimeListSectionState();
 }
 
-class _PageState extends State<Page> with HooksMixin {
+class _MyAnimeListSectionState extends State<MyAnimeListSection> {
   int? seasonAnimeHoverIndex;
   int? recentlyUpdatedHoverIndex;
   final Map<int, StatefulValueHolderWithError<MyAnimeListAnimeList?>>
       mediaCache = <int, StatefulValueHolderWithError<MyAnimeListAnimeList?>>{};
 
   @override
-  void initState() {
-    super.initState();
-
-    onReady(() async {
-      if (_cache.state.isWaiting) {
-        await fetchAnimes();
-      }
-    });
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    hookState.markReady();
+    if (_cache.state.isWaiting) {
+      fetchAnimes();
+    }
   }
 
   Future<void> fetchAnimes() async {
     if (!mounted) return;
-
     setState(() {
       _cache.resolving(null);
     });
@@ -66,9 +55,8 @@ class _PageState extends State<Page> with HooksMixin {
       _cache.fail(null, ErrorInfo(err, stack));
     }
 
-    if (mounted) {
-      setState(() {});
-    }
+    if (!mounted) return;
+    setState(() {});
   }
 
   Future<void> getNodeId(
@@ -76,27 +64,19 @@ class _PageState extends State<Page> with HooksMixin {
     final StateSetter setState,
   ) async {
     if (!mounted) return;
-
     setState(() {
       mediaCache[nodeId]!.resolving(null);
     });
 
     try {
-      final MyAnimeListAnimeList anime =
-          await MyAnimeListAnimeList.getFromNodeId(nodeId);
-
-      if (mounted) {
-        setState(() {
-          mediaCache[nodeId]!.resolve(anime);
-        });
-      }
+      mediaCache[nodeId]!
+          .resolve(await MyAnimeListAnimeList.getFromNodeId(nodeId));
     } catch (err, stack) {
-      if (mounted) {
-        setState(() {
-          mediaCache[nodeId]!.fail(null, ErrorInfo(err, stack));
-        });
-      }
+      mediaCache[nodeId]!.fail(null, ErrorInfo(err, stack));
     }
+
+    if (!mounted) return;
+    setState(() {});
   }
 
   Widget buildOpenBuilder(final MyAnimeListHomeContent x) => StatefulBuilder(
@@ -122,9 +102,7 @@ class _PageState extends State<Page> with HooksMixin {
                 actions: <Widget>[
                   IconButton(
                     onPressed: () {
-                      if (mounted) {
-                        getNodeId(nodeId, setState);
-                      }
+                      getNodeId(nodeId, setState);
                     },
                     icon: const Icon(Icons.refresh),
                     tooltip: Translator.t.refetch(),
@@ -305,8 +283,10 @@ class _HorizontalEntityList extends StatelessWidget {
                                   child: FittedBox(
                                     fit: BoxFit.cover,
                                     child: FallbackableNetworkImage(
-                                      url: x.thumbnail,
-                                      placeholder: Image.asset(
+                                      image: FallbackableNetworkImageProps(
+                                        x.thumbnail,
+                                      ),
+                                      fallback: Image.asset(
                                         Assets.placeholderImageFromContext(
                                           context,
                                         ),

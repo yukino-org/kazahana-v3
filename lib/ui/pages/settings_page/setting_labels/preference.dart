@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/locale.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';
@@ -16,11 +15,11 @@ List<Widget> getSettingsPreference(
           title: Text(Translator.t.language()),
           dialogTitle: Text(Translator.t.chooseLanguage()),
           icon: const Icon(Icons.language),
-          value: Translator.t.locale.toString(),
+          value: Translator.t.locale.toCodeString(),
           labels: <String, String>{
             for (final TranslationSentences lang in Translator.translations)
-              lang.locale.toString():
-                  '${lang.locale.code.language} (${lang.locale.toString()})',
+              lang.locale.toCodeString():
+                  lang.locale.toPrettyString(appendCode: true),
           },
           onChanged: (final String val) async {
             settings.locale = val;

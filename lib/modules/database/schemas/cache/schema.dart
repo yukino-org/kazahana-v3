@@ -17,5 +17,7 @@ class CacheSchema {
 
   String? value_;
   dynamic get value => value_ != null ? json.decode(value_!) : null;
-  set value(final dynamic val) => json.encode(value_);
+  set value(final dynamic val) {
+    value_ = json.encode(val);
+  }
 }

@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'package:objectbox/objectbox.dart';
-import '../../../schemas/settings/anime_keyboard_shortcuts.dart';
+import './sub_schemas/keyboard_shortcuts/anime.dart';
+import './sub_schemas/keyboard_shortcuts/manga.dart';
 import '../../../video_player/video_player.dart';
+
+export './sub_schemas/keyboard_shortcuts/anime.dart';
+export './sub_schemas/keyboard_shortcuts/manga.dart';
 
 const bool _useSystemPreferredTheme = true;
 const bool _useDarkMode = false;
@@ -43,6 +47,7 @@ class SettingsSchema {
     final this.disableAnimations = _disableAnimations,
     final this.animeShortcuts_,
     final this.ignoreBadHttpCertificate = _ignoreBadHttpCertificate,
+    final this.mangaShortcuts_,
   });
 
   int id = 0;
@@ -90,6 +95,15 @@ class SettingsSchema {
       : AnimeKeyboardShortcuts.fromPartial();
   set animeShortcuts(final AnimeKeyboardShortcuts shortcuts) =>
       animeShortcuts_ = json.encode(shortcuts.toJson());
+
+  String? mangaShortcuts_;
+  MangaKeyboardShortcuts get mangaShortcuts => mangaShortcuts_ != null
+      ? MangaKeyboardShortcuts.fromJson(
+          json.decode(mangaShortcuts_!) as Map<dynamic, dynamic>,
+        )
+      : MangaKeyboardShortcuts.fromPartial();
+  set mangaShortcuts(final MangaKeyboardShortcuts shortcuts) =>
+      mangaShortcuts_ = json.encode(shortcuts.toJson());
 }
 
 enum MangaDirections {

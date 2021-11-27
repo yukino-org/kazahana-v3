@@ -96,11 +96,10 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
           );
         }
 
-        if (mounted) {
-          setState(() {
-            item.resolve(computed);
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          item.resolve(computed);
+        });
       }
     });
   }
@@ -207,11 +206,10 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                       value,
                                     );
 
-                                    if (mounted) {
-                                      setState(() {
-                                        searches.resolve(results);
-                                      });
-                                    }
+                                    if (!mounted) return;
+                                    setState(() {
+                                      searches.resolve(results);
+                                    });
                                   },
                                 ),
                                 if (searches.state.hasResolved &&
@@ -252,13 +250,12 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                                                   );
                                                 }
 
-                                                if (mounted) {
-                                                  this.setState(() {
-                                                    item.resolve(resolved);
-                                                  });
+                                                if (!mounted) return;
+                                                this.setState(() {
+                                                  item.resolve(resolved);
+                                                });
 
-                                                  Navigator.of(context).pop();
-                                                }
+                                                Navigator.of(context).pop();
                                               },
                                               child: Padding(
                                                 padding: EdgeInsets.all(
@@ -436,9 +433,8 @@ class _TrackersTileItemState extends State<TrackersTileItem> with HooksMixin {
                 await widget.tracker
                     .setEnabled(widget.title, widget.plugin, enabled);
 
-                if (mounted) {
-                  setState(() {});
-                }
+                if (!mounted) return;
+                setState(() {});
               },
             )
           else

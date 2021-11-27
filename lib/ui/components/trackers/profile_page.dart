@@ -75,11 +75,10 @@ class _ProfilePageState extends State<ProfilePage>
     onReady(() async {
       final dynamic _user = await widget.getUserInfo();
 
-      if (mounted) {
-        setState(() {
-          user.resolve(_user);
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        user.resolve(_user);
+      });
     });
   }
 
@@ -96,9 +95,8 @@ class _ProfilePageState extends State<ProfilePage>
     final Widget left = widget.profile.getLeft(user);
     final Widget mid = widget.profile.getMid(user);
     final Widget right = widget.profile.getRight(user, () {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      if (!mounted) return;
+      Navigator.of(context).pop();
     });
 
     return width > ResponsiveSizes.md

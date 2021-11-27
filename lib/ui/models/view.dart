@@ -1,72 +1,54 @@
 import 'package:flutter/material.dart';
 import './controller.dart';
 
-typedef ViewBuilder<T extends Controller> = Widget Function(BuildContext, T);
+typedef ViewBuilder<T extends Controller<T>> = Widget Function(BuildContext, T);
 
-typedef ViewListener<T extends Controller> = void Function(T, bool);
-
-class View<T extends Controller> extends StatefulWidget {
+class View<T extends Controller<T>> extends StatefulWidget {
   const View({
     required final this.controller,
     required final this.builder,
-    final this.afterSetup,
-    final this.afterReady,
-    final this.afterDispose,
     final Key? key,
   }) : super(key: key);
 
   final T controller;
-  final ViewListener<T>? afterSetup;
-  final ViewListener<T>? afterReady;
-  final ViewListener<T>? afterDispose;
   final ViewBuilder<T> builder;
 
   @override
   _ViewState<T> createState() => _ViewState<T>();
 }
 
-class _ViewState<T extends Controller> extends State<View<T>> {
+class _ViewState<T extends Controller<T>> extends State<View<T>> {
+  late T controller;
+
+  late final ControllerObserver<T> observer = ControllerObserver<T>(
+    onReassemble: (final Controller<T> controller) async {
+      if (!mounted) return;
+      setState(() {});
+    },
+  );
+
   @override
   void initState() {
     super.initState();
 
-    widget.controller
-      ..subscribe(_controllerListener)
-      ..setup().then((final bool done) {
-        if (mounted) {
-          widget.afterSetup?.call(widget.controller, done);
-        }
-      });
+    controller = widget.controller..subscribe(observer);
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didUpdateWidget(final View<T> oldWidget) {
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.unsubscribe(observer);
+      controller = widget.controller..subscribe(observer);
+    }
 
-    widget.controller.ready().then((final bool done) {
-      if (mounted) {
-        widget.afterReady?.call(widget.controller, done);
-      }
-    });
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    widget.controller
-      ..unsubscribe(_controllerListener)
-      ..dispose().then((final bool disposed) {
-        if (mounted) {
-          widget.afterDispose?.call(widget.controller, disposed);
-        }
-      });
+    widget.controller.unsubscribe(observer);
 
     super.dispose();
-  }
-
-  void _controllerListener() {
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override

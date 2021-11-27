@@ -77,7 +77,7 @@
     },
     {
       "id": "4:1",
-      "lastPropertyId": "27:1713392882459328993",
+      "lastPropertyId": "28:3896775940984922968",
       "name": "SettingsSchema",
       "properties": [
         {
@@ -175,6 +175,11 @@
           "id": "27:1713392882459328993",
           "name": "ignoreBadHttpCertificate",
           "type": 1
+        },
+        {
+          "id": "28:3896775940984922968",
+          "name": "mangaShortcuts_",
+          "type": 9
         }
       ],
       "relations": []

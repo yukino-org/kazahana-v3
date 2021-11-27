@@ -3,58 +3,47 @@ import 'package:extensions/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:utilx/utilities/utils.dart';
-import '../../../config/defaults.dart';
-import '../../../modules/helpers/assets.dart';
-import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/hooks.dart';
-import '../../../modules/state/stateful_holder.dart';
-import '../../../modules/state/states.dart';
-import '../../../modules/trackers/anilist/anilist.dart';
-import '../../../modules/translator/translator.dart';
-import '../../components/error_widget.dart';
-import '../../components/network_image_fallback.dart';
-import '../../components/reactive_state_builder.dart';
+import '../../../../../config/defaults.dart';
+import '../../../../../modules/helpers/assets.dart';
+import '../../../../../modules/helpers/ui.dart';
+import '../../../../../modules/state/stateful_holder.dart';
+import '../../../../../modules/state/states.dart';
+import '../../../../../modules/trackers/anilist/anilist.dart';
+import '../../../../../modules/translator/translator.dart';
+import '../../../../components/error_widget.dart';
+import '../../../../components/network_image_fallback.dart';
+import '../../../../components/reactive_state_builder.dart';
 
 final StatefulValueHolderWithError<List<AniListMedia>?> _cache =
     StatefulValueHolderWithError<List<AniListMedia>?>(null);
 
-bool enabled() => AnilistManager.auth.isValidToken();
-
-class Page extends StatefulWidget {
-  const Page({
+class AnilistSection extends StatefulWidget {
+  const AnilistSection({
     final Key? key,
   }) : super(key: key);
 
   @override
-  _PageState createState() => _PageState();
+  _AnilistSectionState createState() => _AnilistSectionState();
+
+  static bool enabled() => AnilistManager.auth.isValidToken();
 }
 
-class _PageState extends State<Page> with HooksMixin {
+class _AnilistSectionState extends State<AnilistSection> {
   int? recommendedHoverIndex;
   final Map<int, StatefulValueHolderWithError<AniListMediaList?>> mediaCache =
       <int, StatefulValueHolderWithError<AniListMediaList?>>{};
 
   @override
-  void initState() {
-    super.initState();
-
-    onReady(() async {
-      if (_cache.state.isWaiting) {
-        await fetchAnimes();
-      }
-    });
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    hookState.markReady();
+    if (_cache.state.isWaiting) {
+      fetchAnimes();
+    }
   }
 
   Future<void> fetchAnimes() async {
     if (!mounted) return;
-
     setState(() {
       _cache.resolving(null);
     });
@@ -71,9 +60,8 @@ class _PageState extends State<Page> with HooksMixin {
       _cache.fail(null, ErrorInfo(err, stack));
     }
 
-    if (mounted) {
-      setState(() {});
-    }
+    if (!mounted) return;
+    setState(() {});
   }
 
   Future<void> getMediaId(
@@ -81,7 +69,6 @@ class _PageState extends State<Page> with HooksMixin {
     final StateSetter setState,
   ) async {
     if (!mounted) return;
-
     setState(() {
       mediaCache[media.id]!.resolving(null);
     });
@@ -91,24 +78,19 @@ class _PageState extends State<Page> with HooksMixin {
       final AniListMediaList? fullMedia =
           await AniListMediaList.tryGetFromMediaId(media.id, user.id);
 
-      if (mounted) {
-        setState(() {
-          mediaCache[media.id]!.resolve(
-            fullMedia ??
-                AniListMediaList.partial(
-                  userId: user.id,
-                  media: media,
-                ),
-          );
-        });
-      }
+      mediaCache[media.id]!.resolve(
+        fullMedia ??
+            AniListMediaList.partial(
+              userId: user.id,
+              media: media,
+            ),
+      );
     } catch (err, stack) {
-      if (mounted) {
-        setState(() {
-          mediaCache[media.id]!.fail(null, ErrorInfo(err, stack));
-        });
-      }
+      mediaCache[media.id]!.fail(null, ErrorInfo(err, stack));
     }
+
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override
@@ -182,9 +164,7 @@ class _PageState extends State<Page> with HooksMixin {
                                     actions: <Widget>[
                                       IconButton(
                                         onPressed: () {
-                                          if (mounted) {
-                                            getMediaId(x, setState);
-                                          }
+                                          getMediaId(x, setState);
                                         },
                                         icon: const Icon(Icons.refresh),
                                         tooltip: Translator.t.refetch(),
@@ -238,8 +218,11 @@ class _PageState extends State<Page> with HooksMixin {
                                             remToPx(0.3),
                                           ),
                                           child: FallbackableNetworkImage(
-                                            url: x.coverImageExtraLarge,
-                                            placeholder: Image.asset(
+                                            image:
+                                                FallbackableNetworkImageProps(
+                                              x.coverImageExtraLarge,
+                                            ),
+                                            fallback: Image.asset(
                                               Assets
                                                   .placeholderImageFromContext(
                                                 context,

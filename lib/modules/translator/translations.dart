@@ -158,4 +158,5 @@ abstract class TranslationSentences {
   String nextEpisode();
   String ignoreBadHttpSslCertificates();
   String copiedErrorToClipboard();
+  String noMoreChaptersLeft();
 }

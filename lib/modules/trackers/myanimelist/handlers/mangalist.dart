@@ -310,11 +310,10 @@ class _DetailedItemWrapperState extends State<_DetailedItemWrapper>
       if (!fetched) {
         await widget.item.fetch();
 
-        if (mounted) {
-          setState(() {
-            fetched = true;
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          fetched = true;
+        });
       }
     });
   }

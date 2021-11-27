@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/locale.dart';
 import 'package:utilx/utilities/utils.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
@@ -17,7 +18,7 @@ import '../../components/reactive_state_builder.dart';
 import '../../components/with_child_builder.dart';
 import '../../router.dart';
 import '../anime_page/controller.dart';
-import '../manga_page/manga_page.dart' as manga_page;
+import '../manga_page/controller.dart';
 
 extension PluginRoutes on ExtensionType {
   String route() {
@@ -39,7 +40,7 @@ extension PluginRoutes on ExtensionType {
         return AnimePageArguments(src: src, plugin: plugin).toJson();
 
       case ExtensionType.manga:
-        return manga_page.PageArguments(src: src, plugin: plugin).toJson();
+        return MangaPageArguments(src: src, plugin: plugin).toJson();
     }
   }
 }
@@ -58,7 +59,7 @@ class _SearchInfo extends SearchInfo {
   _SearchInfo({
     required final String title,
     required final String url,
-    required final String locale,
+    required final Locale locale,
     required final this.pluginName,
     required final this.pluginId,
     required final this.pluginType,
@@ -381,111 +382,10 @@ class _PageState extends State<Page> with HooksMixin {
                     ),
                     child: const Center(child: CircularProgressIndicator()),
                   ),
-                  onResolved: (final BuildContext context) => results
-                          .value!.isNotEmpty
-                      ? Column(
-                          children: UiUtils.getGridded(
-                            MediaQuery.of(context).size.width.toInt(),
-                            results.value!
-                                .map(
-                                  (final _SearchInfo x) => Card(
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(4),
-                                      onTap: () {
-                                        Navigator.of(context).pushNamed(
-                                          ParsedRouteInfo(
-                                            x.pluginType.route(),
-                                            x.pluginType.params(
-                                              src: x.url,
-                                              plugin: x.pluginId,
-                                            ),
-                                          ).toString(),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsets.all(remToPx(0.5)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: remToPx(4),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  remToPx(0.25),
-                                                ),
-                                                child: WithChildBuilder(
-                                                  builder: (
-                                                    final BuildContext context,
-                                                    final Widget child,
-                                                  ) =>
-                                                      x.thumbnail != null
-                                                          ? FallbackableNetworkImage(
-                                                              url: x.thumbnail!
-                                                                  .url,
-                                                              headers: x
-                                                                  .thumbnail!
-                                                                  .headers,
-                                                              placeholder:
-                                                                  child,
-                                                            )
-                                                          : child,
-                                                  child: Image.asset(
-                                                    Assets
-                                                        .placeholderImageFromContext(
-                                                      context,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: remToPx(0.75)),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Text(
-                                                    x.title,
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .headline6
-                                                              ?.fontSize,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    x.pluginName,
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1
-                                                              ?.fontSize,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        )
-                      : Padding(
+                  onResolved: (final BuildContext context) => Builder(
+                    builder: (final BuildContext context) {
+                      if (results.value!.isEmpty) {
+                        return Padding(
                           padding: EdgeInsets.only(
                             top: remToPx(1.5),
                           ),
@@ -494,7 +394,109 @@ class _PageState extends State<Page> with HooksMixin {
                               message: Translator.t.noResultsFound(),
                             ),
                           ),
+                        );
+                      }
+
+                      return Column(
+                        children: UiUtils.getGridded(
+                          MediaQuery.of(context).size.width.toInt(),
+                          results.value!
+                              .map(
+                                (final _SearchInfo x) => Card(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(4),
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                        ParsedRouteInfo(
+                                          x.pluginType.route(),
+                                          x.pluginType.params(
+                                            src: x.url,
+                                            plugin: x.pluginId,
+                                          ),
+                                        ).toString(),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.all(remToPx(0.5)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: remToPx(4),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                remToPx(0.25),
+                                              ),
+                                              child: WithChildBuilder(
+                                                builder: (
+                                                  final BuildContext context,
+                                                  final Widget child,
+                                                ) =>
+                                                    x.thumbnail != null
+                                                        ? FallbackableNetworkImage(
+                                                            image:
+                                                                FallbackableNetworkImageProps(
+                                                              x.thumbnail!.url,
+                                                              x.thumbnail!
+                                                                  .headers,
+                                                            ),
+                                                            fallback: child,
+                                                          )
+                                                        : child,
+                                                child: Image.asset(
+                                                  Assets
+                                                      .placeholderImageFromContext(
+                                                    context,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: remToPx(0.75)),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  x.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: Theme.of(context)
+                                                        .textTheme
+                                                        .headline6
+                                                        ?.fontSize,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  x.pluginName,
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyText1
+                                                        ?.fontSize,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
                         ),
+                      );
+                    },
+                  ),
                   onFailed: (final BuildContext context) => Padding(
                     padding: EdgeInsets.only(
                       top: remToPx(1.5),

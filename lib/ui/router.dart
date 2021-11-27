@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import './pages/anime_page/view.dart';
-import './pages/home_page/home_page.dart' as home_page;
-import './pages/manga_page/manga_page.dart' as manga_page;
+import './pages/home_page/view.dart';
+import './pages/manga_page/view.dart';
 import './pages/search_page/search_page.dart' as search_page;
 import './pages/settings_page/settings_page.dart' as settings_page;
 import './pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
@@ -131,7 +131,7 @@ abstract class RouteManager {
       name: Translator.t.home,
       route: RouteNames.home,
       icon: Icons.home,
-      builder: (final BuildContext context) => const home_page.Page(),
+      builder: (final BuildContext context) => const HomePage(),
       isPublic: true,
       alreadyHandled: true,
     ),
@@ -160,11 +160,11 @@ abstract class RouteManager {
     ),
     RouteInfo(
       route: RouteNames.animePage,
-      builder: (final BuildContext context) => AnimePage(),
+      builder: (final BuildContext context) => const AnimePage(),
     ),
     RouteInfo(
       route: RouteNames.mangaPage,
-      builder: (final BuildContext context) => const manga_page.Page(),
+      builder: (final BuildContext context) => const MangaPage(),
     ),
     RouteInfo(
       route: RouteNames.anilistAuthPage,

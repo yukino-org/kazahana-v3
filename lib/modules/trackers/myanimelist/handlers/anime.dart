@@ -36,15 +36,21 @@ class MyAnimeListSearchAnime {
   ) async {
     final String res = await MyAnimeListManager.request(
       MyAnimeListRequestMethods.get,
-      '/anime?q=$terms&limit=10',
+      '/anime?q=${Uri.encodeQueryComponent(terms)}&limit=10',
     );
 
-    return (json.decode(res)['data'] as List<dynamic>)
-        .cast<Map<dynamic, dynamic>>()
-        .map(
-          (final Map<dynamic, dynamic> x) => MyAnimeListSearchAnime.fromJson(x),
-        )
-        .toList();
+    final Map<dynamic, dynamic> decoded =
+        json.decode(res) as Map<dynamic, dynamic>;
+
+    return decoded.containsKey('data')
+        ? (decoded['data'] as List<dynamic>)
+            .cast<Map<dynamic, dynamic>>()
+            .map(
+              (final Map<dynamic, dynamic> x) =>
+                  MyAnimeListSearchAnime.fromJson(x),
+            )
+            .toList()
+        : <MyAnimeListSearchAnime>[];
   }
 
   static Future<MyAnimeListAnimeList> scrapeFromNodeId(

@@ -8,70 +8,71 @@ enum ControllerState {
   destroyed,
 }
 
-typedef ControllerSubscriber = void Function();
+class ControllerObserver<T extends Controller<T>> {
+  const ControllerObserver({
+    final this.onSetup,
+    final this.onReady,
+    final this.onDispose,
+    final this.onReassemble,
+  });
 
-abstract class Controller {
-  bool _didSetup = false;
-  bool _didReady = false;
-  ControllerState state = ControllerState.waiting;
+  final Future<void> Function(Controller<T>)? onSetup;
+  final Future<void> Function(Controller<T>)? onReady;
+  final Future<void> Function(Controller<T>)? onDispose;
+  final Future<void> Function(Controller<T>)? onReassemble;
+}
 
-  final List<ControllerSubscriber> _subs = <ControllerSubscriber>[];
-  bool _didDestroy = false;
+abstract class Controller<T extends Controller<T>> {
+  final List<ControllerObserver<T>> _observers = <ControllerObserver<T>>[];
+
+  ControllerState _state = ControllerState.waiting;
+  ControllerState get state => _state;
 
   @mustCallSuper
-  Future<bool> setup() async {
-    if (!_didSetup) {
-      state = ControllerState.setup;
-      _didSetup = true;
-      return true;
-    }
+  Future<void> setup() async {
+    _state = ControllerState.setup;
 
-    return false;
-  }
-
-  @mustCallSuper
-  Future<bool> ready() async {
-    if (!_didReady) {
-      state = ControllerState.ready;
-      _didReady = true;
-      return true;
-    }
-
-    return false;
-  }
-
-  void subscribe(final ControllerSubscriber sub) {
-    _subs.add(sub);
-  }
-
-  void unsubscribe(final ControllerSubscriber sub) {
-    _subs.remove(sub);
-  }
-
-  void rebuild() {
-    if (state == ControllerState.ready) {
-      for (final ControllerSubscriber sub in _subs) {
-        sub();
-      }
-    }
+    _eachObserver((final ControllerObserver<T> observer) {
+      observer.onSetup?.call(this);
+    });
   }
 
   @mustCallSuper
-  Future<bool> maybeDispose() async {
-    if (!_didDestroy && disposable) {
-      state = ControllerState.destroyed;
-      _didDestroy = true;
-      return true;
-    }
+  Future<void> ready() async {
+    _state = ControllerState.ready;
 
-    return false;
+    _eachObserver((final ControllerObserver<T> observer) {
+      observer.onReady?.call(this);
+    });
+  }
+
+  void reassemble() {
+    _eachObserver((final ControllerObserver<T> observer) {
+      observer.onReassemble?.call(this);
+    });
+  }
+
+  void subscribe(final ControllerObserver<T> observer) {
+    _observers.add(observer);
+  }
+
+  void unsubscribe(final ControllerObserver<T> observer) {
+    _observers.remove(observer);
   }
 
   @mustCallSuper
-  Future<bool> dispose() async {
-    _subs.clear();
-    return maybeDispose();
+  Future<void> dispose() async {
+    if (state == ControllerState.destroyed) {
+      throw StateError('Controller has already been disposed');
+    }
+
+    _state = ControllerState.destroyed;
+    _observers.clear();
   }
 
-  bool get disposable => _subs.isEmpty;
+  void _eachObserver(final Function(ControllerObserver<T>) fn) {
+    for (final ControllerObserver<T> observer in _observers) {
+      observer.onReassemble?.call(this);
+    }
+  }
 }
