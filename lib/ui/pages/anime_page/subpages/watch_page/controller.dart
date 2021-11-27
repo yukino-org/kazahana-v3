@@ -6,7 +6,6 @@ import '../../../../../modules/app/state.dart';
 import '../../../../../modules/database/database.dart';
 import '../../../../../modules/helpers/keyboard.dart';
 import '../../../../../modules/helpers/screen.dart';
-import '../../../../../modules/schemas/settings/anime_keyboard_shortcuts.dart';
 import '../../../../../modules/trackers/provider.dart';
 import '../../../../../modules/trackers/trackers.dart';
 import '../../../../../modules/translator/translator.dart';
@@ -28,7 +27,7 @@ enum SeekType {
   intro,
 }
 
-class WatchPageController extends Controller {
+class WatchPageController extends Controller<WatchPageController> {
   WatchPageController({
     required final this.animeController,
   });
@@ -58,7 +57,7 @@ class WatchPageController extends Controller {
   final FullscreenPreserver fullscreen = FullscreenPreserver();
 
   @override
-  Future<bool> setup() async {
+  Future<void> setup() async {
     Screen.isWakelockEnabled().then((final bool isWakelockEnabled) async {
       if (!isWakelockEnabled) {
         await Screen.enableWakelock();
@@ -73,34 +72,34 @@ class WatchPageController extends Controller {
       Screen.setOrientation(ScreenOrientation.vertical);
     }
 
-    return super.setup();
+    super.setup();
   }
 
   @override
-  Future<bool> ready() async {
+  Future<void> ready() async {
     await fetchSources();
 
-    return super.ready();
+    super.ready();
   }
 
   @override
-  Future<bool> dispose() async {
+  Future<void> dispose() async {
     if (!ignoreScreenChanges) {
       Screen.disableWakelock();
       Screen.setOrientation(ScreenOrientation.unlock);
-      Screen.exitFullscreen();
+      fullscreen.exitFullscreen();
     }
 
     currentPlayerWidget = null;
     videoPlayer?.destroy();
     duration.dispose();
 
-    return super.dispose();
+    super.dispose();
   }
 
   Future<void> fetchSources() async {
-    sources =
-        await animeController.extractor!.getSources(animeController.episode!);
+    sources = await animeController.extractor!
+        .getSources(animeController.currentEpisode!);
   }
 
   Future<void> setFullscreen({
@@ -161,7 +160,7 @@ class WatchPageController extends Controller {
     currentPlayerWidget = null;
     isPlaying = false;
     videoPlayer?.destroy();
-    rebuild();
+    reassemble();
 
     videoPlayer = VideoPlayerManager.createPlayer(
       VideoPlayerSource(
@@ -178,14 +177,14 @@ class WatchPageController extends Controller {
       case VideoPlayerEvents.load:
         videoPlayer!.setVolume(volume);
         currentPlayerWidget = videoPlayer!.getWidget();
-        rebuild();
+        reassemble();
         _updateDuration();
 
         if (AppState.settings.value.autoPlay) {
           videoPlayer!.play();
 
           showControls = false;
-          rebuild();
+          reassemble();
         }
 
         break;
@@ -196,12 +195,12 @@ class WatchPageController extends Controller {
 
       case VideoPlayerEvents.play:
         isPlaying = true;
-        rebuild();
+        reassemble();
         break;
 
       case VideoPlayerEvents.pause:
         isPlaying = false;
-        rebuild();
+        reassemble();
         break;
 
       case VideoPlayerEvents.seek:
@@ -226,7 +225,7 @@ class WatchPageController extends Controller {
 
       case VideoPlayerEvents.buffering:
         isBuffering = videoPlayer!.isBuffering;
-        rebuild();
+        reassemble();
         break;
 
       case VideoPlayerEvents.error:
@@ -250,7 +249,7 @@ class WatchPageController extends Controller {
             textAlign: TextAlign.center,
           ),
         );
-        rebuild();
+        reassemble();
         break;
     }
   }
@@ -264,7 +263,8 @@ class WatchPageController extends Controller {
     if ((duration.value.current.inSeconds / duration.value.total.inSeconds) *
             100 >
         AppState.settings.value.animeTrackerWatchPercent) {
-      final int? episode = int.tryParse(animeController.episode!.episode);
+      final int? episode =
+          int.tryParse(animeController.currentEpisode!.episode);
 
       if (episode != null && !hasSynced) {
         hasSynced = true;
@@ -318,29 +318,6 @@ class WatchPageController extends Controller {
     }
   }
 
-  void previousEpisode() {
-    if (previousEpisodeAvailable) {
-      animeController.currentEpisodeIndex =
-          animeController.currentEpisodeIndex! - 1;
-      animeController.rebuild();
-    }
-  }
-
-  void nextEpisode() {
-    if (nextEpisodeAvailable) {
-      animeController.currentEpisodeIndex =
-          animeController.currentEpisodeIndex! + 1;
-      animeController.rebuild();
-    }
-  }
-
-  bool get previousEpisodeAvailable =>
-      animeController.currentEpisodeIndex! - 1 >= 0;
-
-  bool get nextEpisodeAvailable =>
-      animeController.currentEpisodeIndex! + 1 <
-      animeController.info.value!.episodes.length;
-
   KeyboardHandler getKeyboard(final BuildContext context) {
     final AnimeKeyboardShortcuts shortcuts =
         AppState.settings.value.animeShortcuts;
@@ -363,7 +340,7 @@ class WatchPageController extends Controller {
               await (videoPlayer!.isPlaying
                   ? videoPlayer!.pause()
                   : videoPlayer!.play());
-              rebuild();
+              reassemble();
             }
           },
         ),
@@ -388,7 +365,7 @@ class WatchPageController extends Controller {
         KeyboardKeyHandler(
           shortcuts.exit,
           (final RawKeyEvent event) async {
-            Navigator.of(context).pop();
+            await animeController.goHome();
           },
         ),
         KeyboardKeyHandler(
@@ -410,6 +387,27 @@ class WatchPageController extends Controller {
       ],
     );
   }
+
+  void previousEpisode() {
+    if (previousEpisodeAvailable) {
+      animeController
+          .setCurrentEpisodeIndex(animeController.currentEpisodeIndex! - 1);
+    }
+  }
+
+  void nextEpisode() {
+    if (nextEpisodeAvailable) {
+      animeController
+          .setCurrentEpisodeIndex(animeController.currentEpisodeIndex! + 1);
+    }
+  }
+
+  bool get previousEpisodeAvailable =>
+      animeController.currentEpisodeIndex! - 1 >= 0;
+
+  bool get nextEpisodeAvailable =>
+      animeController.currentEpisodeIndex! + 1 <
+      animeController.info.value!.episodes.length;
 
   bool get isReady => videoPlayer?.ready ?? false;
 }

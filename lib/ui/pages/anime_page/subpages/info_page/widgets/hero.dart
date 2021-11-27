@@ -56,9 +56,7 @@ class AnimeHero extends StatelessWidget {
       return Row(
         children: <Widget>[
           left,
-          SizedBox(
-            width: remToPx(1),
-          ),
+          SizedBox(width: remToPx(1)),
           Expanded(child: right),
         ],
       );
@@ -66,9 +64,7 @@ class AnimeHero extends StatelessWidget {
       return Column(
         children: <Widget>[
           left,
-          SizedBox(
-            height: remToPx(1),
-          ),
+          SizedBox(height: remToPx(1)),
           right,
         ],
       );

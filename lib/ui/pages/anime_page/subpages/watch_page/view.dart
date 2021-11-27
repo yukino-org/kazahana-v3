@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import './controller.dart';
 import './widgets/overlay/overlay.dart';
 import '../../../../../config/defaults.dart';
-import '../../../../../modules/helpers/logger.dart';
 import '../../../../models/view.dart';
 import '../../controller.dart';
-
-final Logger logger = Logger.of('watch_page');
 
 class WatchPage extends StatefulWidget {
   const WatchPage({
@@ -32,6 +29,27 @@ class _WatchPageState extends State<WatchPage>
   Timer? mouseOverlayTimer;
 
   @override
+  void initState() {
+    super.initState();
+
+    controller.setup();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    controller.ready().then((final void _) async {
+      if (!mounted) return;
+      await controller.showSelectSources(context);
+
+      if (mounted && controller.currentSourceIndex == null) {
+        await controller.animeController.goHome();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     keyBoardFocusNode.dispose();
     mouseOverlayTimer?.cancel();
@@ -47,13 +65,13 @@ class _WatchPageState extends State<WatchPage>
         if (controller.isPlaying) {
           if (!controller.showControls) {
             controller.showControls = true;
-            controller.rebuild();
+            controller.reassemble();
           }
 
           mouseOverlayTimer?.cancel();
           mouseOverlayTimer = Timer(Defaults.mouseOverlayDuration, () {
             controller.showControls = false;
-            controller.rebuild();
+            controller.reassemble();
           });
         }
         break;
@@ -61,25 +79,14 @@ class _WatchPageState extends State<WatchPage>
       case 2:
         mouseOverlayTimer?.cancel();
         controller.showControls = !controller.showControls;
-        controller.rebuild();
+        controller.reassemble();
         break;
-
-      default:
     }
   }
 
   @override
   Widget build(final BuildContext context) => View<WatchPageController>(
         controller: controller,
-        afterReady: (
-          final WatchPageController controller,
-          final bool done,
-        ) async {
-          await controller.showSelectSources(context);
-          if (mounted && controller.currentSourceIndex == null) {
-            Navigator.of(context).pop();
-          }
-        },
         builder: (
           final BuildContext context,
           final WatchPageController controller,

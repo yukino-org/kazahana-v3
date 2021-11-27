@@ -6,6 +6,7 @@ import '../../../config/defaults.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/extensions/extensions.dart';
 import '../../../modules/state/stateful_holder.dart';
+import '../../../modules/state/states.dart';
 import '../../../ui/router.dart';
 import '../../models/controller.dart';
 
@@ -48,21 +49,23 @@ class AnimePageArguments {
       };
 }
 
-class AnimePageController extends Controller {
+class AnimePageController extends Controller<AnimePageController> {
+  AnimePageController({
+    required final this.pageController,
+  });
+
+  final PageController pageController;
+
   bool initialized = false;
   AnimePageArguments? args;
   AnimeExtractor? extractor;
-  EpisodeInfo? episode;
   Locale? locale;
+  int? currentEpisodeIndex;
 
   final StatefulValueHolderWithError<AnimeInfo?> info =
       StatefulValueHolderWithError<AnimeInfo?>(null);
 
-  final PageController pageController = PageController(
-    initialPage: SubPages.home.index,
-  );
-
-  Future<void> initController(final BuildContext context) async {
+  Future<void> onInitState(final BuildContext context) async {
     args = AnimePageArguments.fromJson(
       ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
     );
@@ -73,13 +76,17 @@ class AnimePageController extends Controller {
     }
 
     initialized = true;
+    reassemble();
   }
 
-  int? _currentEpisodeIndex;
-  int? get currentEpisodeIndex => _currentEpisodeIndex;
-  set currentEpisodeIndex(final int? index) {
-    _currentEpisodeIndex = index;
-    episode = index != null ? info.value!.sortedEpisodes[index] : null;
+  void setCurrentEpisodeIndex(final int? index) {
+    currentEpisodeIndex = index;
+    reassemble();
+  }
+
+  Future<void> goHome() async {
+    await goToPage(SubPages.home);
+    setCurrentEpisodeIndex(null);
   }
 
   Future<void> goToPage(final SubPages page) async {
@@ -95,10 +102,10 @@ class AnimePageController extends Controller {
   Future<void> getInfo({
     final bool removeCache = false,
   }) async {
-    try {
-      info.resolving(null);
-      rebuild();
+    info.resolving(null);
+    reassemble();
 
+    try {
       final int nowMs = DateTime.now().millisecondsSinceEpoch;
       final String cacheKey = 'anime-${extractor!.id}-${args!.src}';
 
@@ -118,8 +125,7 @@ class AnimePageController extends Controller {
               cachedAnime.value as Map<dynamic, dynamic>,
             ),
           );
-          rebuild();
-
+          reassemble();
           return;
         } catch (_) {}
       }
@@ -132,10 +138,19 @@ class AnimePageController extends Controller {
       );
 
       await CacheBox.saveKV(cacheKey, info.value!.toJson(), nowMs);
-
-      rebuild();
     } catch (err, stack) {
       info.fail(null, ErrorInfo(err, stack));
     }
+
+    reassemble();
   }
+
+  SubPages get currentPage => SubPages.values.firstWhere(
+        (final SubPages x) => x.index == pageController.page!.toInt(),
+      );
+
+  EpisodeInfo? get currentEpisode =>
+      currentEpisodeIndex != null && info.state.hasResolved
+          ? info.value!.sortedEpisodes[currentEpisodeIndex!]
+          : null;
 }

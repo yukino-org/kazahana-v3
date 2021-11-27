@@ -9,24 +9,63 @@ import '../../components/placeholder_appbar.dart';
 import '../../components/reactive_state_builder.dart';
 import '../../models/view.dart';
 
-class AnimePage extends StatelessWidget {
-  AnimePage({
+class AnimePage extends StatefulWidget {
+  const AnimePage({
     final Key? key,
   }) : super(key: key);
 
-  final AnimePageController controller = AnimePageController();
+  @override
+  _AnimePageState createState() => _AnimePageState();
+}
+
+class _AnimePageState extends State<AnimePage> {
+  final PageController pageController = PageController(
+    initialPage: SubPages.home.index,
+  );
+
+  late final AnimePageController controller = AnimePageController(
+    pageController: pageController,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller.setup().then((final void _) async {
+      await controller.onInitState(context);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    controller.ready();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    pageController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(final BuildContext context) => WillPopScope(
+        onWillPop: () async {
+          if (pageController.hasClients &&
+              controller.currentPage != SubPages.home) {
+            await controller.goHome();
+            return false;
+          }
+
+          Navigator.of(context).pop();
+          return true;
+        },
         child: SafeArea(
           child: View<AnimePageController>(
             controller: controller,
-            afterReady: (
-              final AnimePageController controller,
-              final bool done,
-            ) async {
-              await controller.initController(context);
-            },
             builder: (
               final BuildContext context,
               final AnimePageController controller,
@@ -49,18 +88,20 @@ class AnimePage extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   InfoPage(controller: controller),
-                  if (controller.episode != null)
-                    WatchPage(
-                      key: ValueKey<String>(
-                        'Episode-${controller.currentEpisodeIndex}',
-                      ),
-                      animeController: controller,
-                    )
-                  else
-                    Scaffold(
-                      appBar: AppBar(),
-                      body: Text('poop'),
-                    ),
+                  Builder(
+                    builder: (final BuildContext context) {
+                      if (controller.currentEpisode == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return WatchPage(
+                        key: ValueKey<String>(
+                          'Episode-${controller.currentEpisodeIndex}',
+                        ),
+                        animeController: controller,
+                      );
+                    },
+                  ),
                 ],
               ),
               onFailed: (final BuildContext context) => Scaffold(
@@ -80,16 +121,5 @@ class AnimePage extends StatelessWidget {
             ),
           ),
         ),
-        onWillPop: () async {
-          if (controller.pageController.page?.toInt() != SubPages.home.index) {
-            await controller.goToPage(SubPages.home);
-            controller.currentEpisodeIndex = null;
-            controller.rebuild();
-            return false;
-          }
-
-          Navigator.of(context).pop();
-          return true;
-        },
       );
 }

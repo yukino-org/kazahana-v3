@@ -42,7 +42,7 @@ class PlayerOverlay extends StatelessWidget {
                   child: IconButton(
                     onPressed: () {
                       controller.locked = !controller.locked;
-                      controller.rebuild();
+                      controller.reassemble();
                     },
                     icon: const Icon(Icons.lock),
                     color: Colors.white,
@@ -97,7 +97,7 @@ class PlayerOverlay extends StatelessWidget {
       IconButton(
         onPressed: () {
           controller.locked = !controller.locked;
-          controller.rebuild();
+          controller.reassemble();
         },
         icon: Icon(controller.locked ? Icons.lock : Icons.lock_open),
         color: Colors.white,

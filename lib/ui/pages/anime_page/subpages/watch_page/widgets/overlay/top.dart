@@ -86,8 +86,8 @@ class OverlayTop extends StatelessWidget {
                 Icons.arrow_back,
               ),
               tooltip: Translator.t.back(),
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await controller.animeController.goHome();
               },
               padding: EdgeInsets.only(
                 right: remToPx(1),
@@ -110,7 +110,7 @@ class OverlayTop extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${Translator.t.episode()} ${controller.animeController.episode!.episode} ${Translator.t.of()} ${controller.animeController.info.value!.episodes.length}',
+                    '${Translator.t.episode()} ${controller.animeController.currentEpisode!.episode} ${Translator.t.of()} ${controller.animeController.info.value!.episodes.length}',
                     style: const TextStyle(
                       color: Colors.white,
                     ),

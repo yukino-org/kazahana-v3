@@ -10,7 +10,6 @@ import '../../../../../modules/trackers/trackers.dart';
 import '../../../../../modules/translator/translator.dart';
 import '../../../../components/preferred_size_wrapper.dart';
 import '../../../../components/size_aware_builder.dart';
-import '../../../../components/toggleable_slide_widget.dart';
 import '../../../../components/trackers/trackers_tile.dart';
 import '../../controller.dart';
 
@@ -31,7 +30,7 @@ class _InfoPageState extends State<InfoPage>
   final int maxChunkLength = AppState.isDesktop ? 100 : 30;
 
   ScrollDirection? lastScrollDirection;
-  final ValueNotifier<bool> showFloatingButton = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> showOverlay = ValueNotifier<bool>(true);
   late AnimationController floatingButtonController;
 
   @override
@@ -46,7 +45,7 @@ class _InfoPageState extends State<InfoPage>
 
   @override
   void dispose() {
-    showFloatingButton.dispose();
+    showOverlay.dispose();
     floatingButtonController.dispose();
 
     super.dispose();
@@ -83,15 +82,13 @@ class _InfoPageState extends State<InfoPage>
                     style: Theme.of(context).textTheme.headline6,
                   ),
                 ),
-                SizedBox(
-                  height: remToPx(0.3),
-                ),
+                SizedBox(height: remToPx(0.3)),
                 ...widget.controller.info.value!.availableLocales
                     .map(
                       (final Locale x) => Material(
                         type: MaterialType.transparency,
                         child: RadioListTile<Locale>(
-                          title: Text(x.toString()),
+                          title: Text(x.toPrettyString(appendCode: true)),
                           value: x,
                           groupValue: widget.controller.info.value!.locale,
                           activeColor: Theme.of(context).primaryColor,
@@ -157,7 +154,7 @@ class _InfoPageState extends State<InfoPage>
         return NotificationListener<ScrollNotification>(
           onNotification: (final ScrollNotification notification) {
             if (notification is UserScrollNotification) {
-              showFloatingButton.value =
+              showOverlay.value =
                   notification.direction != ScrollDirection.reverse &&
                       lastScrollDirection != ScrollDirection.reverse;
 
@@ -177,19 +174,17 @@ class _InfoPageState extends State<InfoPage>
                 final PreferredSizeWidget child,
               ) =>
                   ValueListenableBuilder<bool>(
-                valueListenable: showFloatingButton,
+                valueListenable: showOverlay,
                 builder: (
                   final BuildContext context,
-                  final bool showFloatingButton,
+                  final bool showOverlay,
                   final Widget? child,
                 ) =>
-                    ToggleableSlideWidget(
-                  controller: floatingButtonController,
-                  visible: showFloatingButton,
+                    AnimatedSlide(
+                  duration: Defaults.animationsNormal,
+                  offset: showOverlay ? Offset.zero : const Offset(0, -1),
                   curve: Curves.easeInOut,
-                  offsetBegin: Offset.zero,
-                  offsetEnd: const Offset(0, -1),
-                  child: child!,
+                  child: child,
                 ),
                 child: child,
               ),
@@ -226,35 +221,15 @@ class _InfoPageState extends State<InfoPage>
                     sliver: SliverList(
                       delegate: SliverChildListDelegate.fixed(
                         <Widget>[
-                          const SizedBox(
-                            height: kToolbarHeight,
-                          ),
+                          const SizedBox(height: kToolbarHeight),
                           AnimeHero(controller: widget.controller),
-                          SizedBox(
-                            height: remToPx(1.5),
-                          ),
+                          SizedBox(height: remToPx(1.5)),
                           TrackersTile(
                             title: widget.controller.info.value!.title,
                             plugin: widget.controller.extractor!.id,
                             providers: Trackers.anime,
                           ),
-                          SizedBox(
-                            height: remToPx(1.5),
-                          ),
-                          Text(
-                            Translator.t.episodes(),
-                            style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  ?.fontSize,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  ?.color
-                                  ?.withOpacity(0.7),
-                            ),
-                          ),
+                          SizedBox(height: remToPx(1)),
                         ],
                       ),
                     ),
@@ -300,7 +275,7 @@ class _InfoPageState extends State<InfoPage>
                     (final int i) {
                       final int start = i * maxChunkLength;
                       final int totalLength =
-                          widget.controller.info.value!.sortedEpisodes.length;
+                          widget.controller.info.value!.episodes.length;
                       final int end = start + maxChunkLength;
                       final int extra =
                           end > totalLength ? end - totalLength : 0;
@@ -321,19 +296,17 @@ class _InfoPageState extends State<InfoPage>
               ),
             ),
             floatingActionButton: ValueListenableBuilder<bool>(
-              valueListenable: showFloatingButton,
+              valueListenable: showOverlay,
               builder: (
                 final BuildContext context,
-                final bool showFloatingButton,
+                final bool showOverlay,
                 final Widget? child,
               ) =>
-                  ToggleableSlideWidget(
-                controller: floatingButtonController,
-                visible: showFloatingButton,
+                  AnimatedSlide(
+                duration: Defaults.animationsNormal,
+                offset: showOverlay ? Offset.zero : const Offset(0, 1.5),
                 curve: Curves.easeInOut,
-                offsetBegin: Offset.zero,
-                offsetEnd: const Offset(0, 1.5),
-                child: child!,
+                child: child,
               ),
               child: FloatingActionButton.extended(
                 icon: const Icon(Icons.language),
@@ -353,6 +326,5 @@ class _InfoPageState extends State<InfoPage>
   bool get wantKeepAlive => true;
 
   int get tabCount =>
-      (widget.controller.info.value!.sortedEpisodes.length / maxChunkLength)
-          .ceil();
+      (widget.controller.info.value!.episodes.length / maxChunkLength).ceil();
 }
