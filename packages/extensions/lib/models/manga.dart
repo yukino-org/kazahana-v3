@@ -2,7 +2,7 @@ import 'package:utilx/utilities/locale.dart';
 import './base.dart';
 
 class ChapterInfo {
-  ChapterInfo({
+  const ChapterInfo({
     required final this.chapter,
     required final this.url,
     required final this.locale,
@@ -15,26 +15,26 @@ class ChapterInfo {
         url: json['url'] as String,
         volume: json['volume'] as String?,
         chapter: json['chapter'] as String,
-        locale: json['locale'] as String,
+        locale: Locale.parse(json['locale'] as String),
       );
 
   final String? title;
   final String? volume;
   final String chapter;
   final String url;
-  final String locale;
+  final Locale locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
         'volume': volume,
         'chapter': chapter,
         'url': url,
-        'locale': locale,
+        'locale': locale.toCodeString(),
       };
 }
 
 class MangaInfo {
-  MangaInfo({
+  const MangaInfo({
     required final this.url,
     required final this.title,
     required final this.chapters,
@@ -55,7 +55,7 @@ class MangaInfo {
                 json['thumbnail'] as Map<dynamic, dynamic>,
               )
             : null,
-        locale: json['locale'] as String,
+        locale: Locale.parse(json['locale'] as String),
         availableLocales: (json['availableLocales'] as List<dynamic>)
             .cast<String>()
             .map((final String x) => Locale.parse(x))
@@ -66,7 +66,7 @@ class MangaInfo {
   final String url;
   final List<ChapterInfo> chapters;
   final ImageDescriber? thumbnail;
-  final String locale;
+  final Locale locale;
   final List<Locale> availableLocales;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
@@ -74,29 +74,29 @@ class MangaInfo {
         'url': url,
         'thumbnail': thumbnail?.toJson(),
         'chapters': chapters.map((final ChapterInfo x) => x.toJson()).toList(),
-        'locale': locale,
+        'locale': locale.toCodeString(),
         'availableLocales':
-            availableLocales.map((final Locale x) => x.toString()).toList(),
+            availableLocales.map((final Locale x) => x.toCodeString()).toList(),
       };
 }
 
 class PageInfo {
-  PageInfo({
+  const PageInfo({
     required final this.url,
     required final this.locale,
   });
 
   factory PageInfo.fromJson(final Map<dynamic, dynamic> json) => PageInfo(
         url: json['url'] as String,
-        locale: json['locale'] as String,
+        locale: Locale.parse(json['locale'] as String),
       );
 
   final String url;
-  final String locale;
+  final Locale locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'url': url,
-        'locale': locale,
+        'locale': locale.toCodeString(),
       };
 }
 
@@ -107,7 +107,7 @@ typedef GetChapterFn = Future<List<PageInfo>> Function(ChapterInfo);
 typedef GetPageFn = Future<ImageDescriber> Function(PageInfo);
 
 class MangaExtractor extends BaseExtractor {
-  MangaExtractor({
+  const MangaExtractor({
     required final String name,
     required final String id,
     required final SearchFn search,

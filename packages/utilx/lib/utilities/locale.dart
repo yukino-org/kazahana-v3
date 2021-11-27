@@ -38,14 +38,20 @@ class Locale {
     return threshold;
   }
 
-  String toPrettyString() => <String>[
+  String toPrettyString({
+    final bool appendCode = false,
+  }) =>
+      <String>[
         code.language,
-        if (country != null) '(${country!.country})'
+        if (country != null) '(${country!.country})',
+        if (appendCode) '(${toCodeString()})',
       ].join(' ');
 
-  @override
-  String toString() =>
+  String toCodeString() =>
       <String>[code.code, if (country != null) country!.code].join('_');
+
+  @override
+  String toString() => 'Locale<${toCodeString()}>';
 
   @override
   bool operator ==(final Object other) =>

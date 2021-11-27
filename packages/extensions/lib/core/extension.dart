@@ -58,7 +58,7 @@ abstract class ExtensionInternals {
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -79,7 +79,7 @@ abstract class ExtensionInternals {
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -136,7 +136,7 @@ abstract class ExtensionInternals {
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -157,7 +157,7 @@ abstract class ExtensionInternals {
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 

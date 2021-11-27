@@ -53,6 +53,6 @@ class BaseExtension {
         'type': type.type,
         'image': image,
         'nsfw': nsfw,
-        'defaultLocale': defaultLocale.toString(),
+        'defaultLocale': defaultLocale.toCodeString(),
       };
 }
