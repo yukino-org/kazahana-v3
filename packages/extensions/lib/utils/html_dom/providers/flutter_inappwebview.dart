@@ -68,7 +68,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
               eventer!
                   .waitUntil(
                 eventer!.onLoad,
-                (final Uri receivedUri) => uri == receivedUri,
+                (final Uri receivedUri) => true,
               )
                   .then((final Uri uri) {
                 future.complete();
@@ -80,7 +80,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
               eventer!
                   .waitUntil(
                 eventer!.onLoad,
-                (final Uri receivedUri) => uri == receivedUri,
+                (final Uri receivedUri) => true,
               )
                   .then((final Uri uri) async {
                 await webview!.webViewController.callAsyncJavaScript(
