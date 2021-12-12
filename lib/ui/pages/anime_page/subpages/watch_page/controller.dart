@@ -64,22 +64,22 @@ class WatchPageController extends Controller<WatchPageController> {
       }
     });
 
-    if (AppState.settings.value.animeAutoFullscreen) {
+    if (AppState.settings.value.anime.fullscreen) {
       fullscreen.enterFullscreen();
     }
 
-    if (AppState.isMobile && AppState.settings.value.animeForceLandscape) {
+    if (AppState.isMobile && AppState.settings.value.anime.landscape) {
       Screen.setOrientation(ScreenOrientation.vertical);
     }
 
-    super.setup();
+    await super.setup();
   }
 
   @override
   Future<void> ready() async {
     await fetchSources();
 
-    super.ready();
+    await super.ready();
   }
 
   @override
@@ -94,7 +94,7 @@ class WatchPageController extends Controller<WatchPageController> {
     videoPlayer?.destroy();
     duration.dispose();
 
-    super.dispose();
+    await super.dispose();
   }
 
   Future<void> fetchSources() async {
@@ -105,9 +105,9 @@ class WatchPageController extends Controller<WatchPageController> {
   Future<void> setFullscreen({
     required final bool enabled,
   }) async {
-    AppState.settings.value.animeAutoFullscreen = enabled;
+    AppState.settings.value.anime.fullscreen = enabled;
 
-    await (AppState.settings.value.animeAutoFullscreen
+    await (AppState.settings.value.anime.fullscreen
         ? fullscreen.enterFullscreen()
         : fullscreen.exitFullscreen());
 
@@ -117,9 +117,9 @@ class WatchPageController extends Controller<WatchPageController> {
   Future<void> setLandscape({
     required final bool enabled,
   }) async {
-    AppState.settings.value.animeForceLandscape = enabled;
+    AppState.settings.value.anime.landscape = enabled;
 
-    await (AppState.settings.value.animeForceLandscape
+    await (AppState.settings.value.anime.landscape
         ? Screen.setOrientation(ScreenOrientation.vertical)
         : Screen.setOrientation(ScreenOrientation.unlock));
 
@@ -131,7 +131,7 @@ class WatchPageController extends Controller<WatchPageController> {
       switch (type) {
         case SeekType.forward:
           final Duration amt = duration.value.current +
-              Duration(seconds: AppState.settings.value.seekDuration);
+              Duration(seconds: AppState.settings.value.anime.seekDuration);
 
           await videoPlayer!
               .seek(amt < duration.value.total ? amt : duration.value.total);
@@ -139,14 +139,14 @@ class WatchPageController extends Controller<WatchPageController> {
 
         case SeekType.backward:
           final Duration amt = duration.value.current -
-              Duration(seconds: AppState.settings.value.seekDuration);
+              Duration(seconds: AppState.settings.value.anime.seekDuration);
 
           await videoPlayer!.seek(amt <= Duration.zero ? Duration.zero : amt);
           break;
 
         case SeekType.intro:
           final Duration amt = duration.value.current +
-              Duration(seconds: AppState.settings.value.introDuration);
+              Duration(seconds: AppState.settings.value.anime.introDuration);
 
           await videoPlayer!
               .seek(amt < duration.value.total ? amt : duration.value.total);
@@ -180,7 +180,7 @@ class WatchPageController extends Controller<WatchPageController> {
         reassemble();
         _updateDuration();
 
-        if (AppState.settings.value.autoPlay) {
+        if (AppState.settings.value.anime.autoPlay) {
           videoPlayer!.play();
 
           showControls = false;
@@ -211,7 +211,7 @@ class WatchPageController extends Controller<WatchPageController> {
         break;
 
       case VideoPlayerEvents.end:
-        if (AppState.settings.value.autoNext) {
+        if (AppState.settings.value.anime.autoNext) {
           if (nextEpisodeAvailable) {
             ignoreScreenChanges = true;
             nextEpisode();
@@ -262,7 +262,7 @@ class WatchPageController extends Controller<WatchPageController> {
 
     if ((duration.value.current.inSeconds / duration.value.total.inSeconds) *
             100 >
-        AppState.settings.value.animeTrackerWatchPercent) {
+        AppState.settings.value.anime.syncThreshold) {
       final int? episode =
           int.tryParse(animeController.currentEpisode!.episode);
 
@@ -320,20 +320,20 @@ class WatchPageController extends Controller<WatchPageController> {
 
   KeyboardHandler getKeyboard(final BuildContext context) {
     final AnimeKeyboardShortcuts shortcuts =
-        AppState.settings.value.animeShortcuts;
+        AppState.settings.value.anime.shortcuts;
 
     return KeyboardHandler(
       onKeyDown: <KeyboardKeyHandler>[
         KeyboardKeyHandler(
-          shortcuts.fullscreen,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.fullscreen),
           (final RawKeyEvent event) async {
             await setFullscreen(
-              enabled: !AppState.settings.value.animeAutoFullscreen,
+              enabled: !AppState.settings.value.anime.fullscreen,
             );
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.playPause,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.playPause),
           (final RawKeyEvent event) async {
             if (isReady) {
               showControls = videoPlayer!.isPlaying;
@@ -345,31 +345,31 @@ class WatchPageController extends Controller<WatchPageController> {
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.seekBackward,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.seekBackward),
           (final RawKeyEvent event) async {
             await seek(SeekType.backward);
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.seekForward,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.seekForward),
           (final RawKeyEvent event) async {
             await seek(SeekType.forward);
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.skipIntro,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.skipIntro),
           (final RawKeyEvent event) async {
             await seek(SeekType.intro);
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.exit,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.exit),
           (final RawKeyEvent event) async {
             await animeController.goHome();
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.previousEpisode,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.previousEpisode),
           (final RawKeyEvent event) async {
             if (previousEpisodeAvailable) {
               previousEpisode();
@@ -377,7 +377,7 @@ class WatchPageController extends Controller<WatchPageController> {
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.nextEpisode,
+          shortcuts.get(AnimeKeyboardShortcutsKeys.nextEpisode),
           (final RawKeyEvent event) async {
             if (nextEpisodeAvailable) {
               nextEpisode();

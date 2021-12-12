@@ -39,9 +39,9 @@ List<Widget> getSettingsDevelopers(
       MaterialSwitchTile(
         title: Text(Translator.t.disableAnimations()),
         icon: const Icon(Icons.animation),
-        value: settings.disableAnimations,
+        value: settings.developers.disableAnimations,
         onChanged: (final bool val) async {
-          settings.disableAnimations = val;
+          settings.developers.disableAnimations = val;
 
           await save();
         },
@@ -49,9 +49,9 @@ List<Widget> getSettingsDevelopers(
       MaterialSwitchTile(
         title: Text(Translator.t.ignoreBadHttpSslCertificates()),
         icon: const Icon(Icons.https),
-        value: settings.ignoreBadHttpCertificate,
+        value: settings.developers.ignoreBadHttpCertificate,
         onChanged: (final bool val) async {
-          settings.ignoreBadHttpCertificate = val;
+          settings.developers.ignoreBadHttpCertificate = val;
 
           await save();
         },

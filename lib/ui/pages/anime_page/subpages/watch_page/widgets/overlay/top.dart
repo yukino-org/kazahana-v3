@@ -39,7 +39,7 @@ class OverlayTop extends StatelessWidget {
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      RadioMaterialTile<double>(
+                      MaterialRadioTile<double>(
                         title: Text(Translator.t.speed()),
                         icon: const Icon(Icons.speed),
                         value: controller.speed,

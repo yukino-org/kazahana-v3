@@ -85,7 +85,6 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
                 (final Uri receivedUri) => true,
               )
                   .then((final Uri uri) async {
-                print('eval');
                 await webview!.webViewController.callAsyncJavaScript(
                   functionBody: '''
                   return new Promise((resolve) => {
@@ -100,7 +99,6 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
                   ''',
                 );
                 future.complete();
-                print('resolved');
               });
               break;
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/locale.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/translator/translations.dart';
 import '../../../../modules/translator/translator.dart';
@@ -11,7 +12,7 @@ List<Widget> getSettingsPreference(
 ) =>
     <Widget>[
       Builder(
-        builder: (final BuildContext context) => RadioMaterialTile<String>(
+        builder: (final BuildContext context) => MaterialRadioTile<String>(
           title: Text(Translator.t.language()),
           dialogTitle: Text(Translator.t.chooseLanguage()),
           icon: const Icon(Icons.language),
@@ -22,7 +23,7 @@ List<Widget> getSettingsPreference(
                   lang.locale.toPrettyString(appendCode: true),
           },
           onChanged: (final String val) async {
-            settings.locale = val;
+            settings.preferences.locale = Locale.parse(val);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -37,13 +38,13 @@ List<Widget> getSettingsPreference(
           },
         ),
       ),
-      RadioMaterialTile<int>(
+      MaterialRadioTile<int>(
         title: Text(Translator.t.theme()),
         dialogTitle: Text(Translator.t.chooseTheme()),
         icon: const Icon(Icons.palette),
-        value: settings.useSystemPreferredTheme
+        value: settings.preferences.useSystemPreferredTheme
             ? 0
-            : !settings.useDarkMode
+            : !settings.preferences.useDarkMode
                 ? 1
                 : 2,
         labels: <int, String>{
@@ -54,17 +55,17 @@ List<Widget> getSettingsPreference(
         onChanged: (final int val) async {
           switch (val) {
             case 0:
-              settings.useSystemPreferredTheme = true;
+              settings.preferences.useSystemPreferredTheme = true;
               break;
 
             case 1:
-              settings.useSystemPreferredTheme = false;
-              settings.useDarkMode = false;
+              settings.preferences.useSystemPreferredTheme = false;
+              settings.preferences.useDarkMode = false;
               break;
 
             case 2:
-              settings.useSystemPreferredTheme = false;
-              settings.useDarkMode = true;
+              settings.preferences.useSystemPreferredTheme = false;
+              settings.preferences.useDarkMode = true;
               break;
           }
 

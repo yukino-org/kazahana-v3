@@ -15,7 +15,7 @@ List<Widget> getSettingsAnime(
   final SettingsSchema settings,
   final Future<void> Function() save,
 ) {
-  final AnimeKeyboardShortcuts shortcuts = settings.animeShortcuts;
+  final AnimeKeyboardShortcuts shortcuts = settings.anime.shortcuts;
 
   return <Widget>[
     if (AppState.isMobile)
@@ -23,22 +23,22 @@ List<Widget> getSettingsAnime(
         title: Text(Translator.t.landscapeVideoPlayer()),
         icon: const Icon(Icons.screen_lock_landscape),
         subtitle: Text(Translator.t.landscapeVideoPlayerDetail()),
-        value: settings.animeForceLandscape,
+        value: settings.anime.landscape,
         onChanged: (final bool val) async {
-          settings.animeForceLandscape = val;
+          settings.anime.landscape = val;
 
           await save();
         },
       ),
     MaterialSwitchTile(
       title: Text(Translator.t.autoAnimeFullscreen()),
-      icon: settings.animeAutoFullscreen
+      icon: settings.anime.fullscreen
           ? const Icon(Icons.fullscreen)
           : const Icon(Icons.fullscreen_exit),
       subtitle: Text(Translator.t.autoAnimeFullscreenDetail()),
-      value: settings.animeAutoFullscreen,
+      value: settings.anime.fullscreen,
       onChanged: (final bool val) async {
-        settings.animeAutoFullscreen = val;
+        settings.anime.fullscreen = val;
 
         await save();
       },
@@ -46,7 +46,8 @@ List<Widget> getSettingsAnime(
     MaterialDialogTile(
       title: Text(Translator.t.skipIntroDuration()),
       icon: const Icon(Icons.fast_forward),
-      subtitle: Text('${settings.introDuration} ${Translator.t.seconds()}'),
+      subtitle:
+          Text('${settings.anime.introDuration} ${Translator.t.seconds()}'),
       dialogBuilder: (
         final BuildContext context,
         final StateSetter setState,
@@ -61,18 +62,19 @@ List<Widget> getSettingsAnime(
               showValueIndicator: ShowValueIndicator.always,
             ),
             child: Slider(
-              label: '${settings.introDuration} ${Translator.t.seconds()}',
-              value: settings.introDuration.toDouble(),
+              label:
+                  '${settings.anime.introDuration} ${Translator.t.seconds()}',
+              value: settings.anime.introDuration.toDouble(),
               min: VideoPlayer.minIntroLength.toDouble(),
               max: VideoPlayer.maxIntroLength.toDouble(),
               onChanged: (final double value) {
                 setState(() {
-                  settings.introDuration = value.toInt();
+                  settings.anime.introDuration = value.toInt();
                 });
               },
               onChangeEnd: (final double value) async {
                 setState(() {
-                  settings.introDuration = value.toInt();
+                  settings.anime.introDuration = value.toInt();
                 });
 
                 await save();
@@ -85,7 +87,8 @@ List<Widget> getSettingsAnime(
     MaterialDialogTile(
       title: Text(Translator.t.seekDuration()),
       icon: const Icon(Icons.fast_forward),
-      subtitle: Text('${settings.seekDuration} ${Translator.t.seconds()}'),
+      subtitle:
+          Text('${settings.anime.seekDuration} ${Translator.t.seconds()}'),
       dialogBuilder: (
         final BuildContext context,
         final StateSetter setState,
@@ -100,18 +103,18 @@ List<Widget> getSettingsAnime(
               showValueIndicator: ShowValueIndicator.always,
             ),
             child: Slider(
-              label: '${settings.seekDuration} ${Translator.t.seconds()}',
-              value: settings.seekDuration.toDouble(),
+              label: '${settings.anime.seekDuration} ${Translator.t.seconds()}',
+              value: settings.anime.seekDuration.toDouble(),
               min: VideoPlayer.minSeekLength.toDouble(),
               max: VideoPlayer.maxSeekLength.toDouble(),
               onChanged: (final double value) {
                 setState(() {
-                  settings.seekDuration = value.toInt();
+                  settings.anime.seekDuration = value.toInt();
                 });
               },
               onChangeEnd: (final double value) async {
                 setState(() {
-                  settings.seekDuration = value.toInt();
+                  settings.anime.seekDuration = value.toInt();
                 });
 
                 await save();
@@ -125,9 +128,9 @@ List<Widget> getSettingsAnime(
       title: Text(Translator.t.autoPlay()),
       icon: const Icon(Icons.slideshow),
       subtitle: Text(Translator.t.autoPlayDetail()),
-      value: settings.autoPlay,
+      value: settings.anime.autoPlay,
       onChanged: (final bool val) async {
-        settings.autoPlay = val;
+        settings.anime.autoPlay = val;
 
         await save();
       },
@@ -136,9 +139,9 @@ List<Widget> getSettingsAnime(
       title: Text(Translator.t.autoNext()),
       icon: const Icon(Icons.skip_next),
       subtitle: Text(Translator.t.autoNextDetail()),
-      value: settings.autoNext,
+      value: settings.anime.autoNext,
       onChanged: (final bool val) async {
-        settings.autoNext = val;
+        settings.anime.autoNext = val;
 
         await save();
       },
@@ -146,7 +149,7 @@ List<Widget> getSettingsAnime(
     MaterialDialogTile(
       title: Text(Translator.t.animeSyncPercent()),
       icon: const Icon(Icons.sync_alt),
-      subtitle: Text('${settings.animeTrackerWatchPercent}%'),
+      subtitle: Text('${settings.anime.syncThreshold}%'),
       dialogBuilder: (
         final BuildContext context,
         final StateSetter setState,
@@ -161,18 +164,18 @@ List<Widget> getSettingsAnime(
               showValueIndicator: ShowValueIndicator.always,
             ),
             child: Slider(
-              label: '${settings.animeTrackerWatchPercent}%',
-              value: settings.animeTrackerWatchPercent.toDouble(),
+              label: '${settings.anime.syncThreshold}%',
+              value: settings.anime.syncThreshold.toDouble(),
               min: 1,
               max: 100,
               onChanged: (final double value) {
                 setState(() {
-                  settings.animeTrackerWatchPercent = value.toInt();
+                  settings.anime.syncThreshold = value.toInt();
                 });
               },
               onChangeEnd: (final double value) async {
                 setState(() {
-                  settings.animeTrackerWatchPercent = value.toInt();
+                  settings.anime.syncThreshold = value.toInt();
                 });
 
                 await save();
@@ -186,10 +189,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.playPause()),
       icon: const Icon(Icons.play_arrow),
-      keys: shortcuts.playPause,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.playPause),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.playPause = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.playPause, keys);
 
         await save();
       },
@@ -197,10 +199,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.fullscreen()),
       icon: const Icon(Icons.fullscreen),
-      keys: shortcuts.fullscreen,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.fullscreen),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.fullscreen = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.fullscreen, keys);
 
         await save();
       },
@@ -208,10 +209,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.seekBackward()),
       icon: const Icon(Icons.fast_rewind),
-      keys: shortcuts.seekBackward,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.seekBackward),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.seekBackward = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.seekBackward, keys);
 
         await save();
       },
@@ -219,10 +219,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.seekForward()),
       icon: const Icon(Icons.fast_forward),
-      keys: shortcuts.seekForward,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.seekForward),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.seekForward = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.seekForward, keys);
 
         await save();
       },
@@ -230,10 +229,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.skipIntro()),
       icon: const Icon(Icons.fast_forward),
-      keys: shortcuts.skipIntro,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.skipIntro),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.skipIntro = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.skipIntro, keys);
 
         await save();
       },
@@ -241,10 +239,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.goBack()),
       icon: const Icon(Icons.exit_to_app),
-      keys: shortcuts.exit,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.exit),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.exit = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.exit, keys);
 
         await save();
       },
@@ -252,10 +249,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.previousEpisode()),
       icon: const Icon(Icons.arrow_back),
-      keys: shortcuts.previousEpisode,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.previousEpisode),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.previousEpisode = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.previousEpisode, keys);
 
         await save();
       },
@@ -263,10 +259,9 @@ List<Widget> getSettingsAnime(
     SettingsKeyboardTile(
       title: Text(Translator.t.nextEpisode()),
       icon: const Icon(Icons.arrow_forward),
-      keys: shortcuts.nextEpisode,
+      keys: shortcuts.get(AnimeKeyboardShortcutsKeys.nextEpisode),
       onChanged: (final Set<LogicalKeyboardKey> keys) async {
-        shortcuts.playPause = keys;
-        settings.animeShortcuts = shortcuts;
+        shortcuts.set(AnimeKeyboardShortcutsKeys.nextEpisode, keys);
 
         await save();
       },

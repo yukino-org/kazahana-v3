@@ -11,11 +11,11 @@ abstract class AppState {
 
     settings.subscribe(
       (final SettingsSchema current, final SettingsSchema previous) {
-        if (current.ignoreBadHttpCertificate !=
-            previous.ignoreBadHttpCertificate) {
+        if (current.developers.ignoreBadHttpCertificate !=
+            previous.developers.ignoreBadHttpCertificate) {
           HetuHttpClient.set(
             HetuHttpClient(
-              ignoreSSLCertificate: current.ignoreBadHttpCertificate,
+              ignoreSSLCertificate: current.developers.ignoreBadHttpCertificate,
             ),
           );
         }

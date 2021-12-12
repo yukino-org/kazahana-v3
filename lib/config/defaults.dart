@@ -12,29 +12,22 @@ abstract class Defaults {
   static const Duration _animationsFaster = Duration(milliseconds: 100);
 
   static Duration get animationsSlower =>
-      AppState.settings.value.disableAnimations
-          ? _noAnimation
-          : _animationsSlower;
+      isAnimationsDisabled ? _noAnimation : _animationsSlower;
 
   static Duration get animationsSlow =>
-      AppState.settings.value.disableAnimations
-          ? _noAnimation
-          : _animationsSlow;
+      isAnimationsDisabled ? _noAnimation : _animationsSlow;
 
   static Duration get animationsNormal =>
-      AppState.settings.value.disableAnimations
-          ? _noAnimation
-          : _animationsNormal;
+      isAnimationsDisabled ? _noAnimation : _animationsNormal;
 
   static Duration get animationsFast =>
-      AppState.settings.value.disableAnimations
-          ? _noAnimation
-          : _animationsFast;
+      isAnimationsDisabled ? _noAnimation : _animationsFast;
 
   static Duration get animationsFaster =>
-      AppState.settings.value.disableAnimations
-          ? _noAnimation
-          : _animationsFaster;
+      isAnimationsDisabled ? _noAnimation : _animationsFaster;
+
+  static bool get isAnimationsDisabled =>
+      AppState.settings.value.developers.disableAnimations;
 
   static const Duration cachedAnimeInfoExpireTime = Duration(days: 1);
   static const Duration cachedMangaInfoExpireTime = Duration(days: 1);

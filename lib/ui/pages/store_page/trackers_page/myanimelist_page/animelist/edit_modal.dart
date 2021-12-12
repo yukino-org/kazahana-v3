@@ -70,7 +70,7 @@ class _EditModalState extends State<EditModal> {
               SizedBox(
                 height: remToPx(0.3),
               ),
-              RadioMaterialTile<MyAnimeListAnimeListStatus>(
+              MaterialRadioTile<MyAnimeListAnimeListStatus>(
                 title: Text(Translator.t.status()),
                 icon: const Icon(Icons.play_arrow),
                 value: status,

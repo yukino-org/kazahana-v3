@@ -3,7 +3,14 @@ import '../generated/locale.g.dart';
 export '../generated/locale.g.dart';
 
 class Locale {
-  Locale(this.code, [this.country]);
+  const Locale(this.code, [this.country]);
+
+  factory Locale.fromJson(final Map<String, dynamic> json) => Locale(
+        LanguageUtils.nameCodeMap[json['code'] as String]!,
+        json['country'] != null
+            ? CountryUtils.nameCodeMap[json['country'] as String]
+            : null,
+      );
 
   factory Locale.parse(final String locale) {
     final RegExpMatch match = RegExp('([^_]+)(_(.*))?').firstMatch(locale)!;
@@ -37,6 +44,11 @@ class Locale {
 
     return threshold;
   }
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'code': code.name,
+        'country': country?.name,
+      };
 
   String toPrettyString({
     final bool appendCode = false,

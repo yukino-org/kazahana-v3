@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import './dialog.dart';
 
-class RadioMaterialTile<T> extends StatelessWidget {
-  const RadioMaterialTile({
+class MaterialRadioTile<T> extends StatelessWidget {
+  const MaterialRadioTile({
     required final this.title,
     required final this.icon,
     required final this.value,

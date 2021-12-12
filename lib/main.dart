@@ -68,15 +68,15 @@ class _MainAppState extends State<MainApp> {
     final SettingsSchema current,
     final SettingsSchema previous,
   ) {
-    final List<List<dynamic>> changables = <List<dynamic>>[
-      <dynamic>[
-        current.useSystemPreferredTheme,
-        previous.useSystemPreferredTheme
-      ],
-      <dynamic>[current.useDarkMode, previous.useDarkMode],
-    ];
+    final Map<dynamic, dynamic> changables = <dynamic, dynamic>{
+      current.preferences.useSystemPreferredTheme:
+          previous.preferences.useSystemPreferredTheme,
+      current.preferences.useDarkMode: previous.preferences.useDarkMode,
+    };
 
-    if (changables.some((final List<dynamic> x) => x.first != x.last)) {
+    if (changables.entries
+        .toList()
+        .some((final MapEntry<dynamic, dynamic> x) => x.key != x.value)) {
       setState(() {});
     }
   }
@@ -91,9 +91,9 @@ class _MainAppState extends State<MainApp> {
         ],
         theme: Palette.lightTheme,
         darkTheme: Palette.darkTheme,
-        themeMode: AppState.settings.value.useSystemPreferredTheme
+        themeMode: AppState.settings.value.preferences.useSystemPreferredTheme
             ? ThemeMode.system
-            : (AppState.settings.value.useDarkMode
+            : (AppState.settings.value.preferences.useDarkMode
                 ? ThemeMode.dark
                 : ThemeMode.light),
         initialRoute: RouteNames.initialRoute,

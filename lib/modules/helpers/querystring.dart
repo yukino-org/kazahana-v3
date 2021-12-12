@@ -3,8 +3,8 @@ class QueryString {
     _parse();
   }
 
-  factory QueryString.fromJson(final Map<String, dynamic> json) =>
-      QueryString(QueryString.stringify(json));
+  factory QueryString.fromJson(final Map<dynamic, dynamic> json) =>
+      QueryString(QueryString.stringify(json.cast<String, dynamic>()));
 
   final String query;
   late final Map<String, String> parsed;

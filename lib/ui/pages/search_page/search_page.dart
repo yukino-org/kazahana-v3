@@ -181,9 +181,9 @@ class _PageState extends State<Page> with HooksMixin {
   }
 
   void _setCurrentPreferredPlugin([final ExtensionType? _pluginType]) {
-    final PreferencesSchema preferences = PreferencesBox.get();
+    final CachedPreferencesSchema preferences = CachedPreferencesBox.get();
     final ExtensionType? pluginType =
-        _pluginType ?? preferences.lastSelectedSearch.lastSelectedType;
+        _pluginType ?? preferences.lastSelectedSearch?.lastSelectedType;
 
     if (pluginType != null) {
       BaseExtractor? ext;
@@ -191,12 +191,12 @@ class _PageState extends State<Page> with HooksMixin {
       switch (pluginType) {
         case ExtensionType.anime:
           ext = ExtensionsManager
-              .animes[preferences.lastSelectedSearch.lastSelectedAnimePlugin];
+              .animes[preferences.lastSelectedSearch?.lastSelectedAnimePlugin];
           break;
 
         case ExtensionType.manga:
           ext = ExtensionsManager
-              .mangas[preferences.lastSelectedSearch.lastSelectedMangaPlugin];
+              .mangas[preferences.lastSelectedSearch?.lastSelectedMangaPlugin];
           break;
       }
 
@@ -286,9 +286,12 @@ class _PageState extends State<Page> with HooksMixin {
                 currentPlugin = plugin;
               });
 
-              final PreferencesSchema preferences = PreferencesBox.get();
+              final CachedPreferencesSchema preferences =
+                  CachedPreferencesBox.get();
               preferences.lastSelectedSearch =
-                  preferences.lastSelectedSearch.copyWith(
+                  (preferences.lastSelectedSearch ??
+                          const LastSelectedSearchPlugin())
+                      .copyWith(
                 lastSelectedType: plugin.type,
                 lastSelectedAnimePlugin: plugin.type == ExtensionType.anime
                     ? plugin.plugin.id
@@ -297,7 +300,7 @@ class _PageState extends State<Page> with HooksMixin {
                     ? plugin.plugin.id
                     : null,
               );
-              await PreferencesBox.save(preferences);
+              await CachedPreferencesBox.save(preferences);
 
               if (mounted) {
                 this.setState(() {});

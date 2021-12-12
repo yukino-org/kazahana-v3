@@ -159,4 +159,13 @@ abstract class TranslationSentences {
   String ignoreBadHttpSslCertificates();
   String copiedErrorToClipboard();
   String noMoreChaptersLeft();
+  String imageSize();
+  String imageCustomWidth();
+  String custom();
+  String fitWidth();
+  String fitHeight();
+  String previousPage();
+  String nextPage();
+  String previousChapter();
+  String nextChapter();
 }

@@ -26,7 +26,8 @@ abstract class ExtensionsManager {
   static Future<void> initialize() async {
     await ExtensionInternals.initialize(
       httpOptions: HetuHttpClient(
-        ignoreSSLCertificate: AppState.settings.value.ignoreBadHttpCertificate,
+        ignoreSSLCertificate:
+            AppState.settings.value.developers.ignoreBadHttpCertificate,
       ),
       htmlDOMOptions: HtmlDOMOptions(
         localChromiumPath: path.join(PathDirs.otherData, 'local-chromium'),

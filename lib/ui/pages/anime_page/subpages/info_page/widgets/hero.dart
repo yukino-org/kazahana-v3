@@ -20,15 +20,20 @@ class AnimeHero extends StatelessWidget {
             controller.info.value!.thumbnail!.url,
             headers: controller.info.value!.thumbnail!.headers,
             width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
+            fit: BoxFit.cover,
           )
         : Image.asset(
             Assets.placeholderImageFromContext(context),
             width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(7),
+            fit: BoxFit.cover,
           );
 
     final Widget left = ClipRRect(
-      borderRadius: BorderRadius.circular(remToPx(0.5)),
-      child: image,
+      borderRadius: BorderRadius.circular(remToPx(0.2)),
+      child: SizedBox(
+        width: width > ResponsiveSizes.md ? (15 / 100) * width : remToPx(8),
+        child: image,
+      ),
     );
 
     final Widget right = Column(
@@ -56,7 +61,7 @@ class AnimeHero extends StatelessWidget {
       return Row(
         children: <Widget>[
           left,
-          SizedBox(width: remToPx(1)),
+          SizedBox(width: remToPx(1.5)),
           Expanded(child: right),
         ],
       );

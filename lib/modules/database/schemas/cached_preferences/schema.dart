@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'package:extensions/extensions.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:objectbox/objectbox.dart';
 
+part 'schema.g.dart';
+
+@JsonSerializable()
 class LastSelectedSearchPlugin {
   const LastSelectedSearchPlugin({
     final this.lastSelectedType,
@@ -10,15 +14,7 @@ class LastSelectedSearchPlugin {
   });
 
   factory LastSelectedSearchPlugin.fromJson(final Map<dynamic, dynamic> json) =>
-      LastSelectedSearchPlugin(
-        lastSelectedType: json['lastSelectedType'] != null
-            ? ExtensionType.values.firstWhere(
-                (final ExtensionType x) => x.name == json['lastSelectedType'],
-              )
-            : null,
-        lastSelectedAnimePlugin: json['lastSelectedAnimePlugin'] as String?,
-        lastSelectedMangaPlugin: json['lastSelectedMangaPlugin'] as String?,
-      );
+      _$LastSelectedSearchPluginFromJson(json.cast<String, dynamic>());
 
   final ExtensionType? lastSelectedType;
   final String? lastSelectedAnimePlugin;
@@ -42,30 +38,24 @@ class LastSelectedSearchPlugin {
       lastSelectedAnimePlugin == null &&
       lastSelectedMangaPlugin == null;
 
-  Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
-        'lastSelectedType': lastSelectedType?.name,
-        'lastSelectedAnimePlugin': lastSelectedAnimePlugin,
-        'lastSelectedMangaPlugin': lastSelectedMangaPlugin,
-      };
+  Map<dynamic, dynamic> toJson() => _$LastSelectedSearchPluginToJson(this);
 }
 
 @Entity()
-class PreferencesSchema {
-  PreferencesSchema({
-    final this.lastSelectedSearch_,
+class CachedPreferencesSchema {
+  CachedPreferencesSchema({
+    final this.lastSelectedSearch,
   });
 
   int id = 0;
 
-  String? lastSelectedSearch_;
-
-  LastSelectedSearchPlugin get lastSelectedSearch => lastSelectedSearch_ != null
-      ? LastSelectedSearchPlugin.fromJson(
-          json.decode(lastSelectedSearch_!) as Map<dynamic, dynamic>,
-        )
-      : const LastSelectedSearchPlugin();
-
-  set lastSelectedSearch(final LastSelectedSearchPlugin val) {
-    lastSelectedSearch_ = json.encode(val.toJson());
+  LastSelectedSearchPlugin? lastSelectedSearch;
+  String? get lastSelectedSearch_ => json.encode(lastSelectedSearch?.toJson());
+  set lastSelectedSearch_(final String? nValue) {
+    lastSelectedSearch = nValue != null
+        ? LastSelectedSearchPlugin.fromJson(
+            json.decode(nValue) as Map<dynamic, dynamic>,
+          )
+        : const LastSelectedSearchPlugin();
   }
 }

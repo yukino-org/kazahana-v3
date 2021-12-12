@@ -208,7 +208,7 @@ class OverlayBottom extends StatelessWidget {
                       ),
                       onTap: () async {
                         await controller.setLandscape(
-                          enabled: AppState.settings.value.animeForceLandscape,
+                          enabled: AppState.settings.value.anime.landscape,
                         );
                       },
                       child: Icon(
@@ -227,11 +227,11 @@ class OverlayBottom extends StatelessWidget {
                     borderRadius: BorderRadius.circular(remToPx(0.2)),
                     onTap: () async {
                       await controller.setFullscreen(
-                        enabled: !AppState.settings.value.animeAutoFullscreen,
+                        enabled: !AppState.settings.value.anime.fullscreen,
                       );
                     },
                     child: Icon(
-                      AppState.settings.value.animeAutoFullscreen
+                      AppState.settings.value.anime.fullscreen
                           ? Icons.fullscreen_exit
                           : Icons.fullscreen,
                     ),

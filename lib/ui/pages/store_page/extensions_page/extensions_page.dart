@@ -299,18 +299,21 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                       status = ExtensionState.installed;
                                     });
 
-                                    final PreferencesSchema preferences =
-                                        PreferencesBox.get();
+                                    final CachedPreferencesSchema preferences =
+                                        CachedPreferencesBox.get();
                                     if (preferences
-                                        .lastSelectedSearch.isEmpty) {
+                                            .lastSelectedSearch?.isEmpty ??
+                                        true) {
                                       final BaseExtractor? ext =
                                           ExtensionsManager
                                               .animes[widget.ext.id];
 
                                       if (ext != null) {
-                                        preferences.lastSelectedSearch =
-                                            preferences.lastSelectedSearch
-                                                .copyWith(
+                                        preferences
+                                            .lastSelectedSearch = (preferences
+                                                    .lastSelectedSearch ??
+                                                const LastSelectedSearchPlugin())
+                                            .copyWith(
                                           lastSelectedType: widget.ext.type,
                                           lastSelectedAnimePlugin:
                                               widget.ext.type ==
@@ -323,7 +326,9 @@ class _ExtensionPopupState extends State<_ExtensionPopup> {
                                                   ? ext.id
                                                   : null,
                                         );
-                                        await PreferencesBox.save(preferences);
+                                        await CachedPreferencesBox.save(
+                                          preferences,
+                                        );
                                       }
                                     }
                                   }

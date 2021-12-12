@@ -133,7 +133,8 @@ class _MyAnimeListSectionState extends State<MyAnimeListSection> {
         children: <Widget>[
           Text(
             _cache.state.hasResolved &&
-                    AppState.settings.value.locale == LanguageCodes.en.code
+                    AppState.settings.value.preferences.locale?.code ==
+                        LanguageCodes.en
                 ? _cache.value!.seasonName
                 : Translator.t.seasonalAnimes(),
             style: Theme.of(context).textTheme.headline5?.copyWith(
