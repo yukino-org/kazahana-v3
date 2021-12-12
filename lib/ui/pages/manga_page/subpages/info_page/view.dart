@@ -26,27 +26,15 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin {
   final int maxChunkLength = AppState.isDesktop ? 50 : 30;
 
   ScrollDirection? lastScrollDirection;
   final ValueNotifier<bool> showOverlay = ValueNotifier<bool>(true);
-  late AnimationController floatingButtonController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    floatingButtonController = AnimationController(
-      vsync: this,
-      duration: Defaults.animationsNormal,
-    );
-  }
 
   @override
   void dispose() {
     showOverlay.dispose();
-    floatingButtonController.dispose();
 
     super.dispose();
   }
@@ -170,7 +158,7 @@ class _InfoPageState extends State<InfoPage>
           },
           child: Scaffold(
             extendBodyBehindAppBar: true,
-            appBar: PreferredSizeWrapper(
+            appBar: PreferredSizeWrapper.fromChild(
               builder: (
                 final BuildContext context,
                 final PreferredSizeWidget child,

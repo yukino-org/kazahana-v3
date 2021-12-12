@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import './controller.dart';
-import './kinds/list_reader.dart';
+import './kinds/list_reader/view.dart';
 import './kinds/page_reader/view.dart';
+import './widgets/appbar.dart';
 import '../../../../../modules/database/schemas/settings/settings.dart';
 import '../../../../../modules/helpers/ui.dart';
 import '../../../../../modules/translator/translator.dart';
@@ -57,26 +58,37 @@ class _ReaderPageState extends State<ReaderPage> {
         ) =>
             ReactiveStateBuilder(
           state: controller.pages.state,
-          onResolving: (final BuildContext context) => const Center(
-            child: CircularProgressIndicator(),
+          onResolving: (final BuildContext context) => Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: MangaReaderAppBar(controller: controller),
+            body: Container(
+              color: Colors.black,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
           ),
           onResolved: (final BuildContext context) {
             switch (controller.mangaMode) {
-              case MangaMode.page:
+              case MangaReaderMode.page:
                 return PageReader(controller: controller);
 
-              case MangaMode.list:
+              case MangaReaderMode.list:
                 return ListReader(controller: controller);
             }
           },
-          onFailed: (final BuildContext context) => Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: remToPx(1.5),
-            ),
-            child: Center(
-              child: KawaiiErrorWidget.fromErrorInfo(
-                message: Translator.t.failedToGetResults(),
-                error: controller.pages.error,
+          onFailed: (final BuildContext context) => Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: MangaReaderAppBar(controller: controller),
+            body: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: remToPx(1.5),
+              ),
+              child: Center(
+                child: KawaiiErrorWidget.fromErrorInfo(
+                  message: Translator.t.failedToGetResults(),
+                  error: controller.pages.error,
+                ),
               ),
             ),
           ),

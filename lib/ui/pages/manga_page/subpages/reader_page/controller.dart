@@ -41,11 +41,11 @@ class ReaderPageController extends Controller<ReaderPageController> {
       }
     });
 
-    if (AppState.settings.value.mangaAutoFullscreen) {
+    if (AppState.settings.value.manga.fullscreen) {
       fullscreen.enterFullscreen();
     }
 
-    super.setup();
+    await super.setup();
   }
 
   @override
@@ -53,7 +53,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
     await fetchPages();
     await setCurrentPageIndex(currentPageIndex);
 
-    super.ready();
+    await super.ready();
   }
 
   @override
@@ -63,7 +63,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
       fullscreen.exitFullscreen();
     }
 
-    super.dispose();
+    await super.dispose();
   }
 
   Future<void> fetchPages() async {
@@ -87,16 +87,26 @@ class ReaderPageController extends Controller<ReaderPageController> {
     reassemble();
 
     await Future.wait(<Future<void>>[
-      _fetchPage(currentPage),
+      fetchPage(currentPage),
       _updateTrackers(),
     ]);
   }
 
-  Future<void> _fetchPage(final PageInfo page) async {
+  Future<void> fetchPage(
+    final PageInfo page, {
+    final void Function()? reassemble,
+  }) async {
+    void _reassemble() {
+      if (reassemble != null) return reassemble();
+
+      this.reassemble();
+    }
+
     if (images[page]?.state.isWaiting ?? true) {
       images[page] = StatefulValueHolderWithError<ImageDescriber?>(null)
         ..resolving(null);
-      reassemble();
+
+      _reassemble();
 
       try {
         images[page]!.resolve(await mangaController.extractor!.getPage(page));
@@ -105,7 +115,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
       }
     }
 
-    reassemble();
+    _reassemble();
   }
 
   Future<void> _updateTrackers() async {
@@ -142,9 +152,9 @@ class ReaderPageController extends Controller<ReaderPageController> {
   Future<void> setFullscreen({
     required final bool enabled,
   }) async {
-    AppState.settings.value.mangaAutoFullscreen = enabled;
+    AppState.settings.value.manga.fullscreen = enabled;
 
-    await (AppState.settings.value.mangaAutoFullscreen
+    await (AppState.settings.value.manga.fullscreen
         ? fullscreen.enterFullscreen()
         : fullscreen.exitFullscreen());
 
@@ -153,26 +163,26 @@ class ReaderPageController extends Controller<ReaderPageController> {
 
   KeyboardHandler getKeyboard(final BuildContext context) {
     final MangaKeyboardShortcuts shortcuts =
-        AppState.settings.value.mangaShortcuts;
+        AppState.settings.value.manga.shortcuts;
 
     return KeyboardHandler(
       onKeyDown: <KeyboardKeyHandler>[
         KeyboardKeyHandler(
-          shortcuts.fullscreen,
+          shortcuts.get(MangaKeyboardShortcutsKeys.fullscreen),
           (final RawKeyEvent event) async {
             await setFullscreen(
-              enabled: !AppState.settings.value.mangaAutoFullscreen,
+              enabled: !AppState.settings.value.manga.fullscreen,
             );
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.exit,
+          shortcuts.get(MangaKeyboardShortcutsKeys.exit),
           (final RawKeyEvent event) async {
             await mangaController.goHome();
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.previousPage,
+          shortcuts.get(MangaKeyboardShortcutsKeys.previousPage),
           (final RawKeyEvent event) async {
             if (previousPageAvailable) {
               await previousPage();
@@ -180,7 +190,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.nextChapter,
+          shortcuts.get(MangaKeyboardShortcutsKeys.nextPage),
           (final RawKeyEvent event) async {
             if (nextPageAvailable) {
               await nextPage();
@@ -188,7 +198,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.previousChapter,
+          shortcuts.get(MangaKeyboardShortcutsKeys.previousChapter),
           (final RawKeyEvent event) async {
             if (previousChapterAvailable) {
               await previousChapter();
@@ -196,7 +206,7 @@ class ReaderPageController extends Controller<ReaderPageController> {
           },
         ),
         KeyboardKeyHandler(
-          shortcuts.nextChapter,
+          shortcuts.get(MangaKeyboardShortcutsKeys.nextChapter),
           (final RawKeyEvent event) async {
             if (nextChapterAvailable) {
               await nextChapter();
@@ -251,5 +261,5 @@ class ReaderPageController extends Controller<ReaderPageController> {
       mangaController.currentChapterIndex! + 1 <
           mangaController.info.value!.chapters.length;
 
-  MangaMode get mangaMode => AppState.settings.value.mangaReaderMode;
+  MangaReaderMode get mangaMode => AppState.settings.value.manga.readerMode;
 }
