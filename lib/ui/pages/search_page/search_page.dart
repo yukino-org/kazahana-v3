@@ -1,119 +1,15 @@
-import 'package:animations/animations.dart';
-import 'package:collection/collection.dart';
-import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:utilx/utilities/locale.dart';
-import 'package:utilx/utilities/utils.dart';
-import '../../../modules/database/database.dart';
-import '../../../modules/extensions/extensions.dart';
+import './controller.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/state/hooks.dart';
-import '../../../modules/state/stateful_holder.dart';
-import '../../../modules/state/states.dart';
 import '../../../modules/translator/translator.dart';
 import '../../components/error_widget.dart';
 import '../../components/network_image_fallback.dart';
 import '../../components/reactive_state_builder.dart';
 import '../../components/with_child_builder.dart';
+import '../../models/view.dart';
 import '../../router.dart';
-import '../anime_page/controller.dart';
-import '../manga_page/controller.dart';
-
-extension PluginRoutes on ExtensionType {
-  String route() {
-    switch (this) {
-      case ExtensionType.anime:
-        return RouteNames.animePage;
-
-      case ExtensionType.manga:
-        return RouteNames.mangaPage;
-    }
-  }
-
-  Map<String, String> params({
-    required final String plugin,
-    required final String src,
-  }) {
-    switch (this) {
-      case ExtensionType.anime:
-        return AnimePageArguments(src: src, plugin: plugin).toJson();
-
-      case ExtensionType.manga:
-        return MangaPageArguments(src: src, plugin: plugin).toJson();
-    }
-  }
-}
-
-class CurrentPlugin {
-  CurrentPlugin({
-    required final this.type,
-    required final this.plugin,
-  });
-
-  ExtensionType type;
-  BaseExtractor plugin;
-}
-
-class _SearchInfo extends SearchInfo {
-  _SearchInfo({
-    required final String title,
-    required final String url,
-    required final Locale locale,
-    required final this.pluginName,
-    required final this.pluginId,
-    required final this.pluginType,
-    final ImageDescriber? thumbnail,
-  }) : super(
-          title: title,
-          url: url,
-          thumbnail: thumbnail,
-          locale: locale,
-        );
-
-  final String pluginName;
-  final String pluginId;
-  final ExtensionType pluginType;
-}
-
-class PageArguments {
-  PageArguments({
-    required final this.terms,
-    required final this.autoSearch,
-    required final this.pluginType,
-  });
-
-  factory PageArguments.fromJson(final Map<String, String> json) =>
-      PageArguments(
-        terms: json['terms'],
-        autoSearch: json['autoSearch'] == 'true',
-        pluginType: ExtensionType.values.firstWhereOrNull(
-          (final ExtensionType x) => x.type == json['pluginType'],
-        ),
-      );
-
-  String? terms;
-  bool? autoSearch;
-  ExtensionType? pluginType;
-
-  Map<String, String> toJson() {
-    final Map<String, String> json = <String, String>{};
-
-    if (terms != null) {
-      json['terms'] = terms!;
-    }
-
-    if (autoSearch != null) {
-      json['autoSearch'] = autoSearch.toString();
-    }
-
-    if (pluginType != null) {
-      json['pluginType'] = pluginType!.type;
-    }
-
-    return json;
-  }
-}
+import 'widgets/popup.dart';
 
 class Page extends StatefulWidget {
   const Page({
@@ -126,50 +22,15 @@ class Page extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<Page> with HooksMixin {
-  List<String> animePlugins = ExtensionsManager.animes.keys.toList();
-  List<String> mangaPlugins = ExtensionsManager.mangas.keys.toList();
-
-  CurrentPlugin? currentPlugin;
-  StatefulValueHolderWithError<List<_SearchInfo>?> results =
-      StatefulValueHolderWithError<List<_SearchInfo>?>(null);
-
-  ExtensionType popupPluginType = ExtensionType.anime;
-  PageArguments? args;
-
-  final TextEditingController textController = TextEditingController();
+class _PageState extends State<Page> {
+  final SearchPageController controller = SearchPageController();
 
   @override
   void initState() {
     super.initState();
 
-    _setCurrentPreferredPlugin();
-
-    onReady(() async {
-      if (mounted) {
-        args = PageArguments.fromJson(
-          ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
-        );
-
-        if (args?.pluginType != null) {
-          setState(() {
-            _setCurrentPreferredPlugin(args!.pluginType);
-          });
-        }
-
-        if (args?.terms?.isNotEmpty ?? false) {
-          setState(() {
-            textController.text = args!.terms!;
-          });
-
-          if (currentPlugin != null &&
-              currentPlugin!.type == args!.pluginType &&
-              (args?.autoSearch ?? false)) {
-            args!.autoSearch = false;
-            await search();
-          }
-        }
-      }
+    controller.setup().then((final void _) async {
+      await controller.onInitState(context);
     });
   }
 
@@ -177,75 +38,14 @@ class _PageState extends State<Page> with HooksMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    hookState.markReady();
+    controller.ready();
   }
 
-  void _setCurrentPreferredPlugin([final ExtensionType? _pluginType]) {
-    final CachedPreferencesSchema preferences = CachedPreferencesBox.get();
-    final ExtensionType? pluginType =
-        _pluginType ?? preferences.lastSelectedSearch?.lastSelectedType;
+  @override
+  void dispose() {
+    controller.dispose();
 
-    if (pluginType != null) {
-      BaseExtractor? ext;
-
-      switch (pluginType) {
-        case ExtensionType.anime:
-          ext = ExtensionsManager
-              .animes[preferences.lastSelectedSearch?.lastSelectedAnimePlugin];
-          break;
-
-        case ExtensionType.manga:
-          ext = ExtensionsManager
-              .mangas[preferences.lastSelectedSearch?.lastSelectedMangaPlugin];
-          break;
-      }
-
-      if (ext != null) {
-        currentPlugin = CurrentPlugin(type: pluginType, plugin: ext);
-        popupPluginType = pluginType;
-      }
-    }
-  }
-
-  Future<void> search() async {
-    if (mounted && currentPlugin != null) {
-      setState(() {
-        results.resolving(null);
-      });
-
-      try {
-        final List<SearchInfo> searches = await currentPlugin!.plugin.search(
-          textController.text,
-          Translator.t.locale,
-        );
-
-        if (mounted) {
-          setState(() {
-            results.resolve(
-              searches
-                  .map(
-                    (final SearchInfo x) => _SearchInfo(
-                      title: x.title,
-                      url: x.url,
-                      thumbnail: x.thumbnail,
-                      locale: x.locale,
-                      pluginId: currentPlugin!.plugin.id,
-                      pluginName: currentPlugin!.plugin.name,
-                      pluginType: currentPlugin!.type,
-                    ),
-                  )
-                  .toList(),
-            );
-          });
-        }
-      } catch (err, stack) {
-        if (mounted) {
-          setState(() {
-            results.failUnknown(null, err, stack);
-          });
-        }
-      }
-    }
+    super.dispose();
   }
 
   Future<void> selectPlugins(final BuildContext context) async {
@@ -260,505 +60,206 @@ class _PageState extends State<Page> with HooksMixin {
       ) =>
           StatefulBuilder(
         builder: (final BuildContext context, final StateSetter setState) =>
-            PageTransitionSwitcher(
-          transitionBuilder: (
-            final Widget child,
-            final Animation<double> animation,
-            final Animation<double> secondaryAnimation,
-          ) =>
-              FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            fillColor: Colors.transparent,
-            child: child,
-          ),
-          child: _SearchPopUp(
-            key: ValueKey<ExtensionType>(popupPluginType),
-            type: popupPluginType,
-            currentPlugin: currentPlugin,
-            onTypeTap: (final ExtensionType type) {
-              setState(() {
-                popupPluginType = type;
-              });
-            },
-            onPluginTap: (final CurrentPlugin plugin) async {
-              setState(() {
-                currentPlugin = plugin;
-              });
-
-              final CachedPreferencesSchema preferences =
-                  CachedPreferencesBox.get();
-              preferences.lastSelectedSearch =
-                  (preferences.lastSelectedSearch ??
-                          const LastSelectedSearchPlugin())
-                      .copyWith(
-                lastSelectedType: plugin.type,
-                lastSelectedAnimePlugin: plugin.type == ExtensionType.anime
-                    ? plugin.plugin.id
-                    : null,
-                lastSelectedMangaPlugin: plugin.type == ExtensionType.manga
-                    ? plugin.plugin.id
-                    : null,
-              );
-              await CachedPreferencesBox.save(preferences);
-
-              if (mounted) {
-                this.setState(() {});
-                Navigator.of(context).pop();
-
-                if ((textController.text.isNotEmpty &&
-                        results.state.hasEnded) ||
-                    (args?.autoSearch ?? false)) {
-                  if (args != null) {
-                    args!.autoSearch = false;
-                  }
-
-                  await search();
-                }
-              }
-            },
-          ),
-        ),
+            SearchExtensionsPopUp(controller: controller),
       ),
     );
   }
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.list),
-          onPressed: () {
-            selectPlugins(context);
-          },
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: remToPx(1),
-              horizontal: remToPx(1.25),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  Translator.t.search(),
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                TextField(
-                  controller: textController,
-                  decoration: InputDecoration(
-                    labelText: currentPlugin != null
-                        ? Translator.t
-                            .searchInPlugin(currentPlugin!.plugin.name)
-                        : Translator.t.selectPlugin(),
-                    enabled: currentPlugin != null,
-                  ),
-                  onSubmitted: (final String terms) async {
-                    await search();
-                  },
-                ),
-                SizedBox(
-                  height: remToPx(1.25),
-                ),
-                ReactiveStateBuilder(
-                  state: results.state,
-                  onWaiting: (final BuildContext context) => Center(
-                    child: Text(
-                      args?.autoSearch ?? false
-                          ? Translator.t.selectAPluginToGetResults()
-                          : Translator.t.enterToSearch(),
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .color!
-                            .withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                  onResolving: (final BuildContext context) => Padding(
-                    padding: EdgeInsets.only(
-                      top: remToPx(1.5),
-                    ),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  onResolved: (final BuildContext context) => Builder(
-                    builder: (final BuildContext context) {
-                      if (results.value!.isEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            top: remToPx(1.5),
-                          ),
-                          child: Center(
-                            child: KawaiiErrorWidget(
-                              message: Translator.t.noResultsFound(),
-                            ),
-                          ),
-                        );
-                      }
-
-                      return Column(
-                        children: UiUtils.getGridded(
-                          MediaQuery.of(context).size.width.toInt(),
-                          results.value!
-                              .map(
-                                (final _SearchInfo x) => Card(
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(4),
-                                    onTap: () {
-                                      Navigator.of(context).pushNamed(
-                                        ParsedRouteInfo(
-                                          x.pluginType.route(),
-                                          x.pluginType.params(
-                                            src: x.url,
-                                            plugin: x.pluginId,
-                                          ),
-                                        ).toString(),
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.all(remToPx(0.5)),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: remToPx(4),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                remToPx(0.25),
-                                              ),
-                                              child: WithChildBuilder(
-                                                builder: (
-                                                  final BuildContext context,
-                                                  final Widget child,
-                                                ) =>
-                                                    x.thumbnail != null
-                                                        ? FallbackableNetworkImage(
-                                                            image:
-                                                                FallbackableNetworkImageProps(
-                                                              x.thumbnail!.url,
-                                                              x.thumbnail!
-                                                                  .headers,
-                                                            ),
-                                                            fallback: child,
-                                                          )
-                                                        : child,
-                                                child: Image.asset(
-                                                  Assets
-                                                      .placeholderImageFromContext(
-                                                    context,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: remToPx(0.75)),
-                                          Expanded(
-                                            flex: 3,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  x.title,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: Theme.of(context)
-                                                        .textTheme
-                                                        .headline6
-                                                        ?.fontSize,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  x.pluginName,
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText1
-                                                        ?.fontSize,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      );
-                    },
-                  ),
-                  onFailed: (final BuildContext context) => Padding(
-                    padding: EdgeInsets.only(
-                      top: remToPx(1.5),
-                    ),
-                    child: Center(
-                      child: KawaiiErrorWidget.fromErrorInfo(
-                        message: Translator.t.failedToGetResults(),
-                        error: results.error,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+  Widget build(final BuildContext context) => View<SearchPageController>(
+        controller: controller,
+        builder: (
+          final BuildContext context,
+          final SearchPageController controller,
+        ) =>
+            Scaffold(
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.list),
+            onPressed: () {
+              selectPlugins(context);
+            },
           ),
-        ),
-      );
-}
-
-// ignore: avoid_private_typedef_functions
-typedef _SearchPopUpOnPluginSelect = void Function(CurrentPlugin);
-
-class _SearchPopUpTile extends StatelessWidget {
-  const _SearchPopUpTile({
-    required final this.onPluginTap,
-    required final this.currentPlugin,
-    required final this.plugin,
-    final Key? key,
-  }) : super(key: key);
-
-  final _SearchPopUpOnPluginSelect onPluginTap;
-  final CurrentPlugin? currentPlugin;
-  final CurrentPlugin plugin;
-
-  @override
-  Widget build(final BuildContext context) => Material(
-        type: MaterialType.transparency,
-        child: RadioListTile<String>(
-          title: Text(plugin.plugin.name),
-          value: plugin.plugin.id,
-          groupValue: currentPlugin?.plugin.id,
-          activeColor: Theme.of(context).primaryColor,
-          onChanged: (final String? val) async {
-            if (val == plugin.plugin.id) {
-              onPluginTap(plugin);
-            }
-          },
-        ),
-      );
-}
-
-class _SearchPopUp extends StatelessWidget {
-  const _SearchPopUp({
-    required final this.onPluginTap,
-    required final this.onTypeTap,
-    required final this.currentPlugin,
-    required final this.type,
-    final Key? key,
-  }) : super(key: key);
-
-  final _SearchPopUpOnPluginSelect onPluginTap;
-  final void Function(ExtensionType) onTypeTap;
-  final CurrentPlugin? currentPlugin;
-  final ExtensionType type;
-
-  @override
-  Widget build(final BuildContext context) {
-    Widget content = Center(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: remToPx(1),
-          right: remToPx(1),
-          top: remToPx(1.1),
-          bottom: remToPx(0.5),
-        ),
-        child: Text(
-          Translator.t.nothingWasFoundHere(),
-          style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                color: Theme.of(context).textTheme.caption?.color,
-              ),
-        ),
-      ),
-    );
-
-    switch (type) {
-      case ExtensionType.anime:
-        if (ExtensionsManager.animes.isNotEmpty) {
-          content = Column(
-            children: ExtensionsManager.animes.values
-                .map(
-                  (final AnimeExtractor x) => _SearchPopUpTile(
-                    onPluginTap: onPluginTap,
-                    currentPlugin: currentPlugin,
-                    plugin: CurrentPlugin(
-                      type: ExtensionType.anime,
-                      plugin: x,
-                    ),
-                  ),
-                )
-                .toList(),
-          );
-        }
-        break;
-
-      case ExtensionType.manga:
-        if (ExtensionsManager.mangas.isNotEmpty) {
-          content = Column(
-            children: ExtensionsManager.mangas.values
-                .map(
-                  (final MangaExtractor x) => _SearchPopUpTile(
-                    onPluginTap: onPluginTap,
-                    currentPlugin: currentPlugin,
-                    plugin: CurrentPlugin(
-                      type: ExtensionType.manga,
-                      plugin: x,
-                    ),
-                  ),
-                )
-                .toList(),
-          );
-        }
-        break;
-    }
-
-    final bool isLarge = MediaQuery.of(context).size.width > ResponsiveSizes.xs;
-    final Widget typeSwitcher = Row(
-      mainAxisSize: isLarge ? MainAxisSize.min : MainAxisSize.max,
-      children: <ExtensionType>[
-        ExtensionType.anime,
-        ExtensionType.manga,
-      ].map(
-        (final ExtensionType x) {
-          final bool isCurrent = x == type;
-
-          final Widget child = Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: remToPx(0.1),
-            ),
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                mouseCursor: SystemMouseCursors.click,
-                onTap: () {
-                  onTypeTap(x);
-                },
-                borderRadius: BorderRadius.circular(4),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: isCurrent
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: remToPx(0.5),
-                      vertical: remToPx(0.2),
-                    ),
-                    child: Text(
-                      StringUtils.capitalize(x.type),
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            color: isCurrent ? Colors.white : null,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-
-          return isLarge
-              ? child
-              : Expanded(
-                  child: child,
-                );
-        },
-      ).toList(),
-    );
-
-    return SafeArea(
-      child: Padding(
-        padding: MediaQuery.of(context).viewInsets +
-            EdgeInsets.symmetric(
-              horizontal: remToPx(2),
-              vertical: remToPx(1.2),
-            ),
-        child: Material(
-          type: MaterialType.card,
-          elevation: 24,
-          borderRadius: BorderRadius.circular(4),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).dialogBackgroundColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: SingleChildScrollView(
+          body: SingleChildScrollView(
+            child: Padding(
               padding: EdgeInsets.symmetric(
-                vertical: isLarge ? remToPx(0.8) : remToPx(0.6),
+                vertical: remToPx(1),
+                horizontal: remToPx(1.25),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: remToPx(1),
+                  Text(
+                    Translator.t.search(),
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  TextField(
+                    controller: controller.searchTextController,
+                    decoration: InputDecoration(
+                      labelText: Translator.t
+                          .searchInPlugin(controller.currentPlugin.plugin.name),
                     ),
-                    child: isLarge
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                Translator.t.selectPlugin(),
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              typeSwitcher,
-                            ],
-                          )
-                        : Column(
-                            children: <Widget>[
-                              Text(
-                                Translator.t.selectPlugin(),
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              SizedBox(height: remToPx(0.5)),
-                              typeSwitcher,
-                            ],
-                          ),
+                    onSubmitted: (final String terms) async {
+                      await controller.search();
+                    },
                   ),
                   SizedBox(
-                    height: remToPx(0.3),
+                    height: remToPx(1.25),
                   ),
-                  content,
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: remToPx(0.7),
+                  ReactiveStateBuilder(
+                    state: controller.results.state,
+                    onWaiting: (final BuildContext context) => Center(
+                      child: Text(
+                        Translator.t.enterToSearch(),
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .color!
+                              .withOpacity(0.7),
+                        ),
                       ),
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: remToPx(0.6),
-                              vertical: remToPx(0.3),
+                    ),
+                    onResolving: (final BuildContext context) => Padding(
+                      padding: EdgeInsets.only(
+                        top: remToPx(1.5),
+                      ),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    onResolved: (final BuildContext context) => Builder(
+                      builder: (final BuildContext context) {
+                        if (controller.results.value!.isEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              top: remToPx(1.5),
                             ),
-                            child: Text(
-                              Translator.t.close(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).primaryColor,
+                            child: Center(
+                              child: KawaiiErrorWidget(
+                                message: Translator.t.noResultsFound(),
                               ),
                             ),
+                          );
+                        }
+
+                        return Column(
+                          children: UiUtils.getGridded(
+                            MediaQuery.of(context).size.width.toInt(),
+                            controller.results.value!
+                                .map(
+                                  (final SearchResult x) => Card(
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(4),
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          ParsedRouteInfo(
+                                            x.plugin.type.route,
+                                            x.plugin.type.constructQuery(
+                                              src: x.info.url,
+                                              plugin: x.plugin.plugin.id,
+                                            ),
+                                          ).toString(),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(remToPx(0.5)),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: remToPx(4),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  remToPx(0.25),
+                                                ),
+                                                child: WithChildBuilder(
+                                                  builder: (
+                                                    final BuildContext context,
+                                                    final Widget child,
+                                                  ) =>
+                                                      x.info.thumbnail != null
+                                                          ? FallbackableNetworkImage(
+                                                              image:
+                                                                  FallbackableNetworkImageProps(
+                                                                x
+                                                                    .info
+                                                                    .thumbnail!
+                                                                    .url,
+                                                                x
+                                                                    .info
+                                                                    .thumbnail!
+                                                                    .headers,
+                                                              ),
+                                                              fallback: child,
+                                                            )
+                                                          : child,
+                                                  child: Image.asset(
+                                                    Assets
+                                                        .placeholderImageFromContext(
+                                                      context,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: remToPx(0.75)),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    x.info.title,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .headline6
+                                                              ?.fontSize,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    x.plugin.plugin.name,
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1
+                                                              ?.fontSize,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
+                        );
+                      },
+                    ),
+                    onFailed: (final BuildContext context) => Padding(
+                      padding: EdgeInsets.only(
+                        top: remToPx(1.5),
+                      ),
+                      child: Center(
+                        child: KawaiiErrorWidget.fromErrorInfo(
+                          message: Translator.t.failedToGetResults(),
+                          error: controller.results.error,
                         ),
                       ),
                     ),
@@ -768,7 +269,5 @@ class _SearchPopUp extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

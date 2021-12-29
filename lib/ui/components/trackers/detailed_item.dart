@@ -8,7 +8,7 @@ import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
-import '../../pages/search_page/search_page.dart' as search_page;
+import '../../pages/search_page/controller.dart';
 import '../../router.dart';
 
 typedef OnEditCallback = void Function(DetailedInfo);
@@ -49,7 +49,7 @@ class _DetailedItemState extends State<DetailedItem> {
     Navigator.of(context).pushNamed(
       ParsedRouteInfo(
         RouteNames.search,
-        search_page.PageArguments(
+        SearchPageArguments(
           terms: item.title,
           pluginType: item.type,
           autoSearch: true,

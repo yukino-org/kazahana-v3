@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
-import 'package:extensions/hetu/helpers/helpers.dart';
-import 'package:extensions/utils/html_dom/html_dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import '../../config/app.dart';
@@ -19,9 +17,8 @@ extension BaseExtensionUtils on BaseExtension {
 abstract class ExtensionsManager {
   static late final List<ResolvableExtension> store;
 
-  static Map<String, AnimeExtractor> animes = <String, AnimeExtractor>{};
-
-  static Map<String, MangaExtractor> mangas = <String, MangaExtractor>{};
+  static final Map<String, AnimeExtractor> animes = <String, AnimeExtractor>{};
+  static final Map<String, MangaExtractor> mangas = <String, MangaExtractor>{};
 
   static Future<void> initialize() async {
     await ExtensionInternals.initialize(

@@ -23,7 +23,6 @@ class MaterialHeaderTile extends StatelessWidget {
             bottom: remToPx(0.4),
           ),
           child: DefaultTextStyle(
-            textAlign: TextAlign.left,
             style: theme.textTheme.subtitle1!.copyWith(
               color: theme.primaryColor,
               fontWeight: FontWeight.bold,

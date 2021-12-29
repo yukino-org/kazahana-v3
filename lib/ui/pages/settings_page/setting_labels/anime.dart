@@ -185,7 +185,10 @@ List<Widget> getSettingsAnime(
         ],
       ),
     ),
-    MaterialHeaderTile(text: Text(Translator.t.keyboardShortcuts())),
+    Align(
+      alignment: Alignment.topLeft,
+      child: MaterialHeaderTile(text: Text(Translator.t.keyboardShortcuts())),
+    ),
     SettingsKeyboardTile(
       title: Text(Translator.t.playPause()),
       icon: const Icon(Icons.play_arrow),

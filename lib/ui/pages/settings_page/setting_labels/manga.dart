@@ -146,7 +146,10 @@ List<Widget> getSettingsManga(
           ],
         ),
       ),
-    MaterialHeaderTile(text: Text(Translator.t.keyboardShortcuts())),
+    Align(
+      alignment: Alignment.topLeft,
+      child: MaterialHeaderTile(text: Text(Translator.t.keyboardShortcuts())),
+    ),
     SettingsKeyboardTile(
       title: Text(Translator.t.fullscreen()),
       icon: const Icon(Icons.fullscreen),
