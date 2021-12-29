@@ -2,13 +2,13 @@ import 'dart:ui';
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../config/defaults.dart';
 import '../../../modules/helpers/assets.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/trackers/provider.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
-import '../../pages/search_page/search_page.dart' as search_page;
+import '../../pages/search_page/controller.dart';
 import '../../router.dart';
 
 typedef OnEditCallback = void Function(DetailedInfo);
@@ -49,7 +49,7 @@ class _DetailedItemState extends State<DetailedItem> {
     Navigator.of(context).pushNamed(
       ParsedRouteInfo(
         RouteNames.search,
-        search_page.PageArguments(
+        SearchPageArguments(
           terms: item.title,
           pluginType: item.type,
           autoSearch: true,
@@ -596,18 +596,16 @@ class _DetailedItemState extends State<DetailedItem> {
                     ) =>
                         SafeArea(
                       child: widget.onEdit((final DetailedInfo info) {
-                        if (mounted) {
-                          setState(() {
-                            item = info;
-                          });
-                        }
+                        if (!mounted) return;
+                        setState(() {
+                          item = info;
+                        });
                       }),
                     ),
                   );
 
-                  if (mounted) {
-                    setState(() {});
-                  }
+                  if (!mounted) return;
+                  setState(() {});
                 },
                 tooltip: Translator.t.edit(),
                 child: const Icon(Icons.edit),

@@ -3,7 +3,7 @@ import '../translations.dart';
 
 class Sentences extends TranslationSentences {
   @override
-  Locale get locale => Locale(LanguageCodes.en);
+  Locale get locale => const Locale(LanguageCodes.en);
 
   @override
   String home() => 'Home';
@@ -462,4 +462,34 @@ class Sentences extends TranslationSentences {
 
   @override
   String copiedErrorToClipboard() => 'Copied error to clipboard';
+
+  @override
+  String noMoreChaptersLeft() => 'No more chapters left';
+
+  @override
+  String imageSize() => 'Image Size';
+
+  @override
+  String imageCustomWidth() => 'Image Custom Size';
+
+  @override
+  String custom() => 'Custom';
+
+  @override
+  String fitWidth() => 'Fit Width';
+
+  @override
+  String fitHeight() => 'Fit Height';
+
+  @override
+  String previousPage() => 'Previous Page';
+
+  @override
+  String nextPage() => 'Next Page';
+
+  @override
+  String previousChapter() => 'Previous Chapter';
+
+  @override
+  String nextChapter() => 'Next Chapter';
 }

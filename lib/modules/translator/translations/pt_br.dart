@@ -3,7 +3,7 @@ import './en.dart' as en;
 
 class Sentences extends en.Sentences {
   @override
-  Locale get locale => Locale(LanguageCodes.pt, CountryCodes.br);
+  Locale get locale => const Locale(LanguageCodes.pt, CountryCodes.br);
 
   @override
   String home() => 'Menu';

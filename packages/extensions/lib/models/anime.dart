@@ -11,43 +11,39 @@ enum Qualities {
 }
 
 class Quality {
-  Quality(
-    this.quality,
-    this.code,
-    this.short,
-  );
+  const Quality(this.quality, this.code, this.short);
 
   final Qualities quality;
   final String code;
   final String short;
-}
 
-final Map<Qualities, Quality> quality = <Quality>[
-  Quality(Qualities.q_144p, '144p', 'sd'),
-  Quality(Qualities.q_360p, '360p', 'sd'),
-  Quality(Qualities.q_480p, '480p', 'sd'),
-  Quality(Qualities.q_720p, '720p', 'hd'),
-  Quality(Qualities.q_1080p, '1080p', 'fhd'),
-  Quality(Qualities.unknown, 'unknown', '?'),
-].asMap().map(
-      (final int k, final Quality x) =>
-          MapEntry<Qualities, Quality>(x.quality, x),
-    );
+  static final Map<Qualities, Quality> qualities = const <Quality>[
+    Quality(Qualities.q_144p, '144p', 'sd'),
+    Quality(Qualities.q_360p, '360p', 'sd'),
+    Quality(Qualities.q_480p, '480p', 'sd'),
+    Quality(Qualities.q_720p, '720p', 'hd'),
+    Quality(Qualities.q_1080p, '1080p', 'fhd'),
+    Quality(Qualities.unknown, 'unknown', '?'),
+  ].asMap().map(
+        (final int k, final Quality x) =>
+            MapEntry<Qualities, Quality>(x.quality, x),
+      );
 
-Quality getQuality(final Qualities q) => quality[q]!;
+  static Quality getQuality(final Qualities q) => qualities[q]!;
 
-Quality resolveQuality(final String _approx) {
-  final String approx = _approx.toLowerCase();
-  for (final Quality q in quality.values) {
-    if (q.code == approx ||
-        q.code.substring(0, q.code.length - 1) == approx ||
-        q.short == approx) return q;
+  static Quality resolveQuality(final String _approx) {
+    final String approx = _approx.toLowerCase();
+    for (final Quality q in qualities.values) {
+      if (q.code == approx ||
+          q.code.substring(0, q.code.length - 1) == approx ||
+          q.short == approx) return q;
+    }
+    return getQuality(Qualities.unknown);
   }
-  return getQuality(Qualities.unknown);
 }
 
 class EpisodeInfo {
-  EpisodeInfo({
+  const EpisodeInfo({
     required final this.episode,
     required final this.url,
     required final this.locale,
@@ -56,22 +52,22 @@ class EpisodeInfo {
   factory EpisodeInfo.fromJson(final Map<dynamic, dynamic> json) => EpisodeInfo(
         episode: json['episode'] as String,
         url: json['url'] as String,
-        locale: json['locale'] as String,
+        locale: Locale.parse(json['locale'] as String),
       );
 
   final String episode;
   final String url;
-  final String locale;
+  final Locale locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'episode': episode,
         'url': url,
-        'locale': locale,
+        'locale': locale.toCodeString(),
       };
 }
 
 class AnimeInfo {
-  AnimeInfo({
+  const AnimeInfo({
     required final this.title,
     required final this.url,
     required final this.episodes,
@@ -111,14 +107,14 @@ class AnimeInfo {
         'url': url,
         'thumbnail': thumbnail?.toJson(),
         'episodes': episodes.map((final EpisodeInfo x) => x.toJson()).toList(),
-        'locale': locale.toString(),
+        'locale': locale.toCodeString(),
         'availableLocales':
-            availableLocales.map((final Locale x) => x.toString()).toList(),
+            availableLocales.map((final Locale x) => x.toCodeString()).toList(),
       };
 }
 
 class EpisodeSource {
-  EpisodeSource({
+  const EpisodeSource({
     required final this.url,
     required final this.quality,
     required final this.headers,
@@ -130,20 +126,20 @@ class EpisodeSource {
         url: json['url'] as String,
         headers:
             (json['headers'] as Map<dynamic, dynamic>).cast<String, String>(),
-        quality: resolveQuality(json['quality'] as String),
-        locale: json['locale'] as String,
+        quality: Quality.resolveQuality(json['quality'] as String),
+        locale: Locale.parse(json['locale'] as String),
       );
 
   final String url;
   final Quality quality;
   final Map<String, String> headers;
-  final String locale;
+  final Locale locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'quality': quality.code,
         'url': url,
         'headers': headers,
-        'locale': locale,
+        'locale': locale.toCodeString(),
       };
 }
 
@@ -152,7 +148,7 @@ typedef GetAnimeInfoFn = Future<AnimeInfo> Function(String, Locale);
 typedef GetSourcesFn = Future<List<EpisodeSource>> Function(EpisodeInfo);
 
 class AnimeExtractor extends BaseExtractor {
-  AnimeExtractor({
+  const AnimeExtractor({
     required final String name,
     required final String id,
     required final SearchFn search,

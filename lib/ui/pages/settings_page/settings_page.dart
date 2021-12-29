@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import './setting_labels/about.dart';
 import './setting_labels/anime.dart';
 import './setting_labels/developers.dart';
@@ -9,7 +10,6 @@ import '../../../modules/app/state.dart';
 import '../../../modules/database/database.dart';
 import '../../../modules/helpers/ui.dart';
 import '../../../modules/translator/translator.dart';
-import '../../../modules/utils/utils.dart';
 import '../../components/material_tiles/base.dart';
 import '../../components/size_aware_builder.dart';
 
@@ -77,9 +77,19 @@ class _PageState extends State<Page> {
     ),
   ];
 
+  final SettingsSchema settings = SettingsBox.get();
   late SettingsCategory currentCategory = categories.first;
 
-  final SettingsSchema settings = SettingsBox.get();
+  final ScrollController sideBarScrollController = ScrollController();
+  final ScrollController contentScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    sideBarScrollController.dispose();
+    contentScrollController.dispose();
+
+    super.dispose();
+  }
 
   Future<void> saveSettings() async {
     AppState.settings.value = settings;
@@ -233,6 +243,7 @@ class _PageState extends State<Page> {
                     height: pageHeight,
                     width: sideBarWidth,
                     child: SingleChildScrollView(
+                      controller: sideBarScrollController,
                       child: Column(
                         children: buildCategoryChildren(context),
                       ),
@@ -248,6 +259,7 @@ class _PageState extends State<Page> {
                   height: pageHeight,
                   width: pageWidth,
                   child: SingleChildScrollView(
+                    controller: contentScrollController,
                     child: AnimatedSwitcher(
                       switchOutCurve: Curves.easeInOut,
                       duration: Defaults.animationsNormal,

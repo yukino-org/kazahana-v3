@@ -11,6 +11,8 @@ import '../utils/html_dom/html_dom.dart';
 export './base.dart';
 export './resolvable.dart';
 export './resolved.dart';
+export '../hetu/helpers/http.dart' show HetuHttpClient;
+export '../utils/html_dom/html_dom.dart' show HtmlDOMOptions;
 
 abstract class ExtensionInternals {
   static Future<void> initialize({
@@ -58,7 +60,7 @@ abstract class ExtensionInternals {
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -79,7 +81,7 @@ abstract class ExtensionInternals {
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -136,7 +138,7 @@ abstract class ExtensionInternals {
             'search',
             positionalArgs: <dynamic>[
               terms,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 
@@ -157,7 +159,7 @@ abstract class ExtensionInternals {
             'getInfo',
             positionalArgs: <dynamic>[
               url,
-              locale.toString(),
+              locale.toCodeString(),
             ],
           );
 

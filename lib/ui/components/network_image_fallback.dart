@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import '../../modules/state/hooks.dart';
-import '../../modules/state/states.dart';
+import '../../modules/state/stateful_holder.dart';
+import 'reactive_state_builder.dart';
 
-class FallbackableNetworkImage extends StatefulWidget {
-  const FallbackableNetworkImage({
-    required final this.url,
-    required final this.placeholder,
-    final this.headers = const <String, String>{},
-    final this.errorPlaceholder,
-    final Key? key,
-  }) : super(key: key);
+class FallbackableNetworkImageProps {
+  const FallbackableNetworkImageProps(
+    this.url, [
+    this.headers = const <String, String>{},
+  ]);
 
   final String url;
   final Map<String, String> headers;
-  final Widget placeholder;
-  final Widget? errorPlaceholder;
+}
+
+class FallbackableNetworkImage extends StatefulWidget {
+  const FallbackableNetworkImage({
+    required final this.image,
+    required final this.fallback,
+    final this.errorFallback,
+    final Key? key,
+  }) : super(key: key);
+
+  final FallbackableNetworkImageProps image;
+  final Widget fallback;
+  final Widget? errorFallback;
 
   @override
   _FallbackableNetworkImageState createState() =>
@@ -23,36 +32,33 @@ class FallbackableNetworkImage extends StatefulWidget {
 
 class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
     with HooksMixin {
-  ReactiveStates state = ReactiveStates.waiting;
-  ImageInfo? imageInfo;
   late final NetworkImage networkImage;
+  final StatefulValueHolder<ImageInfo?> networkImageInfo =
+      StatefulValueHolder<ImageInfo?>(null);
 
   @override
   void initState() {
     super.initState();
 
-    onReady(() async {
-      networkImage = NetworkImage(widget.url);
-      networkImage.resolve(ImageConfiguration.empty).addListener(
-            ImageStreamListener(
-              (final ImageInfo image, final bool synchronousCall) {
-                if (mounted) {
-                  setState(() {
-                    imageInfo = image;
-                    state = ReactiveStates.resolved;
-                  });
-                }
-              },
-              onError: (final Object exception, final StackTrace? stackTrace) {
-                if (mounted) {
-                  setState(() {
-                    state = ReactiveStates.failed;
-                  });
-                }
-              },
-            ),
-          );
-    });
+    networkImage = NetworkImage(
+      widget.image.url,
+      headers: widget.image.headers,
+    )..resolve(ImageConfiguration.empty).addListener(
+        ImageStreamListener(
+          (final ImageInfo image, final bool synchronousCall) {
+            if (!mounted) return;
+            setState(() {
+              networkImageInfo.resolve(image);
+            });
+          },
+          onError: (final Object exception, final StackTrace? stackTrace) {
+            if (!mounted) return;
+            setState(() {
+              networkImageInfo.fail(null);
+            });
+          },
+        ),
+      );
   }
 
   @override
@@ -64,21 +70,17 @@ class _FallbackableNetworkImageState extends State<FallbackableNetworkImage>
 
   @override
   void dispose() {
-    imageInfo?.dispose();
+    networkImageInfo.value?.dispose();
 
     super.dispose();
   }
 
   @override
-  Widget build(final BuildContext context) {
-    if (state == ReactiveStates.resolved) {
-      return Image(image: networkImage);
-    }
-
-    if (state == ReactiveStates.failed && widget.errorPlaceholder != null) {
-      return widget.errorPlaceholder!;
-    }
-
-    return widget.placeholder;
-  }
+  Widget build(final BuildContext context) => ReactiveStateBuilder(
+        state: networkImageInfo.state,
+        onResolving: (final BuildContext context) => widget.fallback,
+        onResolved: (final BuildContext context) => Image(image: networkImage),
+        onFailed: (final BuildContext context) =>
+            widget.errorFallback ?? widget.fallback,
+      );
 }

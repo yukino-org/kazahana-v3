@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../modules/helpers/ui.dart';
-import '../../../modules/utils/utils.dart';
 
 abstract class MaterialTileUtils {
   static Widget buildWrapper(

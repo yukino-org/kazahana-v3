@@ -112,11 +112,13 @@ abstract class AppLifecycle {
     }
 
     final TranslationSentences? settingsLocale =
-        AppState.settings.value.locale != null
-            ? Translator.tryGetTranslation(AppState.settings.value.locale!)
+        AppState.settings.value.preferences.locale != null
+            ? Translator.tryGetTranslation(
+                AppState.settings.value.preferences.locale!,
+              )
             : null;
     if (settingsLocale == null) {
-      AppState.settings.value.locale = null;
+      AppState.settings.value.preferences.locale = null;
       await SettingsBox.save(AppState.settings.value);
     }
 

@@ -1,33 +1,36 @@
 import './html_dom.dart';
 
+/// `true` = Needs to be bypassed | `false` = Has been bypassed
+typedef HtmlBypassBrowserCheck = bool Function(String);
+
 abstract class HtmlDOMUtils {
-  static const Duration _cloudflareCheckDuration = Duration(seconds: 6);
-  static const Duration _cloudflarePostCheckDuration = Duration(seconds: 1);
+  static bool checkCloudflare(final String html) {
+    final String htmlLwr = html.toLowerCase();
 
-  static bool _isItCloudflareCheck(final String html) {
-    final String _html = html.toLowerCase();
-
-    return <String>[
-      'id="cf-wrapper"',
-      'checking your browser',
-    ].every((final String x) => _html.contains(x));
+    return <bool>[
+      htmlLwr.contains('id="cf-wrapper"'),
+      RegExp('class=".*(cf-browser-verification|cf-im-under-attack).*"')
+          .hasMatch(htmlLwr),
+    ].contains(true);
   }
 
-  static Future<bool> tryBypassCloudflare(final HtmlDOMTab tab) async {
+  static Future<bool> tryBypassBrowserChecks(
+    final HtmlDOMTab tab,
+    final HtmlBypassBrowserCheck check,
+  ) async {
     final List<Duration> checkIntervals = <Duration>[
       Duration.zero,
-      _cloudflareCheckDuration,
       ...List<Duration>.generate(
-        3,
-        (final int _) => _cloudflarePostCheckDuration,
-      ),
+        5,
+        (final int i) => Duration(seconds: i + 1),
+      ).reversed,
     ];
 
     for (final Duration i in checkIntervals) {
       await Future<void>.delayed(i);
 
       final String? html = await tab.getHtml();
-      if (html != null && !_isItCloudflareCheck(html)) {
+      if (html != null && !check(html)) {
         return true;
       }
     }

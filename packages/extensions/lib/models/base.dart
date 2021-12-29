@@ -1,7 +1,7 @@
 import 'package:utilx/utilities/locale.dart';
 
 class ImageDescriber {
-  ImageDescriber({
+  const ImageDescriber({
     required final this.url,
     final this.headers = const <String, String>{},
   });
@@ -23,7 +23,7 @@ class ImageDescriber {
 }
 
 class SearchInfo {
-  SearchInfo({
+  const SearchInfo({
     required final this.title,
     required final this.url,
     required final this.locale,
@@ -38,19 +38,19 @@ class SearchInfo {
                 json['thumbnail'] as Map<dynamic, dynamic>,
               )
             : null,
-        locale: json['locale'] as String,
+        locale: Locale.parse(json['locale'] as String),
       );
 
   final String title;
   final String url;
   final ImageDescriber? thumbnail;
-  final String locale;
+  final Locale locale;
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
         'title': title,
         'url': url,
         'thumbnail': thumbnail?.toJson(),
-        'locale': locale,
+        'locale': locale.toCodeString(),
       };
 }
 
@@ -60,7 +60,7 @@ typedef SearchFn = Future<List<SearchInfo>> Function(
 );
 
 class BaseExtractor {
-  BaseExtractor({
+  const BaseExtractor({
     required final this.name,
     required final this.id,
     required final this.search,

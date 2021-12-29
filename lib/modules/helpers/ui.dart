@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../utils/utils.dart';
+import 'package:utilx/utilities/utils.dart';
 
 abstract class ResponsiveSizes {
   static const int xs = 480;

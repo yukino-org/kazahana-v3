@@ -114,10 +114,10 @@ abstract class HtmlDOMProvider {
 
 class HtmlDOMOptions {
   const HtmlDOMOptions({
-    required final this.localChromiumPath,
+    final this.localChromiumPath,
   });
 
-  final String localChromiumPath;
+  final String? localChromiumPath;
 }
 
 abstract class HtmlDOMManager {

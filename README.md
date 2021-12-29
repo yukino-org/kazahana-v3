@@ -10,8 +10,8 @@ An extension-based Anime and Manga client. The project's name "Yukino" meaning "
 
 The developer of this application does not have any affiliation with any of the third-party sources.
 
-[![Downloads](https://img.shields.io/github/downloads/zyrouge/yukino-app/total.svg?style=flat)](https://github.com/zyrouge/yukino-app/releases/)
-[![Latest release](https://img.shields.io/github/release/zyrouge/yukino-app.svg?style=flat)](https://github.com/zyrouge/yukino-app/releases/)
+[![Downloads](https://img.shields.io/github/downloads/yukino-app/yukino/total.svg?style=flat)](https://github.com/yukino-app/yukino/releases/)
+[![Latest release](https://img.shields.io/github/release/yukino-app/yukino.svg?style=flat)](https://github.com/yukino-app/yukino/releases/)
 [![CodeFactor](https://www.codefactor.io/repository/github/yukino-app/yukino/badge/next)](https://www.codefactor.io/repository/github/yukino-app/yukino/overview/next)
 [![Code Analysis](https://github.com/yukino-app/yukino/actions/workflows/code-analysis.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/code-analysis.yml)
 [![Android (Apk)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml/badge.svg)](https://github.com/yukino-app/yukino/actions/workflows/android-build.yml)
@@ -28,11 +28,11 @@ You can download the latest version of app from the [releases](https://github.co
 
 -   [Website](https://yukino-app.github.io/)
 -   [Wiki](https://yukino-app.github.io/wiki/)
--   [Discord](https://discord.gg/dUHbfHNUmE)
+-   [Discord](https://yukino-app.github.io/discord/)
 -   [GitHub](https://github.com/yukino-app/yukino/)
--   [Patreon](https://patreon.com/zyrouge/)
+-   [Patreon](https://patreon.com/yukino-app/)
 
-For any queries, contact me at [zyrouge@hotmail.com](mailto:zyrouge@hotmail.com).
+For any queries, contact me at [yukino-app@hotmail.com](mailto:yukino-app@hotmail.com).
 
 ## Branding
 

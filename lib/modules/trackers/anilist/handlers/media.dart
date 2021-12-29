@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:extensions/extensions.dart';
+import 'package:utilx/utilities/utils.dart';
 import './fuzzy_date.dart';
-import '../../../utils/utils.dart';
 import '../anilist.dart';
 
 enum AniListMediaFormat {

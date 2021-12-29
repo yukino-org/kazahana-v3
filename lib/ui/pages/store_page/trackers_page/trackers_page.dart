@@ -1,6 +1,7 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:utilx/utilities/utils.dart';
 import './anilist_page/anilist_page.dart' as anilist_page;
 import './myanimelist_page/myanimelist_page.dart' as myanimelist_page;
 import '../../../../modules/helpers/assets.dart';
@@ -9,7 +10,6 @@ import '../../../../modules/state/hooks.dart';
 import '../../../../modules/trackers/anilist/anilist.dart';
 import '../../../../modules/trackers/myanimelist/myanimelist.dart';
 import '../../../../modules/translator/translator.dart';
-import '../../../../modules/utils/utils.dart';
 import '../../../router.dart';
 
 class TrackerRoute {

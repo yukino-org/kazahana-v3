@@ -1,10 +1,10 @@
 import 'package:extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../../modules/helpers/ui.dart';
 import '../../../../../modules/trackers/anilist/anilist.dart';
 import '../../../../../modules/translator/translator.dart';
-import '../../../../../modules/utils/utils.dart';
 import '../../../../components/material_tiles/dialog.dart';
 import '../../../../components/material_tiles/radio.dart';
 import '../../../../components/trackers/detailed_item.dart';
@@ -80,7 +80,7 @@ class _EditModalState extends State<EditModal> {
             SizedBox(
               height: remToPx(0.3),
             ),
-            RadioMaterialTile<AniListMediaListStatus>(
+            MaterialRadioTile<AniListMediaListStatus>(
               title: Text(Translator.t.status()),
               icon: const Icon(Icons.play_arrow),
               value: status,

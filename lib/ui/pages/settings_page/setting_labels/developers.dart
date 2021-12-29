@@ -1,9 +1,9 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import '../../../../modules/database/database.dart';
 import '../../../../modules/helpers/logger.dart';
 import '../../../../modules/translator/translator.dart';
-import '../../../../modules/utils/utils.dart';
 import '../../../components/material_tiles/base.dart';
 import '../../../components/material_tiles/switch.dart';
 
@@ -39,9 +39,9 @@ List<Widget> getSettingsDevelopers(
       MaterialSwitchTile(
         title: Text(Translator.t.disableAnimations()),
         icon: const Icon(Icons.animation),
-        value: settings.disableAnimations,
+        value: settings.developers.disableAnimations,
         onChanged: (final bool val) async {
-          settings.disableAnimations = val;
+          settings.developers.disableAnimations = val;
 
           await save();
         },
@@ -49,9 +49,9 @@ List<Widget> getSettingsDevelopers(
       MaterialSwitchTile(
         title: Text(Translator.t.ignoreBadHttpSslCertificates()),
         icon: const Icon(Icons.https),
-        value: settings.ignoreBadHttpCertificate,
+        value: settings.developers.ignoreBadHttpCertificate,
         onChanged: (final bool val) async {
-          settings.ignoreBadHttpCertificate = val;
+          settings.developers.ignoreBadHttpCertificate = val;
 
           await save();
         },

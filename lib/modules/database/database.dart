@@ -4,8 +4,8 @@ import '../../config/paths.dart';
 import '../helpers/logger.dart';
 
 export './schemas/cache/cache.dart';
+export './schemas/cached_preferences/cached_preferences.dart';
 export './schemas/credentials/credentials.dart';
-export './schemas/preferences/preferences.dart';
 export './schemas/settings/settings.dart';
 
 abstract class DatabaseManager {

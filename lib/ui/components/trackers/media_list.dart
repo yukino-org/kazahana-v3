@@ -53,11 +53,10 @@ class _MediaListState extends State<MediaList> with HooksMixin {
   Future<void> load() async {
     final List<dynamic> _mediaList = await widget.getMediaList(page);
 
-    if (mounted) {
-      setState(() {
-        mediaList = _mediaList;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      mediaList = _mediaList;
+    });
   }
 
   @override

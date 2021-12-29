@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-typedef PreferredSizeWrapperBuilder = Widget Function(
+typedef PreferredSizeWrapperFromChildBuilder = Widget Function(
   BuildContext,
   PreferredSizeWidget,
 );
@@ -9,16 +9,25 @@ class PreferredSizeWrapper extends StatelessWidget
     implements PreferredSizeWidget {
   const PreferredSizeWrapper({
     required final this.builder,
-    required final this.child,
+    required final this.size,
     final Key? key,
   }) : super(key: key);
 
-  final PreferredSizeWrapperBuilder builder;
-  final PreferredSizeWidget child;
+  factory PreferredSizeWrapper.fromChild({
+    required final PreferredSizeWrapperFromChildBuilder builder,
+    required final PreferredSizeWidget child,
+  }) =>
+      PreferredSizeWrapper(
+        builder: (final BuildContext context) => builder(context, child),
+        size: child.preferredSize,
+      );
+
+  final WidgetBuilder builder;
+  final Size size;
 
   @override
-  Widget build(final BuildContext context) => builder(context, child);
+  Widget build(final BuildContext context) => builder(context);
 
   @override
-  Size get preferredSize => child.preferredSize;
+  Size get preferredSize => size;
 }

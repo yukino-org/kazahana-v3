@@ -18,6 +18,33 @@ class ScreenState {
   final Rect bounds;
 }
 
+class FullscreenPreserver {
+  FullscreenPreserver([this.checkInterval = const Duration(seconds: 5)]);
+
+  final Duration checkInterval;
+  final ValueNotifier<bool> isFullscreened =
+      ValueNotifier<bool>(Screen.isFullscreened);
+
+  ScreenState? prevScreenState;
+  OnFullscreenChange? fullscreenWatcher;
+
+  Future<void> enterFullscreen() async {
+    prevScreenState = await Screen.enterFullscreen();
+    fullscreenWatcher = OnFullscreenChange(checkInterval);
+    isFullscreened.value = true;
+  }
+
+  Future<void> exitFullscreen() async {
+    fullscreenWatcher?.dispose();
+
+    if (isFullscreened.value) {
+      await Screen.exitFullscreen(prevScreenState);
+    }
+
+    isFullscreened.value = false;
+  }
+}
+
 mixin FullscreenMixin {
   late Duration fullscreenInterval;
   ScreenState? prevScreenState;
@@ -64,10 +91,11 @@ mixin WakelockMixin {
 }
 
 class OnFullscreenChange {
-  OnFullscreenChange(this.duration) {
+  OnFullscreenChange(this.duration, [this.onChange]) {
     Screen.uiChangeNotifier.subscribe(onUiChange);
   }
 
+  final void Function()? onChange;
   final Duration duration;
 
   Timer? timer;
@@ -88,6 +116,7 @@ class OnFullscreenChange {
           await Screen.enterFullscreen();
         }
       });
+      onChange?.call();
     }
   }
 }

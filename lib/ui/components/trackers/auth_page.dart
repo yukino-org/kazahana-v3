@@ -39,37 +39,34 @@ class _AuthPageState extends State<AuthPage> with HooksMixin {
       try {
         await widget.authenticate();
 
-        if (mounted) {
-          setState(() {
-            status.resolve(<InlineSpan>[
-              TextSpan(text: Translator.t.successfullyAuthenticated()),
-            ]);
-          });
+        if (!mounted) return;
+        setState(() {
+          status.resolve(<InlineSpan>[
+            TextSpan(text: Translator.t.successfullyAuthenticated()),
+          ]);
+        });
 
-          Future<void>.delayed(const Duration(seconds: 4), () {
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
-          });
-        }
+        Future<void>.delayed(const Duration(seconds: 4), () {
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        });
       } catch (err, stack) {
         widget.logger.error('Authentication failed: $err', stack);
 
-        if (mounted) {
-          setState(() {
-            status.fail(
-              <InlineSpan>[
-                TextSpan(text: Translator.t.authenticationFailed()),
-                TextSpan(
-                  text: '\n${err.toString()}',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.caption?.color,
-                  ),
+        if (!mounted) return;
+        setState(() {
+          status.fail(
+            <InlineSpan>[
+              TextSpan(text: Translator.t.authenticationFailed()),
+              TextSpan(
+                text: '\n${err.toString()}',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.caption?.color,
                 ),
-              ],
-            );
-          });
-        }
+              ),
+            ],
+          );
+        });
       }
     });
   }

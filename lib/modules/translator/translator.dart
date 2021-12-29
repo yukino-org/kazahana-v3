@@ -12,30 +12,32 @@ abstract class Translator {
 
   static late TranslationSentences t;
 
-  static TranslationSentences? tryGetTranslation(final String _locale) {
-    final Locale? locale = Locale.tryParse(_locale);
+  static TranslationSentences? tryGetTranslation(final Locale locale) {
+    TranslationSentences? translation;
+    int threshold = 0;
 
-    if (locale != null) {
-      TranslationSentences? translation;
-      int threshold = 0;
-
-      for (final TranslationSentences x in translations) {
-        final int nThresh = x.locale.compare(locale);
-        if (nThresh > threshold) {
-          translation = x;
-          threshold = nThresh;
-        }
+    for (final TranslationSentences x in translations) {
+      final int nThresh = x.locale.compare(locale);
+      if (nThresh > threshold) {
+        translation = x;
+        threshold = nThresh;
       }
-
-      return translation;
     }
+
+    return translation;
   }
 
   static TranslationSentences getDefaultTranslation() =>
       translations.firstWhere(
-        (final TranslationSentences x) => x.locale == Locale(LanguageCodes.en),
+        (final TranslationSentences x) =>
+            x.locale == const Locale(LanguageCodes.en),
       );
 
-  static TranslationSentences getSupportedTranslation() =>
-      tryGetTranslation(Platform.localeName) ?? getDefaultTranslation();
+  static TranslationSentences getSupportedTranslation() {
+    final Locale? platformLocale = Locale.tryParse(Platform.localeName);
+    final TranslationSentences? platformSentences =
+        platformLocale != null ? tryGetTranslation(platformLocale) : null;
+
+    return platformSentences ?? getDefaultTranslation();
+  }
 }

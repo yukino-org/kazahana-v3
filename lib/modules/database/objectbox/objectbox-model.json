@@ -57,27 +57,8 @@
       "relations": []
     },
     {
-      "id": "3:3",
-      "lastPropertyId": "3:5523022497379988698",
-      "name": "PreferencesSchema",
-      "properties": [
-        {
-          "id": "1:2002002972373273367",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "3:5523022497379988698",
-          "name": "lastSelectedSearch_",
-          "type": 9
-        }
-      ],
-      "relations": []
-    },
-    {
       "id": "4:1",
-      "lastPropertyId": "27:1713392882459328993",
+      "lastPropertyId": "34:7870387653348531032",
       "name": "SettingsSchema",
       "properties": [
         {
@@ -87,106 +68,57 @@
           "flags": 1
         },
         {
-          "id": "2:7259109088868208379",
-          "name": "useSystemPreferredTheme",
-          "type": 1
-        },
-        {
-          "id": "3:2924473886036486806",
-          "name": "useDarkMode",
-          "type": 1
-        },
-        {
-          "id": "4:2010270991837719628",
-          "name": "locale",
+          "id": "31:8346693753002946197",
+          "name": "preferences_",
           "type": 9
         },
         {
-          "id": "5:1562037616827922058",
-          "name": "introDuration",
-          "type": 6
-        },
-        {
-          "id": "6:8765360801283119193",
-          "name": "seekDuration",
-          "type": 6
-        },
-        {
-          "id": "7:3475745247786699814",
-          "name": "autoNext",
-          "type": 1
-        },
-        {
-          "id": "8:692196073396158915",
-          "name": "autoPlay",
-          "type": 1
-        },
-        {
-          "id": "9:1399732325084062392",
-          "name": "doubleClickSwitchChapter",
-          "type": 1
-        },
-        {
-          "id": "10:2555505691523001225",
-          "name": "animeAutoFullscreen",
-          "type": 1
-        },
-        {
-          "id": "11:8840252602874529054",
-          "name": "mangaAutoFullscreen",
-          "type": 1
-        },
-        {
-          "id": "12:461535158492699321",
-          "name": "animeTrackerWatchPercent",
-          "type": 6
-        },
-        {
-          "id": "13:450262105290459242",
-          "name": "animeForceLandscape",
-          "type": 1
-        },
-        {
-          "id": "14:5250915747518516456",
-          "name": "mangaReaderDirection_",
+          "id": "32:2945820515866688512",
+          "name": "anime_",
           "type": 9
         },
         {
-          "id": "15:4213400519418794186",
-          "name": "mangaReaderSwipeDirection_",
+          "id": "33:2004277390577324559",
+          "name": "manga_",
           "type": 9
         },
         {
-          "id": "16:3625592503513121933",
-          "name": "mangaReaderMode_",
+          "id": "34:7870387653348531032",
+          "name": "developers_",
           "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:2516426530853536210",
+      "lastPropertyId": "2:8998961797562977595",
+      "name": "CachedPreferencesSchema",
+      "properties": [
+        {
+          "id": "1:6321108629858683715",
+          "name": "id",
+          "type": 6,
+          "flags": 1
         },
         {
-          "id": "25:2078169098439781657",
-          "name": "animeShortcuts_",
+          "id": "2:8998961797562977595",
+          "name": "lastSelectedSearch_",
           "type": 9
-        },
-        {
-          "id": "26:8547498297673923244",
-          "name": "disableAnimations",
-          "type": 1
-        },
-        {
-          "id": "27:1713392882459328993",
-          "name": "ignoreBadHttpCertificate",
-          "type": 1
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "4:1",
+  "lastEntityId": "5:2516426530853536210",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    3
+  ],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
     1921708900049052479,
@@ -197,7 +129,30 @@
     7236699100241270147,
     5432917366629577766,
     3743096892862510591,
-    591995873535278834
+    591995873535278834,
+    7259109088868208379,
+    2924473886036486806,
+    2010270991837719628,
+    1562037616827922058,
+    8765360801283119193,
+    3475745247786699814,
+    692196073396158915,
+    1399732325084062392,
+    2555505691523001225,
+    8840252602874529054,
+    461535158492699321,
+    450262105290459242,
+    5250915747518516456,
+    4213400519418794186,
+    3625592503513121933,
+    2078169098439781657,
+    8547498297673923244,
+    1713392882459328993,
+    3896775940984922968,
+    5534484759579347527,
+    2226931077543175541,
+    5523022497379988698,
+    2002002972373273367
   ],
   "retiredRelationUids": [],
   "version": 1

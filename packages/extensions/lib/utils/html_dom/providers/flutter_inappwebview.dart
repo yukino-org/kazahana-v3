@@ -4,6 +4,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../http.dart';
 import '../html_dom.dart';
 
+const Duration _futureTimeout = Duration(seconds: 15);
+
 class _FlutterWebviewEventer {
   StreamController<Uri> onLoadController = StreamController<Uri>.broadcast();
   late Stream<Uri> onLoad = onLoadController.stream;
@@ -23,7 +25,7 @@ class _FlutterWebviewEventer {
       }
     });
 
-    return future.future;
+    return future.future..timeout(_futureTimeout);
   }
 
   Future<void> dispose() async {
@@ -68,7 +70,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
               eventer!
                   .waitUntil(
                 eventer!.onLoad,
-                (final Uri receivedUri) => uri == receivedUri,
+                (final Uri receivedUri) => true,
               )
                   .then((final Uri uri) {
                 future.complete();
@@ -80,7 +82,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
               eventer!
                   .waitUntil(
                 eventer!.onLoad,
-                (final Uri receivedUri) => uri == receivedUri,
+                (final Uri receivedUri) => true,
               )
                   .then((final Uri uri) async {
                 await webview!.webViewController.callAsyncJavaScript(
@@ -108,7 +110,7 @@ class FlutterWebviewProvider extends HtmlDOMProvider {
           await webview!.webViewController
               .loadUrl(urlRequest: URLRequest(url: uri));
 
-          return future.future;
+          return future.future..timeout(_futureTimeout);
         },
         evalJavascript: (final String code) async {
           final CallAsyncJavaScriptResult? result = await webview!

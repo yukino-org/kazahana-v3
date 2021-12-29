@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
+import 'package:utilx/utilities/utils.dart';
 import '../../../config/paths.dart';
 import '../../helpers/archive.dart';
 import '../../helpers/http_download.dart';
 import '../../helpers/logger.dart';
-import '../../utils/string.dart';
 import '../updater.dart';
 
 const String _template = '''
