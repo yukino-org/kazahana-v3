@@ -14,13 +14,25 @@ external class HtmlDOMTab {
   fun dispose(); // -> Future<void> /// Dispose if you are going to use it anymore
 }
 external fun createDOM(); // -> Future<HtmlDOMTab>;
+const BrowserCheckFn: type = fun(html: str) -> bool;
+external fun tryBypassBrowserChecks(tab: HtmlDOMTab, check: BrowserCheckFn); // -> Future<bool>
 external fun tryBypassCloudflareCheck(tab: HtmlDOMTab); // -> Future<bool>
 ''';
 
 Future<HtmlDOMTab> createDOM() async => HtmlDOMManager.provider.create();
 
+Future<bool> tryBypassBrowserChecks(
+  final HtmlDOMTab tab,
+  final HTFunction check,
+) async =>
+    HtmlDOMUtils.tryBypassBrowserChecks(
+      tab,
+      (final String html) =>
+          check.call(positionalArgs: <dynamic>[html]) as bool,
+    );
+
 Future<bool> tryBypassCloudflareCheck(final HtmlDOMTab tab) async =>
-    HtmlDOMUtils.tryBypassCloudflare(tab);
+    HtmlDOMUtils.tryBypassBrowserChecks(tab, HtmlDOMUtils.checkCloudflare);
 
 class HtmlDOMTabClassBinding extends HTExternalClass {
   HtmlDOMTabClassBinding() : super('HtmlDOMTab');
