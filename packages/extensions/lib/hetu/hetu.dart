@@ -65,6 +65,7 @@ abstract class HetuManager {
         'createDOM': helpers.createDOM,
         'tryBypassCloudflareCheck': helpers.tryBypassCloudflareCheck,
         'joinCookieMap': helpers.joinCookieMap,
+        'tryBypassBrowserChecks': helpers.tryBypassBrowserChecks,
       },
     );
 
