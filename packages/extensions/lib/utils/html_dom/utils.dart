@@ -6,9 +6,11 @@ abstract class HtmlDOMUtils {
   static bool isBlockedByCloudflare(final String html) {
     final String htmlLwr = html.toLowerCase();
 
-    return <String>[
-      'id="cf-wrapper"',
-    ].every((final String x) => htmlLwr.contains(x));
+    return <bool>[
+      htmlLwr.contains('id="cf-wrapper"'),
+      RegExp('class=".*(cf-browser-verification|cf-im-under-attack).*"')
+          .hasMatch(htmlLwr),
+    ].contains(true);
   }
 
   static Future<bool> tryBypassCloudflare(final HtmlDOMTab tab) async {
