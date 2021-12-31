@@ -16,12 +16,14 @@ export const updateChangelogs = async (
 
     const github = getOctokit(githubToken, {});
 
-    const {
-        data: [latest, previous],
-    } = await github.request("GET /repos/{owner}/{repo}/releases", {
-        ...repo,
-        per_page: 2,
-    });
+    const { data } = await github.request(
+        "GET /repos/{owner}/{repo}/releases",
+        {
+            ...repo,
+            per_page: 2,
+        }
+    );
+    const [latest, previous] = data.filter((x) => !x.draft);
     logger.log(`Comparing ${previous.tag_name} & ${latest.tag_name}`);
 
     const { data: diff } = await github.request(
