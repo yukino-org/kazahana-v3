@@ -22,6 +22,7 @@ export const updateChangelogs = async (
         ...repo,
         per_page: 2,
     });
+    logger.log(`Comparing ${previous.tag_name} & ${latest.tag_name}`);
 
     const { data: diff } = await github.request(
         "GET /repos/{owner}/{repo}/compare/{base}...{head}",
