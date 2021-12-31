@@ -3,7 +3,7 @@ import './en.dart' as en;
 
 class Sentences extends en.Sentences {
   @override
-  Locale get locale => Locale(LanguageCodes.es);
+  Locale get locale => const Locale(LanguageCodes.es);
 
   @override
   String home() => 'Inicio';
@@ -48,7 +48,8 @@ class Sentences extends en.Sentences {
   String landscapeVideoPlayer() => 'Reproducción de Vídeo Apaisado';
 
   @override
-  String landscapeVideoPlayerDetail() => 'Fuerza el vídeo para que se vea apaisado.';
+  String landscapeVideoPlayerDetail() =>
+      'Fuerza el vídeo para que se vea apaisado.';
 
   @override
   String theme() => 'Tema';
@@ -363,7 +364,8 @@ class Sentences extends en.Sentences {
   String checkingForUpdates() => 'Buscando actualizaciones';
 
   @override
-  String updatingToVersion(final String version) => 'Actualizando para $version';
+  String updatingToVersion(final String version) =>
+      'Actualizando para $version';
 
   @override
   String failedToUpdate(final String err) => 'Error al actualizar: $err';
@@ -460,7 +462,8 @@ class Sentences extends en.Sentences {
   String nextEpisode() => 'Episodio siguiente';
 
   @override
-  String ignoreBadHttpSslCertificates() => 'Ignorar los certificados SSL HTTP defectuosos';
+  String ignoreBadHttpSslCertificates() =>
+      'Ignorar los certificados SSL HTTP defectuosos';
 
   @override
   String copiedErrorToClipboard() => 'Error copiado al portapapeles';

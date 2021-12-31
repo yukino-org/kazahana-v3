@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:utilx/utilities/locale.dart';
 import './translations/en.dart' as en;
-import './translations/pt_br.dart' as pt_br;
 import './translations/es.dart' as es;
+import './translations/pt_br.dart' as pt_br;
 import 'translations.dart';
 
 abstract class Translator {
