@@ -20,11 +20,10 @@ export const updateChangelogs = async (
         "GET /repos/{owner}/{repo}/releases",
         {
             ...repo,
-            per_page: 2,
+            per_page: 10,
         }
     );
     const [latest, previous] = data.filter((x) => !x.draft);
-    console.log(data.filter((x) => !x.draft).map((x) => x.url));
     logger.log(`Comparing ${previous.tag_name} & ${latest.tag_name}`);
 
     const { data: diff } = await github.request(
