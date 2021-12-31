@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils.dart';
 import './state.dart';
 import '../../config/app.dart';
 import '../../config/paths.dart';
@@ -34,6 +35,8 @@ enum AppLifecycleEvents {
 abstract class AppLifecycle {
   static bool preready = false;
   static bool ready = false;
+  static ErrorInfo? lastError;
+
   static final Eventer<AppLifecycleEvents> events =
       Eventer<AppLifecycleEvents>();
 
@@ -201,4 +204,6 @@ abstract class AppLifecycle {
     await DatabaseManager.dispose();
     Logger.of('DatabaseManager').info('Finished "dispose"');
   }
+
+  static bool get failed => lastError != null;
 }

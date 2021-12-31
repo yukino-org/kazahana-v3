@@ -10,7 +10,7 @@ abstract class Translator {
     pt_br.Sentences(),
   ];
 
-  static late TranslationSentences t;
+  static TranslationSentences? _t;
 
   static TranslationSentences? tryGetTranslation(final Locale locale) {
     TranslationSentences? translation;
@@ -40,4 +40,11 @@ abstract class Translator {
 
     return platformSentences ?? getDefaultTranslation();
   }
+
+  static TranslationSentences get t => _t!;
+  static set t(final TranslationSentences translation) {
+    _t = translation;
+  }
+
+  static bool get loaded => _t != null;
 }

@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:utilx/utilities/utils/error.dart';
 import '../../../config/app.dart';
 import '../../../modules/app/lifecycle.dart';
 import '../../../modules/helpers/http_download.dart';
@@ -10,6 +12,7 @@ import '../../../modules/helpers/ui.dart';
 import '../../../modules/state/hooks.dart';
 import '../../../modules/translator/translator.dart';
 import '../../../modules/updater/updater.dart';
+import '../../base.dart';
 
 class Page extends StatefulWidget {
   const Page({
@@ -31,9 +34,23 @@ class _PageState extends State<Page> with HooksMixin {
   void initState() {
     super.initState();
 
+    final Logger logger = Logger.of('splash_page');
+
     onReady(() async {
       if (!AppLifecycle.ready) {
-        await AppLifecycle.initialize();
+        try {
+          await AppLifecycle.initialize();
+        } catch (err, trace) {
+          logger.error(
+            '"initialize" failed: $err',
+            trace,
+          );
+          AppLifecycle.lastError = ErrorInfo(err, trace);
+          scheduleMicrotask(() {
+            MainApp.refresh();
+          });
+          return;
+        }
 
         final PlatformUpdater? updater = Updater.getUpdater();
         if (updater != null && kReleaseMode) {
@@ -83,7 +100,7 @@ class _PageState extends State<Page> with HooksMixin {
                 exit(0);
               }
             } catch (err, stack) {
-              Logger.of('splash_page').error('"Updater" failed: $err', stack);
+              logger.error('"Updater" failed: $err', stack);
               status.value = Translator.t.failedToUpdate(err.toString());
               await Future<void>.delayed(const Duration(seconds: 5));
             }

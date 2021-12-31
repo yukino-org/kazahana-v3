@@ -105,6 +105,16 @@ abstract class Palette {
       ),
     ),
   );
+
+  static final ThemeData errorTheme = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.white,
+    backgroundColor: Colors.red[500],
+    scaffoldBackgroundColor: Colors.red[500],
+    textTheme: Typography.englishLike2018,
+    fontFamily: 'Poppins',
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
 }
 
 double remToPx(final double rem) => rem * 20;

@@ -36,8 +36,8 @@ class Logger {
     });
   }
 
-  static late String filePath;
-  static late IOSink file;
+  static String? filePath;
+  static IOSink? file;
   static final Map<String, Logger> instances = <String, Logger>{};
 
   static bool ready = false;
@@ -49,7 +49,7 @@ class Logger {
       'debug ${time.day}-${time.month}-${time.year}.log',
     );
 
-    final File file = File(filePath);
+    final File file = File(filePath!);
     if (!(await file.exists())) {
       await file.create(recursive: true);
     }
@@ -63,10 +63,10 @@ class Logger {
 
   static void _write(final String msg) {
     debugPrint(msg);
-    file.write('$msg\n');
+    file?.write('$msg\n');
   }
 
-  static Future<String> read() => File(filePath).readAsString();
+  static Future<String> read() => File(filePath!).readAsString();
 
   static String get time => DateTime.now().toIso8601String();
 }

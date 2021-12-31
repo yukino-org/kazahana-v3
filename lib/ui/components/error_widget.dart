@@ -10,6 +10,21 @@ typedef ActionsBuilder = List<InlineSpan> Function(
   List<InlineSpan>,
 );
 
+class KawaiiErrorWidgetTexts {
+  const KawaiiErrorWidgetTexts({
+    required final this.copyError,
+    required final this.copiedErrorToClipboard,
+  });
+
+  factory KawaiiErrorWidgetTexts.translated() => KawaiiErrorWidgetTexts(
+        copyError: Translator.t.copyError(),
+        copiedErrorToClipboard: Translator.t.copiedErrorToClipboard(),
+      );
+
+  final String copyError;
+  final String copiedErrorToClipboard;
+}
+
 class KawaiiErrorWidget extends StatelessWidget {
   const KawaiiErrorWidget({
     final this.showFace = true,
@@ -19,6 +34,8 @@ class KawaiiErrorWidget extends StatelessWidget {
     final this.stack,
     final this.actions,
     final this.actionsBuilder,
+    final this.texts,
+    final this.foregroundColor = defaultForegroundColor,
     final Key? key,
   })  : assert(
           (child == null && message != null) ||
@@ -38,6 +55,8 @@ class KawaiiErrorWidget extends StatelessWidget {
     final ErrorInfo? error,
     final List<InlineSpan>? actions,
     final ActionsBuilder? actionsBuilder,
+    final KawaiiErrorWidgetTexts? texts,
+    final Color? foregroundColor,
     final Key? key,
   }) =>
       KawaiiErrorWidget(
@@ -48,6 +67,8 @@ class KawaiiErrorWidget extends StatelessWidget {
         stack: error?.stack,
         actions: actions,
         actionsBuilder: actionsBuilder,
+        texts: texts,
+        foregroundColor: foregroundColor ?? defaultForegroundColor,
         child: child,
       );
 
@@ -58,11 +79,14 @@ class KawaiiErrorWidget extends StatelessWidget {
   final StackTrace? stack;
   final List<InlineSpan>? actions;
   final ActionsBuilder? actionsBuilder;
+  final KawaiiErrorWidgetTexts? texts;
+  final Color foregroundColor;
 
   InlineSpan buildCopyError(final BuildContext context) => buildActionButton(
         context: context,
         icon: const Icon(Icons.content_paste),
-        child: Text(Translator.t.copyError()),
+        child: Text(_texts.copyError),
+        color: foregroundColor,
         onTap: () async {
           FlutterClipboard.copy(
             <String>[
@@ -78,7 +102,7 @@ class KawaiiErrorWidget extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  Translator.t.copiedErrorToClipboard(),
+                  _texts.copiedErrorToClipboard,
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 backgroundColor: Theme.of(context).cardColor,
@@ -123,7 +147,7 @@ class KawaiiErrorWidget extends StatelessWidget {
               TextSpan(
                 text: '${error.toString().trim()}\n',
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Colors.red,
+                      color: foregroundColor,
                     ),
               ),
               WidgetSpan(
@@ -156,12 +180,17 @@ class KawaiiErrorWidget extends StatelessWidget {
         ),
       );
 
+  KawaiiErrorWidgetTexts get _texts =>
+      texts ?? KawaiiErrorWidgetTexts.translated();
+
+  static const Color defaultForegroundColor = Colors.red;
+
   static InlineSpan buildActionButton({
     required final BuildContext context,
     required final Widget child,
     required final void Function() onTap,
+    final Color? color,
     final Widget? icon,
-    final Color color = Colors.red,
   }) =>
       WidgetSpan(
         child: Material(

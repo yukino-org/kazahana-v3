@@ -11,7 +11,7 @@ import '../../components/side_bar.dart';
 import '../../router.dart';
 
 class StackPage {
-  StackPage(this.index, this.r);
+  const StackPage(this.index, this.r);
 
   final RouteInfo r;
   final int index;
