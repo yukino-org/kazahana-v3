@@ -51,68 +51,32 @@ abstract class AppLifecycle {
     await Config.initialize();
     await PathDirs.initialize();
     await Logger.initialize();
-
     Logger.of('AppLifecycle').info('Starting "preinitialize"');
 
     if (AppState.isDesktop) {
-      try {
-        await LocalServer.initialize();
-        Logger.of('LocalServer')
-          ..info('Finished "initialize"')
-          ..info('Serving at ${LocalServer.baseURL}');
-      } catch (err, trace) {
-        Logger.of('LocalServer').error(
-          '"initialize" failed: $err',
-          trace,
-        );
-      }
+      await LocalServer.initialize();
+      Logger.of('LocalServer')
+        ..info('Finished "initialize"')
+        ..info('Serving at ${LocalServer.baseURL}');
 
       Screen.setTitle('${Config.name} v${Config.version}');
     }
 
     InstanceInfo? primaryInstance;
-    try {
-      primaryInstance = await InstanceManager.check();
-    } catch (err, trace) {
-      Logger.of('InstanceManager').error(
-        '"check" failed: $err',
-        trace,
-      );
-    }
+    primaryInstance = await InstanceManager.check();
 
     if (primaryInstance != null) {
-      try {
-        await InstanceManager.sendArguments(primaryInstance, args);
-        Logger.of('InstanceManager').info('Finished "sendArguments"');
-      } catch (err, trace) {
-        Logger.of('InstanceManager').error(
-          '"sendArguments" failed: $err',
-          trace,
-        );
-      }
+      await InstanceManager.sendArguments(primaryInstance, args);
+      Logger.of('InstanceManager').info('Finished "sendArguments"');
 
       await Screen.close();
       return;
     }
 
-    try {
-      await DatabaseManager.initialize();
-    } catch (err, trace) {
-      Logger.of('DatabaseManager').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await DatabaseManager.initialize();
 
-    try {
-      await AppState.initialize();
-      Logger.of('AppState').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('AppState').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await AppState.initialize();
+    Logger.of('AppState').info('Finished "initialize"');
 
     final TranslationSentences? settingsLocale =
         AppState.settings.value.preferences.locale != null
@@ -133,65 +97,23 @@ abstract class AppLifecycle {
   }
 
   static Future<void> initialize() async {
-    try {
-      await InstanceManager.register();
-      Logger.of('InstanceManager').info('Finished "register"');
-    } catch (err, trace) {
-      Logger.of('InstanceManager').error(
-        '"register" failed: $err',
-        trace,
-      );
-    }
+    await InstanceManager.register();
+    Logger.of('InstanceManager').info('Finished "register"');
 
-    try {
-      await ProtocolHandler.register();
-      Logger.of('ProtocolHandler').info('Finished "register"');
-    } catch (err, trace) {
-      Logger.of('ProtocolHandler').error(
-        '"register" failed: $err',
-        trace,
-      );
-    }
+    await ProtocolHandler.register();
+    Logger.of('ProtocolHandler').info('Finished "register"');
 
-    try {
-      await Screen.initialize();
-      Logger.of('Screen').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('Screen').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await Screen.initialize();
+    Logger.of('Screen').info('Finished "initialize"');
 
-    try {
-      await VideoPlayerManager.initialize();
-      Logger.of('VideoPlayerManager').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('VideoPlayerManager').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await VideoPlayerManager.initialize();
+    Logger.of('VideoPlayerManager').info('Finished "initialize"');
 
-    try {
-      await ExtensionsManager.initialize();
-      Logger.of('ExtensionsManager').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('ExtensionsManager').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await ExtensionsManager.initialize();
+    Logger.of('ExtensionsManager').info('Finished "initialize"');
 
-    try {
-      await Trackers.initialize();
-      Logger.of('Trackers').info('Finished "initialize"');
-    } catch (err, trace) {
-      Logger.of('Trackers').error(
-        '"initialize" failed: $err',
-        trace,
-      );
-    }
+    await Trackers.initialize();
+    Logger.of('Trackers').info('Finished "initialize"');
 
     ready = true;
     events.dispatch(AppLifecycleEvents.ready);
