@@ -46,6 +46,7 @@ class Logger {
     final DateTime time = DateTime.now();
     filePath = path.join(
       PathDirs.temp,
+      'logs',
       'debug ${time.day}-${time.month}-${time.year}.log',
     );
 

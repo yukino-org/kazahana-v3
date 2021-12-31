@@ -116,7 +116,7 @@ class SearchPageController extends Controller<SearchPageController> {
       StatefulValueHolderWithError<List<SearchResult>?>(null);
 
   final TextEditingController searchTextController = TextEditingController();
-  late CurrentPlugin currentPlugin;
+  CurrentPlugin? currentPlugin;
 
   @override
   Future<void> setup() async {
@@ -124,24 +124,26 @@ class SearchPageController extends Controller<SearchPageController> {
     final ExtensionType type =
         preferences.lastSelectedSearch?.lastSelectedType ?? ExtensionType.anime;
 
-    BaseExtractor plugin;
+    BaseExtractor? plugin;
     switch (type) {
       case ExtensionType.anime:
         plugin = ExtensionsManager.animes[
                 preferences.lastSelectedSearch?.lastSelectedAnimePlugin ??
                     ''] ??
-            ExtensionsManager.animes.values.first;
+            ExtensionsManager.animes.values.firstOrNull;
         break;
 
       case ExtensionType.manga:
         plugin = ExtensionsManager.mangas[
                 preferences.lastSelectedSearch?.lastSelectedMangaPlugin ??
                     ''] ??
-            ExtensionsManager.mangas.values.first;
+            ExtensionsManager.mangas.values.firstOrNull;
         break;
     }
 
-    setCurrentPlugin(CurrentPlugin(type: type, plugin: plugin));
+    if (plugin != null) {
+      setCurrentPlugin(CurrentPlugin(type: type, plugin: plugin));
+    }
 
     await super.setup();
   }
@@ -157,6 +159,10 @@ class SearchPageController extends Controller<SearchPageController> {
     args = SearchPageArguments.fromJson(
       ParsedRouteInfo.fromSettings(ModalRoute.of(context)!.settings).params,
     );
+
+    if (args?.terms != null) {
+      searchTextController.value = TextEditingValue(text: args!.terms!);
+    }
 
     if (args?.pluginType != null) {
       BaseExtractor? plugin;
@@ -176,37 +182,29 @@ class SearchPageController extends Controller<SearchPageController> {
         );
       }
     }
-
-    if (args?.terms != null) {
-      searchTextController.value = TextEditingValue(text: args!.terms!);
-
-      if (searchTextController.value.text.isNotEmpty &&
-          (args?.autoSearch ?? false)) {
-        args!.autoSearch = false;
-        await search();
-      }
-    }
   }
 
-  Future<void> setCurrentPlugin(final CurrentPlugin plugin) async {
+  Future<void> setCurrentPlugin(final CurrentPlugin? plugin) async {
     currentPlugin = plugin;
 
-    final CachedPreferencesSchema preferences = CachedPreferencesBox.get();
+    if (plugin != null) {
+      final CachedPreferencesSchema preferences = CachedPreferencesBox.get();
+      preferences.lastSelectedSearch =
+          (preferences.lastSelectedSearch ?? const LastSelectedSearchPlugin())
+              .copyWith(
+        lastSelectedType: plugin.type,
+        lastSelectedAnimePlugin:
+            plugin.type == ExtensionType.anime ? plugin.plugin.id : null,
+        lastSelectedMangaPlugin:
+            plugin.type == ExtensionType.manga ? plugin.plugin.id : null,
+      );
+      await CachedPreferencesBox.save(preferences);
+    }
 
-    preferences.lastSelectedSearch =
-        (preferences.lastSelectedSearch ?? const LastSelectedSearchPlugin())
-            .copyWith(
-      lastSelectedType: plugin.type,
-      lastSelectedAnimePlugin:
-          plugin.type == ExtensionType.anime ? plugin.plugin.id : null,
-      lastSelectedMangaPlugin:
-          plugin.type == ExtensionType.manga ? plugin.plugin.id : null,
-    );
-
-    await CachedPreferencesBox.save(preferences);
     reassemble();
 
-    if (searchTextController.value.text.isNotEmpty &&
+    if (currentPlugin != null &&
+        searchTextController.value.text.isNotEmpty &&
         (args?.autoSearch ?? false)) {
       args!.autoSearch = false;
       await search();
@@ -214,11 +212,15 @@ class SearchPageController extends Controller<SearchPageController> {
   }
 
   Future<void> search() async {
+    if (currentPlugin == null) {
+      throw Exception('No plugin has been selected');
+    }
+
     results.resolving(null);
     reassemble();
 
     try {
-      final List<SearchInfo> searches = await currentPlugin.plugin.search(
+      final List<SearchInfo> searches = await currentPlugin!.plugin.search(
         searchTextController.text,
         Translator.t.locale,
       );
@@ -228,7 +230,7 @@ class SearchPageController extends Controller<SearchPageController> {
             .map(
               (final SearchInfo x) => SearchResult(
                 info: x,
-                plugin: currentPlugin,
+                plugin: currentPlugin!,
               ),
             )
             .toList(),

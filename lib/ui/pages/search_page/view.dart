@@ -11,18 +11,16 @@ import '../../models/view.dart';
 import '../../router.dart';
 import 'widgets/popup.dart';
 
-class Page extends StatefulWidget {
-  const Page({
+class SearchPage extends StatefulWidget {
+  const SearchPage({
     final Key? key,
-  }) : super(
-          key: key,
-        );
+  }) : super(key: key);
 
   @override
-  _PageState createState() => _PageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
-class _PageState extends State<Page> {
+class _SearchPageState extends State<SearchPage> {
   final SearchPageController controller = SearchPageController();
 
   @override
@@ -98,12 +96,18 @@ class _PageState extends State<Page> {
                   TextField(
                     controller: controller.searchTextController,
                     decoration: InputDecoration(
-                      labelText: Translator.t
-                          .searchInPlugin(controller.currentPlugin.plugin.name),
+                      labelText: controller.currentPlugin != null
+                          ? Translator.t.searchInPlugin(
+                              controller.currentPlugin!.plugin.name,
+                            )
+                          : (controller.args?.autoSearch == true)
+                              ? Translator.t.selectAPluginToGetResults()
+                              : Translator.t.selectPlugin(),
                     ),
                     onSubmitted: (final String terms) async {
                       await controller.search();
                     },
+                    enabled: controller.currentPlugin != null,
                   ),
                   SizedBox(
                     height: remToPx(1.25),

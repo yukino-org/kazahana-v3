@@ -21,7 +21,8 @@ class SearchExtensionsPopUp extends StatefulWidget {
 }
 
 class _SearchExtensionsPopUpState extends State<SearchExtensionsPopUp> {
-  late ExtensionType activeType = widget.controller.currentPlugin.type;
+  late ExtensionType activeType =
+      widget.controller.currentPlugin?.type ?? ExtensionType.anime;
 
   Widget buildListTile({
     required final BuildContext context,
@@ -32,7 +33,7 @@ class _SearchExtensionsPopUpState extends State<SearchExtensionsPopUp> {
         child: RadioListTile<String>(
           title: Text(plugin.plugin.name),
           value: plugin.plugin.id,
-          groupValue: widget.controller.currentPlugin.plugin.id,
+          groupValue: widget.controller.currentPlugin?.plugin.id,
           activeColor: Theme.of(context).primaryColor,
           onChanged: (final String? val) async {
             if (val == plugin.plugin.id) {

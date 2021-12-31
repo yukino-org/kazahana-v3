@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import './pages/anime_page/view.dart';
 import './pages/home_page/view.dart';
 import './pages/manga_page/view.dart';
-import './pages/search_page/search_page.dart' as search_page;
+import './pages/search_page/view.dart';
 import './pages/settings_page/settings_page.dart' as settings_page;
 import './pages/stacked_home_page/stacked_home_page.dart' as stacked_home_page;
 import './pages/store_page/store_page.dart' as store_page;
@@ -139,7 +139,7 @@ abstract class RouteManager {
       name: Translator.t.search,
       route: RouteNames.search,
       icon: Icons.search,
-      builder: (final BuildContext context) => const search_page.Page(),
+      builder: (final BuildContext context) => const SearchPage(),
       isPublic: true,
       alreadyHandled: true,
     ),
