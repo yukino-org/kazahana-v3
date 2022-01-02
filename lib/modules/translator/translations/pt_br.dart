@@ -12,7 +12,7 @@ class Sentences extends en.Sentences {
   String search() => 'Pesquisar';
 
   @override
-  String settings() => 'Configurações';
+  String settings() => 'Ajustes';
 
   @override
   String episodes() => 'Episódios';
@@ -102,7 +102,7 @@ class Sentences extends en.Sentences {
   String page() => 'Página';
 
   @override
-  String noPagesFound() => 'Nenhum página válida encontrada.';
+  String noPagesFound() => 'Nenhum página encontrada.';
 
   @override
   String vol() => 'Vol.';
@@ -272,7 +272,7 @@ class Sentences extends en.Sentences {
   String noOfVolumes() => 'Qtd de volumes';
 
   @override
-  String score() => 'Nota';
+  String score() => 'Avaliação';
 
   @override
   String repeat() => 'Repetir';
@@ -385,4 +385,116 @@ class Sentences extends en.Sentences {
 
   @override
   String nsfw() => 'NSFW';
+
+  @override
+  String restartAppForChangesToTakeEffect() =>
+      'Reinicie o app para aplicar as mudanças';
+
+  @override
+  String copyError() => 'Copiar erro';
+
+  @override
+  String somethingWentWrong() => 'Algo deu errado.';
+
+  @override
+  String unknownExtension(final String name) => 'Extensão desconhecida: $name';
+
+  @override
+  String about() => 'Sobre';
+
+  @override
+  String copyLogsToClipboard() => 'Copiar logs para a área de transferência';
+
+  @override
+  String copiedLogsToClipboard() =>
+      'Logs copiados para a área de transferência.';
+
+  @override
+  String github() => 'GitHub';
+
+  @override
+  String patreon() => 'Patreon';
+
+  @override
+  String website() => 'Website';
+
+  @override
+  String wiki() => 'Wiki';
+
+  @override
+  String discord() => 'Discord';
+
+  @override
+  String developers() => 'Desenvolvedores';
+
+  @override
+  String reportABug() => 'Reportar um problema';
+
+  @override
+  String disableAnimations() => 'Desativar animações';
+
+  @override
+  String keyboardShortcuts() => 'Atalhos de teclado';
+
+  @override
+  String waitingForKeyStrokes() => 'Esperando pelas teclas...';
+
+  @override
+  String playPause() => 'Reproduzir/Pausar';
+
+  @override
+  String fullscreen() => 'Tela Cheia';
+
+  @override
+  String seekBackward() => 'Voltar';
+
+  @override
+  String seekForward() => 'Avançar';
+
+  @override
+  String goBack() => 'Voltar';
+
+  @override
+  String previousEpisode() => 'Episódio anterior';
+
+  @override
+  String nextEpisode() => 'Próximo episódio';
+
+  @override
+  String ignoreBadHttpSslCertificates() =>
+      'Ignorar erros de certificados HTTP SSL';
+
+  @override
+  String copiedErrorToClipboard() =>
+      'Erro copiado para a área de transferência';
+
+  @override
+  String noMoreChaptersLeft() => 'Nenhum capítulo restante';
+
+  @override
+  String imageSize() => 'Tamanho de Imagem';
+
+  @override
+  String imageCustomWidth() => 'Tamanho de Imagem Personalizado';
+
+  @override
+  String custom() => 'Personalizar';
+
+  @override
+  String fitWidth() => 'Ajustar-se à Largura';
+
+  @override
+  String fitHeight() => 'Ajustar-se à Altura';
+
+  @override
+  String previousPage() => 'Página Anterior';
+
+  @override
+  String nextPage() => 'Próxima Página';
+
+  @override
+  String previousChapter() => 'Capítulo Anterior';
+
+  @override
+  String nextChapter() => 'Próximo Capítulo';
 }
