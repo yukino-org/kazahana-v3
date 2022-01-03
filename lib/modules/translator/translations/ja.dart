@@ -18,7 +18,7 @@ class Sentences extends TranslationSentences {
   String episodes() => 'エピソード';
 
   @override
-  String episode() => 'エピソード';
+  String episode(final String episode) => '第$episode話';
 
   @override
   String noValidSources() => '有効なソースが見つかりませんでした。';
@@ -70,7 +70,7 @@ class Sentences extends TranslationSentences {
   String back() => '戻る';
 
   @override
-  String of() => 'の'; //?
+  String of(final String prefix, final String suffix) => '$suffix の $prefix'; //?
 
   @override
   String chooseTheme() => 'テーマを選択';
@@ -94,10 +94,10 @@ class Sentences extends TranslationSentences {
   String volumes() => '巻'; //?
 
   @override
-  String chapter() => 'チャプター';
+  String chapter(final String chapter) => '第$chapter章';
 
   @override
-  String volume() => '巻'; //?
+  String volume(final String volume) => '第$volume巻'; //?
 
   @override
   String page() => 'ページ';
