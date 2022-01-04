@@ -70,7 +70,7 @@ class Sentences extends TranslationSentences {
   String back() => '戻る';
 
   @override
-  String of(final String prefix, final String suffix) => '$suffix の $prefix'; //?
+  String of(final String prefix, final String suffix) => '第$prefix話/$suffix';
 
   @override
   String chooseTheme() => 'テーマを選択';
@@ -91,13 +91,13 @@ class Sentences extends TranslationSentences {
   String chapters() => 'チャプター';
 
   @override
-  String volumes() => '巻'; //?
+  String volumes() => '巻';
 
   @override
   String chapter(final String chapter) => '第$chapter章';
 
   @override
-  String volume(final String volume) => '第$volume巻'; //?
+  String volume(final String volume) => '第$volume巻';
 
   @override
   String page() => 'ページ';
@@ -334,7 +334,7 @@ class Sentences extends TranslationSentences {
   String recommendedBy(final String by) => '$by によっておすすめされています';
 
   @override
-  String seasonalAnimes() => '今季のアニメ'; //?
+  String seasonalAnimes() => '今季のアニメ';
 
   @override
   String selectAPluginToGetResults() => 'プラグインを選択して結果を取得します';
