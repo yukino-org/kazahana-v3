@@ -70,7 +70,7 @@ class Sentences extends TranslationSentences {
   String back() => '戻る';
 
   @override
-  String of(final String prefix, final String suffix) => '第$prefix話/$suffix';
+  String episodeXofY(final String x, final String y) => '第$prefix話/$suffix';
 
   @override
   String chooseTheme() => 'テーマを選択';
