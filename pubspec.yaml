@@ -1,0 +1,20 @@
+name: kazahana
+description: A new Flutter project.
+publish_to: none
+version: 1.0.0
+
+environment:
+    sdk: ">=2.18.0-272.0.dev <3.0.0"
+
+dependencies:
+    flutter:
+        sdk: flutter
+
+dev_dependencies:
+    devx:
+        git:
+            url: https://github.com/yukino-org/packages.git
+            ref: dart_devx
+
+flutter:
+    uses-material-design: true
