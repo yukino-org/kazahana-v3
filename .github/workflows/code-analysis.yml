@@ -1,0 +1,67 @@
+name: Code Analysis
+
+on:
+    push:
+        branches:
+            - main
+            - next
+        paths:
+            - "packages/**"
+            - "lib/**"
+    pull_request:
+        branches:
+            - main
+            - next
+        paths:
+            - "packages/**"
+            - "lib/**"
+    workflow_dispatch:
+
+jobs:
+    dart-analyze:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: subosito/flutter-action@v2
+              with:
+                  channel: master
+
+            - name: 🚧 Do prerequisites
+              run: |
+                  flutter pub get
+
+            - name: 🩺 Check code format
+              uses: actions/github-script@v4
+              with:
+                  script: |
+                      const { sync: spawn } = require("cross-spawn");
+
+                      const { stdout, status } = spawn(
+                          "flutter",
+                          ["format", "--output=none", "--set-exit-if-changed", "."],
+                          {
+                              encoding: "utf-8",
+                          }
+                      );
+
+                      let exitCode = status;
+
+                      if (status !== 0) {
+                          const files = [...stdout.toString().matchAll(/Changed (.*)/g)].map(
+                              (x) => x[1]
+                          );
+                          const filtered = files.filter((x) => !/\.g\.dart$/.test(x));
+
+                          if (filtered.length) {
+                              console.error(filtered.map((x) => `Invalid file: ${x}`).join("\n"));
+                          } else {
+                              exitCode = 0;
+                          }
+                      }
+
+                      process.exit(exitCode);
+
+            - name: 🩺 Analyze code
+              run: flutter analyze
