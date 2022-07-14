@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../core/exports.dart';
+import '../../router/exports.dart';
 
 class UnderScoreHomePage extends StatefulWidget {
   const UnderScoreHomePage({
@@ -24,8 +24,10 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
           ),
           actions: <Widget>[
             IconButton(
-              onPressed: () {},
               icon: const Icon(Icons.search),
+              onPressed: () {
+                Beamer.of(context).beamToNamed(RouteNames.search);
+              },
             ),
           ],
         ),

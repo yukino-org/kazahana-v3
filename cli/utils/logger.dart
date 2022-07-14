@@ -13,6 +13,10 @@ class Logger {
     print('[$time err!] $name: $text');
   }
 
+  void println() {
+    print(' ');
+  }
+
   String get time {
     final DateTime now = DateTime.now();
     return '${now.hour}:${now.minute}:${now.second}';

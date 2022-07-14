@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:utilx/locale.dart';
+import '../../utils/exports.dart';
 
 part 'schema.g.dart';
 
@@ -10,14 +11,14 @@ class SettingsSchema {
     this.ignoreSSLCertificate = true,
   });
 
-  factory SettingsSchema.fromJson(final Map<dynamic, dynamic> json) =>
+  factory SettingsSchema.fromJson(final JsonMap json) =>
       _$SettingsSchemaFromJson(json.cast<String, dynamic>());
 
   @JsonKey(fromJson: _localeFromJson, toJson: _localeToJson)
   Locale? locale;
   bool ignoreSSLCertificate;
 
-  Map<dynamic, dynamic> toJson() => _$SettingsSchemaToJson(this);
+  JsonMap toJson() => _$SettingsSchemaToJson(this);
 
   static Locale _localeFromJson(final String value) => Locale.parse(value);
   static String? _localeToJson(final Locale? value) => value?.toCodeString();

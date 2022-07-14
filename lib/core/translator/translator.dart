@@ -1,14 +1,13 @@
 import 'package:utilx/locale.dart';
 import '../database/exports.dart';
-import 'model.dart';
-import 'sentences/exports.dart';
+import 'translations/exports.dart';
 
-abstract class Translations {
+abstract class Translator {
   static const Locale defaultLocale = Locale(LanguageCodes.en);
 
-  static late TranslationSentences t;
-  static final List<TranslationSentences> all = <TranslationSentences>[
-    EnSentences(),
+  static late Translations t;
+  static final List<Translations> all = <Translations>[
+    EnTranslation(),
   ];
 
   static Future<void> initialize() async {
@@ -18,14 +17,14 @@ abstract class Translations {
         getDefaultLocaleTranslation();
   }
 
-  static TranslationSentences getDefaultLocaleTranslation() =>
+  static Translations getDefaultLocaleTranslation() =>
       getTranslation(defaultLocale)!;
 
-  static TranslationSentences? getTranslation(final Locale locale) {
+  static Translations? getTranslation(final Locale locale) {
     int prevMatchThreshold = 0;
-    TranslationSentences? sentences;
+    Translations? sentences;
 
-    for (final TranslationSentences x in all) {
+    for (final Translations x in all) {
       final int threshold = x.locale.compare(locale);
       if (threshold > prevMatchThreshold) {
         prevMatchThreshold = threshold;

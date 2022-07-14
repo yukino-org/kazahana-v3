@@ -259,7 +259,7 @@ packages:
     source: hosted
     version: "0.15.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -356,6 +356,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
@@ -454,6 +461,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.3"
   pub_semver:
     dependency: transitive
     description:
@@ -594,7 +608,7 @@ packages:
     description:
       path: "."
       ref: dart_utilx
-      resolved-ref: "4084ac65af6dc5974e3b65988a5270a12d0e6e83"
+      resolved-ref: ed83bf3b318a2f56fecd71f6f73a577683a747f7
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"

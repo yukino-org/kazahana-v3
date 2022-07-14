@@ -1,7 +1,7 @@
 import '../database/exports.dart';
 import '../paths.dart';
 import '../tenka/exports.dart';
-import '../translations/exports.dart';
+import '../translator/exports.dart';
 
 abstract class AppLoader {
   static bool ready = false;
@@ -10,7 +10,7 @@ abstract class AppLoader {
     await Paths.initialize();
     await SettingsDatabase.initialize();
     await TenkaManager.initialize();
-    await Translations.initialize();
+    await Translator.initialize();
     ready = true;
   }
 }

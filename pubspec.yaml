@@ -11,9 +11,11 @@ dependencies:
     beamer: ^1.5.0
     flutter:
         sdk: flutter
+    http: ^0.13.4
     json_annotation: ^4.6.0
     path: ^1.8.2
     path_provider: ^2.0.11
+    provider: ^6.0.3
     tenka:
         git:
             url: https://github.com/yukino-org/packages.git
