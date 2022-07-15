@@ -9,7 +9,7 @@ Future<void> main() async {
   const List<String> terms = <String>[
     'mayo chiki',
     'naruto',
-    'masamune kun',
+    'spy x family',
   ];
 
   for (final String x in terms) {

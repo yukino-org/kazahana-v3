@@ -10,7 +10,7 @@ abstract class KitsuAnimeSearchEndpoint {
       KitsuConfig.searchAnimeURL(terms),
       headers: KitsuConfig.defaultHeaders,
     );
-    final JsonMap parsed = json.decode(resp.body) as JsonMap;
+    final JsonMap parsed = json.decode(utf8.decode(resp.bodyBytes)) as JsonMap;
     return castList<JsonMap>(parsed['data']).map(KitsuAnime.fromJson).toList();
   }
 }

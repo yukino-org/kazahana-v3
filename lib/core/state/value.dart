@@ -27,7 +27,7 @@ class StatedValue<T> {
   }
 
   void loading() {
-    _setState(States.waiting);
+    _setState(States.processing);
   }
 
   void finish(final T value) {

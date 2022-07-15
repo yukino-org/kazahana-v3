@@ -38,6 +38,7 @@ class Themer {
       appBarTheme: AppBarTheme(backgroundColor: backgroundColorLevel1),
       bottomAppBarColor: backgroundColorLevel1,
       scaffoldBackgroundColor: backgroundColorLevel0,
+      toggleableActiveColor: foreground.c500,
     );
   }
 }

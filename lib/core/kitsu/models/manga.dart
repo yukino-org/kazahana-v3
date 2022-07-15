@@ -16,7 +16,7 @@ class KitsuManga {
   String get url => (json['links'] as JsonMap)['self'] as String;
   JsonMap get attributes => json['attributes'] as JsonMap;
   String get slug => attributes['slug'] as String;
-  String get synopsis => attributes['synopsis'] as String;
+  String? get synopsis => attributes['synopsis'] as String?;
   Map<String, String?> get titles =>
       castJsonMap<String, String?>(attributes['titles']);
   String get canonicalTitle => attributes['canonicalTitle'] as String;
@@ -29,7 +29,7 @@ class KitsuManga {
   String? get endDateRaw => attributes['endDate'] as String?;
   DateTime? get endDate =>
       endDateRaw != null ? DateTime.parse(endDateRaw!) : null;
-  int get popularityRank => attributes['popularityRank'] as int;
+  int? get popularityRank => attributes['popularityRank'] as int?;
   int? get ratingRank => attributes['ratingRank'] as int?;
   KitsuAgeRating? get ageRating => attributes['ageRating'] != null
       ? parseKitsuAgeRating(attributes['ageRating'] as String)
