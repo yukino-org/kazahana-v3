@@ -18,11 +18,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    AppLoader.initialize().then((final _) async {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    // AppLoader.initialize().then((final _) async {
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
   }
 
   @override

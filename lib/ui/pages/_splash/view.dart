@@ -8,25 +8,42 @@ class UnderScoreSplashPage extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                AppMeta.name,
-                style: TextStyle(
-                  fontFamily: Fonts.greatVibes,
-                  fontSize:
-                      Theme.of(context).textTheme.displayLarge!.fontSize! * 1.2,
+        body: Stack(
+          children: <Widget>[
+            Align(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    AppMeta.name,
+                    style: TextStyle(
+                      fontFamily: Fonts.greatVibes,
+                      fontSize:
+                          Theme.of(context).textTheme.displayLarge!.fontSize! *
+                              1.2,
+                    ),
+                  ),
+                  Text(
+                    'v${AppMeta.version}',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: EdgeInsets.all(rem(1)),
+                child: Text(
+                  AppMeta.yuki,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline3!
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
-              SizedBox(height: rem(1.5)),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2.5,
-                child: LinearProgressIndicator(minHeight: rem(0.1)),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
 }

@@ -31,8 +31,15 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
             ),
           ],
         ),
-        body: Center(
-          child: Text('Home page moment'),
+        body: const Center(child: Text('Home page moment')),
+        bottomNavigationBar: Row(
+          children: <Widget>[
+            TextButton.icon(
+              icon: const Icon(Icons.abc),
+              label: Text(Translator.t.anime()),
+              onPressed: () {},
+            )
+          ],
         ),
       );
 }

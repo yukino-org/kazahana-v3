@@ -3,6 +3,12 @@ import 'model.dart';
 
 class EnTranslation implements Translations {
   @override
+  String anime() => 'Anime';
+
+  @override
+  String manga() => 'Manga';
+
+  @override
   String searchAnime() => 'Search an anime';
 
   @override

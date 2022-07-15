@@ -1,7 +1,7 @@
 name: kazahana
-description: A new Flutter project.
+description: An extension-based Anime and Manga client.
 publish_to: none
-version: 1.0.0
+version: 3.0.0
 
 environment:
     sdk: ">=2.18.0-272.0.dev <3.0.0"
@@ -35,6 +35,7 @@ dev_dependencies:
         git:
             url: https://github.com/yukino-org/packages.git
             ref: dart_devx
+    image: ^3.2.0
     json_serializable: ^6.3.1
 
 flutter:
