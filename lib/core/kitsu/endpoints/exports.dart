@@ -1,2 +1,2 @@
-export 'anime_search.dart';
-export 'manga_search.dart';
+export 'anime.dart';
+export 'manga.dart';

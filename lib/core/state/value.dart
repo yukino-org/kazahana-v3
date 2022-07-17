@@ -11,43 +11,58 @@ class StatedValue<T> {
   Object? error;
   StackTrace? stackTrace;
 
-  // ignore: use_setters_to_change_properties
-  void _setState(final States state) {
+  void _change(
+    final States state, {
+    final T? value,
+    final Object? error,
+    final StackTrace? stackTrace,
+  }) {
     this.state = state;
+    if (value != null) {
+      this.value = value;
+    }
+    if (error != null) {
+      this.error = error;
+    }
+    if (stackTrace != null) {
+      this.stackTrace = stackTrace;
+    }
   }
 
-  // ignore: use_setters_to_change_properties
-  void _setValue(final T value) {
-    this.value = value;
+  void waiting([final T? value]) {
+    _change(States.waiting, value: value);
   }
 
-  void _setError([final Object? error, final StackTrace? stackTrace]) {
-    this.error = error;
-    this.stackTrace = stackTrace;
-  }
-
-  void loading() {
-    _setState(States.processing);
+  void loading([final T? value]) {
+    _change(States.processing, value: value);
   }
 
   void finish(final T value) {
-    _setState(States.finished);
-    _setValue(value);
+    _change(States.finished, value: value);
   }
 
   void fail([
     final Object? error,
     final StackTrace? stackTrace,
   ]) {
-    _setState(States.failed);
-    _setError(error, stackTrace);
+    _change(States.failed, error: error, stackTrace: stackTrace);
   }
+
+  bool get isWaiting => state == States.waiting;
+  bool get isProcessing => state == States.processing;
+  bool get hasFinished => state == States.finished;
+  bool get hasFailed => state == States.failed;
 }
 
 class ListenableStatedValue<T> extends StatedValue<T> with ChangeNotifier {
   @override
-  void _setState(final States state) {
-    super._setState(state);
+  void _change(
+    final States state, {
+    final T? value,
+    final Object? error,
+    final StackTrace? stackTrace,
+  }) {
+    super._change(state, value: value, error: error, stackTrace: stackTrace);
     notifyListeners();
   }
 }

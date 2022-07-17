@@ -9,6 +9,7 @@ abstract class AppLoader {
   static Future<void> initialize() async {
     await Paths.initialize();
     await SettingsDatabase.initialize();
+    await CacheDatabase.initialize();
     await TenkaManager.initialize();
     await Translator.initialize();
     ready = true;

@@ -21,6 +21,7 @@ Future<void> runBuildRunner({
       'run',
       'build_runner',
       'build',
+      '--fail-on-severe',
       if (deleteConflictingOutputs) '--delete-conflicting-outputs',
     ],
     mode: ProcessStartMode.inheritStdio,

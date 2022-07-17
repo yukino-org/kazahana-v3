@@ -13,6 +13,11 @@ class SearchPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void reset() {
+    results.waiting();
+    notifyListeners();
+  }
+
   Future<void> search(final String terms) async {
     results.loading();
     notifyListeners();
@@ -21,11 +26,11 @@ class SearchPageProvider with ChangeNotifier {
       final List<dynamic> values;
       switch (type) {
         case TenkaType.anime:
-          values = await KitsuAnimeSearchEndpoint.search(terms);
+          values = await KitsuAnimeEndpoints.search(terms);
           break;
 
         case TenkaType.manga:
-          values = await KitsuMangaSearchEndpoint.search(terms);
+          values = await KitsuMangaEndpoints.search(terms);
           break;
       }
       results.finish(

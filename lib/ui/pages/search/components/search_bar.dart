@@ -1,10 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tenka/tenka.dart';
-import 'package:utilx/utils.dart';
 import '../../../../core/exports.dart';
+import '../../../exports.dart';
 import '../provider.dart';
 
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
@@ -76,7 +75,7 @@ class _SearchBarState extends State<SearchBar> {
               .map(
                 (final TenkaType x) => DropdownMenuItem<TenkaType>(
                   value: x,
-                  child: Text(StringUtils.capitalize(x.name)),
+                  child: Text(x.titleCase),
                 ),
               )
               .toList(),
@@ -92,6 +91,16 @@ class _SearchBarState extends State<SearchBar> {
           },
         ),
       );
+
+  void onCloseButtonTap(final SearchPageProvider provider) {
+    if (textEditingController.text.isNotEmpty) {
+      textEditingController.clear();
+      provider.reset();
+      return;
+    }
+
+    Beamer.of(context).popRoute();
+  }
 
   @override
   Widget build(final BuildContext context) => Consumer<SearchPageProvider>(
@@ -145,6 +154,24 @@ class _SearchBarState extends State<SearchBar> {
                         ),
                       ),
                     ),
+                    SizedBox(width: rem(0.4)),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(rem(1)),
+                        child: Padding(
+                          padding: EdgeInsets.all(rem(0.2)),
+                          child: Icon(
+                            Icons.close,
+                            size:
+                                Theme.of(context).textTheme.bodyText1?.fontSize,
+                            color: Theme.of(context).textTheme.caption?.color,
+                          ),
+                        ),
+                        onTap: () => onCloseButtonTap(provider),
+                      ),
+                    ),
+                    SizedBox(width: rem(0.2)),
                   ],
                 ),
               ),

@@ -15,5 +15,44 @@ class EnTranslation implements Translations {
   String searchManga() => 'Search a manga';
 
   @override
+  String mostPopularAnimes() => 'Most Popular Animes';
+
+  @override
+  String topOngoingAnimes() => 'Top Ongoing Animes';
+
+  @override
+  String mostPopularMangas() => 'Most Popular Mangas';
+
+  @override
+  String topOngoingMangas() => 'Top Ongoing Mangas';
+
+  @override
+  String current() => 'Ongoing';
+
+  @override
+  String finished() => 'Finished';
+
+  @override
+  String tba() => 'TBA';
+
+  @override
+  String unreleased() => 'Unreleased';
+
+  @override
+  String upcoming() => 'Upcoming';
+
+  @override
+  String winter() => 'Winter';
+
+  @override
+  String spring() => 'Spring';
+
+  @override
+  String summer() => 'Summer';
+
+  @override
+  String autumn() => 'Autumn';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

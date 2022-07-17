@@ -10,11 +10,11 @@ const int defaultImageSize = 1000;
 const int overlayContentSize = 200;
 
 const List<TwinTuple<int, String>> androidIconSizes = <TwinTuple<int, String>>[
-  TwinTuple<int, String>(defaultImageSize ~/ 4, 'mdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 3, 'hdpi'),
+  TwinTuple<int, String>(defaultImageSize ~/ 1, 'mdpi'),
+  TwinTuple<int, String>(defaultImageSize ~/ 1.5, 'hdpi'),
   TwinTuple<int, String>(defaultImageSize ~/ 2, 'xhdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 1.5, 'xxhdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 1, 'xxxhdpi'),
+  TwinTuple<int, String>(defaultImageSize ~/ 3, 'xxhdpi'),
+  TwinTuple<int, String>(defaultImageSize ~/ 4, 'xxxhdpi'),
 ];
 
 String getAndroidIconPath(final String code) => path.join(
