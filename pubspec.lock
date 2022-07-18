@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.0"
+  anilist:
+    dependency: "direct main"
+    description:
+      path: "packages/anilist"
+      relative: true
+    source: path
+    version: "0.0.0"
   animations:
     dependency: "direct main"
     description:
@@ -181,7 +188,7 @@ packages:
     description:
       path: "."
       ref: dart_devx
-      resolved-ref: fd4d70ed67925465e416a6705b29c51c73c1973f
+      resolved-ref: d7ec26e80057e713806c5b8ccc4d39d25d3ad63e
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -266,7 +273,7 @@ packages:
     source: hosted
     version: "0.15.0"
   http:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -331,10 +338,12 @@ packages:
   lint:
     dependency: transitive
     description:
-      name: lint
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.8.2"
+      path: "."
+      ref: master
+      resolved-ref: b5da48d51dda2c17ea93761d08b0c064e30c43d6
+      url: "https://github.com/zyrouge/dart-lint.git"
+    source: git
+    version: "1.9.0"
   logging:
     dependency: transitive
     description:
@@ -524,6 +533,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  shared:
+    dependency: "direct main"
+    description:
+      path: "packages/shared"
+      relative: true
+    source: path
+    version: "0.0.0"
   shelf:
     dependency: transitive
     description:
@@ -597,7 +613,7 @@ packages:
     description:
       path: "."
       ref: dart_tenka
-      resolved-ref: ca4eea586be7d61496680086defce8e79154a809
+      resolved-ref: "8ba101d8949191b22c8676ebcd763de8884ae4b1"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "1.0.5"
@@ -606,7 +622,7 @@ packages:
     description:
       path: "."
       ref: dart_tenka_runtime
-      resolved-ref: f2eb79959642e52d15718e02162f505061cf4208
+      resolved-ref: "124094c5c9c032dd2b2cdfbd00dfb0892cea6748"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -636,7 +652,7 @@ packages:
     description:
       path: "."
       ref: dart_utilx
-      resolved-ref: ed83bf3b318a2f56fecd71f6f73a577683a747f7
+      resolved-ref: "7b2ddc4c01806acf239b47eba3bda5e59f983f5c"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -689,6 +705,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  zlint:
+    dependency: transitive
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "99a2ee37922c0f3d144695ca521c3c0533f25b85"
+      url: "https://github.com/zyrouge/dart_zlint.git"
+    source: git
+    version: "0.0.0"
 sdks:
-  dart: ">=2.18.0-272.0.dev <3.0.0"
+  dart: ">=2.19.0-5.0.dev <3.0.0"
   flutter: ">=3.0.0"

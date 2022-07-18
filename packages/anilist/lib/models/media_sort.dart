@@ -1,0 +1,45 @@
+import 'package:utilx/utils.dart';
+
+enum AnilistMediaSort {
+  id,
+  idDesc,
+  titleRomaji,
+  titleRomajiDesc,
+  titleEnglish,
+  titleEnglishDesc,
+  titleNative,
+  titleNativeDesc,
+  type,
+  typeDesc,
+  format,
+  formatDesc,
+  startDate,
+  startDateDesc,
+  endDate,
+  endDateDesc,
+  score,
+  scoreDesc,
+  popularity,
+  popularityDesc,
+  trending,
+  trendingDesc,
+  episodes,
+  episodesDesc,
+  duration,
+  durationDesc,
+  status,
+  statusDesc,
+  chapters,
+  chaptersDesc,
+  volumes,
+  volumesDesc,
+  updatedAt,
+  updatedAtDesc,
+  searchMatch,
+  favourites,
+  favouritesDesc,
+}
+
+extension AnilistMediaSortUtils on AnilistMediaSort {
+  String get stringify => StringCase(name).snakeCase.toUpperCase();
+}

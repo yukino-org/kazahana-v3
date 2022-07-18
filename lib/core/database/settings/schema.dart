@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:utilx/locale.dart';
 import '../../utils/exports.dart';
 
 part 'schema.g.dart';

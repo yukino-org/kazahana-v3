@@ -24,11 +24,12 @@ Future<void> runBuildRunner({
       '--fail-on-severe',
       if (deleteConflictingOutputs) '--delete-conflicting-outputs',
     ],
-    mode: ProcessStartMode.inheritStdio,
   );
-  watch.stop();
+  process.stdout.listen(stdout.add, onError: stdout.addError);
 
   final int exitCode = await process.exitCode;
+  watch.stop();
+
   if (exitCode == 78 && !deleteConflictingOutputs) {
     _logger.info('Failed with error code $exitCode');
     _logger.info('Retrying with --delete-conflicting-outputs flag...');

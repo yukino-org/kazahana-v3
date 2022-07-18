@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tenka/tenka.dart';
 import '../../../../core/exports.dart';
-import '../../../../core/kitsu/endpoints/seasonal_trends.dart';
 import '../../../components/exports.dart';
 import '../provider.dart';
-import 'kitsu_slide.dart';
+import 'anilist_media_slide.dart';
 
 class UnderScoreHomePageBody extends StatelessWidget {
   const UnderScoreHomePageBody({
@@ -13,7 +12,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
   }) : super(key: key);
 
   Widget buildOnWaiting(final BuildContext _) => SizedBox(
-        height: rem(10),
+        height: rem(12),
         child: const Center(child: CircularProgressIndicator()),
       );
 
@@ -23,7 +22,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
           results.state,
           waiting: buildOnWaiting,
           processing: buildOnWaiting,
-          finished: (final _) => KitsuRow(results.value),
+          finished: (final _) => AnilistMediaRow(results.value),
           failed: (final _) => const Text('Error'),
         ),
       );
@@ -41,7 +40,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
         child: Text(text, style: Theme.of(context).textTheme.headline6),
       );
 
-  Widget buildTrendsSlideshow(final StatedValue<KitsuSeasonTrendsData> data) =>
+  Widget buildTrendsSlideshow(final StatedValue<List<AnilistMedia>> data) =>
       StatedBuilder(
         data.state,
         waiting: buildOnWaiting,
@@ -51,8 +50,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
           child: Slideshow(
             slideDuration: defaultSlideDuration,
             animationDuration: AnimationDurations.defaultNormalAnimation,
-            children: data.value.data
-                .map((final KitsuAnime x) => KitsuSlide(x))
+            children: data.value
+                .map((final AnilistMedia x) => AnilistMediaSlide(x))
                 .toList(),
           ),
         ),
@@ -84,6 +83,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            buildTrendsSlideshow(provider.trendingMangas),
             SizedBox(height: rem(0.75)),
             buildText(Translator.t.topOngoingMangas(), context: context),
             buildCarousel(provider.topOngoingMangas),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tenka/tenka.dart';
 import '../../../../core/exports.dart';
 import '../../../exports.dart';
 import '../provider.dart';
@@ -12,7 +11,7 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  _SearchBarState createState() => _SearchBarState();
+  State<SearchBar> createState() => _SearchBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(rem(2.5));
@@ -39,16 +38,6 @@ class _SearchBarState extends State<SearchBar> {
     super.dispose();
   }
 
-  String getTextFieldPlaceholder(final TenkaType type) {
-    switch (type) {
-      case TenkaType.anime:
-        return Translator.t.searchAnime();
-
-      case TenkaType.manga:
-        return Translator.t.searchManga();
-    }
-  }
-
   void onInputChange(
     final String input, {
     required final SearchPageProvider provider,
@@ -63,34 +52,6 @@ class _SearchBarState extends State<SearchBar> {
     lastInputTime = DateTime.now().millisecondsSinceEpoch;
     lastInputText = input;
   }
-
-  Widget buildDropDown({
-    required final BuildContext context,
-    required final SearchPageProvider provider,
-  }) =>
-      DropdownButtonHideUnderline(
-        child: DropdownButton<TenkaType>(
-          value: provider.type,
-          items: TenkaType.values
-              .map(
-                (final TenkaType x) => DropdownMenuItem<TenkaType>(
-                  value: x,
-                  child: Text(x.titleCase),
-                ),
-              )
-              .toList(),
-          onChanged: (final TenkaType? value) {
-            if (value == null || provider.type == value) {
-              return;
-            }
-
-            provider.setType(value);
-            if (textEditingController.text.isEmpty) return;
-
-            provider.search(textEditingController.text);
-          },
-        ),
-      );
 
   void onCloseButtonTap(final SearchPageProvider provider) {
     if (textEditingController.text.isNotEmpty) {
@@ -126,12 +87,6 @@ class _SearchBarState extends State<SearchBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(width: rem(0.5)),
-                    buildDropDown(context: context, provider: provider),
-                    VerticalDivider(
-                      indent: rem(0.25),
-                      endIndent: rem(0.25),
-                    ),
-                    SizedBox(width: rem(0.25)),
                     Icon(
                       Icons.search,
                       size: Theme.of(context).textTheme.bodyText1?.fontSize,
@@ -147,7 +102,7 @@ class _SearchBarState extends State<SearchBar> {
                           controller: textEditingController,
                           autofocus: true,
                           decoration: InputDecoration.collapsed(
-                            hintText: getTextFieldPlaceholder(provider.type),
+                            hintText: Translator.t.searchAnAnimeOrManga(),
                           ),
                           onChanged: (final String input) =>
                               onInputChange(input, provider: provider),

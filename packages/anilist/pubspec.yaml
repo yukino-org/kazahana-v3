@@ -1,0 +1,21 @@
+name: anilist
+description: "-"
+version: 0.0.0
+publish_to: none
+
+environment:
+    sdk: ">=2.19.0-5.0.dev <3.0.0"
+
+dependencies:
+    shared:
+        path: ../shared
+    utilx:
+        git:
+            url: https://github.com/yukino-org/packages.git
+            ref: dart_utilx
+
+dev_dependencies:
+    devx:
+        git:
+            url: https://github.com/yukino-org/packages.git
+            ref: dart_devx

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as path;
-import 'package:utilx/utils.dart';
 import '../../paths.dart';
 import '../../utils/exports.dart';
 import 'schema.dart';

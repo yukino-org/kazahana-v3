@@ -3,8 +3,7 @@ import 'package:utilx/locale.dart';
 abstract class Translations {
   String anime();
   String manga();
-  String searchAnime();
-  String searchManga();
+  String searchAnAnimeOrManga();
   String mostPopularAnimes();
   String topOngoingAnimes();
   String mostPopularMangas();
@@ -17,7 +16,7 @@ abstract class Translations {
   String winter();
   String spring();
   String summer();
-  String autumn();
+  String fall();
 
   Locale get locale;
 }

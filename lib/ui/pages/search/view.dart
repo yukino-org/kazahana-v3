@@ -11,7 +11,7 @@ class SearchPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
@@ -39,10 +39,7 @@ class _SearchPageState extends State<SearchPage> {
                   height: MediaQuery.of(context).size.height / 1.5,
                   child: const Center(child: CircularProgressIndicator()),
                 ),
-                finished: (final _) => ResultsGrid(
-                  type: provider.results.value.middle,
-                  results: provider.results.value.last,
-                ),
+                finished: (final _) => ResultsGrid(provider.results.value.last),
                 failed: (final _) => Text(provider.results.error.toString()),
               ),
             ),

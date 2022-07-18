@@ -7,16 +7,19 @@ environment:
     sdk: ">=2.18.0-272.0.dev <3.0.0"
 
 dependencies:
+    anilist:
+        path: packages/anilist
     animations: ^2.0.3
     beamer: ^1.5.0
     flutter:
         sdk: flutter
-    http: ^0.13.4
     json_annotation: ^4.6.0
     path: ^1.8.2
     path_provider: ^2.0.11
     perks: ^1.0.0
     provider: ^6.0.3
+    shared:
+        path: packages/shared
     tenka:
         git:
             url: https://github.com/yukino-org/packages.git

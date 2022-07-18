@@ -7,7 +7,7 @@ import '../utils/exports.dart';
 
 const Logger _logger = Logger('icon');
 const int defaultImageSize = 1000;
-const int overlayContentSize = 200;
+const int overlayContentSize = 250;
 
 const List<TwinTuple<int, String>> androidIconSizes = <TwinTuple<int, String>>[
   TwinTuple<int, String>(defaultImageSize ~/ 1, 'mdpi'),

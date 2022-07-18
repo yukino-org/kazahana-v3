@@ -9,10 +9,7 @@ class EnTranslation implements Translations {
   String manga() => 'Manga';
 
   @override
-  String searchAnime() => 'Search an anime';
-
-  @override
-  String searchManga() => 'Search a manga';
+  String searchAnAnimeOrManga() => 'Search an anime or manga';
 
   @override
   String mostPopularAnimes() => 'Most Popular Animes';
@@ -51,7 +48,7 @@ class EnTranslation implements Translations {
   String summer() => 'Summer';
 
   @override
-  String autumn() => 'Autumn';
+  String fall() => 'Fall';
 
   @override
   final Locale locale = const Locale(LanguageCodes.en);

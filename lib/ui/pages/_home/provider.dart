@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:tenka/tenka.dart';
 import '../../../core/exports.dart';
-import '../../../core/kitsu/endpoints/seasonal_trends.dart';
 
 class UnderScoreHomePageProvider with ChangeNotifier {
   TenkaType type = TenkaType.anime;
 
-  final StatedValue<KitsuSeasonTrendsData> trendingAnimes =
-      StatedValue<KitsuSeasonTrendsData>();
-  final StatedValue<List<KitsuAnime>> topOngoingAnimes =
-      StatedValue<List<KitsuAnime>>();
-  final StatedValue<List<KitsuAnime>> mostPopularAnimes =
-      StatedValue<List<KitsuAnime>>();
+  final StatedValue<List<AnilistMedia>> trendingAnimes =
+      StatedValue<List<AnilistMedia>>();
+  final StatedValue<List<AnilistMedia>> topOngoingAnimes =
+      StatedValue<List<AnilistMedia>>();
+  final StatedValue<List<AnilistMedia>> mostPopularAnimes =
+      StatedValue<List<AnilistMedia>>();
 
-  final StatedValue<List<KitsuManga>> topOngoingMangas =
-      StatedValue<List<KitsuManga>>();
-  final StatedValue<List<KitsuManga>> mostPopularMangas =
-      StatedValue<List<KitsuManga>>();
+  final StatedValue<List<AnilistMedia>> trendingMangas =
+      StatedValue<List<AnilistMedia>>();
+  final StatedValue<List<AnilistMedia>> topOngoingMangas =
+      StatedValue<List<AnilistMedia>>();
+  final StatedValue<List<AnilistMedia>> mostPopularMangas =
+      StatedValue<List<AnilistMedia>>();
 
   void initialize() {
     fetch(type);
@@ -37,6 +38,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
         break;
 
       case TenkaType.manga:
+        fetchTrendingMangas();
         fetchTopOngoingMangas();
         fetchMostPopularMangas();
         break;
@@ -47,8 +49,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     if (!trendingAnimes.isWaiting) return;
 
     try {
-      trendingAnimes
-          .finish(await KitsuSeasonTrends.getTrendingAnimesBasedOnUpvotes());
+      trendingAnimes.finish(await AnilistMediaEndpoints.trendingAnimes());
     } catch (error, stackTrace) {
       trendingAnimes.fail(error, stackTrace);
     }
@@ -59,7 +60,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     if (!topOngoingAnimes.isWaiting) return;
 
     try {
-      topOngoingAnimes.finish(await KitsuAnimeEndpoints.topOngoingAnimes());
+      topOngoingAnimes.finish(await AnilistMediaEndpoints.topOngoingAnimes());
     } catch (error, stackTrace) {
       topOngoingAnimes.fail(error, stackTrace);
     }
@@ -70,9 +71,20 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     if (!mostPopularAnimes.isWaiting) return;
 
     try {
-      mostPopularAnimes.finish(await KitsuAnimeEndpoints.mostPopularAnimes());
+      mostPopularAnimes.finish(await AnilistMediaEndpoints.mostPopularAnimes());
     } catch (error, stackTrace) {
       mostPopularAnimes.fail(error, stackTrace);
+    }
+    notifyListeners();
+  }
+
+  Future<void> fetchTrendingMangas() async {
+    if (!trendingMangas.isWaiting) return;
+
+    try {
+      trendingMangas.finish(await AnilistMediaEndpoints.trendingMangas());
+    } catch (error, stackTrace) {
+      trendingMangas.fail(error, stackTrace);
     }
     notifyListeners();
   }
@@ -81,7 +93,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     if (!topOngoingMangas.isWaiting) return;
 
     try {
-      topOngoingMangas.finish(await KitsuMangaEndpoints.topOngoingMangas());
+      topOngoingMangas.finish(await AnilistMediaEndpoints.topOngoingMangas());
     } catch (error, stackTrace) {
       topOngoingMangas.fail(error, stackTrace);
     }
@@ -92,7 +104,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     if (!mostPopularMangas.isWaiting) return;
 
     try {
-      mostPopularMangas.finish(await KitsuMangaEndpoints.mostPopularMangas());
+      mostPopularMangas.finish(await AnilistMediaEndpoints.mostPopularMangas());
     } catch (error, stackTrace) {
       mostPopularMangas.fail(error, stackTrace);
     }

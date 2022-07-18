@@ -12,7 +12,7 @@ class UnderScoreHomePage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _UnderScoreHomePageState createState() => _UnderScoreHomePageState();
+  State<UnderScoreHomePage> createState() => _UnderScoreHomePageState();
 }
 
 class _UnderScoreHomePageState extends State<UnderScoreHomePage> {

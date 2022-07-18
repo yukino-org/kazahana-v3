@@ -14,7 +14,7 @@ class Slideshow extends StatefulWidget {
   final Duration animationDuration;
 
   @override
-  _SlideshowState createState() => _SlideshowState();
+  State<Slideshow> createState() => _SlideshowState();
 }
 
 class _SlideshowState extends State<Slideshow>
