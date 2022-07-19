@@ -57,13 +57,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
-  beamer:
-    dependency: "direct main"
-    description:
-      name: beamer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.5.0"
   build:
     dependency: transitive
     description:
@@ -149,7 +142,7 @@ packages:
     source: hosted
     version: "4.1.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -222,11 +215,6 @@ packages:
     version: "1.0.1"
   flutter:
     dependency: "direct main"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
-  flutter_web_plugins:
-    dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -710,7 +698,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "99a2ee37922c0f3d144695ca521c3c0533f25b85"
+      resolved-ref: df449bafe3487ffda08f0af528e03b6cd3619605
       url: "https://github.com/zyrouge/dart_zlint.git"
     source: git
     version: "0.0.0"

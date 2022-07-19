@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import '../../../../core/exports.dart';
-import '../../../components/exports.dart';
+import '../../../exports.dart';
 
 class ResultsGrid extends StatelessWidget {
   const ResultsGrid(

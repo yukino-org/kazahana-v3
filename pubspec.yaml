@@ -10,7 +10,7 @@ dependencies:
     anilist:
         path: packages/anilist
     animations: ^2.0.3
-    beamer: ^1.5.0
+    collection: ^1.16.0
     flutter:
         sdk: flutter
     json_annotation: ^4.6.0

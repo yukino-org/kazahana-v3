@@ -1,5 +1,3 @@
-import 'package:animations/animations.dart';
-import 'package:flutter/material.dart';
 import '../../../core/exports.dart';
 import '../_home/view.dart';
 import '../_splash/view.dart';
@@ -27,6 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(final BuildContext context) => PageTransitionSwitcher(
+        duration: AnimationDurations.defaultLongAnimation,
         transitionBuilder: (
           final Widget child,
           final Animation<double> animation,

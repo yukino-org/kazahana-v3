@@ -24,21 +24,6 @@ class EnTranslation implements Translations {
   String topOngoingMangas() => 'Top Ongoing Mangas';
 
   @override
-  String current() => 'Ongoing';
-
-  @override
-  String finished() => 'Finished';
-
-  @override
-  String tba() => 'TBA';
-
-  @override
-  String unreleased() => 'Unreleased';
-
-  @override
-  String upcoming() => 'Upcoming';
-
-  @override
   String winter() => 'Winter';
 
   @override
@@ -49,6 +34,49 @@ class EnTranslation implements Translations {
 
   @override
   String fall() => 'Fall';
+
+  @override
+  String nEps(final String episodes) => '$episodes eps.';
+
+  @override
+  String nChs(final String chapters) => '$chapters chs.';
+
+  @override
+  String episodes() => 'Episodes';
+
+  @override
+  String chapters() => 'Chapters';
+
+  @override
+  String nMins(final String minutes) => '$minutes mins.';
+
+  @override
+  String nHrsNMins(final String hours, final String minutes) =>
+      '$hours hrs. ${nMins(minutes)}';
+
+  @override
+  String relations() => 'Relations';
+
+  @override
+  String cancelled() => 'Cancelled';
+
+  @override
+  String releasing() => 'Releasing';
+
+  @override
+  String notYetReleased() => 'Unreleased';
+
+  @override
+  String finished() => 'Finished';
+
+  @override
+  String hiatus() => 'Hiatus';
+
+  @override
+  String nsfw() => 'NSFW';
+
+  @override
+  String characters() => 'Characters';
 
   @override
   final Locale locale = const Locale(LanguageCodes.en);

@@ -1,5 +1,6 @@
 export 'anilist.dart';
 export 'app/exports.dart';
+export 'packages.dart';
 export 'paths.dart';
 export 'state/exports.dart';
 export 'tenka/exports.dart';

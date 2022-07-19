@@ -8,15 +8,24 @@ abstract class Translations {
   String topOngoingAnimes();
   String mostPopularMangas();
   String topOngoingMangas();
-  String current();
-  String finished();
-  String tba();
-  String unreleased();
-  String upcoming();
   String winter();
   String spring();
   String summer();
   String fall();
+  String nEps(final String episodes);
+  String nChs(final String chapters);
+  String episodes();
+  String chapters();
+  String nMins(final String minutes);
+  String nHrsNMins(final String hours, final String minutes);
+  String relations();
+  String cancelled();
+  String releasing();
+  String notYetReleased();
+  String finished();
+  String hiatus();
+  String nsfw();
+  String characters();
 
   Locale get locale;
 }

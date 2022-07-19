@@ -1,16 +1,21 @@
-import 'package:flutter/material.dart';
-import '../../core/exports.dart';
+import '../../../core/exports.dart';
+import '../../exports.dart';
 
 class AnilistMediaTile extends StatelessWidget {
   const AnilistMediaTile(
     this.media, {
+    this.additionalBottomChips = const <Widget>[],
     final Key? key,
   }) : super(key: key);
 
   final AnilistMedia media;
+  final List<Widget> additionalBottomChips;
 
   @override
   Widget build(final BuildContext context) => InkWell(
+        onTap: () {
+          Navigator.of(context).pusher.pushToViewPageFromMedia(media);
+        },
         borderRadius: BorderRadius.circular(rem(0.25)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -41,25 +46,25 @@ class AnilistMediaTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: ListUtils.insertBetween(
                             <Widget>[
-                              buildChip(
-                                context: context,
-                                icon: popularityIcon,
-                                child: Text(media.popularity.toString()),
-                              ),
                               if (media.averageScore != null)
-                                buildChip(
+                                buildRatingChip(
                                   context: context,
-                                  icon: ratingIcon,
-                                  child: Text('${media.averageScore}%'),
+                                  media: media,
                                 ),
-                              buildChip(
+                              buildWatchtimeChip(
                                 context: context,
-                                icon:
-                                    media.status == AnilistMediaStatus.releasing
-                                        ? ongoingIcon
-                                        : null,
-                                child: Text(media.format.titleCase),
+                                media: media,
                               ),
+                              buildFormatChip(
+                                context: context,
+                                media: media,
+                              ),
+                              if (media.isAdult)
+                                AnilistMediaTile.buildNSFWChip(
+                                  context: context,
+                                  media: media,
+                                ),
+                              ...additionalBottomChips,
                             ],
                             SizedBox(height: rem(0.2)),
                           ),
@@ -80,17 +85,17 @@ class AnilistMediaTile extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () {},
       );
 
   static Widget buildChip({
     required final BuildContext context,
     required final Widget child,
     final Widget? icon,
+    final Color? color,
   }) =>
       DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).bottomAppBarColor,
+          color: color ?? Theme.of(context).bottomAppBarColor,
           borderRadius: BorderRadius.circular(rem(0.2)),
         ),
         child: Padding(
@@ -115,9 +120,65 @@ class AnilistMediaTile extends StatelessWidget {
   static Icon get ratingIcon =>
       Icon(Icons.star, color: ColorPalettes.yellow.c500);
 
-  static Icon get popularityIcon =>
-      Icon(Icons.tag, color: ColorPalettes.blue.c500);
-
   static Icon get ongoingIcon =>
       Icon(Icons.trip_origin, color: ColorPalettes.green.c500);
+
+  static Icon get airdateIcon =>
+      Icon(Icons.sync_alt, color: ColorPalettes.fuchsia.c500);
+
+  static Widget buildFormatChip({
+    required final BuildContext context,
+    required final AnilistMedia media,
+  }) =>
+      AnilistMediaTile.buildChip(
+        context: context,
+        icon: media.status == AnilistMediaStatus.releasing
+            ? AnilistMediaTile.ongoingIcon
+            : null,
+        child: Text(media.format.titleCase),
+      );
+
+  static Widget buildWatchtimeChip({
+    required final BuildContext context,
+    required final AnilistMedia media,
+  }) =>
+      AnilistMediaTile.buildChip(
+        context: context,
+        child: Text(media.watchtime),
+      );
+
+  static Widget buildRatingChip({
+    required final BuildContext context,
+    required final AnilistMedia media,
+  }) =>
+      AnilistMediaTile.buildChip(
+        context: context,
+        icon: AnilistMediaTile.ratingIcon,
+        child: Text('${media.averageScore}%'),
+      );
+
+  static Widget buildAirdateChip({
+    required final BuildContext context,
+    required final AnilistMedia media,
+  }) =>
+      AnilistMediaTile.buildChip(
+        context: context,
+        icon: airdateIcon,
+        child: Text(
+          '${prettyAnilistFuzzyDate(media.startDate)} - ${prettyAnilistFuzzyDate(media.endDate)}',
+        ),
+      );
+
+  static Widget buildNSFWChip({
+    required final BuildContext context,
+    required final AnilistMedia media,
+  }) =>
+      AnilistMediaTile.buildChip(
+        context: context,
+        color: ColorPalettes.red.c500,
+        child: Text(Translator.t.nsfw()),
+      );
+
+  static String prettyAnilistFuzzyDate(final AnilistFuzzyDate? date) =>
+      date?.isValidDateTime ?? false ? date!.pretty : '?';
 }

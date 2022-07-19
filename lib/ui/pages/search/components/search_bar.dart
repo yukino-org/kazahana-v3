@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../../../core/exports.dart';
-import '../../../exports.dart';
 import '../provider.dart';
 
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
@@ -60,7 +57,7 @@ class _SearchBarState extends State<SearchBar> {
       return;
     }
 
-    Beamer.of(context).popRoute();
+    Navigator.of(context).pop();
   }
 
   @override

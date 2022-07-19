@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tenka/tenka.dart';
 import '../../../core/exports.dart';
-import '../../router/exports.dart';
+import '../../exports.dart';
 import 'components/exports.dart';
 import 'provider.dart';
 
@@ -38,7 +35,7 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
                 onChanged: (final TenkaType? type) {
                   if (type == null) return;
                   provider.setType(type);
-                  Beamer.of(context).popRoute();
+                  Navigator.of(context).pop();
                 },
               ),
             ),
@@ -116,7 +113,7 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
                         IconButton(
                           icon: const Icon(Icons.search),
                           onPressed: () {
-                            Beamer.of(context).beamToNamed(RouteNames.search);
+                            Navigator.of(context).pusher.pushToSearchPage();
                           },
                         ),
                         SizedBox(width: rem(0.5)),

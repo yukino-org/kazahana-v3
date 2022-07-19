@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:tenka/tenka.dart';
 import '../../../core/exports.dart';
 
-class UnderScoreHomePageProvider with ChangeNotifier {
+class UnderScoreHomePageProvider extends StatedChangeNotifier {
   TenkaType type = TenkaType.anime;
 
   final StatedValue<List<AnilistMedia>> trendingAnimes =
@@ -53,6 +51,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       trendingAnimes.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 
@@ -64,6 +63,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       topOngoingAnimes.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 
@@ -75,6 +75,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       mostPopularAnimes.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 
@@ -86,6 +87,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       trendingMangas.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 
@@ -97,6 +99,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       topOngoingMangas.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 
@@ -108,6 +111,7 @@ class UnderScoreHomePageProvider with ChangeNotifier {
     } catch (error, stackTrace) {
       mostPopularMangas.fail(error, stackTrace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 }

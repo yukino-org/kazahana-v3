@@ -1,4 +1,4 @@
-part 'meta.g.dart';
+part 'meta.generated.dart';
 
 abstract class AppMeta {
   static const String name = 'Kazahana';

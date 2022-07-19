@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tenka/tenka.dart';
 import '../../../../core/exports.dart';
 import '../../../components/exports.dart';
 import '../provider.dart';
-import 'anilist_media_slide.dart';
 
 class UnderScoreHomePageBody extends StatelessWidget {
   const UnderScoreHomePageBody({
@@ -16,7 +12,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
         child: const Center(child: CircularProgressIndicator()),
       );
 
-  Widget buildCarousel(final StatedValue<List<dynamic>> results) => Padding(
+  Widget buildCarousel(final StatedValue<List<AnilistMedia>> results) =>
+      Padding(
         padding: EdgeInsets.only(bottom: rem(1)),
         child: StatedBuilder(
           results.state,
@@ -58,14 +55,14 @@ class UnderScoreHomePageBody extends StatelessWidget {
         failed: (final _) => const Text('Error'),
       );
 
-  @override
-  Widget build(final BuildContext context) {
+  Widget buildBody(final BuildContext context) {
     final UnderScoreHomePageProvider provider =
         context.watch<UnderScoreHomePageProvider>();
 
     switch (provider.type) {
       case TenkaType.anime:
         return Column(
+          key: const ValueKey<TenkaType>(TenkaType.anime),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -80,6 +77,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
 
       case TenkaType.manga:
         return Column(
+          key: const ValueKey<TenkaType>(TenkaType.manga),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -93,6 +91,26 @@ class UnderScoreHomePageBody extends StatelessWidget {
         );
     }
   }
+
+  @override
+  Widget build(final BuildContext context) => PageTransitionSwitcher(
+        duration: AnimationDurations.defaultLongAnimation,
+        transitionBuilder: (
+          final Widget child,
+          final Animation<double> animation,
+          final Animation<double> secondaryAnimation,
+        ) =>
+            SharedAxisTransition(
+          transitionType: SharedAxisTransitionType.vertical,
+          fillColor: Colors.transparent,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          child: child,
+        ),
+        layoutBuilder: (final List<Widget> children) =>
+            Stack(children: children),
+        child: buildBody(context),
+      );
 
   static const Duration defaultSlideDuration = Duration(seconds: 5);
 }

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import '../../../core/exports.dart';
 
-class SearchPageProvider with ChangeNotifier {
+class SearchPageProvider extends StatedChangeNotifier {
   final StatedValue<TwinTuple<String, List<AnilistMedia>>> results =
       StatedValue<TwinTuple<String, List<AnilistMedia>>>();
 
@@ -24,6 +23,7 @@ class SearchPageProvider with ChangeNotifier {
     } catch (err, trace) {
       results.fail(err, trace);
     }
+    if (!mounted) return;
     notifyListeners();
   }
 }
