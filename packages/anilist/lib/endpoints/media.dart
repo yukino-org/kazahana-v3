@@ -3,6 +3,30 @@ import '../models/exports.dart';
 import 'graphql.dart';
 
 abstract class AnilistMediaEndpoints {
+  static Future<AnilistMedia> fetchId(
+    final int id, {
+    final int page = 1,
+    final int perPage = 20,
+  }) async {
+    final AnilistGraphQLResponse resp = await AnilistGraphQL.request(
+      AnilistGraphQLRequest(
+        query: '''
+query (\$id: Int) {
+  Media (id: \$id) ${AnilistMedia.query}
+}
+''',
+        variables: <String, dynamic>{
+          'id': id,
+        },
+      ),
+    );
+
+    final JsonMap? data = resp.data;
+    if (data == null) throw resp.asException;
+
+    return AnilistMedia(data['Media'] as JsonMap);
+  }
+
   static Future<List<AnilistMedia>> search(
     final String terms, {
     final int page = 1,

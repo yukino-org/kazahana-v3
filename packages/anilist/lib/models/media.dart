@@ -1,16 +1,19 @@
 import 'package:utilx/utils.dart';
+import '../endpoints/exports.dart';
 import '../utils.dart';
 import 'character_edge.dart';
 import 'fuzzy_date.dart';
 import 'media_format.dart';
 import 'media_status.dart';
 import 'media_type.dart';
+import 'relation_edge.dart';
 import 'seasons.dart';
 
 class AnilistMedia {
-  const AnilistMedia(this.json);
+  AnilistMedia(this.json);
 
   final JsonMap json;
+  List<AnilistRelationEdge>? relations;
 
   int get id => json['id'] as int;
   int? get idMal => json['idMal'] as int?;
@@ -34,6 +37,7 @@ class AnilistMedia {
   AnimeSeasons? get season => json['season'] != null
       ? parseAnimeSeason(json['season'] as String)
       : null;
+  int? get seasonYear => json['seasonYear'] as int?;
   int? get duration => json['duration'] as int?;
   int? get chapters => json['chapters'] as int?;
   int? get volumes => json['volumes'] as int?;
@@ -61,6 +65,10 @@ class AnilistMedia {
   AnilistMediaStatus get status =>
       parseAnilistMediaStatus(json['status'] as String);
 
+  Future<void> fetchAll() async {
+    relations = await AnilistMediaRelationEndpoints.fetchRelations(id);
+  }
+
   static const String query = '''
 {
   id
@@ -77,6 +85,7 @@ class AnilistMedia {
   startDate ${AnilistFuzzyDate.query}
   endDate ${AnilistFuzzyDate.query}
   season
+  seasonYear
   episodes
   duration
   chapters
