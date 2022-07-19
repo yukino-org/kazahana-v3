@@ -1,2 +1,2 @@
-export 'beamer.dart';
+export 'pusher.dart';
 export 'routes.dart';
