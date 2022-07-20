@@ -57,17 +57,27 @@ class ThemerThemeData {
   ThemeData get asThemeData {
     final Color backgroundColorLevel0 =
         background.getColorFromBrightness(brightness);
-
     final Color backgroundColorLevel1 =
         background.getColorFromBrightness(brightness, 1);
 
+    final Color lightColor = background.c0;
+    final Color darkColor = background.c900;
+    final Color contrastColor =
+        brightness == Brightness.light ? darkColor : lightColor;
+
     return ThemeData(
-      colorScheme: ColorScheme.fromSwatch(
+      colorScheme: ColorScheme(
         brightness: brightness,
-        primarySwatch: foreground.asMaterialColor,
-        accentColor: foreground.c500,
-        cardColor: backgroundColorLevel1,
-        backgroundColor: backgroundColorLevel0,
+        primary: foreground.c500,
+        onPrimary: lightColor,
+        secondary: foreground.c500,
+        onSecondary: contrastColor,
+        background: background.c500,
+        onBackground: contrastColor,
+        error: Colors.red,
+        onError: contrastColor,
+        surface: backgroundColorLevel0,
+        onSurface: contrastColor,
       ),
       fontFamily: fontFamily,
       useMaterial3: true,

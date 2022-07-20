@@ -28,7 +28,14 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(rem(1)),
               onTap: onPressed,
-              child: Center(child: icon),
+              child: Center(
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  child: icon,
+                ),
+              ),
             ),
           ),
         ),
