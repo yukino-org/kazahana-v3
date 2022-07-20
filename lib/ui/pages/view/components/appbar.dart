@@ -1,6 +1,4 @@
 import '../../../../core/exports.dart';
-import '../../../components/exports.dart';
-import '../../../exports.dart';
 import '../provider.dart';
 
 class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {

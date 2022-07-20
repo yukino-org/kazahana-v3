@@ -1,4 +1,4 @@
-export 'anilist.dart';
+export 'anilist/exports.dart';
 export 'app/exports.dart';
 export 'packages.dart';
 export 'paths.dart';

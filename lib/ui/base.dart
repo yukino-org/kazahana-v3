@@ -12,18 +12,9 @@ class BaseApp extends StatelessWidget {
         theme: Themer.defaultThemeData,
         onGenerateRoute: (final RouteSettings settings) {
           final RouteInfo route = RouteInfo(settings);
-          final RoutePage? page = RoutePages.all.firstWhereOrNull(
-            (final RoutePage x) => x.matches(route),
-          );
+          final RoutePage? page = RoutePages.findMatch(route);
           if (page == null) return null;
-          return PageRouteBuilder<dynamic>(
-            settings: settings,
-            pageBuilder: (final _, final __, final ___) => page.build(route),
-            transitionDuration: AnimationDurations.defaultNormalAnimation,
-            reverseTransitionDuration:
-                AnimationDurations.defaultNormalAnimation,
-            transitionsBuilder: RoutePage.defaultTransitionBuilder,
-          );
+          return page.buildRoutePage(route);
         },
       );
 }

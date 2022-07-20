@@ -4,6 +4,8 @@ export '../pages/home/route.dart';
 export '../pages/search/route.dart';
 export '../pages/view/route.dart';
 
+final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
+
 class RoutePusher {
   const RoutePusher(this.navigator);
 

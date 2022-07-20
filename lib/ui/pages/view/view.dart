@@ -53,10 +53,10 @@ class _ViewPageState extends State<ViewPage>
           ) =>
               NotificationListener<ScrollNotification>(
             onNotification: (final ScrollNotification scrollNotification) {
-              final bool hasScrolled =
+              final bool isAtTop =
                   scrollNotification.metrics.axis == Axis.vertical &&
                       scrollNotification.metrics.pixels == 0;
-              if (hasScrolled != appBarIsVisible) {
+              if (isAtTop != appBarIsVisible) {
                 appBarIsVisible = !appBarIsVisible;
                 appBarAnimationController.animateTo(appBarIsVisible ? 1 : 0);
               }

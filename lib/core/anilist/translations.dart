@@ -1,10 +1,8 @@
 import 'package:anilist/anilist.dart';
 import 'package:tenka/tenka.dart';
 import 'package:utilx/utils.dart';
-import 'translator/exports.dart';
-import 'utils/dates.dart';
-
-export 'package:anilist/anilist.dart';
+import '../translator/exports.dart';
+import '../utils/dates.dart';
 
 extension AnilistFuzzyDateTUtils on AnilistFuzzyDate {
   String get pretty => PrettyDates.constructDateString(

@@ -1,29 +1,24 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:perks/perks.dart';
 import '../../paths.dart';
 import '../../utils/exports.dart';
 import 'schema.dart';
 
 abstract class SettingsDatabase {
+  static final PerksFileAdapter adapter =
+      PerksFileAdapter(path.join(Paths.docsDir.path, 'settings.json'));
+
   static late SettingsSchema settings;
 
   static Future<void> initialize() async {
-    final File file = getSettingsFile();
-    if (await file.exists()) {
-      final String contents = await file.readAsString();
-      settings = SettingsSchema.fromJson(json.decode(contents) as JsonMap);
-      return;
-    }
-    settings = SettingsSchema();
+    final String content = await adapter.read();
+    settings = content.isNotEmpty
+        ? SettingsSchema.fromJson(json.decode(content) as JsonMap)
+        : SettingsSchema();
   }
 
   static Future<void> save() async {
-    final File file = getSettingsFile();
-    await FSUtils.ensureFile(file);
-    await file.writeAsString(json.encode(settings.toJson()));
+    await adapter.write(json.encode(settings.toJson()));
   }
-
-  static File getSettingsFile() =>
-      File(path.join(Paths.docsDir.path, 'settings.json'));
 }
