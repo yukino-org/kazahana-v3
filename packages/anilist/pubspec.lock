@@ -20,7 +20,7 @@ packages:
     description:
       path: "."
       ref: dart_devx
-      resolved-ref: "9827600d065c549df4cacd2d3119f04c97bee739"
+      resolved-ref: d7ec26e80057e713806c5b8ccc4d39d25d3ad63e
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -38,13 +38,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.1"
-  lints:
+  lint:
     dependency: transitive
     description:
-      name: lints
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
+      path: "."
+      ref: master
+      resolved-ref: b5da48d51dda2c17ea93761d08b0c064e30c43d6
+      url: "https://github.com/zyrouge/dart-lint.git"
+    source: git
+    version: "1.9.0"
   meta:
     dependency: transitive
     description:
@@ -101,6 +103,15 @@ packages:
       ref: dart_utilx
       resolved-ref: "7b2ddc4c01806acf239b47eba3bda5e59f983f5c"
       url: "https://github.com/yukino-org/packages.git"
+    source: git
+    version: "0.0.0"
+  zlint:
+    dependency: transitive
+    description:
+      path: "."
+      ref: main
+      resolved-ref: df449bafe3487ffda08f0af528e03b6cd3619605
+      url: "https://github.com/zyrouge/dart_zlint.git"
     source: git
     version: "0.0.0"
 sdks:

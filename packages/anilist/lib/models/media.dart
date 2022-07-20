@@ -4,6 +4,7 @@ import '../utils.dart';
 import 'character_edge.dart';
 import 'fuzzy_date.dart';
 import 'media_format.dart';
+import 'media_list.dart';
 import 'media_status.dart';
 import 'media_type.dart';
 import 'relation_edge.dart';
@@ -64,6 +65,9 @@ class AnilistMedia {
   int get popularity => json['popularity'] as int;
   AnilistMediaStatus get status =>
       parseAnilistMediaStatus(json['status'] as String);
+  AnilistMediaList? get mediaListEntry => json['mediaListEntry'] != null
+      ? AnilistMediaList(json['mediaListEntry'] as JsonMap)
+      : null;
 
   Future<void> fetchAll() async {
     relations = await AnilistMediaRelationEndpoints.fetchRelations(id);
@@ -111,6 +115,7 @@ class AnilistMedia {
   averageScore
   popularity
   status
+  mediaListEntry ${AnilistMediaList.query}
 }
 ''';
 }
