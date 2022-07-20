@@ -1,4 +1,5 @@
 import '../../../core/exports.dart';
+import '../../components/exports.dart';
 import 'components/exports.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -27,7 +28,10 @@ class _SettingsPageState extends State<SettingsPage> {
   _SettingsCategory category = _SettingsCategory.appearance;
 
   PreferredSizeWidget buildAppBar(final BuildContext context) {
-    final AppBar appBar = AppBar(title: Text(Translator.t.settings()));
+    final AppBar appBar = AppBar(
+      leading: const RoundedBackButton(),
+      title: Text(Translator.t.settings()),
+    );
     final double appBarHeight = appBar.preferredSize.height;
     final double height = (appBarHeight * 2) + 1;
 
@@ -36,16 +40,19 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         children: <Widget>[
           appBar,
-          Container(color: Theme.of(context).canvasColor, height: 1),
-          SizedBox(
+          const Divider(height: 1, thickness: 1),
+          Container(
+            color: Theme.of(context).bottomAppBarColor,
             height: appBarHeight,
             width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: rem(0.5)),
             child: DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true,
                 child: Container(
                   color: Theme.of(context).bottomAppBarColor,
                   child: DropdownButton<_SettingsCategory>(
+                    isExpanded: true,
                     value: category,
                     items: _SettingsCategory.values
                         .map(

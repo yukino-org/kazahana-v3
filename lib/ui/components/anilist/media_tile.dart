@@ -124,15 +124,6 @@ class AnilistMediaTile extends StatelessWidget {
         ),
       );
 
-  static Icon get ratingIcon =>
-      Icon(Icons.star, color: ColorPalettes.yellow.c500);
-
-  static Icon get ongoingIcon =>
-      Icon(Icons.trip_origin, color: ColorPalettes.green.c500);
-
-  static Icon get airdateIcon =>
-      Icon(Icons.sync_alt, color: ColorPalettes.fuchsia.c500);
-
   static Widget buildFormatChip({
     required final BuildContext context,
     required final AnilistMedia media,
@@ -171,9 +162,7 @@ class AnilistMediaTile extends StatelessWidget {
       AnilistMediaTile.buildChip(
         context: context,
         icon: airdateIcon,
-        child: Text(
-          '${prettyAnilistFuzzyDate(media.startDate)} - ${prettyAnilistFuzzyDate(media.endDate)}',
-        ),
+        child: Text(media.airdate),
       );
 
   static Widget buildNSFWChip({
@@ -186,6 +175,12 @@ class AnilistMediaTile extends StatelessWidget {
         child: Text(Translator.t.nsfw()),
       );
 
-  static String prettyAnilistFuzzyDate(final AnilistFuzzyDate? date) =>
-      date?.isValidDateTime ?? false ? date!.pretty : '?';
+  static Icon get ratingIcon =>
+      Icon(Icons.star_rounded, color: ColorPalettes.yellow.c500);
+
+  static Icon get ongoingIcon =>
+      Icon(Icons.trip_origin_rounded, color: ColorPalettes.green.c500);
+
+  static Icon get airdateIcon =>
+      Icon(Icons.date_range_rounded, color: ColorPalettes.fuchsia.c500);
 }

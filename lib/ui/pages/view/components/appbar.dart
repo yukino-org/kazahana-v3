@@ -56,7 +56,7 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: <Widget>[
             buildAppBarButton(
               context: context,
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close_rounded),
               onPressed: () {
                 Navigator.of(context).maybePop();
               },
@@ -64,7 +64,7 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
             const Spacer(),
             buildAppBarButton(
               context: context,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh_rounded),
               onPressed: () {
                 provider.fetch();
               },

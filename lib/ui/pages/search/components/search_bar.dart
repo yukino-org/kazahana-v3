@@ -85,7 +85,7 @@ class _SearchBarState extends State<SearchBar> {
                   children: <Widget>[
                     SizedBox(width: rem(0.5)),
                     Icon(
-                      Icons.search,
+                      Icons.search_rounded,
                       size: Theme.of(context).textTheme.bodyText1?.fontSize,
                       color: Theme.of(context).textTheme.caption?.color,
                     ),
@@ -114,7 +114,7 @@ class _SearchBarState extends State<SearchBar> {
                         child: Padding(
                           padding: EdgeInsets.all(rem(0.2)),
                           child: Icon(
-                            Icons.close,
+                            Icons.close_rounded,
                             size:
                                 Theme.of(context).textTheme.bodyText1?.fontSize,
                             color: Theme.of(context).textTheme.caption?.color,

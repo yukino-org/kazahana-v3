@@ -32,6 +32,7 @@ abstract class Translations {
   String accentColor();
   String backgroundColor();
   String disableAnimations();
+  String useSystemTheme();
 
   Locale get locale;
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../database/exports.dart';
 import 'colors.dart';
 import 'fonts.dart';
@@ -21,9 +22,11 @@ abstract class Themer {
           SettingsDatabase.settings.backgroundColor,
           ThemerThemeData.defaultBackground,
         ),
-        brightness: SettingsDatabase.settings.darkMode
-            ? Brightness.dark
-            : Brightness.light,
+        brightness: SettingsDatabase.settings.useSystemPreferredTheme
+            ? SchedulerBinding.instance.window.platformBrightness
+            : SettingsDatabase.settings.darkMode
+                ? Brightness.dark
+                : Brightness.light,
       );
 
   static ThemerThemeData defaultTheme() => const ThemerThemeData();
@@ -59,27 +62,38 @@ class ThemerThemeData {
         background.getColorFromBrightness(brightness);
     final Color backgroundColorLevel1 =
         background.getColorFromBrightness(brightness, 1);
+    final Color backgroundColorLevel2 =
+        background.getColorFromBrightness(brightness, 2);
 
-    final Color lightColor = background.c0;
-    final Color darkColor = background.c900;
-    final Color contrastColor =
-        brightness == Brightness.light ? darkColor : lightColor;
+    final Color foregroundContrastColor =
+        background.getColorFromBrightness(Brightness.light);
+    final Color backgroundContrastColor =
+        background.getColorFromBrightness(brightness, 9);
+
+    final Typography defaultTypography = Typography.material2021();
+    final TextTheme defaultTextTheme = brightness == Brightness.light
+        ? defaultTypography.black
+        : defaultTypography.white;
 
     return ThemeData(
       colorScheme: ColorScheme(
         brightness: brightness,
         primary: foreground.c500,
-        onPrimary: lightColor,
+        onPrimary: foregroundContrastColor,
         secondary: foreground.c500,
-        onSecondary: contrastColor,
+        onSecondary: backgroundContrastColor,
         background: background.c500,
-        onBackground: contrastColor,
+        onBackground: backgroundContrastColor,
         error: Colors.red,
-        onError: contrastColor,
+        onError: foregroundContrastColor,
         surface: backgroundColorLevel0,
-        onSurface: contrastColor,
+        onSurface: backgroundContrastColor,
       ),
-      fontFamily: fontFamily,
+      textTheme: defaultTextTheme.apply(
+        fontFamily: fontFamily,
+        bodyColor: backgroundContrastColor,
+        displayColor: backgroundContrastColor,
+      ),
       useMaterial3: true,
       // NOTE: Below properties are workarounds until
       // https://github.com/flutter/flutter/issues/91772 is resolved.
@@ -87,6 +101,9 @@ class ThemerThemeData {
       bottomAppBarColor: backgroundColorLevel1,
       scaffoldBackgroundColor: backgroundColorLevel0,
       toggleableActiveColor: foreground.c500,
+      bottomSheetTheme:
+          BottomSheetThemeData(backgroundColor: backgroundColorLevel1),
+      canvasColor: backgroundColorLevel2,
     );
   }
 

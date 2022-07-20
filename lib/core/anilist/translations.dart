@@ -10,6 +10,8 @@ extension AnilistFuzzyDateTUtils on AnilistFuzzyDate {
         month: month?.toString() ?? '?',
         year: year?.toString() ?? '?',
       );
+
+  String? get maybePretty => isValidDateTime ? pretty : null;
 }
 
 const Map<AnilistMediaType, TenkaType> _anilistMediaTypeTenkaTypeMap =
@@ -56,6 +58,13 @@ extension AnilistMediaTUtils on AnilistMedia {
       case AnilistMediaType.manga:
         return Translator.t.nChs(chapters?.toString() ?? '?');
     }
+  }
+
+  String get airdate {
+    final String startDatePretty = startDate?.maybePretty ?? '?';
+    final String endDatePretty = endDate?.maybePretty ?? '?';
+    if (startDatePretty == endDatePretty) return startDatePretty;
+    return '$startDatePretty - $endDatePretty';
   }
 }
 

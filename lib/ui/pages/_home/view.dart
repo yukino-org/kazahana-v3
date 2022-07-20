@@ -93,7 +93,7 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
                           children: <Widget>[
                             SizedBox(width: rem(0.5)),
                             Text(provider.type.titleCase),
-                            const Icon(Icons.arrow_drop_up),
+                            const Icon(Icons.arrow_drop_up_rounded),
                           ],
                         ),
                         onPressed: () {
@@ -111,14 +111,14 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
                     child: Row(
                       children: <Widget>[
                         IconButton(
-                          icon: const Icon(Icons.search),
+                          icon: const Icon(Icons.search_rounded),
                           onPressed: () {
                             Navigator.of(context).pusher.pushToSearchPage();
                           },
                         ),
                         SizedBox(width: rem(0.5)),
                         IconButton(
-                          icon: const Icon(Icons.settings),
+                          icon: const Icon(Icons.settings_rounded),
                           onPressed: () {
                             Navigator.of(context).pusher.pushToSettingsPage();
                           },

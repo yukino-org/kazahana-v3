@@ -23,7 +23,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
           children: <Widget>[
             MultiChoiceListTile<String>(
               title: Text(Translator.t.accentColor()),
-              secondary: const Icon(Icons.format_color_fill),
+              secondary: const Icon(Icons.format_color_fill_rounded),
               value: SettingsDatabase.settings.primaryColor ??
                   ThemerThemeData.defaultForeground.name,
               items: ColorPalettes.foregroundColors.asMap().map(
@@ -37,7 +37,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
             ),
             MultiChoiceListTile<String>(
               title: Text(Translator.t.backgroundColor()),
-              secondary: const Icon(Icons.format_paint),
+              secondary: const Icon(Icons.format_paint_rounded),
               value: SettingsDatabase.settings.backgroundColor ??
                   ThemerThemeData.defaultBackground.name,
               items: ColorPalettes.backgroundColors.asMap().map(
@@ -50,25 +50,36 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             SwitchListTile(
+              title: Text(Translator.t.useSystemTheme()),
+              secondary: const Icon(Icons.highlight_rounded),
+              value: SettingsDatabase.settings.useSystemPreferredTheme,
+              onChanged: (final bool value) {
+                SettingsDatabase.settings.useSystemPreferredTheme = value;
+                saveSettings();
+              },
+            ),
+            SwitchListTile(
               title: Text(Translator.t.darkMode()),
               secondary: AnimatedSwitcher(
                 duration: AnimationDurations.defaultNormalAnimation,
                 child: Icon(
                   SettingsDatabase.settings.darkMode
-                      ? Icons.dark_mode
-                      : Icons.light_mode,
+                      ? Icons.dark_mode_rounded
+                      : Icons.light_mode_rounded,
                   key: UniqueKey(),
                 ),
               ),
               value: SettingsDatabase.settings.darkMode,
-              onChanged: (final bool value) {
-                SettingsDatabase.settings.darkMode = value;
-                saveSettings();
-              },
+              onChanged: SettingsDatabase.settings.useSystemPreferredTheme
+                  ? null
+                  : (final bool value) {
+                      SettingsDatabase.settings.darkMode = value;
+                      saveSettings();
+                    },
             ),
             CheckboxListTile(
               title: Text(Translator.t.disableAnimations()),
-              secondary: const Icon(Icons.animation),
+              secondary: const Icon(Icons.animation_rounded),
               value: SettingsDatabase.settings.disableAnimations,
               onChanged: (final bool? value) {
                 if (value == null) return;

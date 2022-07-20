@@ -97,5 +97,8 @@ class EnTranslation implements Translations {
   String disableAnimations() => 'Disable Animations';
 
   @override
+  String useSystemTheme() => 'Use System Theme';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

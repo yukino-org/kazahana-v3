@@ -12,6 +12,7 @@ class SettingsSchema {
     this.primaryColor,
     this.backgroundColor,
     this.disableAnimations = false,
+    this.useSystemPreferredTheme = false,
   });
 
   factory SettingsSchema.fromJson(final JsonMap json) =>
@@ -24,6 +25,7 @@ class SettingsSchema {
   String? primaryColor;
   String? backgroundColor;
   bool disableAnimations;
+  bool useSystemPreferredTheme;
 
   JsonMap toJson() => _$SettingsSchemaToJson(this);
 
