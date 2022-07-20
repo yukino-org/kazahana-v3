@@ -1,5 +1,6 @@
 export 'anilist/exports.dart';
 export 'app/exports.dart';
+export 'database/exports.dart';
 export 'packages.dart';
 export 'paths.dart';
 export 'state/exports.dart';

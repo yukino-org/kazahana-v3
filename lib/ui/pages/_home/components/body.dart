@@ -20,7 +20,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
           waiting: buildOnWaiting,
           processing: buildOnWaiting,
           finished: (final _) => AnilistMediaRow(results.value),
-          failed: (final _) => const Text('Error'),
+          failed: (final _) => Text('Error: ${results.error}'),
         ),
       );
 

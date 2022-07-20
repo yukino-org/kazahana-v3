@@ -33,8 +33,8 @@ class AnilistMediaList {
   progressVolumes
   repeat
   score (format: POINT_100)
-  startedAt
-  completedAt
+  startedAt ${AnilistFuzzyDate.query}
+  completedAt ${AnilistFuzzyDate.query}
 }
 ''';
 }

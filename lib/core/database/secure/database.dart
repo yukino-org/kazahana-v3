@@ -12,7 +12,7 @@ abstract class SecureDatabase {
   static final Encrypter encrypter = Encrypter(AES(key, mode: AESMode.cbc));
 
   static final PerksFileAdapter adapter =
-      PerksFileAdapter(path.join(Paths.docsDir.path, 'settings.json'));
+      PerksFileAdapter(path.join(Paths.docsDir.path, 'secure.db'));
 
   static late SecureSchema data;
 

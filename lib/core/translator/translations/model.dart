@@ -26,6 +26,12 @@ abstract class Translations {
   String hiatus();
   String nsfw();
   String characters();
+  String settings();
+  String appearance();
+  String darkMode();
+  String accentColor();
+  String backgroundColor();
+  String disableAnimations();
 
   Locale get locale;
 }

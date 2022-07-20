@@ -79,5 +79,23 @@ class EnTranslation implements Translations {
   String characters() => 'Characters';
 
   @override
+  String settings() => 'Settings';
+
+  @override
+  String appearance() => 'Appearance';
+
+  @override
+  String darkMode() => 'Dark Mode';
+
+  @override
+  String accentColor() => 'Accent Color';
+
+  @override
+  String backgroundColor() => 'Background Color';
+
+  @override
+  String disableAnimations() => 'Disable Animations';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

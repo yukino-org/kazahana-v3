@@ -1,22 +1,60 @@
 import 'package:flutter/material.dart';
+import '../database/exports.dart';
 import 'colors.dart';
 import 'fonts.dart';
 
-class Themer {
-  static const String defaultFontFamily = Fonts.inter;
+abstract class Themer {
+  static ColorPalette _findColor(
+    final String? color,
+    final ColorPalette fallback,
+  ) {
+    if (color == null) return fallback;
+    return ColorPalettes.find(color) ?? fallback;
+  }
 
-  static final ThemeData defaultThemeData = constructThemeData(
-    foreground: ColorPalettes.indigo,
-    background: ColorPalettes.neutral,
-    brightness: Brightness.dark,
-  );
+  static ThemerThemeData getCurrentTheme() => ThemerThemeData(
+        foreground: _findColor(
+          SettingsDatabase.settings.primaryColor,
+          ThemerThemeData.defaultForeground,
+        ),
+        background: _findColor(
+          SettingsDatabase.settings.backgroundColor,
+          ThemerThemeData.defaultBackground,
+        ),
+        brightness: SettingsDatabase.settings.darkMode
+            ? Brightness.dark
+            : Brightness.light,
+      );
 
-  static ThemeData constructThemeData({
-    required final ColorPalette foreground,
-    required final ColorPalette background,
-    required final Brightness brightness,
-    final String fontFamily = defaultFontFamily,
-  }) {
+  static ThemerThemeData defaultTheme() => const ThemerThemeData();
+}
+
+class ThemerThemeData {
+  const ThemerThemeData({
+    this.foreground = defaultForeground,
+    this.background = defaultBackground,
+    this.brightness = defaultBrightness,
+    this.fontFamily = defaultFontFamily,
+  });
+
+  final ColorPalette foreground;
+  final ColorPalette background;
+  final Brightness brightness;
+  final String fontFamily;
+
+  @override
+  int get hashCode =>
+      Object.hash(foreground, background, brightness, fontFamily);
+
+  @override
+  bool operator ==(final Object other) =>
+      other is ThemerThemeData &&
+      foreground.name == other.foreground.name &&
+      background.name == other.background.name &&
+      brightness.name == other.brightness.name &&
+      fontFamily == other.fontFamily;
+
+  ThemeData get asThemeData {
     final Color backgroundColorLevel0 =
         background.getColorFromBrightness(brightness);
 
@@ -41,4 +79,9 @@ class Themer {
       toggleableActiveColor: foreground.c500,
     );
   }
+
+  static const ColorPalette defaultForeground = ColorPalettes.indigo;
+  static const ColorPalette defaultBackground = ColorPalettes.neutral;
+  static const Brightness defaultBrightness = Brightness.dark;
+  static const String defaultFontFamily = Fonts.inter;
 }

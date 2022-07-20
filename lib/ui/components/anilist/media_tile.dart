@@ -91,28 +91,35 @@ class AnilistMediaTile extends StatelessWidget {
     required final BuildContext context,
     required final Widget child,
     final Widget? icon,
-    final Color? color,
+    final Color? backgroundColor,
+    final Color? textColor,
   }) =>
       DecoratedBox(
         decoration: BoxDecoration(
-          color: color ?? Theme.of(context).bottomAppBarColor,
+          color: backgroundColor ?? Theme.of(context).bottomAppBarColor,
           borderRadius: BorderRadius.circular(rem(0.2)),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: rem(0.2)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (icon != null) ...<Widget>[
-                IconTheme(
-                  data: Theme.of(context).iconTheme.copyWith(size: rem(0.5)),
-                  child: icon,
-                ),
-                SizedBox(width: rem(0.15)),
+          child: DefaultTextStyle(
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge!
+                .copyWith(fontWeight: FontWeight.normal, color: textColor),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (icon != null) ...<Widget>[
+                  IconTheme(
+                    data: Theme.of(context).iconTheme.copyWith(size: rem(0.5)),
+                    child: icon,
+                  ),
+                  SizedBox(width: rem(0.15)),
+                ],
+                child,
               ],
-              child,
-            ],
+            ),
           ),
         ),
       );
@@ -175,7 +182,7 @@ class AnilistMediaTile extends StatelessWidget {
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
-        color: ColorPalettes.red.c500,
+        backgroundColor: ColorPalettes.red.c500,
         child: Text(Translator.t.nsfw()),
       );
 

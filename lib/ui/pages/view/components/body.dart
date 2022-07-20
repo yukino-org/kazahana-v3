@@ -63,7 +63,10 @@ class ViewPageBody extends StatelessWidget {
                             <Widget>[
                               AnilistMediaTile.buildChip(
                                 context: context,
-                                color: Theme.of(context).colorScheme.primary,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                textColor:
+                                    Theme.of(context).colorScheme.onPrimary,
                                 child: Text(character.role.titleCase),
                               ),
                             ],
@@ -273,7 +276,10 @@ class ViewPageBody extends StatelessWidget {
                           additionalBottomChips: <Widget>[
                             AnilistMediaTile.buildChip(
                               context: context,
-                              color: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              textColor:
+                                  Theme.of(context).colorScheme.onPrimary,
                               child: Text(x.relationType.titleCase),
                             ),
                           ],

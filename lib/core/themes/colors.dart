@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/exports.dart';
 
 enum ColorPaletteKind {
   foreground,
@@ -67,6 +68,9 @@ class ColorPalette {
 }
 
 abstract class ColorPalettes {
+  static ColorPalette? find(final String name) =>
+      all.firstWhereOrNull((final ColorPalette x) => x.name == name);
+
   static const List<ColorPalette> all = <ColorPalette>[
     slate,
     gray,
