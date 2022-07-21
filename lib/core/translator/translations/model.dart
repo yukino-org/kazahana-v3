@@ -33,6 +33,7 @@ abstract class Translations {
   String backgroundColor();
   String disableAnimations();
   String useSystemTheme();
+  String overview();
 
   Locale get locale;
 }

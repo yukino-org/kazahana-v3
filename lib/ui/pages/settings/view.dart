@@ -1,5 +1,5 @@
 import '../../../core/exports.dart';
-import '../../components/exports.dart';
+import '../../exports.dart';
 import 'components/exports.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -15,7 +15,7 @@ enum _SettingsCategory {
   appearance,
 }
 
-extension _SettingsCategoryUtils on _SettingsCategory {
+extension on _SettingsCategory {
   String get titleCase {
     switch (this) {
       case _SettingsCategory.appearance:

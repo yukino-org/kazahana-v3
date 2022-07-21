@@ -3,43 +3,46 @@ import '../provider.dart';
 
 class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ViewPageAppBar({
-    required this.controller,
     final Key? key,
   }) : super(key: key);
-
-  final AnimationController controller;
 
   Widget buildAppBarButton({
     required final BuildContext context,
     required final Widget icon,
     required final VoidCallback onPressed,
-  }) =>
-      AnimatedBuilder(
-        animation: controller,
-        builder: (final BuildContext context, final Widget? child) =>
-            FadeScaleTransition(animation: controller, child: child),
-        child: SizedBox.square(
-          dimension: rem(1.5),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).bottomAppBarColor.withOpacity(0.25),
-              shape: BoxShape.circle,
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(rem(1)),
-              onTap: onPressed,
-              child: Center(
-                child: IconTheme(
-                  data: IconThemeData(
-                    color: Theme.of(context).colorScheme.onPrimary,
+  }) {
+    final ViewPageViewProvider provider = context.watch<ViewPageViewProvider>();
+
+    return AnimatedSwitcher(
+      duration: AnimationDurations.defaultQuickAnimation,
+      transitionBuilder:
+          (final Widget child, final Animation<double> animation) =>
+              FadeScaleTransition(animation: animation, child: child),
+      child: provider.showFloatingAppBar
+          ? SizedBox.square(
+              dimension: rem(1.5),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).bottomAppBarColor.withOpacity(0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(rem(1)),
+                  onTap: onPressed,
+                  child: Center(
+                    child: IconTheme(
+                      data: IconThemeData(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                      child: icon,
+                    ),
                   ),
-                  child: icon,
                 ),
               ),
-            ),
-          ),
-        ),
-      );
+            )
+          : Container(),
+    );
+  }
 
   @override
   Widget build(final BuildContext context) {
@@ -62,13 +65,14 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               },
             ),
             const Spacer(),
-            buildAppBarButton(
-              context: context,
-              icon: const Icon(Icons.refresh_rounded),
-              onPressed: () {
-                provider.fetch();
-              },
-            ),
+            if (provider.media.hasFinishedOrFailed)
+              buildAppBarButton(
+                context: context,
+                icon: const Icon(Icons.refresh_rounded),
+                onPressed: () {
+                  provider.fetch();
+                },
+              ),
           ],
         ),
       ),
@@ -76,7 +80,9 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(fixedHeight);
+  // ? Prevents excess padding with `SafeArea`
+  Size get preferredSize => const Size.fromHeight(mockedHeight);
 
   static final double fixedHeight = rem(2);
+  static const double mockedHeight = 10;
 }

@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        // NOTE: Application ID
+        // ? Application ID
         applicationId "io.github.yukino_org.kazahana"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion

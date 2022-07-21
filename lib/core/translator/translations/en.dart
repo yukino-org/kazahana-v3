@@ -100,5 +100,8 @@ class EnTranslation implements Translations {
   String useSystemTheme() => 'Use System Theme';
 
   @override
+  String overview() => 'Overview';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

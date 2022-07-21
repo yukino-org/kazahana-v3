@@ -52,6 +52,7 @@ class StatedValue<T> {
   bool get isProcessing => state == States.processing;
   bool get hasFinished => state == States.finished;
   bool get hasFailed => state == States.failed;
+  bool get hasFinishedOrFailed => hasFinished || hasFailed;
 }
 
 class ListenableStatedValue<T> extends StatedValue<T> with ChangeNotifier {

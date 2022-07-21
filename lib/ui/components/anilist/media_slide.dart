@@ -1,5 +1,6 @@
 import '../../../core/exports.dart';
 import '../../router/exports.dart';
+import '../body_padding.dart';
 import 'media_tile.dart';
 
 class AnilistMediaSlide extends StatefulWidget {
@@ -66,7 +67,7 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
           alignment: Alignment.bottomLeft,
           child: IgnorePointer(
             child: Padding(
-              padding: EdgeInsets.all(rem(0.75)),
+              padding: EdgeInsets.all(HorizontalBodyPadding.size),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

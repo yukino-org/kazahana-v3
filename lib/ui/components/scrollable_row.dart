@@ -1,4 +1,5 @@
 import '../../core/exports.dart';
+import 'body_padding.dart';
 
 class ScrollableRow extends StatelessWidget {
   const ScrollableRow(
@@ -22,5 +23,5 @@ class ScrollableRow extends StatelessWidget {
         ),
       );
 
-  SizedBox get spacer => SizedBox(width: rem(0.75));
+  SizedBox get spacer => SizedBox(width: HorizontalBodyPadding.size);
 }

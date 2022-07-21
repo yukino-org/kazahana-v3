@@ -95,8 +95,8 @@ class ThemerThemeData {
         displayColor: backgroundContrastColor,
       ),
       useMaterial3: true,
-      // NOTE: Below properties are workarounds until
-      // https://github.com/flutter/flutter/issues/91772 is resolved.
+      // ? Below properties are workarounds until
+      // ? https://github.com/flutter/flutter/issues/91772 is resolved.
       appBarTheme: AppBarTheme(backgroundColor: backgroundColorLevel1),
       bottomAppBarColor: backgroundColorLevel1,
       scaffoldBackgroundColor: backgroundColorLevel0,

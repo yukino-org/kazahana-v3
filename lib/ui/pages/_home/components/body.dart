@@ -1,5 +1,5 @@
 import '../../../../core/exports.dart';
-import '../../../components/exports.dart';
+import '../../../exports.dart';
 import '../provider.dart';
 
 class UnderScoreHomePageBody extends StatelessWidget {
@@ -29,11 +29,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
     required final BuildContext context,
   }) =>
       Padding(
-        padding: EdgeInsets.only(
-          left: rem(0.75),
-          right: rem(0.75),
-          bottom: rem(0.5),
-        ),
+        padding: HorizontalBodyPadding.padding.copyWith(bottom: rem(0.5)),
         child: Text(text, style: Theme.of(context).textTheme.headline6),
       );
 

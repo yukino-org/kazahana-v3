@@ -1,5 +1,18 @@
 import '../../../core/exports.dart';
 
+class ViewPageViewProvider extends ChangeNotifier {
+  bool showFloatingAppBar = true;
+
+  void setFloatingAppBarVisibility({
+    required final bool visible,
+  }) {
+    if (showFloatingAppBar != visible) {
+      showFloatingAppBar = visible;
+      notifyListeners();
+    }
+  }
+}
+
 class ViewPageProvider extends StatedChangeNotifier {
   late final int mediaId;
   final StatedValue<AnilistMedia> media = StatedValue<AnilistMedia>();
