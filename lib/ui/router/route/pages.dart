@@ -1,5 +1,6 @@
 import '../../../core/exports.dart';
 import '../../pages/home/route.dart';
+import '../../pages/modules/route.dart';
 import '../../pages/search/route.dart';
 import '../../pages/settings/route.dart';
 import '../../pages/view/route.dart';
@@ -11,6 +12,7 @@ abstract class RoutePages {
   static final SearchPageRoute search = SearchPageRoute();
   static final ViewPageRoute view = ViewPageRoute();
   static final SettingsPageRoute settings = SettingsPageRoute();
+  static final ModulesPageRoute modules = ModulesPageRoute();
 
   static RoutePage? findMatch(final RouteInfo route) =>
       all.firstWhereOrNull((final RoutePage x) => x.matches(route));
@@ -20,5 +22,6 @@ abstract class RoutePages {
         search,
         view,
         settings,
+        modules,
       ];
 }

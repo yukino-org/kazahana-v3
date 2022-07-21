@@ -90,7 +90,8 @@ class ViewPageHero extends StatelessWidget {
                     media.status.titleCase,
                   ].join(' | '),
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: Theme.of(context).textTheme.caption!.color),
+                        color: Theme.of(context).textTheme.caption!.color,
+                      ),
                 ),
                 SizedBox(height: rem(0.5)),
                 Wrap(

@@ -104,6 +104,7 @@ class ThemerThemeData {
       bottomSheetTheme:
           BottomSheetThemeData(backgroundColor: backgroundColorLevel1),
       canvasColor: backgroundColorLevel2,
+      dialogBackgroundColor: backgroundColorLevel1,
     );
   }
 

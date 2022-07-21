@@ -118,6 +118,13 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
                         ),
                         SizedBox(width: rem(0.5)),
                         IconButton(
+                          icon: const Icon(Icons.extension_rounded),
+                          onPressed: () {
+                            Navigator.of(context).pusher.pushToModulesPage();
+                          },
+                        ),
+                        SizedBox(width: rem(0.5)),
+                        IconButton(
                           icon: const Icon(Icons.settings_rounded),
                           onPressed: () {
                             Navigator.of(context).pusher.pushToSettingsPage();

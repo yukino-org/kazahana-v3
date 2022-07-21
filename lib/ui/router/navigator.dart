@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 export '../pages/home/route.dart';
+export '../pages/modules/route.dart';
 export '../pages/search/route.dart';
 export '../pages/settings/route.dart';
 export '../pages/view/route.dart';

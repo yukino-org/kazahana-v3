@@ -103,5 +103,11 @@ class EnTranslation implements Translations {
   String overview() => 'Overview';
 
   @override
+  String extensions() => 'Extensions';
+
+  @override
+  String by(final String value) => 'By $value';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

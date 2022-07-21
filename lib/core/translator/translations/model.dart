@@ -34,6 +34,8 @@ abstract class Translations {
   String disableAnimations();
   String useSystemTheme();
   String overview();
+  String extensions();
+  String by(final String value);
 
   Locale get locale;
 }
