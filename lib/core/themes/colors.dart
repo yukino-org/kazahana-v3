@@ -77,6 +77,7 @@ abstract class ColorPalettes {
     zinc,
     neutral,
     stone,
+    highContrast,
     red,
     orange,
     amber,
@@ -186,6 +187,25 @@ abstract class ColorPalettes {
       700: Color(0xFF44403C),
       800: Color(0xFF292524),
       900: Color(0xFF1C1917)
+    },
+    ColorPaletteKind.background,
+  );
+
+  static const ColorPalette highContrast = ColorPalette(
+    'High Contrast',
+    <int, Color>{
+      // ? High Constrast White
+      0: Color(0xFFFFFFFF),
+      100: Color(0xFFFBFBFB),
+      200: Color(0xFFF4F4F4),
+      300: Color(0xFFECECEC),
+      400: Color(0xFFE4E4E4),
+      // ? High Constrast Blacks
+      500: Color(0xFF1F1F1F),
+      600: Color(0xFF171717),
+      700: Color(0xFF0F0F0F),
+      800: Color(0xFF080808),
+      900: Color(0xFF000000)
     },
     ColorPaletteKind.background,
   );
