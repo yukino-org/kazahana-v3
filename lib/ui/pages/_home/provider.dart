@@ -17,14 +17,22 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
   final StatedValue<List<AnilistMedia>> mostPopularMangas =
       StatedValue<List<AnilistMedia>>();
 
-  void initialize() {
+  Future<void> initialize() async {
+    final String? lastVisitedPage =
+        await CacheDatabase.get<String?>(kHomeLastVisitedKey);
+    if (lastVisitedPage != null) {
+      type = EnumUtils.find(TenkaType.values, lastVisitedPage);
+      notifyListeners();
+    }
+
     fetch(type);
   }
 
-  void setType(final TenkaType type) {
+  Future<void> setType(final TenkaType type) async {
     this.type = type;
     fetch(type);
     notifyListeners();
+    await CacheDatabase.set(kHomeLastVisitedKey, type.name);
   }
 
   void fetch(final TenkaType type) {
@@ -114,4 +122,6 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
     if (!mounted) return;
     notifyListeners();
   }
+
+  static const String kHomeLastVisitedKey = 'home_last_visited';
 }

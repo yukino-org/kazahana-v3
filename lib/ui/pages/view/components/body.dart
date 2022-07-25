@@ -1,4 +1,5 @@
 import '../../../../core/exports.dart';
+import '../../../exports.dart';
 import '../provider.dart';
 import 'episodes.dart';
 import 'hero.dart';
@@ -23,8 +24,8 @@ extension on _ViewPageTabs {
 
 class ViewPageBody extends StatefulWidget {
   const ViewPageBody({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ViewPageBody> createState() => _ViewPageBodyState();
@@ -81,7 +82,7 @@ class _ViewPageBodyState extends State<ViewPageBody>
           delegate: SliverChildListDelegate.fixed(
             <Widget>[
               ViewPageHero(media),
-              SizedBox(height: rem(0.75)),
+              SizedBox(height: context.r.size(0.75)),
               const Divider(height: 0, thickness: 0),
             ],
           ),

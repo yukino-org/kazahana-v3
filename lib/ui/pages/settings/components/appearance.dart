@@ -1,10 +1,11 @@
 import '../../../../core/exports.dart';
+import '../../../exports.dart';
 import 'tiles/exports.dart';
 
 class ApperanceSettings extends StatefulWidget {
   const ApperanceSettings({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ApperanceSettings> createState() => _ApperanceSettingsState();

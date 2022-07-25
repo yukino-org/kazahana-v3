@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import '../database/exports.dart';
-import 'colors.dart';
-import 'fonts.dart';
+import '../../core/exports.dart';
+import 'relative_size.dart';
 
 abstract class Themer {
   static ColorPalette _findColor(
@@ -45,19 +43,7 @@ class ThemerThemeData {
   final Brightness brightness;
   final String fontFamily;
 
-  @override
-  int get hashCode =>
-      Object.hash(foreground, background, brightness, fontFamily);
-
-  @override
-  bool operator ==(final Object other) =>
-      other is ThemerThemeData &&
-      foreground.name == other.foreground.name &&
-      background.name == other.background.name &&
-      brightness.name == other.brightness.name &&
-      fontFamily == other.fontFamily;
-
-  ThemeData get asThemeData {
+  ThemeData getThemeData(final BuildContext context) {
     final Color backgroundColorLevel0 =
         background.getColorFromBrightness(brightness);
     final Color backgroundColorLevel1 =
@@ -74,6 +60,31 @@ class ThemerThemeData {
     final TextTheme defaultTextTheme = brightness == Brightness.light
         ? defaultTypography.black
         : defaultTypography.white;
+    final TextTheme textTheme = defaultTextTheme
+        .merge(
+          TextTheme(
+            displayLarge: TextStyle(fontSize: context.r.size(4.8)),
+            displayMedium: TextStyle(fontSize: context.r.size(3)),
+            displaySmall: TextStyle(fontSize: context.r.size(2.4)),
+            headlineLarge: TextStyle(fontSize: context.r.size(2)),
+            headlineMedium: TextStyle(fontSize: context.r.size(1.3)),
+            headlineSmall: TextStyle(fontSize: context.r.size(1.2)),
+            titleLarge: TextStyle(fontSize: context.r.size(1.1)),
+            titleMedium: TextStyle(fontSize: context.r.size(0.73)),
+            titleSmall: TextStyle(fontSize: context.r.size(0.64)),
+            bodyLarge: TextStyle(fontSize: context.r.size(0.75)),
+            bodyMedium: TextStyle(fontSize: context.r.size(0.65)),
+            bodySmall: TextStyle(fontSize: context.r.size(0.55)),
+            labelLarge: TextStyle(fontSize: context.r.size(0.63)),
+            labelMedium: TextStyle(fontSize: context.r.size(0.55)),
+            labelSmall: TextStyle(fontSize: context.r.size(0.5)),
+          ),
+        )
+        .apply(
+          fontFamily: fontFamily,
+          bodyColor: backgroundContrastColor,
+          displayColor: backgroundContrastColor,
+        );
 
     return ThemeData(
       colorScheme: ColorScheme(
@@ -89,11 +100,7 @@ class ThemerThemeData {
         surface: backgroundColorLevel0,
         onSurface: backgroundContrastColor,
       ),
-      textTheme: defaultTextTheme.apply(
-        fontFamily: fontFamily,
-        bodyColor: backgroundContrastColor,
-        displayColor: backgroundContrastColor,
-      ),
+      textTheme: textTheme,
       useMaterial3: true,
       // ? Below properties are workarounds until
       // ? https://github.com/flutter/flutter/issues/91772 is resolved.
@@ -107,6 +114,18 @@ class ThemerThemeData {
       dialogBackgroundColor: backgroundColorLevel1,
     );
   }
+
+  @override
+  int get hashCode =>
+      Object.hash(foreground, background, brightness, fontFamily);
+
+  @override
+  bool operator ==(final Object other) =>
+      other is ThemerThemeData &&
+      foreground.name == other.foreground.name &&
+      background.name == other.background.name &&
+      brightness.name == other.brightness.name &&
+      fontFamily == other.fontFamily;
 
   static const ColorPalette defaultForeground = ColorPalettes.indigo;
   static const ColorPalette defaultBackground = ColorPalettes.neutral;

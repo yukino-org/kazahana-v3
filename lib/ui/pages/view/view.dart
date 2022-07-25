@@ -7,8 +7,8 @@ class ViewPage extends StatelessWidget {
   const ViewPage({
     required this.mediaId,
     this.media,
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final int mediaId;
   final AnilistMedia? media;

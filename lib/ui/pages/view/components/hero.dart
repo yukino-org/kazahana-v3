@@ -4,8 +4,8 @@ import '../../../exports.dart';
 class ViewPageHero extends StatelessWidget {
   const ViewPageHero(
     this.media, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AnilistMedia media;
 
@@ -14,11 +14,11 @@ class ViewPageHero extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(
-            height: rem(12),
+            height: context.r.size(12),
             child: Stack(
               children: <Widget>[
                 SizedBox(
-                  height: rem(8),
+                  height: context.r.size(8),
                   width: double.infinity,
                   child: FadeInImage(
                     fit: BoxFit.cover,
@@ -29,7 +29,7 @@ class ViewPageHero extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: rem(8),
+                  height: context.r.size(8),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -46,7 +46,7 @@ class ViewPageHero extends StatelessWidget {
                 ),
                 if (media.bannerImage == null)
                   SizedBox(
-                    height: rem(8),
+                    height: context.r.size(8),
                     child: ClipRRect(
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
@@ -57,17 +57,17 @@ class ViewPageHero extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(rem(0.5)),
+                    borderRadius: BorderRadius.circular(context.r.size(0.5)),
                     child: Image.network(
                       media.coverImageExtraLarge,
-                      height: rem(10),
+                      height: context.r.size(10),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: rem(0.75)),
+          SizedBox(height: context.r.size(0.75)),
           HorizontalBodyPadding(
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -76,11 +76,11 @@ class ViewPageHero extends StatelessWidget {
                   media.titleUserPreferred,
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: rem(0.2)),
+                SizedBox(height: context.r.size(0.2)),
                 Text(
                   <String>[
                     media.format.titleCase,
@@ -89,14 +89,14 @@ class ViewPageHero extends StatelessWidget {
                       '${media.season?.titleCase ?? '?'} ${media.seasonYear ?? '?'}',
                     media.status.titleCase,
                   ].join(' | '),
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        color: Theme.of(context).textTheme.caption!.color,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                 ),
-                SizedBox(height: rem(0.5)),
+                SizedBox(height: context.r.size(0.5)),
                 Wrap(
-                  spacing: rem(0.25),
-                  runSpacing: rem(0.2),
+                  spacing: context.r.size(0.25),
+                  runSpacing: context.r.size(0.2),
                   alignment: WrapAlignment.center,
                   children: <Widget>[
                     if (media.averageScore != null)
@@ -116,10 +116,10 @@ class ViewPageHero extends StatelessWidget {
                       ),
                   ],
                 ),
-                SizedBox(height: rem(0.25)),
+                SizedBox(height: context.r.size(0.25)),
                 Wrap(
-                  spacing: rem(0.25),
-                  runSpacing: rem(0.2),
+                  spacing: context.r.size(0.25),
+                  runSpacing: context.r.size(0.2),
                   alignment: WrapAlignment.center,
                   children: media.genres
                       .map(

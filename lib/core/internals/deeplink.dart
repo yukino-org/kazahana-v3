@@ -22,6 +22,6 @@ abstract class Deeplink {
       internalRoute.handle(path);
       return;
     }
-    navigationKey.currentState!.pushNamed(path);
+    gNavigatorKey.currentState!.pushNamed(path);
   }
 }

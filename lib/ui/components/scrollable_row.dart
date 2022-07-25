@@ -4,8 +4,8 @@ import 'body_padding.dart';
 class ScrollableRow extends StatelessWidget {
   const ScrollableRow(
     this.children, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final List<Widget> children;
 
@@ -16,12 +16,13 @@ class ScrollableRow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            spacer,
-            ...ListUtils.insertBetween(children, spacer),
-            spacer,
+            spacer(context),
+            ...ListUtils.insertBetween(children, spacer(context)),
+            spacer(context),
           ],
         ),
       );
 
-  SizedBox get spacer => SizedBox(width: HorizontalBodyPadding.size);
+  SizedBox spacer(final BuildContext context) =>
+      SizedBox(width: HorizontalBodyPadding.size(context));
 }

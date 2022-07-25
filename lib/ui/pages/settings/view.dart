@@ -4,8 +4,8 @@ import 'components/exports.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
             color: Theme.of(context).bottomAppBarColor,
             height: appBarHeight,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: rem(0.5)),
+            padding: EdgeInsets.symmetric(horizontal: context.r.size(0.5)),
             child: DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true,
@@ -92,7 +92,10 @@ class _SettingsPageState extends State<SettingsPage> {
         body: SafeArea(
           child: AnimatedSwitcher(
             duration: AnimationDurations.defaultNormalAnimation,
-            child: buildBody(context),
+            child: SingleChildScrollView(
+              key: ValueKey<_SettingsCategory>(category),
+              child: buildBody(context),
+            ),
           ),
         ),
       );

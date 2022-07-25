@@ -1,12 +1,11 @@
 import '../../../core/exports.dart';
-import '../scrollable_row.dart';
-import 'media_tile.dart';
+import '../../exports.dart';
 
 class AnilistMediaRow extends StatelessWidget {
   const AnilistMediaRow(
     this.results, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final List<AnilistMedia> results;
 
@@ -14,11 +13,13 @@ class AnilistMediaRow extends StatelessWidget {
   Widget build(final BuildContext context) => ScrollableRow(
         results
             .map(
-              (final AnilistMedia x) =>
-                  SizedBox(width: tileWidth, child: AnilistMediaTile(x)),
+              (final AnilistMedia x) => SizedBox(
+                width: context.r.size(tileWidthScale),
+                child: AnilistMediaTile(x),
+              ),
             )
             .toList(),
       );
 
-  static final double tileWidth = rem(7.5);
+  static const double tileWidthScale = 7.5;
 }

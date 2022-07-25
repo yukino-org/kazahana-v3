@@ -109,5 +109,8 @@ class EnTranslation implements Translations {
   String by(final String value) => 'By $value';
 
   @override
+  String authenticatedAs(final String name) => 'Authenticated as $name';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

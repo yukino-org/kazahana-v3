@@ -1,11 +1,12 @@
 import '../../../core/exports.dart';
+import '../../exports.dart';
 import '../_home/view.dart';
 import '../_splash/view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();

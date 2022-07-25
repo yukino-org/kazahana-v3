@@ -1,9 +1,10 @@
 import '../../../core/exports.dart';
+import '../../exports.dart';
 
 class UnderScoreSplashPage extends StatelessWidget {
   const UnderScoreSplashPage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(final BuildContext context) => Scaffold(
@@ -15,16 +16,14 @@ class UnderScoreSplashPage extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     AppMeta.name,
-                    style: TextStyle(
-                      fontFamily: Fonts.greatVibes,
-                      fontSize:
-                          Theme.of(context).textTheme.displayLarge!.fontSize! *
-                              1.2,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .displayMedium!
+                        .copyWith(fontFamily: Fonts.greatVibes),
                   ),
                   Text(
                     'v${AppMeta.version}',
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -32,12 +31,12 @@ class UnderScoreSplashPage extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: Padding(
-                padding: EdgeInsets.all(rem(1)),
+                padding: EdgeInsets.all(context.r.size(1)),
                 child: Text(
                   AppMeta.yuki,
                   style: Theme.of(context)
                       .textTheme
-                      .headline3!
+                      .headlineMedium!
                       .copyWith(color: Theme.of(context).colorScheme.primary),
                 ),
               ),

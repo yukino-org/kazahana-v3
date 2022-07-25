@@ -3,8 +3,8 @@ import '../../../../core/exports.dart';
 class ViewPageEpisodes extends StatelessWidget {
   const ViewPageEpisodes(
     this.media, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AnilistMedia media;
 

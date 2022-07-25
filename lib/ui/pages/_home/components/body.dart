@@ -4,17 +4,20 @@ import '../provider.dart';
 
 class UnderScoreHomePageBody extends StatelessWidget {
   const UnderScoreHomePageBody({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
-  Widget buildOnWaiting(final BuildContext _) => SizedBox(
-        height: rem(12),
+  Widget buildOnWaiting(final BuildContext context) => SizedBox(
+        height: context.r.size(12),
         child: const Center(child: CircularProgressIndicator()),
       );
 
-  Widget buildCarousel(final StatedValue<List<AnilistMedia>> results) =>
+  Widget buildCarousel({
+    required final BuildContext context,
+    required final StatedValue<List<AnilistMedia>> results,
+  }) =>
       Padding(
-        padding: EdgeInsets.only(bottom: rem(1)),
+        padding: EdgeInsets.only(bottom: context.r.size(1)),
         child: StatedBuilder(
           results.state,
           waiting: buildOnWaiting,
@@ -29,8 +32,9 @@ class UnderScoreHomePageBody extends StatelessWidget {
     required final BuildContext context,
   }) =>
       Padding(
-        padding: HorizontalBodyPadding.padding.copyWith(bottom: rem(0.5)),
-        child: Text(text, style: Theme.of(context).textTheme.headline6),
+        padding: HorizontalBodyPadding.padding(context)
+            .copyWith(bottom: context.r.size(0.5)),
+        child: Text(text, style: Theme.of(context).textTheme.titleLarge),
       );
 
   Widget buildTrendsSlideshow(final StatedValue<List<AnilistMedia>> data) =>
@@ -39,7 +43,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
         waiting: buildOnWaiting,
         processing: buildOnWaiting,
         finished: (final BuildContext context) => SizedBox(
-          height: rem(20),
+          height: context.r.size(25),
           child: Slideshow(
             slideDuration: defaultSlideDuration,
             animationDuration: AnimationDurations.defaultNormalAnimation,
@@ -63,11 +67,17 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingAnimes),
-            SizedBox(height: rem(0.75)),
+            SizedBox(height: context.r.size(0.75)),
             buildText(Translator.t.topOngoingAnimes(), context: context),
-            buildCarousel(provider.topOngoingAnimes),
+            buildCarousel(
+              context: context,
+              results: provider.topOngoingAnimes,
+            ),
             buildText(Translator.t.mostPopularAnimes(), context: context),
-            buildCarousel(provider.mostPopularAnimes),
+            buildCarousel(
+              context: context,
+              results: provider.mostPopularAnimes,
+            ),
           ],
         );
 
@@ -78,11 +88,17 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingMangas),
-            SizedBox(height: rem(0.75)),
+            SizedBox(height: context.r.size(0.75)),
             buildText(Translator.t.topOngoingMangas(), context: context),
-            buildCarousel(provider.topOngoingMangas),
+            buildCarousel(
+              context: context,
+              results: provider.topOngoingMangas,
+            ),
             buildText(Translator.t.mostPopularMangas(), context: context),
-            buildCarousel(provider.mostPopularMangas),
+            buildCarousel(
+              context: context,
+              results: provider.mostPopularMangas,
+            ),
           ],
         );
     }

@@ -4,8 +4,8 @@ import '../../../exports.dart';
 class ViewPageOverview extends StatelessWidget {
   const ViewPageOverview(
     this.media, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AnilistMedia media;
 
@@ -14,14 +14,14 @@ class ViewPageOverview extends StatelessWidget {
     required final AnilistCharacterEdge character,
   }) =>
       SizedBox(
-        width: AnilistMediaRow.tileWidth,
+        width: context.r.size(AnilistMediaRow.tileWidthScale),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(rem(0.25)),
+              borderRadius: BorderRadius.circular(context.r.size(0.25)),
               child: AspectRatio(
-                aspectRatio: 3 / 4,
+                aspectRatio: AnilistMediaTile.coverRatio,
                 child: Stack(
                   children: <Widget>[
                     Positioned.fill(
@@ -33,7 +33,7 @@ class ViewPageOverview extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: EdgeInsets.all(rem(0.25)),
+                        padding: EdgeInsets.all(context.r.size(0.25)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -48,7 +48,7 @@ class ViewPageOverview extends StatelessWidget {
                                 child: Text(character.role.titleCase),
                               ),
                             ],
-                            SizedBox(height: rem(0.2)),
+                            SizedBox(height: context.r.size(0.2)),
                           ),
                         ),
                       ),
@@ -57,7 +57,7 @@ class ViewPageOverview extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: rem(0.25)),
+            SizedBox(height: context.r.size(0.25)),
             Flexible(
               child: Text(
                 character.node.nameUserPreferred,
@@ -77,20 +77,20 @@ class ViewPageOverview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (media.description != null) ...<Widget>[
-                SizedBox(height: rem(0.75)),
+                SizedBox(height: context.r.size(0.75)),
                 HorizontalBodyPadding(Text(media.description!)),
               ],
-              SizedBox(height: rem(1)),
+              SizedBox(height: context.r.size(1)),
               HorizontalBodyPadding(
                 Text(
                   Translator.t.characters(),
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: rem(0.5)),
+              SizedBox(height: context.r.size(0.5)),
               ScrollableRow(
                 media.characters
                     .map(
@@ -100,22 +100,22 @@ class ViewPageOverview extends StatelessWidget {
                     .toList(),
               ),
               if (media.relations?.isNotEmpty ?? false) ...<Widget>[
-                SizedBox(height: rem(1)),
+                SizedBox(height: context.r.size(1)),
                 HorizontalBodyPadding(
                   Text(
                     Translator.t.relations(),
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: rem(0.5)),
+                SizedBox(height: context.r.size(0.5)),
                 ScrollableRow(
                   media.relations!
                       .map(
                         (final AnilistRelationEdge x) => SizedBox(
-                          width: AnilistMediaRow.tileWidth,
+                          width: context.r.size(AnilistMediaRow.tileWidthScale),
                           child: AnilistMediaTile(
                             x.node,
                             additionalBottomChips: <Widget>[

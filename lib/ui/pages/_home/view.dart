@@ -5,8 +5,8 @@ import 'provider.dart';
 
 class UnderScoreHomePage extends StatefulWidget {
   const UnderScoreHomePage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<UnderScoreHomePage> createState() => _UnderScoreHomePageState();
@@ -20,10 +20,11 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
     await showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(rem(1))),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(context.r.size(1))),
       ),
       builder: (final BuildContext context) => Padding(
-        padding: EdgeInsets.symmetric(vertical: rem(0.5)),
+        padding: EdgeInsets.symmetric(vertical: context.r.size(0.5)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -51,6 +52,7 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
   Widget build(final BuildContext context) =>
       ChangeNotifierProvider<UnderScoreHomePageProvider>(
         create: (final _) => UnderScoreHomePageProvider()..initialize(),
+        lazy: false,
         child: Consumer<UnderScoreHomePageProvider>(
           builder: (
             final BuildContext context,
@@ -58,82 +60,92 @@ class _UnderScoreHomePageState extends State<UnderScoreHomePage> {
             final _,
           ) =>
               Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                AppMeta.name,
-                style: Theme.of(context).textTheme.headline4!.copyWith(
-                      fontFamily: Fonts.greatVibes,
-                      color: Theme.of(context).textTheme.bodyText1?.color,
-                    ),
-              ),
-            ),
+            appBar: const UnderScoreHomePageAppBar(),
             extendBody: true,
             body: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: rem(2.5)),
+              padding: EdgeInsets.only(bottom: context.r.size(2.5)),
               child: const UnderScoreHomePageBody(),
             ),
             bottomNavigationBar: Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: rem(1),
-                vertical: rem(0.5),
+                horizontal: context.r.size(1),
+                vertical: context.r.size(0.5),
               ),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Builder(
-                      builder: (final BuildContext context) => TextButton(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).bottomAppBarColor,
-                          padding: EdgeInsets.symmetric(vertical: rem(0.5)),
-                          surfaceTintColor: Colors.transparent,
+              child: SizedBox(
+                height: context.r.size(2.5),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Builder(
+                        builder: (final BuildContext context) => TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).bottomAppBarColor,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.r.size(0.5),
+                            ),
+                            surfaceTintColor: Colors.transparent,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(width: context.r.size(0.5)),
+                              Text(provider.type.titleCase),
+                              const Icon(Icons.arrow_drop_up_rounded),
+                            ],
+                          ),
+                          onPressed: () {
+                            showTypeModal(context: context, provider: provider);
+                          },
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(width: rem(0.5)),
-                            Text(provider.type.titleCase),
-                            const Icon(Icons.arrow_drop_up_rounded),
-                          ],
-                        ),
-                        onPressed: () {
-                          showTypeModal(context: context, provider: provider);
-                        },
                       ),
                     ),
-                  ),
-                  SizedBox(width: rem(0.5)),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).bottomAppBarColor,
-                      borderRadius: BorderRadius.circular(rem(999)),
+                    SizedBox(width: context.r.size(0.5)),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).bottomAppBarColor,
+                        borderRadius:
+                            BorderRadius.circular(context.r.size(999)),
+                      ),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: Theme.of(context)
+                              .textTheme
+                              .headlineMedium!
+                              .fontSize,
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                              icon: const Icon(Icons.search_rounded),
+                              onPressed: () {
+                                Navigator.of(context).pusher.pushToSearchPage();
+                              },
+                            ),
+                            SizedBox(width: context.r.size(0.25)),
+                            IconButton(
+                              icon: const Icon(Icons.extension_rounded),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pusher
+                                    .pushToModulesPage();
+                              },
+                            ),
+                            SizedBox(width: context.r.size(0.25)),
+                            IconButton(
+                              icon: const Icon(Icons.settings_rounded),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pusher
+                                    .pushToSettingsPage();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: const Icon(Icons.search_rounded),
-                          onPressed: () {
-                            Navigator.of(context).pusher.pushToSearchPage();
-                          },
-                        ),
-                        SizedBox(width: rem(0.5)),
-                        IconButton(
-                          icon: const Icon(Icons.extension_rounded),
-                          onPressed: () {
-                            Navigator.of(context).pusher.pushToModulesPage();
-                          },
-                        ),
-                        SizedBox(width: rem(0.5)),
-                        IconButton(
-                          icon: const Icon(Icons.settings_rounded),
-                          onPressed: () {
-                            Navigator.of(context).pusher.pushToSettingsPage();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

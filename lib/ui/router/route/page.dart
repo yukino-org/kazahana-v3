@@ -1,5 +1,5 @@
 import '../../../core/exports.dart';
-import 'info.dart';
+import '../../exports.dart';
 
 abstract class RoutePage {
   RouteTransitionsBuilder transitionBuilder = defaultTransitionBuilder;

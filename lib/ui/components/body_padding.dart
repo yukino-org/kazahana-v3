@@ -1,17 +1,20 @@
 import '../../core/exports.dart';
+import '../exports.dart';
 
 class HorizontalBodyPadding extends StatelessWidget {
   const HorizontalBodyPadding(
     this.child, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Widget child;
 
   @override
   Widget build(final BuildContext context) =>
-      Padding(padding: padding, child: child);
+      Padding(padding: padding(context), child: child);
 
-  static final double size = rem(0.75);
-  static final EdgeInsets padding = EdgeInsets.symmetric(horizontal: size);
+  static const double sizeScale = 0.75;
+  static double size(final BuildContext context) => context.r.size(sizeScale);
+  static EdgeInsets padding(final BuildContext context) =>
+      EdgeInsets.symmetric(horizontal: size(context));
 }

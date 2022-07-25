@@ -20,7 +20,7 @@ class AnilistCharacter {
   String get imageMedium => image['medium'] as String;
   String? get descriptionRaw => json['description'] as String?;
   String? get description =>
-      descriptionRaw != null ? stripHtmlTags(descriptionRaw!) : null;
+      descriptionRaw != null ? cleanHtml(descriptionRaw!) : null;
   String? get gender => json['gender'] as String?;
   JsonMap get dateOfBirthRaw => json['dateOfBirth'] as JsonMap;
   AnilistFuzzyDate get dateOfBirth => AnilistFuzzyDate(dateOfBirthRaw);

@@ -8,3 +8,7 @@ abstract class Paths {
     docsDir = await path_provider.getApplicationDocumentsDirectory();
   }
 }
+
+abstract class AssetPaths {
+  static const String anilistLogo = 'assets/images/anilist_logo.png';
+}

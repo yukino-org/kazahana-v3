@@ -1,17 +1,20 @@
 import 'dart:async';
 import '../../../../core/exports.dart';
+import '../../../exports.dart';
 import '../provider.dart';
 
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   const SearchBar({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SearchBar> createState() => _SearchBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(rem(2.5));
+  // TODO: Do something about this
+  // Size get preferredSize => Size.fromHeight(context.r.size(2.5));
+  Size get preferredSize => const Size.fromHeight(50);
 }
 
 class _SearchBarState extends State<SearchBar> {
@@ -70,29 +73,29 @@ class _SearchBarState extends State<SearchBar> {
             SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: rem(0.75),
-              vertical: rem(0.5),
+              horizontal: context.r.size(0.75),
+              vertical: context.r.size(0.5),
             ),
             child: SizedBox(
-              height: rem(1.5),
+              height: context.r.size(1.5),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(rem(0.25)),
+                  borderRadius: BorderRadius.circular(context.r.size(0.25)),
                   color: Theme.of(context).appBarTheme.backgroundColor,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(width: rem(0.5)),
+                    SizedBox(width: context.r.size(0.5)),
                     Icon(
                       Icons.search_rounded,
-                      size: Theme.of(context).textTheme.bodyText1?.fontSize,
-                      color: Theme.of(context).textTheme.caption?.color,
+                      size: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
-                    SizedBox(width: rem(0.4)),
+                    SizedBox(width: context.r.size(0.4)),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: rem(0.2)),
+                        padding: EdgeInsets.only(bottom: context.r.size(0.2)),
                         child: TextField(
                           textAlignVertical: TextAlignVertical.center,
                           textCapitalization: TextCapitalization.words,
@@ -106,24 +109,24 @@ class _SearchBarState extends State<SearchBar> {
                         ),
                       ),
                     ),
-                    SizedBox(width: rem(0.4)),
+                    SizedBox(width: context.r.size(0.4)),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(rem(1)),
+                        borderRadius: BorderRadius.circular(context.r.size(1)),
                         child: Padding(
-                          padding: EdgeInsets.all(rem(0.2)),
+                          padding: EdgeInsets.all(context.r.size(0.2)),
                           child: Icon(
                             Icons.close_rounded,
                             size:
-                                Theme.of(context).textTheme.bodyText1?.fontSize,
-                            color: Theme.of(context).textTheme.caption?.color,
+                                Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                           ),
                         ),
                         onTap: () => onCloseButtonTap(provider),
                       ),
                     ),
-                    SizedBox(width: rem(0.2)),
+                    SizedBox(width: context.r.size(0.2)),
                   ],
                 ),
               ),

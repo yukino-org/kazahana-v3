@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
-import '../database/exports.dart';
+import '../../core/exports.dart';
 
 abstract class AnimationDurations {
   static const Duration _defaultQuickAnimation = Duration(milliseconds: 100);
@@ -20,12 +18,4 @@ abstract class AnimationDurations {
 
   static bool get disabled =>
       SettingsDatabase.ready && SettingsDatabase.settings.disableAnimations;
-}
-
-abstract class Placeholders {
-  static const String transparent1x1ImageBase64 =
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-
-  static final Uint8List transparent1x1Image =
-      base64.decode(transparent1x1ImageBase64);
 }

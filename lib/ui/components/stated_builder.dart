@@ -7,8 +7,8 @@ class StatedBuilder extends StatelessWidget {
     required this.processing,
     required this.finished,
     required this.failed,
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final States state;
   final WidgetBuilder waiting;

@@ -1,4 +1,5 @@
 import '../../../../../core/exports.dart';
+import '../../../../exports.dart';
 
 class MultiChoiceListTile<T> extends StatelessWidget {
   const MultiChoiceListTile({
@@ -7,8 +8,8 @@ class MultiChoiceListTile<T> extends StatelessWidget {
     required this.items,
     required this.onChanged,
     this.secondary,
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Widget? secondary;
   final Widget title;
@@ -28,7 +29,9 @@ class MultiChoiceListTile<T> extends StatelessWidget {
           final T? value = await showModalBottomSheet<T>(
             context: context,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(rem(1))),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(context.r.size(1)),
+              ),
             ),
             builder: (final BuildContext context) => SingleChildScrollView(
               child: Column(
@@ -36,13 +39,13 @@ class MultiChoiceListTile<T> extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(
-                      left: rem(1),
-                      right: rem(1),
-                      top: rem(1),
-                      bottom: rem(0.5),
+                      left: context.r.size(1),
+                      right: context.r.size(1),
+                      top: context.r.size(1),
+                      bottom: context.r.size(0.5),
                     ),
                     child: DefaultTextStyle(
-                      style: Theme.of(context).textTheme.headline6!,
+                      style: Theme.of(context).textTheme.titleLarge!,
                       child: title,
                     ),
                   ),

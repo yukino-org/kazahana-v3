@@ -30,6 +30,7 @@ dependencies:
             url: https://github.com/yukino-org/packages.git
             ref: dart_tenka_runtime
     uni_links: ^0.5.1
+    url_launcher: ^6.1.5
     utilx:
         git:
             url: https://github.com/yukino-org/packages.git
@@ -46,6 +47,8 @@ dev_dependencies:
 
 flutter:
     uses-material-design: true
+    assets:
+        - assets/images/
     fonts:
         - family: Inter
           fonts:

@@ -1,10 +1,11 @@
 import '../../../core/exports.dart';
+import '../../exports.dart';
 import 'provider.dart';
 
 class ModulesPage extends StatelessWidget {
   const ModulesPage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   VoidCallback createOnPressed({
     required final ModulesPageProvider provider,
@@ -46,11 +47,14 @@ class ModulesPage extends StatelessWidget {
         : createOnPressed(provider: provider, metadata: metadata);
 
     return ListTile(
-      contentPadding: EdgeInsets.only(left: rem(0.75), right: rem(0.25)),
+      contentPadding: EdgeInsets.only(
+        left: context.r.size(0.75),
+        right: context.r.size(0.25),
+      ),
       leading: SizedBox(
         height: double.infinity,
         child: SizedBox.square(
-          dimension: rem(1.5),
+          dimension: context.r.size(1.5),
           child: Image.network(
             TenkaManager.repository.resolver
                 .resolveURL((metadata.thumbnail as TenkaCloudDS).url),
@@ -66,11 +70,11 @@ class ModulesPage extends StatelessWidget {
                 text: '  (${Translator.t.nsfw()})',
                 style: Theme.of(context)
                     .textTheme
-                    .overline
+                    .labelSmall
                     ?.copyWith(color: ColorPalettes.red.c500),
               ),
           ],
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
       subtitle: Text(

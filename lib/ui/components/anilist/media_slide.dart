@@ -1,13 +1,11 @@
 import '../../../core/exports.dart';
-import '../../router/exports.dart';
-import '../body_padding.dart';
-import 'media_tile.dart';
+import '../../exports.dart';
 
 class AnilistMediaSlide extends StatefulWidget {
   const AnilistMediaSlide(
     this.media, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AnilistMedia media;
 
@@ -67,25 +65,30 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
           alignment: Alignment.bottomLeft,
           child: IgnorePointer(
             child: Padding(
-              padding: EdgeInsets.all(HorizontalBodyPadding.size),
+              padding: EdgeInsets.all(HorizontalBodyPadding.size(context)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(rem(0.5)),
-                      child: FadeInImage(
-                        placeholder:
-                            MemoryImage(Placeholders.transparent1x1Image),
-                        image: NetworkImage(widget.media.coverImageExtraLarge),
+                      borderRadius: BorderRadius.circular(context.r.size(0.5)),
+                      child: AspectRatio(
+                        aspectRatio: AnilistMediaTile.coverRatio,
+                        child: FadeInImage(
+                          placeholder:
+                              MemoryImage(Placeholders.transparent1x1Image),
+                          image:
+                              NetworkImage(widget.media.coverImageExtraLarge),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: rem(0.5)),
+                  SizedBox(height: context.r.size(0.5)),
                   Wrap(
-                    spacing: rem(0.25),
-                    runSpacing: rem(0.2),
+                    spacing: context.r.size(0.25),
+                    runSpacing: context.r.size(0.2),
                     alignment: WrapAlignment.center,
                     children: <Widget>[
                       AnilistMediaTile.buildFormatChip(
@@ -114,15 +117,15 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                         ),
                     ],
                   ),
-                  SizedBox(height: rem(0.25)),
+                  SizedBox(height: context.r.size(0.25)),
                   Text(
                     widget.media.titleUserPreferred,
                     style: Theme.of(context)
                         .textTheme
-                        .headline5!
+                        .headlineSmall!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: rem(0.25)),
+                  SizedBox(height: context.r.size(0.25)),
                   if (widget.media.description != null)
                     Text(
                       widget.media.description!,

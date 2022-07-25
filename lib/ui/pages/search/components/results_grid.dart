@@ -4,17 +4,21 @@ import '../../../exports.dart';
 class ResultsGrid extends StatelessWidget {
   const ResultsGrid(
     this.results, {
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final List<AnilistMedia> results;
 
-  Widget buildGridRow(final List<Widget> children) => Padding(
-        padding: EdgeInsets.only(bottom: rem(1)),
+  Widget buildGridRow({
+    required final BuildContext context,
+    required final List<Widget> children,
+  }) =>
+      Padding(
+        padding: EdgeInsets.only(bottom: context.r.size(1)),
         child: Row(
           children: ListUtils.insertBetween(
             children.map((final Widget x) => Expanded(child: x)).toList(),
-            SizedBox(width: rem(1)),
+            SizedBox(width: context.r.size(1)),
           ),
         ),
       );
@@ -27,7 +31,10 @@ class ResultsGrid extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => Column(
         children: ListUtils.chunk(buildTiles(context: context), 2)
-            .map(buildGridRow)
+            .map(
+              (final List<Widget> x) =>
+                  buildGridRow(context: context, children: x),
+            )
             .toList(),
       );
 }

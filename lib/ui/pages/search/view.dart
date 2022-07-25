@@ -5,8 +5,8 @@ import 'provider.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -27,8 +27,8 @@ class _SearchPageState extends State<SearchPage> {
             appBar: const SearchBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: rem(0.75),
-                vertical: rem(0.25),
+                horizontal: context.r.size(0.75),
+                vertical: context.r.size(0.25),
               ),
               child: StatedBuilder(
                 provider.results.state,

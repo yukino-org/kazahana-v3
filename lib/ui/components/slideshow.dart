@@ -6,8 +6,8 @@ class Slideshow extends StatefulWidget {
     required this.children,
     required this.slideDuration,
     required this.animationDuration,
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final List<Widget> children;
   final Duration slideDuration;

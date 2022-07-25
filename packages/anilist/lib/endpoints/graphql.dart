@@ -83,4 +83,6 @@ abstract class AnilistGraphQL {
     }
     return parsed;
   }
+
+  static bool get isAuthenticated => token != null;
 }

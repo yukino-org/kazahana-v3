@@ -28,7 +28,7 @@ class AnilistMedia {
       parseAnilistMediaFormat(json['format'] as String);
   String? get descriptionRaw => json['description'] as String?;
   String? get description =>
-      descriptionRaw != null ? stripHtmlTags(descriptionRaw!) : null;
+      descriptionRaw != null ? cleanHtml(descriptionRaw!) : null;
   JsonMap? get startDateRaw => json['startDate'] as JsonMap;
   AnilistFuzzyDate? get startDate =>
       startDateRaw != null ? AnilistFuzzyDate(startDateRaw!) : null;

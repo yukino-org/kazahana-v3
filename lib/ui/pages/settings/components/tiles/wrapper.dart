@@ -3,8 +3,8 @@ import '../../../../../core/exports.dart';
 class SettingsBodyWrapper extends StatelessWidget {
   const SettingsBodyWrapper({
     required this.child,
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Widget child;
 

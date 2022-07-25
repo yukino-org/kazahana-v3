@@ -1,10 +1,11 @@
 import '../../../../core/exports.dart';
+import '../../../exports.dart';
 import '../provider.dart';
 
 class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ViewPageAppBar({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   Widget buildAppBarButton({
     required final BuildContext context,
@@ -20,14 +21,14 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               FadeScaleTransition(animation: animation, child: child),
       child: provider.showFloatingAppBar
           ? SizedBox.square(
-              dimension: rem(1.5),
+              dimension: context.r.size(1.5),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Theme.of(context).bottomAppBarColor.withOpacity(0.25),
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(rem(1)),
+                  borderRadius: BorderRadius.circular(context.r.size(1)),
                   onTap: onPressed,
                   child: Center(
                     child: IconTheme(
@@ -51,9 +52,9 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          top: rem(0.5),
-          left: rem(0.75),
-          right: rem(0.75),
+          top: context.r.size(0.5),
+          left: context.r.size(0.75),
+          right: context.r.size(0.75),
         ),
         child: Row(
           children: <Widget>[
@@ -81,8 +82,5 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   // ? Prevents excess padding with `SafeArea`
-  Size get preferredSize => const Size.fromHeight(mockedHeight);
-
-  static final double fixedHeight = rem(2);
-  static const double mockedHeight = 10;
+  Size get preferredSize => const Size.fromHeight(10);
 }

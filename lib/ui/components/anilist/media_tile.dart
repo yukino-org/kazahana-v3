@@ -5,8 +5,8 @@ class AnilistMediaTile extends StatelessWidget {
   const AnilistMediaTile(
     this.media, {
     this.additionalBottomChips = const <Widget>[],
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AnilistMedia media;
   final List<Widget> additionalBottomChips;
@@ -16,14 +16,14 @@ class AnilistMediaTile extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pusher.pushToViewPageFromMedia(media);
         },
-        borderRadius: BorderRadius.circular(rem(0.25)),
+        borderRadius: BorderRadius.circular(context.r.size(0.25)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(rem(0.25)),
+              borderRadius: BorderRadius.circular(context.r.size(0.25)),
               child: AspectRatio(
-                aspectRatio: 3 / 4,
+                aspectRatio: coverRatio,
                 child: Stack(
                   children: <Widget>[
                     Positioned.fill(
@@ -40,7 +40,7 @@ class AnilistMediaTile extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: EdgeInsets.all(rem(0.25)),
+                        padding: EdgeInsets.all(context.r.size(0.25)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -66,7 +66,7 @@ class AnilistMediaTile extends StatelessWidget {
                                 ),
                               ...additionalBottomChips,
                             ],
-                            SizedBox(height: rem(0.2)),
+                            SizedBox(height: context.r.size(0.2)),
                           ),
                         ),
                       ),
@@ -75,7 +75,7 @@ class AnilistMediaTile extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: rem(0.25)),
+            SizedBox(height: context.r.size(0.25)),
             Flexible(
               child: Text(
                 media.titleUserPreferred,
@@ -87,6 +87,8 @@ class AnilistMediaTile extends StatelessWidget {
         ),
       );
 
+  static const double coverRatio = 5 / 8;
+
   static Widget buildChip({
     required final BuildContext context,
     required final Widget child,
@@ -97,10 +99,10 @@ class AnilistMediaTile extends StatelessWidget {
       DecoratedBox(
         decoration: BoxDecoration(
           color: backgroundColor ?? Theme.of(context).bottomAppBarColor,
-          borderRadius: BorderRadius.circular(rem(0.2)),
+          borderRadius: BorderRadius.circular(context.r.size(0.2)),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: rem(0.2)),
+          padding: EdgeInsets.symmetric(horizontal: context.r.size(0.2)),
           child: DefaultTextStyle(
             style: Theme.of(context)
                 .textTheme
@@ -112,10 +114,15 @@ class AnilistMediaTile extends StatelessWidget {
               children: <Widget>[
                 if (icon != null) ...<Widget>[
                   IconTheme(
-                    data: Theme.of(context).iconTheme.copyWith(size: rem(0.5)),
-                    child: icon,
+                    data: Theme.of(context)
+                        .iconTheme
+                        .copyWith(size: context.r.size(0.65)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 1),
+                      child: icon,
+                    ),
                   ),
-                  SizedBox(width: rem(0.15)),
+                  SizedBox(width: context.r.size(0.15)),
                 ],
                 child,
               ],
@@ -179,7 +186,7 @@ class AnilistMediaTile extends StatelessWidget {
       Icon(Icons.star_rounded, color: ColorPalettes.yellow.c500);
 
   static Icon get ongoingIcon =>
-      Icon(Icons.trip_origin_rounded, color: ColorPalettes.green.c500);
+      Icon(Icons.fiber_manual_record_rounded, color: ColorPalettes.green.c500);
 
   static Icon get airdateIcon =>
       Icon(Icons.date_range_rounded, color: ColorPalettes.fuchsia.c500);

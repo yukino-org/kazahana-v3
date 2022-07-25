@@ -2,8 +2,8 @@ import '../../core/exports.dart';
 
 class RoundedBackButton extends StatelessWidget {
   const RoundedBackButton({
-    final Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(final BuildContext context) => IconButton(

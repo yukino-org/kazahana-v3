@@ -13,3 +13,4 @@ export 'relation_edge.dart';
 export 'relation_type.dart';
 export 'seasons.dart';
 export 'token.dart';
+export 'user.dart';

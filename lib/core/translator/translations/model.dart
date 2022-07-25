@@ -36,6 +36,7 @@ abstract class Translations {
   String overview();
   String extensions();
   String by(final String value);
+  String authenticatedAs(final String name);
 
   Locale get locale;
 }
