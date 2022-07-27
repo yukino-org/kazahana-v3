@@ -37,6 +37,25 @@ abstract class Translations {
   String extensions();
   String by(final String value);
   String authenticatedAs(final String name);
+  String anilist();
+  String loginUsing(final String name);
+  String somethingWentWrong();
+  String trackYourProgressUsingAnilist();
+  String current();
+  String planning();
+  String completed();
+  String dropped();
+  String paused();
+  String repeating();
+  String totalAnime();
+  String episodesWatched();
+  String meanScore();
+  String timeSpent();
+  String totalManga();
+  String chaptersRead();
+  String volumesRead();
 
   Locale get locale;
+
+  static const String unknownCharacter = '?';
 }

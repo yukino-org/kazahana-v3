@@ -7,7 +7,6 @@ enum AnilistCharacterRole {
 }
 
 extension AnilistCharacterRoleUtils on AnilistCharacterRole {
-  String get titleCase => StringUtils.capitalize(name);
   String get stringify => name.toUpperCase();
 }
 

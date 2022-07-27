@@ -2,8 +2,8 @@ import 'package:utilx/utils.dart';
 import 'fuzzy_date.dart';
 import 'media_list_status.dart';
 
-class AnilistMediaList {
-  const AnilistMediaList(this.json);
+class AnilistMediaListEntry {
+  const AnilistMediaListEntry(this.json);
 
   final JsonMap json;
 

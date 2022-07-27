@@ -23,7 +23,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
         child: Column(
           children: <Widget>[
             MultiChoiceListTile<String>(
-              title: Text(Translator.t.accentColor()),
+              title: Text(context.t.accentColor()),
               secondary: const Icon(Icons.format_color_fill_rounded),
               value: SettingsDatabase.settings.primaryColor ??
                   ThemerThemeData.defaultForeground.name,
@@ -37,7 +37,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             MultiChoiceListTile<String>(
-              title: Text(Translator.t.backgroundColor()),
+              title: Text(context.t.backgroundColor()),
               secondary: const Icon(Icons.format_paint_rounded),
               value: SettingsDatabase.settings.backgroundColor ??
                   ThemerThemeData.defaultBackground.name,
@@ -51,7 +51,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             SwitchListTile(
-              title: Text(Translator.t.useSystemTheme()),
+              title: Text(context.t.useSystemTheme()),
               secondary: const Icon(Icons.highlight_rounded),
               value: SettingsDatabase.settings.useSystemPreferredTheme,
               onChanged: (final bool value) {
@@ -60,7 +60,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             SwitchListTile(
-              title: Text(Translator.t.darkMode()),
+              title: Text(context.t.darkMode()),
               secondary: AnimatedSwitcher(
                 duration: AnimationDurations.defaultNormalAnimation,
                 child: Icon(
@@ -79,7 +79,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
                     },
             ),
             CheckboxListTile(
-              title: Text(Translator.t.disableAnimations()),
+              title: Text(context.t.disableAnimations()),
               secondary: const Icon(Icons.animation_rounded),
               value: SettingsDatabase.settings.disableAnimations,
               onChanged: (final bool? value) {

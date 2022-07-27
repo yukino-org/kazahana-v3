@@ -38,10 +38,8 @@ class ViewPage extends StatelessWidget {
               provider.media.state,
               waiting: (final _) => const SizedBox.shrink(),
               processing: (final _) => const SizedBox.shrink(),
-              finished: (final _) => Padding(
-                padding:
-                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: const ViewPageBody(),
+              finished: (final _) => const SafeArea(
+                child: ViewPageBody(),
               ),
               failed: (final _) => const SizedBox.shrink(),
             ),

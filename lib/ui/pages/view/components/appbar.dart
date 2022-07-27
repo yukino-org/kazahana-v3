@@ -81,6 +81,5 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  // ? Prevents excess padding with `SafeArea`
-  Size get preferredSize => const Size.fromHeight(10);
+  Size get preferredSize => const Size.fromHeight(0);
 }

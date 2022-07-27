@@ -1,11 +1,40 @@
+import 'dart:async';
 import '../../../../core/exports.dart';
 import '../../../exports.dart';
 
-class UnderScoreHomePageAppBar extends StatelessWidget
+class UnderScoreHomePageAppBar extends StatefulWidget
     implements PreferredSizeWidget {
   const UnderScoreHomePageAppBar({
     super.key,
   });
+
+  @override
+  State<UnderScoreHomePageAppBar> createState() =>
+      _UnderScoreHomePageAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _UnderScoreHomePageAppBarState extends State<UnderScoreHomePageAppBar> {
+  StreamSubscription<AppEvent>? appEventSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    appEventSubscription = AppEvents.stream.listen((final AppEvent event) {
+      if (event != AppEvent.anilistStateChange) return;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    appEventSubscription?.cancel();
+
+    super.dispose();
+  }
 
   @override
   Widget build(final BuildContext context) => AppBar(
@@ -44,7 +73,4 @@ class UnderScoreHomePageAppBar extends StatelessWidget
           SizedBox(width: context.r.size(0.5)),
         ],
       );
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

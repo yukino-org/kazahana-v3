@@ -16,10 +16,10 @@ enum _SettingsCategory {
 }
 
 extension on _SettingsCategory {
-  String get titleCase {
+  String getTitleCase(final Translations translations) {
     switch (this) {
       case _SettingsCategory.appearance:
-        return Translator.t.appearance();
+        return translations.appearance();
     }
   }
 }
@@ -30,7 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
   PreferredSizeWidget buildAppBar(final BuildContext context) {
     final AppBar appBar = AppBar(
       leading: const RoundedBackButton(),
-      title: Text(Translator.t.settings()),
+      title: Text(context.t.settings()),
     );
     final double appBarHeight = appBar.preferredSize.height;
     final double height = (appBarHeight * 2) + 1;
@@ -54,12 +54,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: DropdownButton<_SettingsCategory>(
                     isExpanded: true,
                     value: category,
+                    icon: const Icon(Icons.arrow_drop_down_rounded),
                     items: _SettingsCategory.values
                         .map(
                           (final _SettingsCategory x) =>
                               DropdownMenuItem<_SettingsCategory>(
                             value: x,
-                            child: Text(x.titleCase),
+                            child: Text(x.getTitleCase(context.t)),
                           ),
                         )
                         .toList(),

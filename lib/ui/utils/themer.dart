@@ -112,6 +112,11 @@ class ThemerThemeData {
           BottomSheetThemeData(backgroundColor: backgroundColorLevel1),
       canvasColor: backgroundColorLevel2,
       dialogBackgroundColor: backgroundColorLevel1,
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: backgroundColorLevel1,
+        actionTextColor: foreground.c500,
+        contentTextStyle: textTheme.button,
+      ),
     );
   }
 

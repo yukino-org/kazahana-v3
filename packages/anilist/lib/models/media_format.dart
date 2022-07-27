@@ -25,22 +25,7 @@ const Map<AnilistMediaFormat, String> _anilistMediaFormatStringifyMap =
   AnilistMediaFormat.oneshot: 'ONE_SHOT',
 };
 
-const Map<AnilistMediaFormat, String> _anilistMediaFormatTitleMap =
-    <AnilistMediaFormat, String>{
-  AnilistMediaFormat.tv: 'TV',
-  AnilistMediaFormat.tvShort: 'TV (Short)',
-  AnilistMediaFormat.movie: 'Movie',
-  AnilistMediaFormat.special: 'Special',
-  AnilistMediaFormat.ova: 'OVA',
-  AnilistMediaFormat.ona: 'ONA',
-  AnilistMediaFormat.music: 'Music',
-  AnilistMediaFormat.manga: 'Manga',
-  AnilistMediaFormat.novel: 'Novel',
-  AnilistMediaFormat.oneshot: 'OneShot',
-};
-
 extension AnilistMediaFormatUtils on AnilistMediaFormat {
-  String get titleCase => _anilistMediaFormatTitleMap[this]!;
   String get stringify => _anilistMediaFormatStringifyMap[this]!;
 }
 

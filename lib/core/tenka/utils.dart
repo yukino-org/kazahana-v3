@@ -2,13 +2,13 @@ import 'package:tenka/tenka.dart';
 import '../translator/exports.dart';
 
 extension TenkaTypeUtils on TenkaType {
-  String get titleCase {
+  String getTitleCase(final Translations translations) {
     switch (this) {
       case TenkaType.anime:
-        return Translator.t.anime();
+        return translations.anime();
 
       case TenkaType.manga:
-        return Translator.t.manga();
+        return translations.manga();
     }
   }
 }

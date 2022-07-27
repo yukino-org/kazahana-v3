@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../ui/utils/relative_size.dart';
 import '../../utils/exports.dart';
 
 part 'schema.g.dart';
@@ -13,6 +14,7 @@ class SettingsSchema {
     this.backgroundColor,
     this.disableAnimations = false,
     this.useSystemPreferredTheme = false,
+    this.scaleMultiplier = RelativeSizeData.defaultMultiplier,
   });
 
   factory SettingsSchema.fromJson(final JsonMap json) =>
@@ -26,6 +28,7 @@ class SettingsSchema {
   String? backgroundColor;
   bool disableAnimations;
   bool useSystemPreferredTheme;
+  double scaleMultiplier;
 
   JsonMap toJson() => _$SettingsSchemaToJson(this);
 

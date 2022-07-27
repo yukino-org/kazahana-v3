@@ -6,8 +6,8 @@ class AnilistUserStatistics {
   final JsonMap json;
 
   int get count => json['count'] as int;
-  double get meanScore => json['meanScore'] as double;
-  double get standardDeviation => json['standardDeviation'] as double;
+  double get meanScore => (json['meanScore'] as num).toDouble();
+  double get standardDeviation => (json['standardDeviation'] as num).toDouble();
   int? get minutesWatched => json['minutesWatched'] as int?;
   int? get episodesWatched => json['episodesWatched'] as int?;
   int? get chaptersRead => json['chaptersRead'] as int?;
@@ -27,11 +27,13 @@ class AnilistUser {
   String? get avatarMedium => avatar['medium'] as String?;
   String? get bannerImage => json['bannerImage'] as String?;
   String get siteUrl => json['siteUrl'] as String;
-  JsonMap get statistics => json['statistics'] as JsonMap;
-  AnilistUserStatistics get animeStatistics =>
-      AnilistUserStatistics(statistics['anime'] as JsonMap);
-  AnilistUserStatistics get mangaStatistics =>
-      AnilistUserStatistics(statistics['manga'] as JsonMap);
+  JsonMap? get statistics => json['statistics'] as JsonMap?;
+  AnilistUserStatistics? get animeStatistics => statistics?['anime'] != null
+      ? AnilistUserStatistics(statistics!['anime'] as JsonMap)
+      : null;
+  AnilistUserStatistics? get mangaStatistics => statistics?['manga'] != null
+      ? AnilistUserStatistics(statistics!['manga'] as JsonMap)
+      : null;
 
   static const String query = '''
 {

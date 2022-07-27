@@ -1,5 +1,7 @@
 import 'package:uni_links/uni_links.dart' as uni_links;
 import '../../ui/exports.dart';
+import '../app/exports.dart';
+import '../packages.dart';
 import 'router/exports.dart';
 
 abstract class Deeplink {
@@ -17,11 +19,19 @@ abstract class Deeplink {
   }
 
   static void handle(final String path) {
-    final InternalRoute? internalRoute = InternalRoutes.findMatch(path);
+    String resolvedPath = path;
+    if (resolvedPath.startsWith(fullScheme)) {
+      resolvedPath = resolvedPath.replaceFirst(fullScheme, '');
+    }
+    debugPrint('Incoming deeplink: $resolvedPath');
+
+    final InternalRoute? internalRoute = InternalRoutes.findMatch(resolvedPath);
     if (internalRoute != null) {
-      internalRoute.handle(path);
+      internalRoute.handle(resolvedPath);
       return;
     }
-    gNavigatorKey.currentState!.pushNamed(path);
+    gNavigatorKey.currentState!.pushNamed(resolvedPath);
   }
+
+  static const String fullScheme = '${AppMeta.scheme}://';
 }

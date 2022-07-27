@@ -1,5 +1,3 @@
-import '../translator/exports.dart';
-
 abstract class PrettyDates {
   static String constructDateString({
     required final String day,
@@ -12,13 +10,5 @@ abstract class PrettyDates {
         day: date.day.toString(),
         month: date.month.toString(),
         year: date.year.toString(),
-      );
-}
-
-abstract class PrettyDurations {
-  static String prettyHoursMinutesShort(final Duration duration) =>
-      Translator.t.nHrsNMins(
-        duration.inHours.toString(),
-        duration.inMinutes.remainder(60).toString(),
       );
 }

@@ -7,6 +7,13 @@ const Map<String, String> htmlEntities = <String, String>{
   '&gt;': '>',
   '&nbsp;': ' ',
   '&copy;': '©',
+  '&deg;': '°',
+  '&lsquo;': "'",
+  '&rsquo;': "'",
+  '&sbquo;': ',',
+  '&ldquo;': '"',
+  '&rdquo;': '"',
+  '&trade;': '™',
 };
 
 String replaceHtmlEntities(final String text) {

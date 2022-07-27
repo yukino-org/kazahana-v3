@@ -1,9 +1,9 @@
 import 'package:anilist/anilist.dart';
 import '../../ui/keys.dart';
+import '../../ui/utils/exports.dart';
 import '../app/exports.dart';
 import '../database/exports.dart';
 import '../packages.dart';
-import '../translator/exports.dart';
 import 'credentials.dart';
 
 abstract class AnilistAuth {
@@ -23,7 +23,14 @@ abstract class AnilistAuth {
     await fetchUser();
     if (user != null) {
       gScaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(content: Text(Translator.t.authenticatedAs(user!.name))),
+        SnackBar(
+          content: Text(
+            <String>[
+              '${gNavigatorKey.currentContext!.t.anilist()}:',
+              gNavigatorKey.currentContext!.t.authenticatedAs(user!.name),
+            ].join(' '),
+          ),
+        ),
       );
     }
   }
@@ -31,6 +38,7 @@ abstract class AnilistAuth {
   static Future<void> unauthenticate() async {
     SecureDatabase.data.anilistToken = null;
     await SecureDatabase.save();
+    updateAnilistClient(null);
   }
 
   static Future<void> fetchUser() async {
@@ -47,6 +55,7 @@ abstract class AnilistAuth {
         'User-Agent': '${AppMeta.name} v${AppMeta.version}',
       },
     );
+    AppEvents.controller.add(AppEvent.anilistStateChange);
   }
 
   static String get oauthURL => Uri.encodeFull(

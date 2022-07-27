@@ -102,7 +102,7 @@ class _SearchBarState extends State<SearchBar> {
                           controller: textEditingController,
                           autofocus: true,
                           decoration: InputDecoration.collapsed(
-                            hintText: Translator.t.searchAnAnimeOrManga(),
+                            hintText: context.t.searchAnAnimeOrManga(),
                           ),
                           onChanged: (final String input) =>
                               onInputChange(input, provider: provider),

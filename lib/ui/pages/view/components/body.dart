@@ -11,13 +11,13 @@ enum _ViewPageTabs {
 }
 
 extension on _ViewPageTabs {
-  String get titleCase {
+  String getTitleCase(final Translations translations) {
     switch (this) {
       case _ViewPageTabs.overview:
-        return Translator.t.overview();
+        return translations.overview();
 
       case _ViewPageTabs.episodes:
-        return Translator.t.episodes();
+        return translations.episodes();
     }
   }
 }
@@ -67,6 +67,21 @@ class _ViewPageBodyState extends State<ViewPageBody>
     super.dispose();
   }
 
+  Widget buildTabBarViewPage({
+    required final BuildContext context,
+    required final WidgetBuilder builder,
+  }) =>
+      Builder(
+        builder: (final BuildContext context) => CustomScrollView(
+          slivers: <Widget>[
+            SliverOverlapInjector(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            ),
+            SliverToBoxAdapter(child: builder(context)),
+          ],
+        ),
+      );
+
   @override
   Widget build(final BuildContext context) {
     final ViewPageProvider provider = context.watch<ViewPageProvider>();
@@ -101,7 +116,10 @@ class _ViewPageBodyState extends State<ViewPageBody>
                     .asMap()
                     .map(
                       (final int i, final _ViewPageTabs x) =>
-                          MapEntry<int, Widget>(i, Tab(text: x.titleCase)),
+                          MapEntry<int, Widget>(
+                        i,
+                        Tab(text: x.getTitleCase(context.t)),
+                      ),
                     )
                     .values
                     .toList(),
@@ -113,8 +131,14 @@ class _ViewPageBodyState extends State<ViewPageBody>
       body: TabBarView(
         controller: tabController,
         children: <Widget>[
-          Builder(builder: (final _) => ViewPageOverview(media)),
-          Builder(builder: (final _) => ViewPageEpisodes(media)),
+          buildTabBarViewPage(
+            context: context,
+            builder: (final _) => ViewPageOverview(media),
+          ),
+          buildTabBarViewPage(
+            context: context,
+            builder: (final _) => ViewPageEpisodes(media),
+          ),
         ],
       ),
     );

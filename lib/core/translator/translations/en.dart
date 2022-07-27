@@ -112,5 +112,57 @@ class EnTranslation implements Translations {
   String authenticatedAs(final String name) => 'Authenticated as $name';
 
   @override
+  String anilist() => 'Anilist';
+
+  @override
+  String loginUsing(final String name) => 'Login using $name';
+
+  @override
+  String somethingWentWrong() => 'Something went wrong!';
+
+  @override
+  String trackYourProgressUsingAnilist() =>
+      'Track your progress using Anilist!';
+
+  @override
+  String current() => 'Current';
+
+  @override
+  String planning() => 'Planning';
+
+  @override
+  String completed() => 'Completed';
+
+  @override
+  String dropped() => 'Dropped';
+
+  @override
+  String paused() => 'Paused';
+
+  @override
+  String repeating() => 'Repeating';
+
+  @override
+  String totalAnime() => 'Total Anime';
+
+  @override
+  String episodesWatched() => 'Episodes Watched';
+
+  @override
+  String meanScore() => 'Mean Score';
+
+  @override
+  String timeSpent() => 'Time Spent';
+
+  @override
+  String totalManga() => 'Total Manga';
+
+  @override
+  String chaptersRead() => 'Chapters Read';
+
+  @override
+  String volumesRead() => 'Volumes Read';
+
+  @override
   final Locale locale = const Locale(LanguageCodes.en);
 }

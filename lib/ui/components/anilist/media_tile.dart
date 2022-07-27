@@ -117,10 +117,7 @@ class AnilistMediaTile extends StatelessWidget {
                     data: Theme.of(context)
                         .iconTheme
                         .copyWith(size: context.r.size(0.65)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 1),
-                      child: icon,
-                    ),
+                    child: icon,
                   ),
                   SizedBox(width: context.r.size(0.15)),
                 ],
@@ -140,7 +137,7 @@ class AnilistMediaTile extends StatelessWidget {
         icon: media.status == AnilistMediaStatus.releasing
             ? AnilistMediaTile.ongoingIcon
             : null,
-        child: Text(media.format.titleCase),
+        child: Text(media.format.getTitleCase(context.t)),
       );
 
   static Widget buildWatchtimeChip({
@@ -149,7 +146,7 @@ class AnilistMediaTile extends StatelessWidget {
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
-        child: Text(media.watchtime),
+        child: Text(media.getWatchtime(context.t)),
       );
 
   static Widget buildRatingChip({
@@ -179,14 +176,14 @@ class AnilistMediaTile extends StatelessWidget {
       AnilistMediaTile.buildChip(
         context: context,
         backgroundColor: ColorPalettes.red.c500,
-        child: Text(Translator.t.nsfw()),
+        child: Text(context.t.nsfw()),
       );
 
   static Icon get ratingIcon =>
       Icon(Icons.star_rounded, color: ColorPalettes.yellow.c500);
 
   static Icon get ongoingIcon =>
-      Icon(Icons.fiber_manual_record_rounded, color: ColorPalettes.green.c500);
+      Icon(Icons.fiber_manual_record_outlined, color: ColorPalettes.green.c500);
 
   static Icon get airdateIcon =>
       Icon(Icons.date_range_rounded, color: ColorPalettes.fuchsia.c500);

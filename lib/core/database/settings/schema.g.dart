@@ -16,6 +16,8 @@ SettingsSchema _$SettingsSchemaFromJson(Map<String, dynamic> json) =>
       disableAnimations: json['disableAnimations'] as bool? ?? false,
       useSystemPreferredTheme:
           json['useSystemPreferredTheme'] as bool? ?? false,
+      scaleMultiplier: (json['scaleMultiplier'] as num?)?.toDouble() ??
+          RelativeSizeData.defaultMultiplier,
     );
 
 Map<String, dynamic> _$SettingsSchemaToJson(SettingsSchema instance) =>
@@ -27,4 +29,5 @@ Map<String, dynamic> _$SettingsSchemaToJson(SettingsSchema instance) =>
       'backgroundColor': instance.backgroundColor,
       'disableAnimations': instance.disableAnimations,
       'useSystemPreferredTheme': instance.useSystemPreferredTheme,
+      'scaleMultiplier': instance.scaleMultiplier,
     };

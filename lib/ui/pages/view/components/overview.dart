@@ -45,7 +45,9 @@ class ViewPageOverview extends StatelessWidget {
                                     Theme.of(context).colorScheme.primary,
                                 textColor:
                                     Theme.of(context).colorScheme.onPrimary,
-                                child: Text(character.role.titleCase),
+                                child: Text(
+                                  character.role.getTitleCase(context.t),
+                                ),
                               ),
                             ],
                             SizedBox(height: context.r.size(0.2)),
@@ -72,6 +74,9 @@ class ViewPageOverview extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => SafeArea(
         child: SingleChildScrollView(
+          // padding: EdgeInsets.symmetric(
+          //   vertical: context.r.size(0.25),
+          // ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +88,7 @@ class ViewPageOverview extends StatelessWidget {
               SizedBox(height: context.r.size(1)),
               HorizontalBodyPadding(
                 Text(
-                  Translator.t.characters(),
+                  context.t.characters(),
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -103,7 +108,7 @@ class ViewPageOverview extends StatelessWidget {
                 SizedBox(height: context.r.size(1)),
                 HorizontalBodyPadding(
                   Text(
-                    Translator.t.relations(),
+                    context.t.relations(),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!
@@ -125,7 +130,9 @@ class ViewPageOverview extends StatelessWidget {
                                     Theme.of(context).colorScheme.primary,
                                 textColor:
                                     Theme.of(context).colorScheme.onPrimary,
-                                child: Text(x.relationType.titleCase),
+                                child: Text(
+                                  x.relationType.getTitleCase(context.t),
+                                ),
                               ),
                             ],
                           ),

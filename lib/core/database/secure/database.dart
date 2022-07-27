@@ -8,7 +8,7 @@ import 'schema.dart';
 
 abstract class SecureDatabase {
   static final Key key = Key.fromUtf8('ThIs_Is_HiGhLy_SeCuRe_KeY_nO_cAp');
-  static final IV iv = IV.fromUtf8('ThIs_Is_HiGhLy_SeCuRe_Iv_No_CaP');
+  static final IV iv = IV.fromLength(16);
   static final Encrypter encrypter = Encrypter(AES(key, mode: AESMode.cbc));
 
   static final PerksFileAdapter adapter =

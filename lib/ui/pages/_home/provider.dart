@@ -18,10 +18,9 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
       StatedValue<List<AnilistMedia>>();
 
   Future<void> initialize() async {
-    final String? lastVisitedPage =
-        await CacheDatabase.get<String?>(kHomeLastVisitedKey);
-    if (lastVisitedPage != null) {
-      type = EnumUtils.find(TenkaType.values, lastVisitedPage);
+    final TenkaType? lastVisitedType = await getHomeLastVisited();
+    if (lastVisitedType != null && type != lastVisitedType) {
+      type = lastVisitedType;
       notifyListeners();
     }
 
@@ -32,7 +31,7 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
     this.type = type;
     fetch(type);
     notifyListeners();
-    await CacheDatabase.set(kHomeLastVisitedKey, type.name);
+    await setHomeLastVisited(type);
   }
 
   void fetch(final TenkaType type) {
@@ -124,4 +123,13 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
   }
 
   static const String kHomeLastVisitedKey = 'home_last_visited';
+
+  static Future<TenkaType?> getHomeLastVisited() async {
+    final String? value = await CacheDatabase.get<String?>(kHomeLastVisitedKey);
+    return value != null ? EnumUtils.find(TenkaType.values, value) : null;
+  }
+
+  static Future<void> setHomeLastVisited(final TenkaType type) async {
+    await CacheDatabase.set(kHomeLastVisitedKey, type.name);
+  }
 }

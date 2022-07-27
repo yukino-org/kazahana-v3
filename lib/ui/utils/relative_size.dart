@@ -13,23 +13,35 @@ class RelativeSize extends InheritedWidget {
   bool updateShouldNotify(final RelativeSize oldWidget) =>
       oldWidget.data != data;
 
-  double size(final double scale) => scale * data.value;
+  double size(final double scale) => data.size(scale);
 
   static RelativeSize of(final BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<RelativeSize>()!;
 }
 
 class RelativeSizeData {
-  RelativeSizeData._(this.value);
+  const RelativeSizeData._(this.screenSize);
 
-  factory RelativeSizeData.fromContext(final BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    final double value = 0.025 * size.longestSide;
-    debugPrint('Relative size computed to $value');
-    return RelativeSizeData._(value);
-  }
+  factory RelativeSizeData.fromContext(final BuildContext context) =>
+      RelativeSizeData._(MediaQuery.of(context).size);
 
-  final double value;
+  factory RelativeSizeData.fromWindow() => RelativeSizeData._(
+        WidgetsBinding.instance.window.physicalSize /
+            WidgetsBinding.instance.window.devicePixelRatio,
+      );
+
+  final Size screenSize;
+
+  double size(final double scale) => scale * value;
+
+  double get multiplier => SettingsDatabase.ready
+      ? SettingsDatabase.settings.scaleMultiplier
+      : defaultMultiplier;
+
+  double get value => defaultRatio * screenSize.longestSide * multiplier;
+
+  static const double defaultRatio = 0.025;
+  static const double defaultMultiplier = 1;
 }
 
 extension RelativeSizeUtils on BuildContext {

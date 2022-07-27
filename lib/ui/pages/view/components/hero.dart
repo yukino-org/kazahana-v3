@@ -83,11 +83,11 @@ class ViewPageHero extends StatelessWidget {
                 SizedBox(height: context.r.size(0.2)),
                 Text(
                   <String>[
-                    media.format.titleCase,
-                    media.watchtime,
+                    media.format.getTitleCase(context.t),
+                    media.getWatchtime(context.t),
                     if (media.season != null || media.seasonYear != null)
-                      '${media.season?.titleCase ?? '?'} ${media.seasonYear ?? '?'}',
-                    media.status.titleCase,
+                      '${media.season?.getTitleCase(context.t) ?? Translations.unknownCharacter} ${media.seasonYear ?? Translations.unknownCharacter}',
+                    media.status.getTitleCase(context.t),
                   ].join(' | '),
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: Theme.of(context).textTheme.bodySmall!.color,

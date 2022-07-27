@@ -68,12 +68,12 @@ class UnderScoreHomePageBody extends StatelessWidget {
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingAnimes),
             SizedBox(height: context.r.size(0.75)),
-            buildText(Translator.t.topOngoingAnimes(), context: context),
+            buildText(context.t.topOngoingAnimes(), context: context),
             buildCarousel(
               context: context,
               results: provider.topOngoingAnimes,
             ),
-            buildText(Translator.t.mostPopularAnimes(), context: context),
+            buildText(context.t.mostPopularAnimes(), context: context),
             buildCarousel(
               context: context,
               results: provider.mostPopularAnimes,
@@ -89,12 +89,12 @@ class UnderScoreHomePageBody extends StatelessWidget {
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingMangas),
             SizedBox(height: context.r.size(0.75)),
-            buildText(Translator.t.topOngoingMangas(), context: context),
+            buildText(context.t.topOngoingMangas(), context: context),
             buildCarousel(
               context: context,
               results: provider.topOngoingMangas,
             ),
-            buildText(Translator.t.mostPopularMangas(), context: context),
+            buildText(context.t.mostPopularMangas(), context: context),
             buildCarousel(
               context: context,
               results: provider.mostPopularMangas,
