@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../../ui/utils/relative_size.dart';
+import 'package:kazahana/ui/utils/relative_size.dart';
 import '../../utils/exports.dart';
 
 part 'schema.g.dart';

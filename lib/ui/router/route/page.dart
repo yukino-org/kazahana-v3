@@ -1,4 +1,4 @@
-import '../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../exports.dart';
 
 abstract class RoutePage {

@@ -5,6 +5,7 @@ import '../paths.dart';
 
 abstract class TenkaManager {
   static late final TenkaRepository repository;
+  static final Map<String, dynamic> _extractors = <String, dynamic>{};
 
   static Future<void> initialize() async {
     await TenkaInternals.initialize(
@@ -24,13 +25,14 @@ abstract class TenkaManager {
   }
 
   static Future<T> getExtractor<T>(final TenkaMetadata metadata) async {
-    final TenkaRuntimeInstance runtime = await TenkaRuntimeManager.create();
-    await runtime.loadScriptCode('', appendDefinitions: true);
-    await runtime.loadByteCode((metadata.source as TenkaBase64DS).data);
-    return runtime.getExtractor<T>();
-  }
+    if (!_extractors.containsKey(metadata.id)) {
+      final TenkaRuntimeInstance runtime = await TenkaRuntimeManager.create();
+      await runtime.loadScriptCode('', appendDefinitions: true);
+      await runtime.loadByteCode((metadata.source as TenkaBase64DS).data);
+      final T extractor = await runtime.getExtractor<T>();
+      _extractors[metadata.id] = extractor;
+    }
 
-  static Future<void> dispose() async {
-    await TenkaInternals.dispose();
+    return _extractors[metadata.id] as T;
   }
 }

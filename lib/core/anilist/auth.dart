@@ -1,6 +1,5 @@
 import 'package:anilist/anilist.dart';
-import '../../ui/keys.dart';
-import '../../ui/utils/exports.dart';
+import 'package:kazahana/ui/exports.dart';
 import '../app/exports.dart';
 import '../database/exports.dart';
 import '../packages.dart';
@@ -22,16 +21,14 @@ abstract class AnilistAuth {
 
     await fetchUser();
     if (user != null) {
-      gScaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text(
-            <String>[
-              '${gNavigatorKey.currentContext!.t.anilist()}:',
-              gNavigatorKey.currentContext!.t.authenticatedAs(user!.name),
-            ].join(' '),
-          ),
+      Toast(
+        content: Text(
+          <String>[
+            '${gNavigatorKey.currentContext!.t.anilist()}:',
+            gNavigatorKey.currentContext!.t.authenticatedAs(user!.name),
+          ].join(' '),
         ),
-      );
+      ).show();
     }
   }
 

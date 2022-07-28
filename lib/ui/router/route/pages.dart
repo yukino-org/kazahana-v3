@@ -1,4 +1,4 @@
-import '../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../pages/anilist/route.dart';
 import '../../pages/home/route.dart';
 import '../../pages/modules/route.dart';

@@ -1,5 +1,5 @@
+import 'package:kazahana/ui/exports.dart';
 import 'package:uni_links/uni_links.dart' as uni_links;
-import '../../ui/exports.dart';
 import '../app/exports.dart';
 import '../packages.dart';
 import 'router/exports.dart';
