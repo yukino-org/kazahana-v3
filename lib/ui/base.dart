@@ -1,4 +1,4 @@
-import '../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import 'exports.dart';
 
 class BaseApp extends StatefulWidget {
@@ -45,7 +45,6 @@ class _BaseAppState extends State<BaseApp> {
   @override
   Widget build(final BuildContext context) => MaterialApp(
         title: AppMeta.name,
-        scaffoldMessengerKey: gScaffoldMessengerKey,
         navigatorKey: gNavigatorKey,
         builder: (
           final BuildContext context,
@@ -58,7 +57,10 @@ class _BaseAppState extends State<BaseApp> {
             child: Builder(
               builder: (final BuildContext context) => Theme(
                 data: theme.getThemeData(context),
-                child: child!,
+                child: Builder(
+                  builder: (final BuildContext context) =>
+                      ClassicWrapper(child: child!),
+                ),
               ),
             ),
           ),
@@ -70,4 +72,17 @@ class _BaseAppState extends State<BaseApp> {
           return page.buildRoutePage(route);
         },
       );
+}
+
+class ClassicWrapper extends StatelessWidget {
+  const ClassicWrapper({
+    required this.child,
+    super.key,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(final BuildContext context) =>
+      Stack(children: <Widget>[child, const SuperImposer()]);
 }

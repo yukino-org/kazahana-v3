@@ -1,4 +1,4 @@
-import '../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 
 abstract class AnimationDurations {
   static const Duration _defaultQuickAnimation = Duration(milliseconds: 100);

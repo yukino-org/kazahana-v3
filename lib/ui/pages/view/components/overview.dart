@@ -1,4 +1,4 @@
-import '../../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../../exports.dart';
 
 class ViewPageOverview extends StatelessWidget {
@@ -74,9 +74,6 @@ class ViewPageOverview extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => SafeArea(
         child: SingleChildScrollView(
-          // padding: EdgeInsets.symmetric(
-          //   vertical: context.r.size(0.25),
-          // ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

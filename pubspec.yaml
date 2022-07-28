@@ -4,7 +4,7 @@ publish_to: none
 version: 3.0.0
 
 environment:
-    sdk: ">=2.18.0-272.0.dev <3.0.0"
+    sdk: ">=2.18.0-271.4.beta <3.0.0"
 
 dependencies:
     anilist:

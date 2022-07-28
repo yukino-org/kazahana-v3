@@ -1,4 +1,4 @@
-import '../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 
 class TranslationsWrapper extends InheritedWidget {
   const TranslationsWrapper({

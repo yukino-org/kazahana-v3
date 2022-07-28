@@ -9,13 +9,13 @@ typedef _TrendingFn = Future<List<AnilistMedia>> Function();
 Future<void> main() async {
   final Map<String, _TrendingFn> fns = <String, _TrendingFn>{
     'Trending Animes': () async => AnilistMediaEndpoints.trendingAnimes(),
-    // 'Top Ongoing Animes': () async => AnilistMediaEndpoints.topOngoingAnimes(),
-    // 'Most Popular Animes': () async =>
-    //     AnilistMediaEndpoints.mostPopularAnimes(),
-    // 'Trending Mangas': () async => AnilistMediaEndpoints.trendingMangas(),
-    // 'Top Ongoing Mangas': () async => AnilistMediaEndpoints.topOngoingMangas(),
-    // 'Most Popular Mangas': () async =>
-    //     AnilistMediaEndpoints.mostPopularMangas(),
+    'Top Ongoing Animes': () async => AnilistMediaEndpoints.topOngoingAnimes(),
+    'Most Popular Animes': () async =>
+        AnilistMediaEndpoints.mostPopularAnimes(),
+    'Trending Mangas': () async => AnilistMediaEndpoints.trendingMangas(),
+    'Top Ongoing Mangas': () async => AnilistMediaEndpoints.topOngoingMangas(),
+    'Most Popular Mangas': () async =>
+        AnilistMediaEndpoints.mostPopularMangas(),
   };
 
   for (final MapEntry<String, _TrendingFn> x in fns.entries) {

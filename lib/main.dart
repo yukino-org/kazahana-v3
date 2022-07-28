@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ui/exports.dart';
+import 'package:kazahana/ui/exports.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

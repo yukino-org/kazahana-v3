@@ -1,6 +1,3 @@
-import '../core/exports.dart';
-
-final GlobalKey<ScaffoldMessengerState> gScaffoldMessengerKey =
-    GlobalKey<ScaffoldMessengerState>();
+import 'package:kazahana/core/exports.dart';
 
 final GlobalKey<NavigatorState> gNavigatorKey = GlobalKey<NavigatorState>();

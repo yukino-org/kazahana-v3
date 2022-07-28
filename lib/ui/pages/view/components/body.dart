@@ -1,23 +1,34 @@
-import '../../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../../exports.dart';
 import '../provider.dart';
-import 'episodes.dart';
+import 'content/content.dart';
 import 'hero.dart';
 import 'overview.dart';
 
 enum _ViewPageTabs {
   overview,
-  episodes,
+  content,
 }
 
 extension on _ViewPageTabs {
-  String getTitleCase(final Translations translations) {
+  String getTitleCase({
+    required final Translations translations,
+    required final TenkaType type,
+  }) {
     switch (this) {
       case _ViewPageTabs.overview:
         return translations.overview();
 
-      case _ViewPageTabs.episodes:
-        return translations.episodes();
+      case _ViewPageTabs.content:
+        {
+          switch (type) {
+            case TenkaType.anime:
+              return translations.episodes();
+
+            case TenkaType.manga:
+              return translations.chapters();
+          }
+        }
     }
   }
 }
@@ -35,7 +46,7 @@ class _ViewPageBodyState extends State<ViewPageBody>
     with SingleTickerProviderStateMixin {
   final List<_ViewPageTabs> tabs = <_ViewPageTabs>[
     _ViewPageTabs.overview,
-    _ViewPageTabs.episodes,
+    _ViewPageTabs.content,
   ];
 
   late final TabController tabController;
@@ -118,7 +129,12 @@ class _ViewPageBodyState extends State<ViewPageBody>
                       (final int i, final _ViewPageTabs x) =>
                           MapEntry<int, Widget>(
                         i,
-                        Tab(text: x.getTitleCase(context.t)),
+                        Tab(
+                          text: x.getTitleCase(
+                            translations: context.t,
+                            type: media.type.asTenkaType,
+                          ),
+                        ),
                       ),
                     )
                     .values
@@ -137,7 +153,7 @@ class _ViewPageBodyState extends State<ViewPageBody>
           ),
           buildTabBarViewPage(
             context: context,
-            builder: (final _) => ViewPageEpisodes(media),
+            builder: (final _) => ViewPageContent(media),
           ),
         ],
       ),

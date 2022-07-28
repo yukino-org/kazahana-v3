@@ -1,5 +1,5 @@
 import 'package:flutter/scheduler.dart';
-import '../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import 'relative_size.dart';
 
 abstract class Themer {
@@ -112,11 +112,6 @@ class ThemerThemeData {
           BottomSheetThemeData(backgroundColor: backgroundColorLevel1),
       canvasColor: backgroundColorLevel2,
       dialogBackgroundColor: backgroundColorLevel1,
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: backgroundColorLevel1,
-        actionTextColor: foreground.c500,
-        contentTextStyle: textTheme.button,
-      ),
     );
   }
 

@@ -1,4 +1,4 @@
-import '../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import 'body_padding.dart';
 
 class ScrollableRow extends StatelessWidget {

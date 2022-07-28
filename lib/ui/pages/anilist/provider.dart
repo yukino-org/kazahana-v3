@@ -1,5 +1,5 @@
 import 'dart:async';
-import '../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 
 class AnilistPageProvider extends StatedChangeNotifier {
   StreamSubscription<AppEvent>? appEventSubscription;

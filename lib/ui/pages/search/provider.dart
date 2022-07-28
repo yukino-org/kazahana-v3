@@ -1,4 +1,4 @@
-import '../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 
 class SearchPageProvider extends StatedChangeNotifier {
   final StatedValue<TwinTuple<String, List<AnilistMedia>>> results =

@@ -1,4 +1,4 @@
-import '../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 
 class ViewPageViewProvider extends ChangeNotifier {
   bool showFloatingAppBar = true;

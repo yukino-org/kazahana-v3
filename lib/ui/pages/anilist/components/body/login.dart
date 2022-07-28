@@ -1,4 +1,4 @@
-import '../../../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../../../exports.dart';
 
 class AnilistPageLoginBody extends StatelessWidget {
@@ -77,11 +77,9 @@ class AnilistPageLoginBody extends StatelessWidget {
                     throw Exception('Failed to launch URL');
                   }
                 } catch (err) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${context.t.somethingWentWrong()} $err'),
-                    ),
-                  );
+                  Toast(
+                    content: Text('${context.t.somethingWentWrong()} $err'),
+                  ).show();
                 }
               },
             ),

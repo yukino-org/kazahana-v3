@@ -1,4 +1,4 @@
-import '../../../../../../core/exports.dart';
+import 'package:kazahana/core/exports.dart';
 import '../../../../../exports.dart';
 import '../../../provider.dart';
 import 'body.dart';
@@ -49,17 +49,16 @@ class _AnilistPageProfileBodyState extends State<AnilistPageProfileBody> {
             ],
             body: CustomScrollView(
               slivers: <Widget>[
-                SliverOverlapInjector(
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                Builder(
+                  builder: (final BuildContext context) =>
+                      SliverOverlapInjector(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                      context,
+                    ),
+                  ),
                 ),
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: _AnilistControlsHeaderDelegate.fixedHeight,
-                    ),
-                    child: AnilistPageProfileBodyBody(provider: provider),
-                  ),
+                  child: AnilistPageProfileBodyBody(provider: provider),
                 ),
               ],
             ),
