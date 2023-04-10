@@ -105,9 +105,10 @@ class ThemerThemeData {
       // ? Below properties are workarounds until
       // ? https://github.com/flutter/flutter/issues/91772 is resolved.
       appBarTheme: AppBarTheme(backgroundColor: backgroundColorLevel1),
-      bottomAppBarColor: backgroundColorLevel1,
+      bottomAppBarTheme: BottomAppBarTheme(color: backgroundColorLevel1),
       scaffoldBackgroundColor: backgroundColorLevel0,
-      toggleableActiveColor: foreground.c500,
+      // TODO: https://docs.flutter.dev/release/breaking-changes/toggleable-active-color#migration-guide
+      // toggleableActiveColor: foreground.c500,
       bottomSheetTheme:
           BottomSheetThemeData(backgroundColor: backgroundColorLevel1),
       canvasColor: backgroundColorLevel2,

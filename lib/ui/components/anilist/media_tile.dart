@@ -28,7 +28,7 @@ class AnilistMediaTile extends StatelessWidget {
                   children: <Widget>[
                     Positioned.fill(
                       child: Container(
-                        color: Theme.of(context).bottomAppBarColor,
+                        color: Theme.of(context).bottomAppBarTheme.color,
                       ),
                     ),
                     Positioned.fill(
@@ -98,7 +98,7 @@ class AnilistMediaTile extends StatelessWidget {
   }) =>
       DecoratedBox(
         decoration: BoxDecoration(
-          color: backgroundColor ?? Theme.of(context).bottomAppBarColor,
+          color: backgroundColor ?? Theme.of(context).bottomAppBarTheme.color,
           borderRadius: BorderRadius.circular(context.r.size(0.2)),
         ),
         child: Padding(

@@ -20,7 +20,7 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
     super.build(context);
     return Stack(
       children: <Widget>[
-        Container(color: Theme.of(context).bottomAppBarColor),
+        Container(color: Theme.of(context).bottomAppBarTheme.color),
         Positioned.fill(
           child: FadeInImage(
             placeholder: MemoryImage(Placeholders.transparent1x1Image),
@@ -52,8 +52,11 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Theme.of(context).bottomAppBarColor.withOpacity(0.25),
-                      Theme.of(context).bottomAppBarColor,
+                      Theme.of(context)
+                          .bottomAppBarTheme
+                          .color!
+                          .withOpacity(0.25),
+                      Theme.of(context).bottomAppBarTheme.color!,
                     ],
                   ),
                 ),

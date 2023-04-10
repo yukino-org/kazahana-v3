@@ -75,7 +75,7 @@ class _ToastState extends State<Toast> {
                     color: Colors.transparent,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).bottomAppBarColor,
+                        color: Theme.of(context).bottomAppBarTheme.color,
                         borderRadius:
                             BorderRadius.circular(context.r.size(0.25)),
                       ),

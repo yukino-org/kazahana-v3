@@ -1,1 +1,5 @@
 include: package:devx/analysis_options.yaml
+
+linter:
+    rules:
+        prefer_relative_imports: false

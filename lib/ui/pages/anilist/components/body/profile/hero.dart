@@ -143,7 +143,7 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
         delegate: SliverChildListDelegate.fixed(
           <Widget>[
             Container(
-              color: Theme.of(context).bottomAppBarColor,
+              color: Theme.of(context).bottomAppBarTheme.color,
               height: context.r.size(10),
               child: Stack(
                 children: <Widget>[
@@ -163,7 +163,8 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
                           colors: <Color>[
                             Colors.transparent,
                             Theme.of(context)
-                                .bottomAppBarColor
+                                .bottomAppBarTheme
+                                .color!
                                 .withOpacity(0.75),
                           ],
                         ),

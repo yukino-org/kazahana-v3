@@ -119,7 +119,7 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
         height: buttonHeight,
         child: TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).bottomAppBarColor,
+            backgroundColor: Theme.of(context).bottomAppBarTheme.color,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(context.r.size(0.25)),
             ),
@@ -145,7 +145,7 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
       );
 
   @override
-  Widget build(final BuildContext context, final _, final __) => Container(
+  Widget build(final BuildContext context, final _, final __) => ColoredBox(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: <Widget>[

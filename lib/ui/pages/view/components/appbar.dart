@@ -24,7 +24,10 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               dimension: context.r.size(1.5),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).bottomAppBarColor.withOpacity(0.25),
+                  color: Theme.of(context)
+                      .bottomAppBarTheme
+                      .color!
+                      .withOpacity(0.25),
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(

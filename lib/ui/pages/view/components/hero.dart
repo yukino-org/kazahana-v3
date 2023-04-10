@@ -37,7 +37,10 @@ class ViewPageHero extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: <Color>[
                           Colors.transparent,
-                          Theme.of(context).bottomAppBarColor.withOpacity(0.75),
+                          Theme.of(context)
+                              .bottomAppBarTheme
+                              .color!
+                              .withOpacity(0.75),
                         ],
                       ),
                     ),

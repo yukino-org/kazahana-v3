@@ -26,10 +26,19 @@ abstract class TenkaManager {
 
   static Future<T> getExtractor<T>(final TenkaMetadata metadata) async {
     if (!_extractors.containsKey(metadata.id)) {
-      final TenkaRuntimeInstance runtime = await TenkaRuntimeManager.create();
-      await runtime.loadScriptCode('', appendDefinitions: true);
-      await runtime.loadByteCode((metadata.source as TenkaBase64DS).data);
-      final T extractor = await runtime.getExtractor<T>();
+      final FubukiProgramConstant program = FubukiProgramConstant.deserialize(
+        (metadata.source as TenkaBase64DS).data,
+      );
+      final TenkaRuntimeInstance runtime =
+          await TenkaRuntimeManager.create(program);
+      final T extractor;
+      if (T is AnimeExtractor) {
+        extractor = await runtime.getAnimeExtractor() as T;
+      } else if (T is MangaExtractor) {
+        extractor = await runtime.getMangaExtractor() as T;
+      } else {
+        throw UnsupportedError('Invalid extractor type: $T');
+      }
       _extractors[metadata.id] = extractor;
     }
 
