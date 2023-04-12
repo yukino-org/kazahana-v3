@@ -14,6 +14,7 @@ dependencies:
     encrypt: ^5.0.1
     flutter:
         sdk: flutter
+    flutter_meedu_videoplayer: ^4.0.11
     json_annotation: ^4.6.0
     path: ^1.8.2
     path_provider: ^2.0.11
