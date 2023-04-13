@@ -13,8 +13,6 @@ class ViewPageContentProvider extends StatedChangeNotifier {
   final StatedValue<List<SearchInfo>> searches =
       StatedValue<List<SearchInfo>>();
 
-//Initialize will be called at some point either during app startup or after the user selects a provider from the episodes tab.
-
   Future<void> initialize() async {
     final String? lastUsedExtractorId = await getLastUsedExtractor(type);
     final TenkaMetadata? lastUsedExtractor =
@@ -22,8 +20,6 @@ class ViewPageContentProvider extends StatedChangeNotifier {
     if (lastUsedExtractor == null) return;
     await change(lastUsedExtractor);
   }
-
-//Change will set the new extractor in a persistent storage for convenience and pull the data from the extractor from tenka
 
   Future<void> change(final TenkaMetadata nMetadata) async {
     metadata = nMetadata;
@@ -46,9 +42,16 @@ class ViewPageContentProvider extends StatedChangeNotifier {
     }
   }
 
-//Fetch was likely was supposed to either decide whether to run fetchanime or an undefined fetchmanga
-
-  Future<void> fetch() async {}
+  Future<void> fetch() async {
+    //  switch (type) {
+    //    case TenkaType.anime:
+    //      fetchAnime();
+    //      break;
+    //    case TenkaType.manga:
+    //      //fetchManga();
+    //      break;
+    //  }
+  }
 
   Future<void> fetchAnime() async {
     searches.waiting();
