@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_meedu_videoplayer/meedu_player.dart';
-import 'package:flutter_meedu_videoplayer/src/helpers/responsive.dart';
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key});
@@ -18,7 +17,7 @@ String fileContents =
 class _PlayerPageState extends State<PlayerPage> {
   late MeeduPlayerController _controller;
 
-  final ValueNotifier<bool> _subtitlesEnabled = ValueNotifier(true);
+  final ValueNotifier<bool> _subtitlesEnabled = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -33,7 +32,7 @@ class _PlayerPageState extends State<PlayerPage> {
     super.dispose();
   }
 
-  _setDataSource() async {
+  Future<void> _setDataSource() async {
     await _controller.setDataSource(
       DataSource(
         source: sourceurl,
@@ -65,7 +64,7 @@ class _PlayerPageState extends State<PlayerPage> {
                 return CupertinoButton(
                   padding: const EdgeInsets.all(5),
                   minSize: 25,
-                  child: ValueListenableBuilder(
+                  child: ValueListenableBuilder<bool>(
                     valueListenable: _subtitlesEnabled,
                     builder: (
                       final BuildContext context,

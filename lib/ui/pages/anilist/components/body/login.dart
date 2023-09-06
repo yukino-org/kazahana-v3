@@ -78,7 +78,7 @@ class AnilistPageLoginBody extends StatelessWidget {
                   }
                 } catch (err) {
                   Toast(
-                    content: Text('${context.t.somethingWentWrong()} $err'),
+                    content: Text(err.toString()),
                   ).show();
                 }
               },

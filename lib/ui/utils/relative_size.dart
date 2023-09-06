@@ -25,9 +25,10 @@ class RelativeSizeData {
   factory RelativeSizeData.fromContext(final BuildContext context) =>
       RelativeSizeData._(MediaQuery.of(context).size);
 
-  factory RelativeSizeData.fromWindow() => RelativeSizeData._(
-        WidgetsBinding.instance.window.physicalSize /
-            WidgetsBinding.instance.window.devicePixelRatio,
+  factory RelativeSizeData.fromPlatformDispatcher() => RelativeSizeData._(
+        WidgetsBinding.instance.platformDispatcher.views.first.physicalSize /
+            WidgetsBinding
+                .instance.platformDispatcher.views.first.devicePixelRatio,
       );
 
   final Size screenSize;

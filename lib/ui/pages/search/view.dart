@@ -1,4 +1,4 @@
-import 'package:kazahana/core/exports.dart';
+import 'package:kazahana/core/exports.dart' hide SearchBar;
 import '../../exports.dart';
 import 'components/exports.dart';
 import 'provider.dart';

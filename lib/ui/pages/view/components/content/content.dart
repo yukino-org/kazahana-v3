@@ -2,7 +2,7 @@ import 'package:kazahana/core/exports.dart';
 import 'package:kazahana/core/player/video_player.dart';
 import 'provider.dart';
 
-List<String> entries = ['A', 'B', 'C'];
+List<String> entries = <String>['A', 'B', 'C'];
 
 class ViewPageContent extends StatelessWidget {
   const ViewPageContent(
@@ -53,10 +53,10 @@ class ViewPageContent extends StatelessWidget {
                             if (value == null) {
                               return;
                             } else {
-                              entries = [
+                              entries = <String>[
                                 'Episode one',
                                 'Episode two',
-                                'Episode three'
+                                'Episode three',
                               ]; //placeholder values
                             }
                           },
@@ -64,7 +64,7 @@ class ViewPageContent extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const EpisodeList()
+                  const EpisodeList(),
                 ],
               ),
             ),
@@ -94,7 +94,7 @@ class _EpisodeListState extends State<EpisodeList> {
               selectedEntry = entries[index];
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<Builder>(
                   builder: (final BuildContext context) => const PlayerPage(),
                 ),
               );

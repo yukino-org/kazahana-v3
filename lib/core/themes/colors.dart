@@ -118,7 +118,7 @@ abstract class ColorPalettes {
       600: Color(0xFF475569),
       700: Color(0xFF334155),
       800: Color(0xFF1E293B),
-      900: Color(0xFF0F172A)
+      900: Color(0xFF0F172A),
     },
     ColorPaletteKind.background,
   );
@@ -135,7 +135,7 @@ abstract class ColorPalettes {
       600: Color(0xFF4B5563),
       700: Color(0xFF374151),
       800: Color(0xFF1F2937),
-      900: Color(0xFF111827)
+      900: Color(0xFF111827),
     },
     ColorPaletteKind.background,
   );
@@ -152,7 +152,7 @@ abstract class ColorPalettes {
       600: Color(0xFF52525B),
       700: Color(0xFF3F3F46),
       800: Color(0xFF27272A),
-      900: Color(0xFF18181B)
+      900: Color(0xFF18181B),
     },
     ColorPaletteKind.background,
   );
@@ -169,7 +169,7 @@ abstract class ColorPalettes {
       600: Color(0xFF525252),
       700: Color(0xFF404040),
       800: Color(0xFF262626),
-      900: Color(0xFF171717)
+      900: Color(0xFF171717),
     },
     ColorPaletteKind.background,
   );
@@ -186,7 +186,7 @@ abstract class ColorPalettes {
       600: Color(0xFF57534E),
       700: Color(0xFF44403C),
       800: Color(0xFF292524),
-      900: Color(0xFF1C1917)
+      900: Color(0xFF1C1917),
     },
     ColorPaletteKind.background,
   );
@@ -205,7 +205,7 @@ abstract class ColorPalettes {
       600: Color(0xFF171717),
       700: Color(0xFF0F0F0F),
       800: Color(0xFF080808),
-      900: Color(0xFF000000)
+      900: Color(0xFF000000),
     },
     ColorPaletteKind.background,
   );
@@ -220,7 +220,7 @@ abstract class ColorPalettes {
     600: Color(0xFFDC2626),
     700: Color(0xFFB91C1C),
     800: Color(0xFF991B1B),
-    900: Color(0xFF7F1D1D)
+    900: Color(0xFF7F1D1D),
   });
 
   static const ColorPalette orange = ColorPalette('Orange', <int, Color>{
@@ -233,7 +233,7 @@ abstract class ColorPalettes {
     600: Color(0xFFEA580C),
     700: Color(0xFFC2410C),
     800: Color(0xFF9A3412),
-    900: Color(0xFF7C2D12)
+    900: Color(0xFF7C2D12),
   });
 
   static const ColorPalette amber = ColorPalette('Amber', <int, Color>{
@@ -246,7 +246,7 @@ abstract class ColorPalettes {
     600: Color(0xFFD97706),
     700: Color(0xFFB45309),
     800: Color(0xFF92400E),
-    900: Color(0xFF78350F)
+    900: Color(0xFF78350F),
   });
 
   static const ColorPalette yellow = ColorPalette('Yellow', <int, Color>{
@@ -259,7 +259,7 @@ abstract class ColorPalettes {
     600: Color(0xFFCA8A04),
     700: Color(0xFFA16207),
     800: Color(0xFF854D0E),
-    900: Color(0xFF713F12)
+    900: Color(0xFF713F12),
   });
 
   static const ColorPalette lime = ColorPalette('Lime', <int, Color>{
@@ -272,7 +272,7 @@ abstract class ColorPalettes {
     600: Color(0xFF65A30D),
     700: Color(0xFF4D7C0F),
     800: Color(0xFF3F6212),
-    900: Color(0xFF365314)
+    900: Color(0xFF365314),
   });
 
   static const ColorPalette green = ColorPalette('Green', <int, Color>{
@@ -285,7 +285,7 @@ abstract class ColorPalettes {
     600: Color(0xFF16A34A),
     700: Color(0xFF15803D),
     800: Color(0xFF166534),
-    900: Color(0xFF14532D)
+    900: Color(0xFF14532D),
   });
 
   static const ColorPalette emerald = ColorPalette('Emerald', <int, Color>{
@@ -298,7 +298,7 @@ abstract class ColorPalettes {
     600: Color(0xFF059669),
     700: Color(0xFF047857),
     800: Color(0xFF065F46),
-    900: Color(0xFF064E3B)
+    900: Color(0xFF064E3B),
   });
 
   static const ColorPalette teal = ColorPalette('Teal', <int, Color>{
@@ -311,7 +311,7 @@ abstract class ColorPalettes {
     600: Color(0xFF0D9488),
     700: Color(0xFF0F766E),
     800: Color(0xFF115E59),
-    900: Color(0xFF134E4A)
+    900: Color(0xFF134E4A),
   });
 
   static const ColorPalette cyan = ColorPalette('Cyan', <int, Color>{
@@ -324,7 +324,7 @@ abstract class ColorPalettes {
     600: Color(0xFF0891B2),
     700: Color(0xFF0E7490),
     800: Color(0xFF155E75),
-    900: Color(0xFF164E63)
+    900: Color(0xFF164E63),
   });
 
   static const ColorPalette sky = ColorPalette('Sky', <int, Color>{
@@ -337,7 +337,7 @@ abstract class ColorPalettes {
     600: Color(0xFF0284C7),
     700: Color(0xFF0369A1),
     800: Color(0xFF075985),
-    900: Color(0xFF0C4A6E)
+    900: Color(0xFF0C4A6E),
   });
 
   static const ColorPalette blue = ColorPalette('Blue', <int, Color>{
@@ -350,7 +350,7 @@ abstract class ColorPalettes {
     600: Color(0xFF2563EB),
     700: Color(0xFF1D4ED8),
     800: Color(0xFF1E40AF),
-    900: Color(0xFF1E3A8A)
+    900: Color(0xFF1E3A8A),
   });
 
   static const ColorPalette indigo = ColorPalette('Indigo', <int, Color>{
@@ -363,7 +363,7 @@ abstract class ColorPalettes {
     600: Color(0xFF4F46E5),
     700: Color(0xFF4338CA),
     800: Color(0xFF3730A3),
-    900: Color(0xFF312E81)
+    900: Color(0xFF312E81),
   });
 
   static const ColorPalette violet = ColorPalette('Violet', <int, Color>{
@@ -376,7 +376,7 @@ abstract class ColorPalettes {
     600: Color(0xFF7C3AED),
     700: Color(0xFF6D28D9),
     800: Color(0xFF5B21B6),
-    900: Color(0xFF4C1D95)
+    900: Color(0xFF4C1D95),
   });
 
   static const ColorPalette purple = ColorPalette('Purple', <int, Color>{
@@ -389,7 +389,7 @@ abstract class ColorPalettes {
     600: Color(0xFF9333EA),
     700: Color(0xFF7E22CE),
     800: Color(0xFF6B21A8),
-    900: Color(0xFF581C87)
+    900: Color(0xFF581C87),
   });
 
   static const ColorPalette fuchsia = ColorPalette('Fuchsia', <int, Color>{
@@ -402,7 +402,7 @@ abstract class ColorPalettes {
     600: Color(0xFFC026D3),
     700: Color(0xFFA21CAF),
     800: Color(0xFF86198F),
-    900: Color(0xFF701A75)
+    900: Color(0xFF701A75),
   });
 
   static const ColorPalette pink = ColorPalette('Pink', <int, Color>{
@@ -415,7 +415,7 @@ abstract class ColorPalettes {
     600: Color(0xFFDB2777),
     700: Color(0xFFBE185D),
     800: Color(0xFF9D174D),
-    900: Color(0xFF831843)
+    900: Color(0xFF831843),
   });
 
   static const ColorPalette rose = ColorPalette('Rose', <int, Color>{
@@ -428,6 +428,6 @@ abstract class ColorPalettes {
     600: Color(0xFFE11D48),
     700: Color(0xFFBE123C),
     800: Color(0xFF9F1239),
-    900: Color(0xFF881337)
+    900: Color(0xFF881337),
   });
 }
