@@ -51,7 +51,7 @@ abstract class KawaiiFaces {
     '(✖╭╮✖)',
     'ಥ⌣ಥ',
     'இ_இ',
-    '✖‿✖'
+    '✖‿✖',
   ];
 
   static const List<String> happy = <String>[
@@ -236,6 +236,6 @@ abstract class KawaiiFaces {
     "<('o'<)",
     '◕‿◕',
     'ᵔᴥᵔ',
-    '◙‿◙'
+    '◙‿◙',
   ];
 }

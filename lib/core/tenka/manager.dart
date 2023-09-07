@@ -26,7 +26,7 @@ abstract class TenkaManager {
 
   static Future<T> getExtractor<T>(final TenkaMetadata metadata) async {
     if (!_extractors.containsKey(metadata.id)) {
-      final FubukiProgramConstant program = FubukiProgramConstant.deserialize(
+      final BeizeProgramConstant program = BeizeProgramConstant.deserialize(
         (metadata.source as TenkaBase64DS).data,
       );
       final TenkaRuntimeInstance runtime =

@@ -10,6 +10,8 @@ class ViewPageContentProvider extends StatedChangeNotifier {
 
   final StatedValue<TwinTuple<SearchInfo, AnimeInfo>?> computed =
       StatedValue<TwinTuple<SearchInfo, AnimeInfo>?>();
+  final StatedValue<List<SearchInfo>> searches =
+      StatedValue<List<SearchInfo>>();
 
   Future<void> initialize() async {
     final String? lastUsedExtractorId = await getLastUsedExtractor(type);
@@ -40,54 +42,63 @@ class ViewPageContentProvider extends StatedChangeNotifier {
     }
   }
 
-  Future<void> fetch() async {}
+  Future<void> fetch() async {
+    //  switch (type) {
+    //    case TenkaType.anime:
+    //      fetchAnime();
+    //      break;
+    //    case TenkaType.manga:
+    //      //fetchManga();
+    //      break;
+    //  }
+  }
 
   Future<void> fetchAnime() async {
-    // searches.waiting();
+    searches.waiting();
     computed.waiting();
     notifyListeners();
 
     final AnimeExtractor extractor = await getCastedExtractor();
-    // try {
-    //   searches.finish(
-    //     await extractor.search(
-    //       media.titleRomaji,
-    //       extractor.defaultLocale,
-    //     ),
-    //   );
-    // } catch (error, stackTrace) {
-    //   searches.fail(error, stackTrace);
-    //   computed.fail('Failed to fetch search results');
-    // }
-    // notifyListeners();
-    // if (searches.hasFailed) return;
+    try {
+      searches.finish(
+        await extractor.search(
+          media.titleRomaji,
+          extractor.defaultLocale,
+        ),
+      );
+    } catch (error, stackTrace) {
+      searches.fail(error, stackTrace);
+      computed.fail('Failed to fetch search results');
+    }
+    notifyListeners();
+    if (searches.hasFailed) return;
 
-    // final String? lastComputedUrl = await getLastComputed(
-    //   type: type,
-    //   id: metadata!.id,
-    //   mediaId: media.id,
-    // );
-    // final SearchInfo? computedSearchInfo = (lastComputedUrl != null
-    //         ? searches.value.firstWhereOrNull(
-    //             (final SearchInfo x) => x.url == lastComputedUrl,
-    //           )
-    //         : null) ??
-    //     searches.value.firstOrNull;
-    // if (computedSearchInfo == null) {
-    //   computed.fail('Failed to find valid result');
-    // }
+    final String? lastComputedUrl = await getLastComputed(
+      type: type,
+      id: metadata!.id,
+      mediaId: media.id,
+    );
+    final dynamic computedSearchInfo = (lastComputedUrl != null
+            ? searches.value.firstWhereOrNull(
+                (final SearchInfo x) => x.url == lastComputedUrl,
+              )
+            : null) ??
+        IterableExtension(searches.value).firstOrNull;
+    if (computedSearchInfo == null) {
+      computed.fail('Failed to find valid result');
+    }
 
-    // try {
-    //   searches.finish(
-    //     await extractor.search(
-    //       media.titleRomaji,
-    //       extractor.defaultLocale,
-    //     ),
-    //   );
-    // } catch (error, stackTrace) {
-    //   computed.fail('Failed to fetch search results');
-    // }
-    // notifyListeners();
+    try {
+      searches.finish(
+        await extractor.search(
+          media.titleRomaji,
+          extractor.defaultLocale,
+        ),
+      );
+    } catch (error) {
+      computed.fail('Failed to fetch search results');
+    }
+    notifyListeners();
   }
 
   T getCastedExtractor<T>() => extractor as T;

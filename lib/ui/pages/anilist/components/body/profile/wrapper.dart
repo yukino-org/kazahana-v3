@@ -213,9 +213,10 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent => fixedHeight;
 
-  static double get buttonHeight => RelativeSizeData.fromWindow().size(2);
+  static double get buttonHeight =>
+      RelativeSizeData.fromPlatformDispatcher().size(2);
   static double get verticalPaddingSize =>
-      RelativeSizeData.fromWindow().size(0.3);
+      RelativeSizeData.fromPlatformDispatcher().size(0.3);
 
   static double get fixedHeight => buttonHeight + (verticalPaddingSize * 2) + 1;
 }

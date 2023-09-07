@@ -21,7 +21,7 @@ abstract class Themer {
           ThemerThemeData.defaultBackground,
         ),
         brightness: SettingsDatabase.settings.useSystemPreferredTheme
-            ? SchedulerBinding.instance.window.platformBrightness
+            ? SchedulerBinding.instance.platformDispatcher.platformBrightness
             : SettingsDatabase.settings.darkMode
                 ? Brightness.dark
                 : Brightness.light,
