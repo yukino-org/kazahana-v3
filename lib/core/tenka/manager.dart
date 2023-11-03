@@ -21,7 +21,7 @@ abstract class TenkaManager {
       baseDir: path.join(Paths.docsDir.path, 'tenka'),
     );
 
-    await repository.initialize();
+    // await repository.initialize();
   }
 
   static Future<T> getExtractor<T>(final TenkaMetadata metadata) async {

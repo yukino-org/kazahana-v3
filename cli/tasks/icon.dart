@@ -37,14 +37,14 @@ Future<void> main() async {
   final Image backgroundImage = decodePng(backgroundImageBytes)!;
   final Image overlayImage = decodePng(overlayImageBytes)!;
 
-  final Image iconImage = drawImage(
+  final Image iconImage = compositeImage(
     overlayImage,
     copyCrop(
       backgroundImage,
-      0,
-      overlayContentSize ~/ 2,
-      defaultImageSize,
-      defaultImageSize - overlayContentSize,
+      x: 0,
+      y: overlayContentSize ~/ 2,
+      width: defaultImageSize,
+      height: defaultImageSize - overlayContentSize,
     ),
   );
 
@@ -52,8 +52,8 @@ Future<void> main() async {
     final String iconPath = getAndroidIconPath(x.last);
     final File iconFile = File(iconPath);
     final List<int> icon = encodeNamedImage(
-      copyResizeCropSquare(iconImage, x.first),
       path.basename(iconFile.path),
+      copyResizeCropSquare(iconImage, size: x.first),
     )!;
     await iconFile.writeAsBytes(icon);
     _logger.info('Generated $iconPath (${x.last})');

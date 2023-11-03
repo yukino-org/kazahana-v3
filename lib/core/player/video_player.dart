@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
+import 'package:media_kit/media_kit.dart' as media_kit;
+import 'package:media_kit_video/media_kit_video.dart' as media_kit;
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key});
@@ -15,36 +16,34 @@ String fileContents =
     ''; // TODO: Placeholder variable. Subtitles will have to be implemented later.
 
 class _PlayerPageState extends State<PlayerPage> {
-  late MeeduPlayerController _controller;
+  late media_kit.Player _player;
+  late media_kit.VideoController _controller;
 
   final ValueNotifier<bool> _subtitlesEnabled = ValueNotifier<bool>(true);
 
   @override
   void initState() {
     super.initState();
-    _controller = MeeduPlayerController();
+    _player = media_kit.Player();
+    _controller = media_kit.VideoController(_player);
     _setDataSource();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _player.dispose();
     super.dispose();
   }
 
   Future<void> _setDataSource() async {
-    await _controller.setDataSource(
-      DataSource(
-        source: sourceurl,
-        type: DataSourceType.network,
-        closedCaptionFile: _loadCaptions(),
-      ),
+    await _player.open(
+      media_kit.Media(sourceurl),
     );
-    _controller.onClosedCaptionEnabled(true);
+    // _controller.onClosedCaptionEnabled(true);
   }
 
-  Future<ClosedCaptionFile> _loadCaptions() async =>
-      SubRipCaptionFile(fileContents);
+  // Future<ClosedCaptionFile> _loadCaptions() async =>
+  //     SubRipCaptionFile(fileContents);
 
   @override
   Widget build(final BuildContext context) => Scaffold(
@@ -52,41 +51,41 @@ class _PlayerPageState extends State<PlayerPage> {
         body: SafeArea(
           child: AspectRatio(
             aspectRatio: 16 / 9,
-            child: MeeduVideoPlayer(
+            child: media_kit.Video(
               controller: _controller,
-              bottomRight: (
-                final BuildContext ctx,
-                final MeeduPlayerController controller,
-                final Responsive responsive,
-              ) {
-                final double fontSize = responsive.ip(3);
+              // bottomRight: (
+              //   final BuildContext ctx,
+              //   final MeeduPlayerController controller,
+              //   final Responsive responsive,
+              // ) {
+              //   final double fontSize = responsive.ip(3);
 
-                return CupertinoButton(
-                  padding: const EdgeInsets.all(5),
-                  minSize: 25,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _subtitlesEnabled,
-                    builder: (
-                      final BuildContext context,
-                      final bool enabled,
-                      final _,
-                    ) =>
-                        Text(
-                      'CC',
-                      style: TextStyle(
-                        fontSize: fontSize > 18 ? 18 : fontSize,
-                        color: Colors.white.withOpacity(
-                          enabled ? 1 : 0.4,
-                        ),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    _subtitlesEnabled.value = !_subtitlesEnabled.value;
-                    _controller.onClosedCaptionEnabled(_subtitlesEnabled.value);
-                  },
-                );
-              },
+              //   return CupertinoButton(
+              //     padding: const EdgeInsets.all(5),
+              //     minSize: 25,
+              //     child: ValueListenableBuilder<bool>(
+              //       valueListenable: _subtitlesEnabled,
+              //       builder: (
+              //         final BuildContext context,
+              //         final bool enabled,
+              //         final _,
+              //       ) =>
+              //           Text(
+              //         'CC',
+              //         style: TextStyle(
+              //           fontSize: fontSize > 18 ? 18 : fontSize,
+              //           color: Colors.white.withOpacity(
+              //             enabled ? 1 : 0.4,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //     onPressed: () {
+              //       _subtitlesEnabled.value = !_subtitlesEnabled.value;
+              //       _controller.onClosedCaptionEnabled(_subtitlesEnabled.value);
+              //     },
+              //   );
+              // },
             ),
           ),
         ),

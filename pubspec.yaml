@@ -14,8 +14,10 @@ dependencies:
     encrypt: ^5.0.1
     flutter:
         sdk: flutter
-    flutter_meedu_videoplayer: ^4.3.0
     json_annotation: ^4.6.0
+    media_kit: ^1.1.10
+    media_kit_video: ^1.2.4
+    media_kit_libs_video: ^1.0.4
     path: ^1.8.2
     path_provider: ^2.0.11
     perks: ^1.0.0
@@ -43,7 +45,7 @@ dev_dependencies:
         git:
             url: https://github.com/yukino-org/packages.git
             ref: dart_devx
-    image: ^3.2.0
+    image: ^4.1.3
     json_serializable: ^6.3.1
 
 flutter:

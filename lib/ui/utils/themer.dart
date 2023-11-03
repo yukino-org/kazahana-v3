@@ -61,30 +61,30 @@ class ThemerThemeData {
         ? defaultTypography.black
         : defaultTypography.white;
     final TextTheme textTheme = defaultTextTheme
-        .merge(
-          TextTheme(
-            displayLarge: TextStyle(fontSize: context.r.size(4.8)),
-            displayMedium: TextStyle(fontSize: context.r.size(3)),
-            displaySmall: TextStyle(fontSize: context.r.size(2.4)),
-            headlineLarge: TextStyle(fontSize: context.r.size(2)),
-            headlineMedium: TextStyle(fontSize: context.r.size(1.3)),
-            headlineSmall: TextStyle(fontSize: context.r.size(1.2)),
-            titleLarge: TextStyle(fontSize: context.r.size(1.1)),
-            titleMedium: TextStyle(fontSize: context.r.size(0.73)),
-            titleSmall: TextStyle(fontSize: context.r.size(0.64)),
-            bodyLarge: TextStyle(fontSize: context.r.size(0.75)),
-            bodyMedium: TextStyle(fontSize: context.r.size(0.65)),
-            bodySmall: TextStyle(fontSize: context.r.size(0.55)),
-            labelLarge: TextStyle(fontSize: context.r.size(0.63)),
-            labelMedium: TextStyle(fontSize: context.r.size(0.55)),
-            labelSmall: TextStyle(fontSize: context.r.size(0.5)),
-          ),
-        )
+        // .merge(
+        //   TextTheme(
+        //     displayLarge: TextStyle(fontSize: context.r.size(4.8)),
+        //     displayMedium: TextStyle(fontSize: context.r.size(3)),
+        //     displaySmall: TextStyle(fontSize: context.r.size(2.4)),
+        //     headlineLarge: TextStyle(fontSize: context.r.size(2)),
+        //     headlineMedium: TextStyle(fontSize: context.r.size(1.3)),
+        //     headlineSmall: TextStyle(fontSize: context.r.size(1.2)),
+        //     titleLarge: TextStyle(fontSize: context.r.size(1.1)),
+        //     titleMedium: TextStyle(fontSize: context.r.size(0.73)),
+        //     titleSmall: TextStyle(fontSize: context.r.size(0.64)),
+        //     bodyLarge: TextStyle(fontSize: context.r.size(0.75)),
+        //     bodyMedium: TextStyle(fontSize: context.r.size(0.65)),
+        //     bodySmall: TextStyle(fontSize: context.r.size(0.55)),
+        //     labelLarge: TextStyle(fontSize: context.r.size(0.63)),
+        //     labelMedium: TextStyle(fontSize: context.r.size(0.55)),
+        //     labelSmall: TextStyle(fontSize: context.r.size(0.5)),
+        //   ),
+        // )
         .apply(
-          fontFamily: fontFamily,
-          bodyColor: backgroundContrastColor,
-          displayColor: backgroundContrastColor,
-        );
+      fontFamily: fontFamily,
+      bodyColor: backgroundContrastColor,
+      displayColor: backgroundContrastColor,
+    );
 
     return ThemeData(
       colorScheme: ColorScheme(
@@ -99,6 +99,7 @@ class ThemerThemeData {
         onError: foregroundContrastColor,
         surface: backgroundColorLevel0,
         onSurface: backgroundContrastColor,
+        outline: backgroundColorLevel0,
       ),
       textTheme: textTheme,
       useMaterial3: true,
