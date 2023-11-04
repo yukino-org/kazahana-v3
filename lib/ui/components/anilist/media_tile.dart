@@ -16,12 +16,12 @@ class AnilistMediaTile extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pusher.pushToViewPageFromMedia(media);
         },
-        borderRadius: BorderRadius.circular(context.r.size(0.25)),
+        borderRadius: BorderRadius.circular(context.r.scale(0.25)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(context.r.size(0.25)),
+              borderRadius: BorderRadius.circular(context.r.scale(0.25)),
               child: AspectRatio(
                 aspectRatio: coverRatio,
                 child: Stack(
@@ -40,7 +40,7 @@ class AnilistMediaTile extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: EdgeInsets.all(context.r.size(0.25)),
+                        padding: EdgeInsets.all(context.r.scale(0.25)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -66,7 +66,7 @@ class AnilistMediaTile extends StatelessWidget {
                                 ),
                               ...additionalBottomChips,
                             ],
-                            SizedBox(height: context.r.size(0.2)),
+                            SizedBox(height: context.r.scale(0.2)),
                           ),
                         ),
                       ),
@@ -75,7 +75,7 @@ class AnilistMediaTile extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: context.r.size(0.25)),
+            SizedBox(height: context.r.scale(0.25)),
             Flexible(
               child: Text(
                 media.titleUserPreferred,
@@ -99,10 +99,10 @@ class AnilistMediaTile extends StatelessWidget {
       DecoratedBox(
         decoration: BoxDecoration(
           color: backgroundColor ?? Theme.of(context).bottomAppBarTheme.color,
-          borderRadius: BorderRadius.circular(context.r.size(0.2)),
+          borderRadius: BorderRadius.circular(context.r.scale(0.2)),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.r.size(0.2)),
+          padding: EdgeInsets.symmetric(horizontal: context.r.scale(0.2)),
           child: DefaultTextStyle(
             style: Theme.of(context)
                 .textTheme
@@ -116,10 +116,10 @@ class AnilistMediaTile extends StatelessWidget {
                   IconTheme(
                     data: Theme.of(context)
                         .iconTheme
-                        .copyWith(size: context.r.size(0.65)),
+                        .copyWith(size: context.r.scale(0.65)),
                     child: icon,
                   ),
-                  SizedBox(width: context.r.size(0.15)),
+                  SizedBox(width: context.r.scale(0.15)),
                 ],
                 child,
               ],
@@ -175,16 +175,22 @@ class AnilistMediaTile extends StatelessWidget {
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
-        backgroundColor: ColorPalettes.red.c500,
+        backgroundColor: ForegroundColors.red,
         child: Text(context.t.nsfw()),
       );
 
-  static Icon get ratingIcon =>
-      Icon(Icons.star_rounded, color: ColorPalettes.yellow.c500);
+  static const Icon ratingIcon = Icon(
+    Icons.star_rounded,
+    color: ForegroundColors.yellow,
+  );
 
-  static Icon get ongoingIcon =>
-      Icon(Icons.fiber_manual_record_outlined, color: ColorPalettes.green.c500);
+  static const Icon ongoingIcon = Icon(
+    Icons.fiber_manual_record_outlined,
+    color: ForegroundColors.green,
+  );
 
-  static Icon get airdateIcon =>
-      Icon(Icons.date_range_rounded, color: ColorPalettes.fuchsia.c500);
+  static const Icon airdateIcon = Icon(
+    Icons.date_range_rounded,
+    color: ForegroundColors.fuchsia,
+  );
 }

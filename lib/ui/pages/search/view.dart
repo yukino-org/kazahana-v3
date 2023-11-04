@@ -27,8 +27,8 @@ class _SearchPageState extends State<SearchPage> {
             appBar: const SearchBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: context.r.size(0.75),
-                vertical: context.r.size(0.25),
+                horizontal: context.r.scale(0.75),
+                vertical: context.r.scale(0.25),
               ),
               child: StatedBuilder(
                 provider.results.state,

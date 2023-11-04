@@ -108,7 +108,7 @@ class _ViewPageBodyState extends State<ViewPageBody>
           delegate: SliverChildListDelegate.fixed(
             <Widget>[
               ViewPageHero(media),
-              SizedBox(height: context.r.size(0.75)),
+              SizedBox(height: context.r.scale(0.75)),
               const Divider(height: 0, thickness: 0),
             ],
           ),

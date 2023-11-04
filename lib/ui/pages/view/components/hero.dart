@@ -14,11 +14,11 @@ class ViewPageHero extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(
-            height: context.r.size(12),
+            height: context.r.scale(12),
             child: Stack(
               children: <Widget>[
                 SizedBox(
-                  height: context.r.size(8),
+                  height: context.r.scale(8),
                   width: double.infinity,
                   child: FadeInImage(
                     fit: BoxFit.cover,
@@ -29,7 +29,7 @@ class ViewPageHero extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: context.r.size(8),
+                  height: context.r.scale(8),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -49,7 +49,7 @@ class ViewPageHero extends StatelessWidget {
                 ),
                 if (media.bannerImage == null)
                   SizedBox(
-                    height: context.r.size(8),
+                    height: context.r.scale(8),
                     child: ClipRRect(
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
@@ -60,17 +60,17 @@ class ViewPageHero extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(context.r.size(0.5)),
+                    borderRadius: BorderRadius.circular(context.r.scale(0.5)),
                     child: Image.network(
                       media.coverImageExtraLarge,
-                      height: context.r.size(10),
+                      height: context.r.scale(10),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: context.r.size(0.75)),
+          SizedBox(height: context.r.scale(0.75)),
           HorizontalBodyPadding(
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -83,7 +83,7 @@ class ViewPageHero extends StatelessWidget {
                       ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: context.r.size(0.2)),
+                SizedBox(height: context.r.scale(0.2)),
                 Text(
                   <String>[
                     media.format.getTitleCase(context.t),
@@ -96,10 +96,10 @@ class ViewPageHero extends StatelessWidget {
                         color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                 ),
-                SizedBox(height: context.r.size(0.5)),
+                SizedBox(height: context.r.scale(0.5)),
                 Wrap(
-                  spacing: context.r.size(0.25),
-                  runSpacing: context.r.size(0.2),
+                  spacing: context.r.scale(0.25),
+                  runSpacing: context.r.scale(0.2),
                   alignment: WrapAlignment.center,
                   children: <Widget>[
                     if (media.averageScore != null)
@@ -119,10 +119,10 @@ class ViewPageHero extends StatelessWidget {
                       ),
                   ],
                 ),
-                SizedBox(height: context.r.size(0.25)),
+                SizedBox(height: context.r.scale(0.25)),
                 Wrap(
-                  spacing: context.r.size(0.25),
-                  runSpacing: context.r.size(0.2),
+                  spacing: context.r.scale(0.25),
+                  runSpacing: context.r.scale(0.2),
                   alignment: WrapAlignment.center,
                   children: media.genres
                       .map(

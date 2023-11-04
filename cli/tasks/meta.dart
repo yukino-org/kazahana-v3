@@ -5,7 +5,7 @@ import 'version.dart';
 
 const Logger _logger = Logger('meta');
 final String generatedAppMetaPath =
-    path.join(Paths.libDir, 'core/app/meta.generated.dart');
+    path.join(Paths.libDir, 'core/app/meta.g.dart');
 
 Future<void> main() async {
   await File(generatedAppMetaPath)

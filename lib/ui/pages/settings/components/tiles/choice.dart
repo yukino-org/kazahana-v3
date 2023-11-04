@@ -30,7 +30,7 @@ class MultiChoiceListTile<T> extends StatelessWidget {
             context: context,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(context.r.size(1)),
+                top: Radius.circular(context.r.scale(1)),
               ),
             ),
             builder: (final BuildContext context) => SingleChildScrollView(
@@ -39,10 +39,10 @@ class MultiChoiceListTile<T> extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(
-                      left: context.r.size(1),
-                      right: context.r.size(1),
-                      top: context.r.size(1),
-                      bottom: context.r.size(0.5),
+                      left: context.r.scale(1),
+                      right: context.r.scale(1),
+                      top: context.r.scale(1),
+                      bottom: context.r.scale(0.5),
                     ),
                     child: DefaultTextStyle(
                       style: Theme.of(context).textTheme.titleLarge!,

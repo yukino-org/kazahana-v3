@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart' as media_kit;
 import 'package:media_kit_video/media_kit_video.dart' as media_kit;
@@ -19,7 +18,7 @@ class _PlayerPageState extends State<PlayerPage> {
   late media_kit.Player _player;
   late media_kit.VideoController _controller;
 
-  final ValueNotifier<bool> _subtitlesEnabled = ValueNotifier<bool>(true);
+  // final ValueNotifier<bool> _subtitlesEnabled = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -36,9 +35,7 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   Future<void> _setDataSource() async {
-    await _player.open(
-      media_kit.Media(sourceurl),
-    );
+    await _player.open(media_kit.Media(sourceurl));
     // _controller.onClosedCaptionEnabled(true);
   }
 

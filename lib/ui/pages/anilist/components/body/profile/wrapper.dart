@@ -83,10 +83,10 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.r.size(1))),
+            BorderRadius.vertical(top: Radius.circular(context.r.scale(1))),
       ),
       builder: (final BuildContext context) => Padding(
-        padding: EdgeInsets.symmetric(vertical: context.r.size(0.5)),
+        padding: EdgeInsets.symmetric(vertical: context.r.scale(0.5)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: values
@@ -121,13 +121,13 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
           style: TextButton.styleFrom(
             backgroundColor: Theme.of(context).bottomAppBarTheme.color,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(context.r.size(0.25)),
+              borderRadius: BorderRadius.circular(context.r.scale(0.25)),
             ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(width: context.r.size(0.5)),
+              SizedBox(width: context.r.scale(0.5)),
               Text(labels[value]!),
               const Icon(Icons.arrow_drop_down_rounded),
             ],
@@ -213,10 +213,10 @@ class _AnilistControlsHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent => fixedHeight;
 
-  static double get buttonHeight =>
-      RelativeSizeData.fromPlatformDispatcher().size(2);
+  static double get buttonHeight => RelativeScaleData.fromSettings().scale(2);
+
   static double get verticalPaddingSize =>
-      RelativeSizeData.fromPlatformDispatcher().size(0.3);
+      RelativeScaleData.fromSettings().scale(0.3);
 
   static double get fixedHeight => buttonHeight + (verticalPaddingSize * 2) + 1;
 }

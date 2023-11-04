@@ -41,7 +41,7 @@ class _UnderScoreHomePageAppBarState extends State<UnderScoreHomePageAppBar> {
         centerTitle: true,
         title: Text(
           AppMeta.name,
-          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 fontFamily: Fonts.greatVibes,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
@@ -49,28 +49,28 @@ class _UnderScoreHomePageAppBarState extends State<UnderScoreHomePageAppBar> {
         actions: <Widget>[
           Row(
             children: <Widget>[
-              SizedBox.square(
-                dimension: context.r.size(1.5),
-                child: GestureDetector(
+              InkWell(
+                child: Padding(
+                  padding: EdgeInsets.all(context.r.scale(0.5)),
                   child: AnilistAuth.user?.avatarLarge != null
                       ? ClipRRect(
                           borderRadius:
-                              BorderRadius.circular(context.r.size(1)),
+                              BorderRadius.circular(context.r.scale(1)),
                           child: Image.network(AnilistAuth.user!.avatarLarge!),
                         )
                       : ClipRRect(
                           borderRadius:
-                              BorderRadius.circular(context.r.size(0.2)),
+                              BorderRadius.circular(context.r.scale(0.2)),
                           child: Image.asset(AssetPaths.anilistLogo),
                         ),
-                  onTap: () {
-                    Navigator.of(context).pusher.pushToAnilistPage();
-                  },
                 ),
+                onTap: () {
+                  Navigator.of(context).pusher.pushToAnilistPage();
+                },
               ),
             ],
           ),
-          SizedBox(width: context.r.size(0.5)),
+          SizedBox(width: context.r.scale(0.5)),
         ],
       );
 }

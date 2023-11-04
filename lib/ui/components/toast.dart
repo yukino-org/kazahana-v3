@@ -68,7 +68,7 @@ class _ToastState extends State<Toast> {
                 FadeScaleTransition(animation: animation, child: child),
         child: visible
             ? Padding(
-                padding: EdgeInsets.all(context.r.size(0.4)),
+                padding: EdgeInsets.all(context.r.scale(0.4)),
                 child: SizedBox(
                   width: double.infinity,
                   child: Material(
@@ -77,10 +77,10 @@ class _ToastState extends State<Toast> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).bottomAppBarTheme.color,
                         borderRadius:
-                            BorderRadius.circular(context.r.size(0.25)),
+                            BorderRadius.circular(context.r.scale(0.25)),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(context.r.size(0.5)),
+                        padding: EdgeInsets.all(context.r.scale(0.5)),
                         child: Row(
                           children: <Widget>[
                             widget.content,

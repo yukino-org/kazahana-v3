@@ -14,7 +14,7 @@ class SettingsSchema {
     this.backgroundColor,
     this.disableAnimations = false,
     this.useSystemPreferredTheme = false,
-    this.scaleMultiplier = RelativeSizeData.defaultMultiplier,
+    this.scaleMultiplier = RelativeScaleData.defaultMultiplier,
   });
 
   factory SettingsSchema.fromJson(final JsonMap json) =>

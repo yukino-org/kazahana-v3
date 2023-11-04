@@ -18,10 +18,10 @@ class UnderScoreHomePageBottomBar extends StatelessWidget {
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.r.size(1))),
+            BorderRadius.vertical(top: Radius.circular(context.r.scale(1))),
       ),
       builder: (final BuildContext context) => Padding(
-        padding: EdgeInsets.symmetric(vertical: context.r.size(0.5)),
+        padding: EdgeInsets.symmetric(vertical: context.r.scale(0.5)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -46,11 +46,11 @@ class UnderScoreHomePageBottomBar extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: context.r.size(1),
-          vertical: context.r.size(0.5),
+          horizontal: context.r.scale(1),
+          vertical: context.r.scale(0.5),
         ),
         child: SizedBox(
-          height: context.r.size(2.5),
+          height: context.r.scale(2.5),
           child: Row(
             children: <Widget>[
               Expanded(
@@ -58,16 +58,15 @@ class UnderScoreHomePageBottomBar extends StatelessWidget {
                   builder: (final BuildContext context) => TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor:
-                          Theme.of(context).bottomAppBarTheme.color,
+                          Theme.of(context).colorScheme.surfaceVariant,
                       padding: EdgeInsets.symmetric(
-                        vertical: context.r.size(0.5),
+                        vertical: context.r.scale(0.5),
                       ),
-                      surfaceTintColor: Colors.transparent,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        SizedBox(width: context.r.size(0.5)),
+                        SizedBox(width: context.r.scale(0.5)),
                         Text(provider.type.getTitleCase(context.t)),
                         const Icon(Icons.arrow_drop_up_rounded),
                       ],
@@ -78,15 +77,16 @@ class UnderScoreHomePageBottomBar extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: context.r.size(0.5)),
+              SizedBox(width: context.r.scale(0.5)),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).bottomAppBarTheme.color,
-                  borderRadius: BorderRadius.circular(context.r.size(999)),
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(context.r.scale(999)),
                 ),
                 child: IconTheme(
                   data: IconThemeData(
-                    size: Theme.of(context).textTheme.headlineMedium!.fontSize,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    size: Theme.of(context).textTheme.titleSmall!.fontSize,
                   ),
                   child: Row(
                     children: <Widget>[
@@ -96,14 +96,14 @@ class UnderScoreHomePageBottomBar extends StatelessWidget {
                           Navigator.of(context).pusher.pushToSearchPage();
                         },
                       ),
-                      SizedBox(width: context.r.size(0.25)),
+                      SizedBox(width: context.r.scale(0.25)),
                       IconButton(
                         icon: const Icon(Icons.extension_rounded),
                         onPressed: () {
                           Navigator.of(context).pusher.pushToModulesPage();
                         },
                       ),
-                      SizedBox(width: context.r.size(0.25)),
+                      SizedBox(width: context.r.scale(0.25)),
                       IconButton(
                         icon: const Icon(Icons.settings_rounded),
                         onPressed: () {

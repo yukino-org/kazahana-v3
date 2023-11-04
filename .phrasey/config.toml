@@ -1,0 +1,16 @@
+[input]
+files = ["../i18n/**.toml"]
+format = "toml"
+fallback = "../i18n/en.toml"
+
+[schema]
+file = "./schema.toml"
+format = "toml"
+
+[output]
+dir = "../assets/translations"
+format = "json"
+stringFormat = "format-string"
+
+[hooks]
+files = []

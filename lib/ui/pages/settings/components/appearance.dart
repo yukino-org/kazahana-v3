@@ -26,27 +26,13 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               title: Text(context.t.accentColor()),
               secondary: const Icon(Icons.format_color_fill_rounded),
               value: SettingsDatabase.settings.primaryColor ??
-                  ThemerThemeData.defaultForeground.name,
-              items: ColorPalettes.foregroundColors.asMap().map(
-                    (final _, final ColorPalette x) =>
-                        MapEntry<String, Widget>(x.name, Text(x.name)),
+                  ThemerThemeData.defaultForegroundName,
+              items: ForegroundColors.names().asMap().map(
+                    (final _, final String name) =>
+                        MapEntry<String, Widget>(name, Text(name)),
                   ),
               onChanged: (final String value) {
                 SettingsDatabase.settings.primaryColor = value;
-                saveSettings();
-              },
-            ),
-            MultiChoiceListTile<String>(
-              title: Text(context.t.backgroundColor()),
-              secondary: const Icon(Icons.format_paint_rounded),
-              value: SettingsDatabase.settings.backgroundColor ??
-                  ThemerThemeData.defaultBackground.name,
-              items: ColorPalettes.backgroundColors.asMap().map(
-                    (final _, final ColorPalette x) =>
-                        MapEntry<String, Widget>(x.name, Text(x.name)),
-                  ),
-              onChanged: (final String value) {
-                SettingsDatabase.settings.backgroundColor = value;
                 saveSettings();
               },
             ),

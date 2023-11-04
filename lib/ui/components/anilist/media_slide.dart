@@ -75,7 +75,7 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                 children: <Widget>[
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(context.r.size(0.5)),
+                      borderRadius: BorderRadius.circular(context.r.scale(0.5)),
                       child: AspectRatio(
                         aspectRatio: AnilistMediaTile.coverRatio,
                         child: FadeInImage(
@@ -88,10 +88,10 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                       ),
                     ),
                   ),
-                  SizedBox(height: context.r.size(0.5)),
+                  SizedBox(height: context.r.scale(0.5)),
                   Wrap(
-                    spacing: context.r.size(0.25),
-                    runSpacing: context.r.size(0.2),
+                    spacing: context.r.scale(0.25),
+                    runSpacing: context.r.scale(0.2),
                     alignment: WrapAlignment.center,
                     children: <Widget>[
                       AnilistMediaTile.buildFormatChip(
@@ -120,7 +120,7 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                         ),
                     ],
                   ),
-                  SizedBox(height: context.r.size(0.25)),
+                  SizedBox(height: context.r.scale(0.25)),
                   Text(
                     widget.media.titleUserPreferred,
                     style: Theme.of(context)
@@ -128,7 +128,7 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                         .headlineSmall!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: context.r.size(0.25)),
+                  SizedBox(height: context.r.scale(0.25)),
                   if (widget.media.description != null)
                     Text(
                       widget.media.description!,

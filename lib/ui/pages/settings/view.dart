@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
             color: Theme.of(context).bottomAppBarTheme.color,
             height: appBarHeight,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: context.r.size(0.5)),
+            padding: EdgeInsets.symmetric(horizontal: context.r.scale(0.5)),
             child: DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true,

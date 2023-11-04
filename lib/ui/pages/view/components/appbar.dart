@@ -21,7 +21,7 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               FadeScaleTransition(animation: animation, child: child),
       child: provider.showFloatingAppBar
           ? SizedBox.square(
-              dimension: context.r.size(1.5),
+              dimension: context.r.scale(1.5),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Theme.of(context)
@@ -31,7 +31,7 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(context.r.size(1)),
+                  borderRadius: BorderRadius.circular(context.r.scale(1)),
                   onTap: onPressed,
                   child: Center(
                     child: IconTheme(
@@ -55,9 +55,9 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          top: context.r.size(0.5),
-          left: context.r.size(0.75),
-          right: context.r.size(0.75),
+          top: context.r.scale(0.5),
+          left: context.r.scale(0.75),
+          right: context.r.scale(0.75),
         ),
         child: Row(
           children: <Widget>[

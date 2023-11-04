@@ -73,29 +73,30 @@ class _SearchBarState extends State<SearchBar> {
             SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: context.r.size(0.75),
-              vertical: context.r.size(0.5),
+              horizontal: context.r.scale(0.75),
+              vertical: context.r.scale(0.5),
             ),
             child: SizedBox(
-              height: context.r.size(1.5),
+              height: context.r.scale(1.5),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(context.r.size(0.25)),
-                  color: Theme.of(context).appBarTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(context.r.scale(0.25)),
+                  // TODO
+                  // color: Theme.of(context).appBarTheme.backgroundColor,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(width: context.r.size(0.5)),
+                    SizedBox(width: context.r.scale(0.5)),
                     Icon(
                       Icons.search_rounded,
                       size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
-                    SizedBox(width: context.r.size(0.4)),
+                    SizedBox(width: context.r.scale(0.4)),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: context.r.size(0.2)),
+                        padding: EdgeInsets.only(bottom: context.r.scale(0.2)),
                         child: TextField(
                           textAlignVertical: TextAlignVertical.center,
                           textCapitalization: TextCapitalization.words,
@@ -109,13 +110,13 @@ class _SearchBarState extends State<SearchBar> {
                         ),
                       ),
                     ),
-                    SizedBox(width: context.r.size(0.4)),
+                    SizedBox(width: context.r.scale(0.4)),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(context.r.size(1)),
+                        borderRadius: BorderRadius.circular(context.r.scale(1)),
                         child: Padding(
-                          padding: EdgeInsets.all(context.r.size(0.2)),
+                          padding: EdgeInsets.all(context.r.scale(0.2)),
                           child: Icon(
                             Icons.close_rounded,
                             size:
@@ -126,7 +127,7 @@ class _SearchBarState extends State<SearchBar> {
                         onTap: () => onCloseButtonTap(provider),
                       ),
                     ),
-                    SizedBox(width: context.r.size(0.2)),
+                    SizedBox(width: context.r.scale(0.2)),
                   ],
                 ),
               ),

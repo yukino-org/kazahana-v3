@@ -14,11 +14,11 @@ class ResultsGrid extends StatelessWidget {
     required final List<Widget> children,
   }) =>
       Padding(
-        padding: EdgeInsets.only(bottom: context.r.size(1)),
+        padding: EdgeInsets.only(bottom: context.r.scale(1)),
         child: Row(
           children: ListUtils.insertBetween(
             children.map((final Widget x) => Expanded(child: x)).toList(),
-            SizedBox(width: context.r.size(1)),
+            SizedBox(width: context.r.scale(1)),
           ),
         ),
       );

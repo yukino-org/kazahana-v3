@@ -17,7 +17,7 @@ SettingsSchema _$SettingsSchemaFromJson(Map<String, dynamic> json) =>
       useSystemPreferredTheme:
           json['useSystemPreferredTheme'] as bool? ?? false,
       scaleMultiplier: (json['scaleMultiplier'] as num?)?.toDouble() ??
-          RelativeSizeData.defaultMultiplier,
+          RelativeScaleData.defaultMultiplier,
     );
 
 Map<String, dynamic> _$SettingsSchemaToJson(SettingsSchema instance) =>

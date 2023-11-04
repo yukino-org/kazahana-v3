@@ -11,7 +11,7 @@ class AnilistPageProfileBodyBody extends StatelessWidget {
   final AnilistPageProfileProvider provider;
 
   Widget buildOnWaiting(final BuildContext context) => SizedBox(
-        height: context.r.size(12),
+        height: context.r.scale(12),
         child: const Center(child: CircularProgressIndicator()),
       );
 
@@ -20,12 +20,12 @@ class AnilistPageProfileBodyBody extends StatelessWidget {
     required final List<Widget> children,
   }) =>
       Padding(
-        padding: EdgeInsets.only(bottom: context.r.size(1)),
+        padding: EdgeInsets.only(bottom: context.r.scale(1)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: ListUtils.insertBetween(
             children.map((final Widget x) => Expanded(child: x)).toList(),
-            SizedBox(width: context.r.size(1)),
+            SizedBox(width: context.r.scale(1)),
           ),
         ),
       );
@@ -67,7 +67,7 @@ class AnilistPageProfileBodyBody extends StatelessWidget {
   Widget build(final BuildContext context) => Padding(
         padding: EdgeInsets.symmetric(
           horizontal: HorizontalBodyPadding.size(context),
-          vertical: context.r.size(0.5),
+          vertical: context.r.scale(0.5),
         ),
         child: StatedBuilder(
           provider.list.state,

@@ -14,12 +14,12 @@ class ViewPageOverview extends StatelessWidget {
     required final AnilistCharacterEdge character,
   }) =>
       SizedBox(
-        width: context.r.size(AnilistMediaRow.tileWidthScale),
+        width: context.r.scale(AnilistMediaRow.tileWidthScale),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(context.r.size(0.25)),
+              borderRadius: BorderRadius.circular(context.r.scale(0.25)),
               child: AspectRatio(
                 aspectRatio: AnilistMediaTile.coverRatio,
                 child: Stack(
@@ -33,7 +33,7 @@ class ViewPageOverview extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: EdgeInsets.all(context.r.size(0.25)),
+                        padding: EdgeInsets.all(context.r.scale(0.25)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -50,7 +50,7 @@ class ViewPageOverview extends StatelessWidget {
                                 ),
                               ),
                             ],
-                            SizedBox(height: context.r.size(0.2)),
+                            SizedBox(height: context.r.scale(0.2)),
                           ),
                         ),
                       ),
@@ -59,7 +59,7 @@ class ViewPageOverview extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: context.r.size(0.25)),
+            SizedBox(height: context.r.scale(0.25)),
             Flexible(
               child: Text(
                 character.node.nameUserPreferred,
@@ -79,10 +79,10 @@ class ViewPageOverview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (media.description != null) ...<Widget>[
-                SizedBox(height: context.r.size(0.75)),
+                SizedBox(height: context.r.scale(0.75)),
                 HorizontalBodyPadding(Text(media.description!)),
               ],
-              SizedBox(height: context.r.size(1)),
+              SizedBox(height: context.r.scale(1)),
               HorizontalBodyPadding(
                 Text(
                   context.t.characters(),
@@ -92,7 +92,7 @@ class ViewPageOverview extends StatelessWidget {
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: context.r.size(0.5)),
+              SizedBox(height: context.r.scale(0.5)),
               ScrollableRow(
                 media.characters
                     .map(
@@ -102,7 +102,7 @@ class ViewPageOverview extends StatelessWidget {
                     .toList(),
               ),
               if (media.relations?.isNotEmpty ?? false) ...<Widget>[
-                SizedBox(height: context.r.size(1)),
+                SizedBox(height: context.r.scale(1)),
                 HorizontalBodyPadding(
                   Text(
                     context.t.relations(),
@@ -112,12 +112,13 @@ class ViewPageOverview extends StatelessWidget {
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: context.r.size(0.5)),
+                SizedBox(height: context.r.scale(0.5)),
                 ScrollableRow(
                   media.relations!
                       .map(
                         (final AnilistRelationEdge x) => SizedBox(
-                          width: context.r.size(AnilistMediaRow.tileWidthScale),
+                          width:
+                              context.r.scale(AnilistMediaRow.tileWidthScale),
                           child: AnilistMediaTile(
                             x.node,
                             additionalBottomChips: <Widget>[

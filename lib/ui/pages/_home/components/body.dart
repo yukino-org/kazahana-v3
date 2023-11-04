@@ -8,7 +8,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
   });
 
   Widget buildOnWaiting(final BuildContext context) => SizedBox(
-        height: context.r.size(12),
+        height: context.r.scale(12),
         child: const Center(child: CircularProgressIndicator()),
       );
 
@@ -17,7 +17,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
     required final StatedValue<List<AnilistMedia>> results,
   }) =>
       Padding(
-        padding: EdgeInsets.only(bottom: context.r.size(1)),
+        padding: EdgeInsets.only(bottom: context.r.scale(1)),
         child: StatedBuilder(
           results.state,
           waiting: buildOnWaiting,
@@ -33,7 +33,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
   }) =>
       Padding(
         padding: HorizontalBodyPadding.padding(context)
-            .copyWith(bottom: context.r.size(0.5)),
+            .copyWith(bottom: context.r.scale(0.5)),
         child: Text(text, style: Theme.of(context).textTheme.titleLarge),
       );
 
@@ -43,7 +43,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
         waiting: buildOnWaiting,
         processing: buildOnWaiting,
         finished: (final BuildContext context) => SizedBox(
-          height: context.r.size(25),
+          height: context.r.scale(25),
           child: Slideshow(
             slideDuration: defaultSlideDuration,
             animationDuration: AnimationDurations.defaultNormalAnimation,
@@ -67,7 +67,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingAnimes),
-            SizedBox(height: context.r.size(0.75)),
+            SizedBox(height: context.r.scale(4)),
             buildText(context.t.topOngoingAnimes(), context: context),
             buildCarousel(
               context: context,
@@ -88,7 +88,7 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingMangas),
-            SizedBox(height: context.r.size(0.75)),
+            SizedBox(height: context.r.scale(0.75)),
             buildText(context.t.topOngoingMangas(), context: context),
             buildCarousel(
               context: context,

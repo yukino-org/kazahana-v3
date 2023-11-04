@@ -12,6 +12,7 @@ class BaseApp extends StatefulWidget {
 
 class _BaseAppState extends State<BaseApp> {
   late ThemerThemeData theme;
+  late RelativeScaleData scale;
   late String translationId;
 
   @override
@@ -19,6 +20,7 @@ class _BaseAppState extends State<BaseApp> {
     super.initState();
 
     theme = Themer.defaultTheme();
+    scale = RelativeScaleData.defaultScale;
     translationId = Translator.identifier;
 
     AppEvents.stream.listen((final AppEvent event) {
@@ -27,6 +29,12 @@ class _BaseAppState extends State<BaseApp> {
         if (theme != nTheme) {
           setState(() {
             theme = nTheme;
+          });
+        }
+        final RelativeScaleData nScale = RelativeScaleData.fromSettings();
+        if (scale != nScale) {
+          setState(() {
+            scale = nScale;
           });
         }
       }
@@ -46,12 +54,13 @@ class _BaseAppState extends State<BaseApp> {
   Widget build(final BuildContext context) => MaterialApp(
         title: AppMeta.name,
         navigatorKey: gNavigatorKey,
+        debugShowCheckedModeBanner: false,
         builder: (
           final BuildContext context,
           final Widget? child,
         ) =>
-            RelativeSize(
-          data: RelativeSizeData.fromContext(context),
+            RelativeScaler(
+          data: scale,
           child: TranslationsWrapper(
             id: translationId,
             child: Builder(

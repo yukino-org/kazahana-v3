@@ -107,9 +107,9 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(context.r.size(0.25)),
+            borderRadius: BorderRadius.circular(context.r.scale(0.25)),
             child: SizedBox(
-              height: context.r.size(5),
+              height: context.r.scale(5),
               child: user.avatarLarge != null
                   ? Image.network(
                       user.avatarLarge!,
@@ -118,7 +118,7 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
                   : Image.asset(AssetPaths.anilistLogo),
             ),
           ),
-          SizedBox(width: context.r.size(1)),
+          SizedBox(width: context.r.scale(1)),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -144,7 +144,7 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
           <Widget>[
             Container(
               color: Theme.of(context).bottomAppBarTheme.color,
-              height: context.r.size(10),
+              height: context.r.scale(10),
               child: Stack(
                 children: <Widget>[
                   if (user.bannerImage != null)

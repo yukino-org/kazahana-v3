@@ -1,0 +1,217 @@
+[[keys]]
+name = "Anime"
+description = "Anime"
+
+[[keys]]
+name = "Manga"
+description = "Manga"
+
+[[keys]]
+name = "SearchAnAnimeOrManga"
+description = "Search an Anime or Manga"
+
+[[keys]]
+name = "MostPopularAnime"
+description = "Most Popular Anime"
+
+[[keys]]
+name = "TopOngoingAnime"
+description = "Top Ongoing Anime"
+
+[[keys]]
+name = "MostPopularManga"
+description = "Most Popular Manga"
+
+[[keys]]
+name = "TopOngoingManga"
+description = "Top Ongoing Manga"
+
+[[keys]]
+name = "Winter"
+description = "Winter"
+
+[[keys]]
+name = "Spring"
+description = "Spring"
+
+[[keys]]
+name = "Summer"
+description = "Summer"
+
+[[keys]]
+name = "Fall"
+description = "Fall"
+
+[[keys]]
+name = "NEps"
+description = "Episodes"
+parameters = ["n"]
+
+[[keys]]
+name = "NChs"
+description = "Chapters"
+parameters = ["n"]
+
+[[keys]]
+name = "Episodes"
+description = "Episodes"
+
+[[keys]]
+name = "Chapters"
+description = "Chapters"
+
+[[keys]]
+name = "NMins"
+description = "Minutes"
+parameters = ["n"]
+
+[[keys]]
+name = "NHrsOMins"
+description = "Hours and minutes"
+parameters = ["n", "o"]
+
+[[keys]]
+name = "Relations"
+description = "Relations"
+
+[[keys]]
+name = "Cancelled"
+description = "Cancelled"
+
+[[keys]]
+name = "Releasing"
+description = "Releasing"
+
+[[keys]]
+name = "NotYetReleased"
+description = "Not yet released"
+
+[[keys]]
+name = "Finished"
+description = "Finished"
+
+[[keys]]
+name = "Hiatus"
+description = "Hiatus"
+
+[[keys]]
+name = "Nsfw"
+description = "NSFW"
+
+[[keys]]
+name = "Characters"
+description = "Characters"
+
+[[keys]]
+name = "Settings"
+description = "Settings"
+
+[[keys]]
+name = "Appearance"
+description = "Appearance"
+
+[[keys]]
+name = "DarkMode"
+description = "Dark mode"
+
+[[keys]]
+name = "AccentColor"
+description = "Accent color"
+
+[[keys]]
+name = "BackgroundColor"
+description = "Background color"
+
+[[keys]]
+name = "DisableAnimations"
+description = "Disable animations"
+
+[[keys]]
+name = "UseSystemTheme"
+description = "Use system theme"
+
+[[keys]]
+name = "Overview"
+description = "Overview"
+
+[[keys]]
+name = "Extensions"
+description = "Extensions"
+
+[[keys]]
+name = "ByX"
+description = "By something"
+parameters = ["x"]
+
+[[keys]]
+name = "AuthenticatedAsX"
+description = "Authenticated as someone"
+parameters = ["x"]
+
+[[keys]]
+name = "Anilist"
+description = "Anilist"
+
+[[keys]]
+name = "LoginUsingAnilist"
+description = "Login using Anilist"
+
+[[keys]]
+name = "SomethingWentWrong"
+description = "Something went wrong"
+
+[[keys]]
+name = "TrackYourProgressUsingAnilist"
+description = "Track your progress using AniList"
+
+[[keys]]
+name = "Current"
+description = "Current"
+
+[[keys]]
+name = "Planning"
+description = "Planning"
+
+[[keys]]
+name = "Completed"
+description = "Completed"
+
+[[keys]]
+name = "Dropped"
+description = "Dropped"
+
+[[keys]]
+name = "Paused"
+description = "Paused"
+
+[[keys]]
+name = "Repeating"
+description = "Repeating"
+
+[[keys]]
+name = "TotalAnime"
+description = "Total anime"
+
+[[keys]]
+name = "EpisodesWatched"
+description = "Episodes watched"
+
+[[keys]]
+name = "MeanScore"
+description = "Mean score"
+
+[[keys]]
+name = "TimeSpent"
+description = "Time spent"
+
+[[keys]]
+name = "TotalManga"
+description = "Total manga"
+
+[[keys]]
+name = "ChaptersRead"
+description = "Chapters read"
+
+[[keys]]
+name = "VolumesRead"
+description = "Volumes read"

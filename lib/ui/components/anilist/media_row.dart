@@ -14,7 +14,7 @@ class AnilistMediaRow extends StatelessWidget {
         results
             .map(
               (final AnilistMedia x) => SizedBox(
-                width: context.r.size(tileWidthScale),
+                width: context.r.scale(tileWidthScale),
                 child: AnilistMediaTile(x),
               ),
             )

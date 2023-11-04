@@ -31,7 +31,7 @@ class UnderScoreSplashPage extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: Padding(
-                padding: EdgeInsets.all(context.r.size(1)),
+                padding: EdgeInsets.all(context.r.scale(1)),
                 child: Text(
                   AppMeta.yuki,
                   style: Theme.of(context)

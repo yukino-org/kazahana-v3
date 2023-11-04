@@ -24,7 +24,7 @@ class AnilistPageLoginBody extends StatelessWidget {
                       .headlineLarge!
                       .copyWith(fontFamily: Fonts.greatVibes),
                 ),
-                SizedBox(width: context.r.size(1)),
+                SizedBox(width: context.r.scale(1)),
                 Text(
                   '+',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -35,11 +35,11 @@ class AnilistPageLoginBody extends StatelessWidget {
                             .withOpacity(0.3),
                       ),
                 ),
-                SizedBox(width: context.r.size(1)),
+                SizedBox(width: context.r.scale(1)),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(context.r.size(0.5)),
+                  borderRadius: BorderRadius.circular(context.r.scale(0.5)),
                   child: SizedBox.square(
-                    dimension: context.r.size(2.5),
+                    dimension: context.r.scale(2.5),
                     child: Image.asset(
                       AssetPaths.anilistLogo,
                       fit: BoxFit.cover,
@@ -48,23 +48,24 @@ class AnilistPageLoginBody extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: context.r.size(1)),
+            SizedBox(height: context.r.scale(1)),
             const Divider(),
-            SizedBox(height: context.r.size(1)),
+            SizedBox(height: context.r.scale(1)),
             Text(
               context.t.trackYourProgressUsingAnilist(),
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: context.r.size(1)),
+            SizedBox(height: context.r.scale(1)),
             TextButton.icon(
               icon: const Icon(Icons.login_rounded),
               label: Text(context.t.loginUsing(context.t.anilist())),
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: EdgeInsets.symmetric(horizontal: context.r.size(0.75)),
+                padding:
+                    EdgeInsets.symmetric(horizontal: context.r.scale(0.75)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.r.size(0.5)),
+                  borderRadius: BorderRadius.circular(context.r.scale(0.5)),
                 ),
               ),
               onPressed: () async {

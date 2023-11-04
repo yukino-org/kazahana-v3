@@ -1,50 +1,44 @@
 import 'package:kazahana/core/exports.dart';
 
-class RelativeSize extends InheritedWidget {
-  const RelativeSize({
+class RelativeScaler extends InheritedWidget {
+  const RelativeScaler({
     required this.data,
     required super.child,
     super.key,
   });
 
-  final RelativeSizeData data;
+  factory RelativeScaler.of(final BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<RelativeScaler>()!;
+
+  final RelativeScaleData data;
 
   @override
-  bool updateShouldNotify(final RelativeSize oldWidget) =>
+  bool updateShouldNotify(final RelativeScaler oldWidget) =>
       oldWidget.data != data;
 
-  double size(final double scale) => data.size(scale);
+  double scale(final double scale) => data.scale(scale);
 
-  static RelativeSize of(final BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<RelativeSize>()!;
-}
-
-class RelativeSizeData {
-  const RelativeSizeData._(this.screenSize);
-
-  factory RelativeSizeData.fromContext(final BuildContext context) =>
-      RelativeSizeData._(MediaQuery.of(context).size);
-
-  factory RelativeSizeData.fromPlatformDispatcher() => RelativeSizeData._(
-        WidgetsBinding.instance.platformDispatcher.views.first.physicalSize /
-            WidgetsBinding
-                .instance.platformDispatcher.views.first.devicePixelRatio,
-      );
-
-  final Size screenSize;
-
-  double size(final double scale) => scale * value;
-
-  double get multiplier => SettingsDatabase.ready
-      ? SettingsDatabase.settings.scaleMultiplier
-      : defaultMultiplier;
-
-  double get value => defaultRatio * screenSize.longestSide * multiplier;
-
-  static const double defaultRatio = 0.025;
   static const double defaultMultiplier = 1;
 }
 
-extension RelativeSizeUtils on BuildContext {
-  RelativeSize get r => RelativeSize.of(this);
+class RelativeScaleData {
+  const RelativeScaleData(this.multiplier);
+
+  factory RelativeScaleData.fromSettings() => SettingsDatabase.ready
+      ? RelativeScaleData(SettingsDatabase.settings.scaleMultiplier)
+      : defaultScale;
+
+  final double multiplier;
+
+  double scale(final double value) => ratio * value;
+
+  static const double ratio = 14;
+  static const double defaultMultiplier = 1;
+
+  static const RelativeScaleData defaultScale =
+      RelativeScaleData(defaultMultiplier);
+}
+
+extension RelativeScalerUtils on BuildContext {
+  RelativeScaler get r => RelativeScaler.of(this);
 }

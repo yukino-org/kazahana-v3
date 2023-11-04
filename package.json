@@ -1,0 +1,17 @@
+{
+    "name": "@yukino-org/kazahana",
+    "description": "",
+    "private": true,
+    "version": "0.0.0",
+    "author": "Zyrouge",
+    "license": "GPL-3.0",
+    "scripts": {
+        "i18n:build": "phrasey build -p ./.phrasey/config.toml -f toml"
+    },
+    "dependencies": {
+        "@zyrouge/phrasey-json": "^1.0.3",
+        "@zyrouge/phrasey-locales": "^1.1.9",
+        "@zyrouge/phrasey-toml": "^1.0.3",
+        "phrasey": "^2.0.24"
+    }
+}

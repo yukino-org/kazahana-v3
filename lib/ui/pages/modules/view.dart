@@ -48,13 +48,13 @@ class ModulesPage extends StatelessWidget {
 
     return ListTile(
       contentPadding: EdgeInsets.only(
-        left: context.r.size(0.75),
-        right: context.r.size(0.25),
+        left: context.r.scale(0.75),
+        right: context.r.scale(0.25),
       ),
       leading: SizedBox(
         height: double.infinity,
         child: SizedBox.square(
-          dimension: context.r.size(1.5),
+          dimension: context.r.scale(1.5),
           child: Image.network(
             TenkaManager.repository.resolver
                 .resolveURL((metadata.thumbnail as TenkaCloudDS).url),
@@ -71,7 +71,7 @@ class ModulesPage extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .labelSmall
-                    ?.copyWith(color: ColorPalettes.red.c500),
+                    ?.copyWith(color: ForegroundColors.red),
               ),
           ],
           style: Theme.of(context).textTheme.titleSmall,

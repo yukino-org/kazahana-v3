@@ -23,7 +23,7 @@ class UnderScoreHomePage extends StatelessWidget {
             appBar: const UnderScoreHomePageAppBar(),
             extendBody: true,
             body: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: context.r.size(2.5)),
+              padding: EdgeInsets.only(bottom: context.r.scale(2.5)),
               child: const UnderScoreHomePageBody(),
             ),
             bottomNavigationBar:
