@@ -22,7 +22,6 @@ class _UnderScoreHomePageAppBarState extends State<UnderScoreHomePageAppBar> {
   @override
   void initState() {
     super.initState();
-
     appEventSubscription = AppEvents.stream.listen((final AppEvent event) {
       if (event != AppEvent.anilistStateChange) return;
       setState(() {});

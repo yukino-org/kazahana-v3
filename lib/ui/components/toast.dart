@@ -45,15 +45,12 @@ class _ToastState extends State<Toast> {
   @override
   void initState() {
     super.initState();
-
     Future<void>.microtask(() async {
       setState(() {
         visible = true;
       });
-
       await Future<void>.delayed(widget.duration);
       if (!mounted) return;
-
       setState(() {
         visible = false;
       });

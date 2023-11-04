@@ -16,7 +16,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
     AppLoader.initialize().then((final _) async {
       if (mounted) {
         setState(() {});

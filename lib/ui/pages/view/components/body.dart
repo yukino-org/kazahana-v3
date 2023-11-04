@@ -52,7 +52,6 @@ class _ViewPageBodyState extends State<ViewPageBody>
   @override
   void initState() {
     super.initState();
-
     tabController = TabController(length: tabs.length, vsync: this);
     scrollController = ScrollController()
       ..addListener(() {

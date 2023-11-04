@@ -1,7 +1,7 @@
 import 'package:kazahana/core/exports.dart';
 import '../../../../exports.dart';
 
-class MultiChoiceListTile<T> extends StatelessWidget {
+class MultiChoiceListTile<T> extends StatefulWidget {
   const MultiChoiceListTile({
     required this.title,
     required this.value,
@@ -18,14 +18,24 @@ class MultiChoiceListTile<T> extends StatelessWidget {
   final void Function(T) onChanged;
 
   @override
+  State<MultiChoiceListTile<T>> createState() => _MultiChoiceListTileState<T>();
+}
+
+class _MultiChoiceListTileState<T> extends State<MultiChoiceListTile<T>> {
+  final GlobalKey _initActiveOptionKey = GlobalKey();
+
+  @override
   Widget build(final BuildContext context) => ListTile(
         leading: SizedBox(
           height: double.infinity,
-          child: secondary,
+          child: widget.secondary,
         ),
-        title: title,
-        subtitle: items[value],
+        title: widget.title,
+        subtitle: widget.items[widget.value],
         onTap: () async {
+          WidgetsBinding.instance.addPostFrameCallback((final _) {
+            Scrollable.ensureVisible(_initActiveOptionKey.currentContext!);
+          });
           final T? value = await showModalBottomSheet<T>(
             context: context,
             shape: RoundedRectangleBorder(
@@ -46,18 +56,21 @@ class MultiChoiceListTile<T> extends StatelessWidget {
                     ),
                     child: DefaultTextStyle(
                       style: Theme.of(context).textTheme.titleLarge!,
-                      child: title,
+                      child: widget.title,
                     ),
                   ),
                   const Divider(),
-                  ...items
+                  ...widget.items
                       .map(
                         (final T key, final Widget value) =>
                             MapEntry<T, Widget>(
                           key,
                           RadioListTile<T>(
+                            key: key == widget.value
+                                ? _initActiveOptionKey
+                                : null,
                             value: key,
-                            groupValue: this.value,
+                            groupValue: widget.value,
                             title: value,
                             onChanged: (final T? value) {
                               if (value == null) return;
@@ -71,8 +84,8 @@ class MultiChoiceListTile<T> extends StatelessWidget {
               ),
             ),
           );
-          if (value != null && value != this.value) {
-            onChanged(value);
+          if (value != null && value != widget.value) {
+            widget.onChanged(value);
           }
         },
       );

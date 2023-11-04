@@ -14,7 +14,7 @@ dependencies:
     encrypt: ^5.0.1
     flutter:
         sdk: flutter
-    json_annotation: ^4.6.0
+    json_annotation: ^4.8.1
     media_kit: ^1.1.10
     media_kit_libs_video: ^1.0.4
     media_kit_video: ^1.2.4

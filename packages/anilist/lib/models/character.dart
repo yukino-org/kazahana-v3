@@ -1,4 +1,4 @@
-import 'package:utilx/utils.dart';
+import 'package:utilx/utilx.dart';
 import '../utils.dart';
 import 'fuzzy_date.dart';
 

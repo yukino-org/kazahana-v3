@@ -43,20 +43,14 @@ async function createTranslationDart(phrasey, state, log) {
                 .join(", ");
             const callArgs = x.parameters.join(", ");
             dynamicKeys.push(
-                `    String ${cname}(${params}) => StringUtils.formatPositional(_json['keys']['${x.name}'], <String>[${callArgs}]);`
+                `    String ${cname}(${params}) => StringUtils.formatPositional(_key('${x.name}'), <String>[${callArgs}]);`
             );
         } else {
-            staticKeys.push(
-                `    String ${cname} get => _json['keys']['${x.name}'];`
-            );
+            staticKeys.push(`    String get ${cname} => _key('${x.name}');`);
         }
     }
 
     const content = `
-import 'dart:convert';
-import 'package:utilx/locale.dart';
-import 'package:utilx/utilx.dart';
-
 part of 'translator.dart';
 
 class Translation {
@@ -64,13 +58,15 @@ class Translation {
 
     final Map<dynamic, dynamic> _json;
 
-    String localeDisplayName get => json['locale']['display'];
-    String localeNativeName get => json['locale']['native'];
-    String localeCode get => json['locale']['code'];
-    Locale locale get => Locale(localeDisplayName, localeNativeName, localeCode);
+    JsonMap get _localeJson => _json['locale'] as JsonMap;
+    String get localeDisplayName => _localeJson['display'];
+    String get localeNativeName => _localeJson['native'];
+    String get localeCode => _localeJson['code'];
+    Locale get locale => Locale(localeDisplayName, localeNativeName, localeCode);
 
+    JsonMap get _keysJson => _json['keys'] as JsonMap;
+    String _key(final String name) => _keysJson[name] as String;
 ${staticKeys.join("\n")}
-
 ${dynamicKeys.join("\n")}
 
     static const List<String> availableLocales = <String>[${locales

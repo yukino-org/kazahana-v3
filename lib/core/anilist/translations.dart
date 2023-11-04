@@ -33,39 +33,39 @@ extension TenkaTypeAnilistUtils on TenkaType {
 }
 
 extension AnimeSeasonsTUtils on AnimeSeasons {
-  String getTitleCase(final Translation translations) {
+  String getTitleCase(final Translation translation) {
     switch (this) {
       case AnimeSeasons.winter:
-        return translations.winter;
+        return translation.winter;
 
       case AnimeSeasons.spring:
-        return translations.spring;
+        return translation.spring;
 
       case AnimeSeasons.summer:
-        return translations.summer;
+        return translation.summer;
 
       case AnimeSeasons.fall:
-        return translations.fall;
+        return translation.fall;
     }
   }
 }
 
 extension AnilistMediaTUtils on AnilistMedia {
-  String getWatchtime(final Translation translations) {
+  String getWatchtime(final Translation translation) {
     switch (type) {
       case AnilistMediaType.anime:
         if (format == AnilistMediaFormat.movie) {
           return duration != null
               ? PrettyDurations.prettyHoursMinutesShort(
-                  translations,
+                  translation,
                   Duration(minutes: duration!),
                 )
-              : translations.nMins(Translation.unk);
+              : translation.nMins(Translation.unk);
         }
-        return translations.nEps(episodes?.toString() ?? Translation.unk);
+        return translation.nEps(episodes?.toString() ?? Translation.unk);
 
       case AnilistMediaType.manga:
-        return translations.nChs(chapters?.toString() ?? Translation.unk);
+        return translation.nChs(chapters?.toString() ?? Translation.unk);
     }
   }
 
@@ -78,32 +78,32 @@ extension AnilistMediaTUtils on AnilistMedia {
 }
 
 extension AnilistRelationTypeTUtils on AnilistRelationType {
-  String getTitleCase(final Translation translations) =>
+  String getTitleCase(final Translation translation) =>
       StringCase(name).titleCase;
 }
 
 extension AnilistCharacterRoleTUtils on AnilistCharacterRole {
-  String getTitleCase(final Translation translations) =>
+  String getTitleCase(final Translation translation) =>
       StringCase(name).titleCase;
 }
 
 extension AnilistMediaStatusTUtils on AnilistMediaStatus {
-  String getTitleCase(final Translation translations) {
+  String getTitleCase(final Translation translation) {
     switch (this) {
       case AnilistMediaStatus.cancelled:
-        return translations.cancelled;
+        return translation.cancelled;
 
       case AnilistMediaStatus.releasing:
-        return translations.releasing;
+        return translation.releasing;
 
       case AnilistMediaStatus.notYetReleased:
-        return translations.notYetReleased;
+        return translation.notYetReleased;
 
       case AnilistMediaStatus.finished:
-        return translations.finished;
+        return translation.finished;
 
       case AnilistMediaStatus.hiatus:
-        return translations.hiatus;
+        return translation.hiatus;
     }
   }
 }
@@ -123,30 +123,30 @@ const Map<AnilistMediaFormat, String> _anilistMediaFormatTitleMap =
 };
 
 extension AnilistMediaFormatTUtils on AnilistMediaFormat {
-  String getTitleCase(final Translation translations) =>
+  String getTitleCase(final Translation translation) =>
       _anilistMediaFormatTitleMap[this]!;
 }
 
 extension AnilistMediaListStatusTUtils on AnilistMediaListStatus {
-  String getTitleCase(final Translation translations) {
+  String getTitleCase(final Translation translation) {
     switch (this) {
       case AnilistMediaListStatus.current:
-        return translations.current;
+        return translation.current;
 
       case AnilistMediaListStatus.planning:
-        return translations.planning;
+        return translation.planning;
 
       case AnilistMediaListStatus.completed:
-        return translations.completed;
+        return translation.completed;
 
       case AnilistMediaListStatus.dropped:
-        return translations.dropped;
+        return translation.dropped;
 
       case AnilistMediaListStatus.paused:
-        return translations.paused;
+        return translation.paused;
 
       case AnilistMediaListStatus.repeating:
-        return translations.repeating;
+        return translation.repeating;
     }
   }
 }

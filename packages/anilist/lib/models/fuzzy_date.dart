@@ -1,4 +1,4 @@
-import 'package:utilx/utils.dart';
+import 'package:utilx/utilx.dart';
 
 class AnilistFuzzyDate {
   const AnilistFuzzyDate(this.json);

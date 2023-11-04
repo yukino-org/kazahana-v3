@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import '../translator/exports.dart';
 
 abstract class ForegroundColors {
-  static const Color red = Color(0xef4444ff);
-  static const Color orange = Color(0xf97316ff);
-  static const Color amber = Color(0xf59e0bff);
-  static const Color yellow = Color(0xeab308ff);
-  static const Color lime = Color(0x84cc16ff);
-  static const Color green = Color(0x22c55eff);
-  static const Color emerald = Color(0x10b981ff);
-  static const Color teal = Color(0x14b8a6ff);
-  static const Color cyan = Color(0x06b6d4ff);
-  static const Color sky = Color(0x0ea5e9ff);
-  static const Color blue = Color(0x3b82f6ff);
-  static const Color indigo = Color(0x6366f1ff);
-  static const Color violet = Color(0x8b5cf6ff);
-  static const Color purple = Color(0xa855f7ff);
-  static const Color fuchsia = Color(0xd946efff);
-  static const Color pink = Color(0xec4899ff);
-  static const Color rose = Color(0xf43f5eff);
+  static const Color red = Color(0xffef4444);
+  static const Color orange = Color(0xfff97316);
+  static const Color amber = Color(0xfff59e0b);
+  static const Color yellow = Color(0xffeab308);
+  static const Color lime = Color(0xff84cc16);
+  static const Color green = Color(0xff22c55e);
+  static const Color emerald = Color(0xff10b981);
+  static const Color teal = Color(0xff14b8a6);
+  static const Color cyan = Color(0xff06b6d4);
+  static const Color sky = Color(0xff0ea5e9);
+  static const Color blue = Color(0xff3b82f6);
+  static const Color indigo = Color(0xff6366f1);
+  static const Color violet = Color(0xff8b5cf6);
+  static const Color purple = Color(0xffa855f7);
+  static const Color fuchsia = Color(0xffd946ef);
+  static const Color pink = Color(0xffec4899);
+  static const Color rose = Color(0xfff43f5e);
 
   static const Map<String, Color> colors = <String, Color>{
     'red': red,
@@ -42,4 +43,62 @@ abstract class ForegroundColors {
   static Color? find(final String name) => colors[name];
 
   static List<String> names() => colors.keys.toList();
+
+  static String getTitleCase(final Translation translation, final String name) {
+    switch (name) {
+      case 'red':
+        return translation.red;
+
+      case 'orange':
+        return translation.orange;
+
+      case 'amber':
+        return translation.amber;
+
+      case 'yellow':
+        return translation.yellow;
+
+      case 'lime':
+        return translation.lime;
+
+      case 'green':
+        return translation.green;
+
+      case 'emerald':
+        return translation.emerald;
+
+      case 'teal':
+        return translation.teal;
+
+      case 'cyan':
+        return translation.cyan;
+
+      case 'sky':
+        return translation.sky;
+
+      case 'blue':
+        return translation.blue;
+
+      case 'indigo':
+        return translation.indigo;
+
+      case 'violet':
+        return translation.violet;
+
+      case 'purple':
+        return translation.purple;
+
+      case 'fuchsia':
+        return translation.fuchsia;
+
+      case 'pink':
+        return translation.pink;
+
+      case 'rose':
+        return translation.rose;
+
+      default:
+        return name;
+    }
+  }
 }

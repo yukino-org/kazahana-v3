@@ -1,4 +1,4 @@
-import 'package:utilx/utils.dart';
+import 'package:utilx/utilx.dart';
 import '../endpoints/exports.dart';
 import '../utils.dart';
 import 'character_edge.dart';

@@ -18,11 +18,9 @@ class _BaseAppState extends State<BaseApp> {
   @override
   void initState() {
     super.initState();
-
     theme = Themer.defaultTheme();
     scale = RelativeScaleData.defaultScale;
-    translationId = Translator.identifier;
-
+    translationId = '';
     AppEvents.stream.listen((final AppEvent event) {
       if (event == AppEvent.settingsChange) {
         final ThemerThemeData nTheme = Themer.getCurrentTheme();
@@ -38,7 +36,6 @@ class _BaseAppState extends State<BaseApp> {
           });
         }
       }
-
       if (event == AppEvent.translationsChange) {
         final String nTranslationId = Translator.identifier;
         if (translationId != nTranslationId) {

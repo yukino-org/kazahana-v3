@@ -16,7 +16,7 @@ Future<void> main() async {
 Future<String> getGeneratedAppMetaContent() async => '''
 part of 'meta.dart';
 
-abstract class _GeneratedAppMeta {
+abstract class GeneratedAppMeta {
   static const String version = '${await getVersion()}';
   static const int builtAtMs = ${DateTime.now().millisecondsSinceEpoch};
 }

@@ -47,7 +47,6 @@ class _SuperImposerState extends State<SuperImposer> {
   @override
   void initState() {
     super.initState();
-
     subscription = SuperImposer.onChange.listen((final _) {
       if (!mounted) return;
       setState(() {});

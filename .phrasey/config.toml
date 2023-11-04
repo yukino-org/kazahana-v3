@@ -10,7 +10,7 @@ format = "toml"
 [output]
 dir = "../assets/translations"
 format = "json"
-stringFormat = "format-string"
+stringFormat = "python-positional-format-string"
 
 [hooks]
 files = ["./hooks/dart-sync.js"]

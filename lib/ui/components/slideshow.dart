@@ -25,12 +25,10 @@ class _SlideshowState extends State<Slideshow>
   @override
   void initState() {
     super.initState();
-
     tabController = TabController(
       length: widget.children.length,
       vsync: this,
     );
-
     scheduleSlideChange();
   }
 

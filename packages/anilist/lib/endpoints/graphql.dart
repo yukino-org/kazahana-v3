@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared/http.dart' as http;
-import 'package:utilx/utils.dart';
+import 'package:utilx/utilx.dart';
 import '../models/exports.dart';
 
 class AnilistGraphQLRequest {

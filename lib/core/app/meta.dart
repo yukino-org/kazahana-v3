@@ -6,7 +6,7 @@ abstract class AppMeta {
   static const String scheme = 'kazahana';
   static const String yuki = '雪';
 
-  static const String version = _GeneratedAppMeta.version;
+  static const String version = GeneratedAppMeta.version;
   static final DateTime builtAt =
-      DateTime.fromMillisecondsSinceEpoch(_GeneratedAppMeta.builtAtMs);
+      DateTime.fromMillisecondsSinceEpoch(GeneratedAppMeta.builtAtMs);
 }

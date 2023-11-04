@@ -28,8 +28,10 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               value: SettingsDatabase.settings.primaryColor ??
                   ThemerThemeData.defaultForegroundName,
               items: ForegroundColors.names().asMap().map(
-                    (final _, final String name) =>
-                        MapEntry<String, Widget>(name, Text(name)),
+                    (final _, final String name) => MapEntry<String, Widget>(
+                      name,
+                      Text(ForegroundColors.getTitleCase(context.t, name)),
+                    ),
                   ),
               onChanged: (final String value) {
                 SettingsDatabase.settings.primaryColor = value;

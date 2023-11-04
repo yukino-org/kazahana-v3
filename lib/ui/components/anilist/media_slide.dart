@@ -15,6 +15,70 @@ class AnilistMediaSlide extends StatefulWidget {
 
 class _AnilistMediaSlideState extends State<AnilistMediaSlide>
     with AutomaticKeepAliveClientMixin {
+  Widget buildThumbnail(final BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(context.r.scale(1)),
+        child: AspectRatio(
+          aspectRatio: AnilistMediaTile.coverRatio,
+          child: FadeInImage(
+            placeholder: MemoryImage(Placeholders.transparent1x1Image),
+            image: NetworkImage(widget.media.coverImageExtraLarge),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+
+  Widget buildContent(final BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Wrap(
+            spacing: context.r.scale(0.25),
+            runSpacing: context.r.scale(0.2),
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              AnilistMediaTile.buildFormatChip(
+                context: context,
+                media: widget.media,
+              ),
+              AnilistMediaTile.buildWatchtimeChip(
+                context: context,
+                media: widget.media,
+              ),
+              if (widget.media.averageScore != null)
+                AnilistMediaTile.buildRatingChip(
+                  context: context,
+                  media: widget.media,
+                ),
+              if (widget.media.startDate != null ||
+                  widget.media.endDate != null)
+                AnilistMediaTile.buildAirdateChip(
+                  context: context,
+                  media: widget.media,
+                ),
+              if (widget.media.isAdult)
+                AnilistMediaTile.buildNSFWChip(
+                  context: context,
+                  media: widget.media,
+                ),
+            ],
+          ),
+          SizedBox(height: context.r.scale(0.25)),
+          Text(
+            widget.media.titleUserPreferred,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: context.r.scale(0.25)),
+          if (widget.media.description != null)
+            Text(
+              widget.media.description!,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+            ),
+        ],
+      );
+
   @override
   Widget build(final BuildContext context) {
     super.build(context);
@@ -41,26 +105,23 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
-              onTap: () {
-                Navigator.of(context)
-                    .pusher
-                    .pushToViewPageFromMedia(widget.media);
-              },
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Theme.of(context)
-                          .bottomAppBarTheme
-                          .color!
-                          .withOpacity(0.25),
-                      Theme.of(context).bottomAppBarTheme.color!,
+                      Theme.of(context).colorScheme.background.withOpacity(0.3),
+                      Theme.of(context).colorScheme.background.withOpacity(0.7),
                     ],
                   ),
                 ),
               ),
+              onTap: () {
+                Navigator.of(context)
+                    .pusher
+                    .pushToViewPageFromMedia(widget.media);
+              },
             ),
           ),
         ),
@@ -68,73 +129,24 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
           alignment: Alignment.bottomLeft,
           child: IgnorePointer(
             child: Padding(
-              padding: EdgeInsets.all(HorizontalBodyPadding.size(context)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: EdgeInsets.all(context.r.scale(1)),
+              child: Row(
+                // mainAxisSize: MainAxisSize.min,
+                // mainAxisAlignment: MainAxisAlignment.end,
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  buildThumbnail(context),
+                  // SizedBox(height: context.r.scale(0.5)),
+                  SizedBox(width: context.r.scale(1.5)),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(context.r.scale(0.5)),
-                      child: AspectRatio(
-                        aspectRatio: AnilistMediaTile.coverRatio,
-                        child: FadeInImage(
-                          placeholder:
-                              MemoryImage(Placeholders.transparent1x1Image),
-                          image:
-                              NetworkImage(widget.media.coverImageExtraLarge),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        buildContent(context),
+                      ],
                     ),
                   ),
-                  SizedBox(height: context.r.scale(0.5)),
-                  Wrap(
-                    spacing: context.r.scale(0.25),
-                    runSpacing: context.r.scale(0.2),
-                    alignment: WrapAlignment.center,
-                    children: <Widget>[
-                      AnilistMediaTile.buildFormatChip(
-                        context: context,
-                        media: widget.media,
-                      ),
-                      AnilistMediaTile.buildWatchtimeChip(
-                        context: context,
-                        media: widget.media,
-                      ),
-                      if (widget.media.averageScore != null)
-                        AnilistMediaTile.buildRatingChip(
-                          context: context,
-                          media: widget.media,
-                        ),
-                      if (widget.media.startDate != null ||
-                          widget.media.endDate != null)
-                        AnilistMediaTile.buildAirdateChip(
-                          context: context,
-                          media: widget.media,
-                        ),
-                      if (widget.media.isAdult)
-                        AnilistMediaTile.buildNSFWChip(
-                          context: context,
-                          media: widget.media,
-                        ),
-                    ],
-                  ),
-                  SizedBox(height: context.r.scale(0.25)),
-                  Text(
-                    widget.media.titleUserPreferred,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: context.r.scale(0.25)),
-                  if (widget.media.description != null)
-                    Text(
-                      widget.media.description!,
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                 ],
               ),
             ),

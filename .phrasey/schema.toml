@@ -215,3 +215,71 @@ description = "Chapters read"
 [[keys]]
 name = "VolumesRead"
 description = "Volumes read"
+
+[[keys]]
+name = "Red"
+description = "Red"
+
+[[keys]]
+name = "Orange"
+description = "Orange"
+
+[[keys]]
+name = "Amber"
+description = "Amber"
+
+[[keys]]
+name = "Yellow"
+description = "Yellow"
+
+[[keys]]
+name = "Lime"
+description = "Lime"
+
+[[keys]]
+name = "Green"
+description = "Green"
+
+[[keys]]
+name = "Emerald"
+description = "Emerald"
+
+[[keys]]
+name = "Teal"
+description = "Teal"
+
+[[keys]]
+name = "Cyan"
+description = "Cyan"
+
+[[keys]]
+name = "Sky"
+description = "Sky"
+
+[[keys]]
+name = "Blue"
+description = "Blue"
+
+[[keys]]
+name = "Indigo"
+description = "Indigo"
+
+[[keys]]
+name = "Violet"
+description = "Violet"
+
+[[keys]]
+name = "Purple"
+description = "Purple"
+
+[[keys]]
+name = "Fuchsia"
+description = "Fuchsia"
+
+[[keys]]
+name = "Pink"
+description = "Pink"
+
+[[keys]]
+name = "Rose"
+description = "Rose"

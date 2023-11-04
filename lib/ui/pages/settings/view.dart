@@ -16,10 +16,10 @@ enum _SettingsCategory {
 }
 
 extension on _SettingsCategory {
-  String getTitleCase(final Translation translations) {
+  String getTitleCase(final Translation translation) {
     switch (this) {
       case _SettingsCategory.appearance:
-        return translations.appearance;
+        return translation.appearance;
     }
   }
 }
