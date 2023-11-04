@@ -85,7 +85,7 @@ class ViewPageOverview extends StatelessWidget {
               SizedBox(height: context.r.scale(1)),
               HorizontalBodyPadding(
                 Text(
-                  context.t.characters(),
+                  context.t.characters,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -105,7 +105,7 @@ class ViewPageOverview extends StatelessWidget {
                 SizedBox(height: context.r.scale(1)),
                 HorizontalBodyPadding(
                   Text(
-                    context.t.relations(),
+                    context.t.relations,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!

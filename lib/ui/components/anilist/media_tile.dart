@@ -176,7 +176,7 @@ class AnilistMediaTile extends StatelessWidget {
       AnilistMediaTile.buildChip(
         context: context,
         backgroundColor: ForegroundColors.red,
-        child: Text(context.t.nsfw()),
+        child: Text(context.t.nsfw),
       );
 
   static const Icon ratingIcon = Icon(

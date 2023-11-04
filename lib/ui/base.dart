@@ -61,7 +61,7 @@ class _BaseAppState extends State<BaseApp> {
         ) =>
             RelativeScaler(
           data: scale,
-          child: TranslationsWrapper(
+          child: TranslationWrapper(
             id: translationId,
             child: Builder(
               builder: (final BuildContext context) => Theme(

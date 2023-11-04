@@ -89,7 +89,7 @@ class ViewPageHero extends StatelessWidget {
                     media.format.getTitleCase(context.t),
                     media.getWatchtime(context.t),
                     if (media.season != null || media.seasonYear != null)
-                      '${media.season?.getTitleCase(context.t) ?? Translations.unknownCharacter} ${media.seasonYear ?? Translations.unknownCharacter}',
+                      '${media.season?.getTitleCase(context.t) ?? Translation.unk} ${media.seasonYear ?? Translation.unk}',
                     media.status.getTitleCase(context.t),
                   ].join(' | '),
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(

@@ -34,5 +34,5 @@ class SettingsSchema {
 
   static Locale? _localeFromJson(final String? value) =>
       value != null ? Locale.parse(value) : null;
-  static String? _localeToJson(final Locale? value) => value?.toCodeString();
+  static String? _localeToJson(final Locale? value) => value?.code;
 }

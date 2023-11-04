@@ -16,10 +16,10 @@ enum _SettingsCategory {
 }
 
 extension on _SettingsCategory {
-  String getTitleCase(final Translations translations) {
+  String getTitleCase(final Translation translations) {
     switch (this) {
       case _SettingsCategory.appearance:
-        return translations.appearance();
+        return translations.appearance;
     }
   }
 }
@@ -30,7 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
   PreferredSizeWidget buildAppBar(final BuildContext context) {
     final AppBar appBar = AppBar(
       leading: const RoundedBackButton(),
-      title: Text(context.t.settings()),
+      title: Text(context.t.settings),
     );
     final double appBarHeight = appBar.preferredSize.height;
     final double height = (appBarHeight * 2) + 1;

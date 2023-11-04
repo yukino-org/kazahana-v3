@@ -66,17 +66,17 @@ class UnderScoreHomePageBody extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            buildTrendsSlideshow(provider.trendingAnimes),
+            buildTrendsSlideshow(provider.trendingAnime),
             SizedBox(height: context.r.scale(4)),
-            buildText(context.t.topOngoingAnimes(), context: context),
+            buildText(context.t.topOngoingAnime, context: context),
             buildCarousel(
               context: context,
-              results: provider.topOngoingAnimes,
+              results: provider.topOngoingAnime,
             ),
-            buildText(context.t.mostPopularAnimes(), context: context),
+            buildText(context.t.mostPopularAnime, context: context),
             buildCarousel(
               context: context,
-              results: provider.mostPopularAnimes,
+              results: provider.mostPopularAnime,
             ),
           ],
         );
@@ -87,17 +87,17 @@ class UnderScoreHomePageBody extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            buildTrendsSlideshow(provider.trendingMangas),
+            buildTrendsSlideshow(provider.trendingManga),
             SizedBox(height: context.r.scale(0.75)),
-            buildText(context.t.topOngoingMangas(), context: context),
+            buildText(context.t.topOngoingManga, context: context),
             buildCarousel(
               context: context,
-              results: provider.topOngoingMangas,
+              results: provider.topOngoingManga,
             ),
-            buildText(context.t.mostPopularMangas(), context: context),
+            buildText(context.t.mostPopularManga, context: context),
             buildCarousel(
               context: context,
-              results: provider.mostPopularMangas,
+              results: provider.mostPopularManga,
             ),
           ],
         );

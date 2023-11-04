@@ -11,22 +11,19 @@ enum _ViewPageTabs {
 }
 
 extension on _ViewPageTabs {
-  String getTitleCase({
-    required final Translations translations,
-    required final TenkaType type,
-  }) {
+  String getTitleCase(final Translation translation, final TenkaType type) {
     switch (this) {
       case _ViewPageTabs.overview:
-        return translations.overview();
+        return translation.overview;
 
       case _ViewPageTabs.content:
         {
           switch (type) {
             case TenkaType.anime:
-              return translations.episodes();
+              return translation.episodes;
 
             case TenkaType.manga:
-              return translations.chapters();
+              return translation.chapters;
           }
         }
     }
@@ -131,8 +128,8 @@ class _ViewPageBodyState extends State<ViewPageBody>
                         i,
                         Tab(
                           text: x.getTitleCase(
-                            translations: context.t,
-                            type: media.type.asTenkaType,
+                            context.t,
+                            media.type.asTenkaType,
                           ),
                         ),
                       ),

@@ -4,7 +4,7 @@ publish_to: none
 version: 3.0.0
 
 environment:
-    sdk: ">=2.19.0-43.0.dev <3.0.0"
+    sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
     anilist:
@@ -16,8 +16,8 @@ dependencies:
         sdk: flutter
     json_annotation: ^4.6.0
     media_kit: ^1.1.10
-    media_kit_video: ^1.2.4
     media_kit_libs_video: ^1.0.4
+    media_kit_video: ^1.2.4
     path: ^1.8.2
     path_provider: ^2.0.11
     perks: ^1.0.0
@@ -52,6 +52,7 @@ flutter:
     uses-material-design: true
     assets:
         - assets/images/
+        - assets/translations/
     fonts:
         - family: Inter
           fonts:

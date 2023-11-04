@@ -24,8 +24,8 @@ abstract class AnilistAuth {
       Toast(
         content: Text(
           <String>[
-            '${gNavigatorKey.currentContext!.t.anilist()}:',
-            gNavigatorKey.currentContext!.t.authenticatedAs(user!.name),
+            '${gNavigatorKey.currentContext!.t.anilist}:',
+            gNavigatorKey.currentContext!.t.authenticatedAsX(user!.name),
           ].join(' '),
         ),
       ).show();

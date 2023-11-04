@@ -67,7 +67,7 @@ class ModulesPage extends StatelessWidget {
             TextSpan(text: metadata.name),
             if (metadata.nsfw)
               TextSpan(
-                text: '  (${context.t.nsfw()})',
+                text: '  (${context.t.nsfw})',
                 style: Theme.of(context)
                     .textTheme
                     .labelSmall
@@ -80,7 +80,7 @@ class ModulesPage extends StatelessWidget {
       subtitle: Text(
         <String>[
           metadata.type.getTitleCase(context.t),
-          context.t.by(metadata.author),
+          context.t.byX(metadata.author),
           'v${metadata.version}',
         ].join(' / '),
       ),
@@ -103,7 +103,7 @@ class ModulesPage extends StatelessWidget {
             final _,
           ) =>
               Scaffold(
-            appBar: AppBar(title: Text(context.t.extensions())),
+            appBar: AppBar(title: Text(context.t.extensions)),
             body: SingleChildScrollView(
               child: Column(
                 children: TenkaManager.repository.store.modules.values

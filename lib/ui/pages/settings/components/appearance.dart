@@ -23,7 +23,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
         child: Column(
           children: <Widget>[
             MultiChoiceListTile<String>(
-              title: Text(context.t.accentColor()),
+              title: Text(context.t.accentColor),
               secondary: const Icon(Icons.format_color_fill_rounded),
               value: SettingsDatabase.settings.primaryColor ??
                   ThemerThemeData.defaultForegroundName,
@@ -37,7 +37,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             SwitchListTile(
-              title: Text(context.t.useSystemTheme()),
+              title: Text(context.t.useSystemTheme),
               secondary: const Icon(Icons.highlight_rounded),
               value: SettingsDatabase.settings.useSystemPreferredTheme,
               onChanged: (final bool value) {
@@ -46,7 +46,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
               },
             ),
             SwitchListTile(
-              title: Text(context.t.darkMode()),
+              title: Text(context.t.darkMode),
               secondary: AnimatedSwitcher(
                 duration: AnimationDurations.defaultNormalAnimation,
                 child: Icon(
@@ -65,7 +65,7 @@ class _ApperanceSettingsState extends State<ApperanceSettings> {
                     },
             ),
             CheckboxListTile(
-              title: Text(context.t.disableAnimations()),
+              title: Text(context.t.disableAnimations),
               secondary: const Icon(Icons.animation_rounded),
               value: SettingsDatabase.settings.disableAnimations,
               onChanged: (final bool? value) {

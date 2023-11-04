@@ -1,7 +1,7 @@
 import 'package:kazahana/core/exports.dart';
 
-class TranslationsWrapper extends InheritedWidget {
-  const TranslationsWrapper({
+class TranslationWrapper extends InheritedWidget {
+  const TranslationWrapper({
     required this.id,
     required super.child,
     super.key,
@@ -10,15 +10,15 @@ class TranslationsWrapper extends InheritedWidget {
   final String id;
 
   @override
-  bool updateShouldNotify(final TranslationsWrapper oldWidget) =>
+  bool updateShouldNotify(final TranslationWrapper oldWidget) =>
       oldWidget.id != id;
 
-  Translations get t => Translator.currentTranslation;
+  Translation get t => Translator.currentTranslation;
 
-  static TranslationsWrapper of(final BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<TranslationsWrapper>()!;
+  static TranslationWrapper of(final BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TranslationWrapper>()!;
 }
 
-extension TranslationsWrapperUtils on BuildContext {
-  Translations get t => TranslationsWrapper.of(this).t;
+extension TranslationWrapperUtils on BuildContext {
+  Translation get t => TranslationWrapper.of(this).t;
 }

@@ -42,31 +42,28 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
         return <Widget>[
           buildStatisticsChild(
             context: context,
-            title: context.t.totalAnime(),
-            value: stats?.count.toString() ?? Translations.unknownCharacter,
+            title: context.t.totalAnime,
+            value: stats?.count.toString() ?? Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.episodesWatched(),
-            value: stats?.episodesWatched.toString() ??
-                Translations.unknownCharacter,
+            title: context.t.episodesWatched,
+            value: stats?.episodesWatched.toString() ?? Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.timeSpent(),
+            title: context.t.timeSpent,
             value: stats?.minutesWatched != null
                 ? PrettyDurations.prettyHoursMinutesShort(
-                    duration: Duration(minutes: stats!.minutesWatched!),
-                    translations: context.t,
+                    context.t,
+                    Duration(minutes: stats!.minutesWatched!),
                   )
-                : Translations.unknownCharacter,
+                : Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.meanScore(),
-            value: stats != null
-                ? '${stats.meanScore}%'
-                : Translations.unknownCharacter,
+            title: context.t.meanScore,
+            value: stats != null ? '${stats.meanScore}%' : Translation.unk,
           ),
         ];
 
@@ -76,27 +73,23 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
         return <Widget>[
           buildStatisticsChild(
             context: context,
-            title: context.t.totalManga(),
-            value: stats?.count.toString() ?? Translations.unknownCharacter,
+            title: context.t.totalManga,
+            value: stats?.count.toString() ?? Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.volumesRead(),
-            value:
-                stats?.volumesRead.toString() ?? Translations.unknownCharacter,
+            title: context.t.volumesRead,
+            value: stats?.volumesRead.toString() ?? Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.chaptersRead(),
-            value:
-                stats?.chaptersRead.toString() ?? Translations.unknownCharacter,
+            title: context.t.chaptersRead,
+            value: stats?.chaptersRead.toString() ?? Translation.unk,
           ),
           buildStatisticsChild(
             context: context,
-            title: context.t.meanScore(),
-            value: stats != null
-                ? '${stats.meanScore}%'
-                : Translations.unknownCharacter,
+            title: context.t.meanScore,
+            value: stats != null ? '${stats.meanScore}%' : Translation.unk,
           ),
         ];
     }

@@ -52,13 +52,13 @@ class AnilistPageLoginBody extends StatelessWidget {
             const Divider(),
             SizedBox(height: context.r.scale(1)),
             Text(
-              context.t.trackYourProgressUsingAnilist(),
+              context.t.trackYourProgressUsingAnilist,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(height: context.r.scale(1)),
             TextButton.icon(
               icon: const Icon(Icons.login_rounded),
-              label: Text(context.t.loginUsing(context.t.anilist())),
+              label: Text(context.t.loginUsingAnilist),
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -78,9 +78,10 @@ class AnilistPageLoginBody extends StatelessWidget {
                     throw Exception('Failed to launch URL');
                   }
                 } catch (err) {
+                  if (!context.mounted) return;
                   Toast(
                     content: Text(
-                      '${context.t.somethingWentWrong()} $err',
+                      '${context.t.somethingWentWrong} $err',
                     ), //dart(use_build_context_synchronously)
                   ).show();
                 }

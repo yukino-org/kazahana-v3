@@ -1,54 +1,47 @@
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:utilx/locale.dart';
+import 'package:utilx/utilx.dart';
 import '../app/exports.dart';
 import '../database/exports.dart';
-import 'translations/exports.dart';
+
+part 'translation.g.dart';
 
 abstract class Translator {
-  static const Locale defaultLocale = Locale(LanguageCodes.en);
+  static const Locale defaultLocale = LocalesRepository.en;
 
-  static final List<Translations> all = <Translations>[
-    EnTranslation(),
-  ];
-
-  static Translations currentTranslation = getDefaultLocaleTranslation();
+  static late Translation currentTranslation;
 
   static Future<void> initialize() async {
-    updateCurrentTranslation();
+    await updateCurrentTranslation();
 
-    AppEvents.stream.listen((final AppEvent event) {
+    AppEvents.stream.listen((final AppEvent event) async {
       if (event != AppEvent.settingsChange) return;
-      updateCurrentTranslation();
+      await updateCurrentTranslation();
     });
   }
 
-  static void updateCurrentTranslation() {
-    currentTranslation = (SettingsDatabase.settings.locale != null
-            ? getTranslation(SettingsDatabase.settings.locale!)
-            : null) ??
-        getDefaultLocaleTranslation();
+  static Future<void> updateCurrentTranslation() async {
+    final Locale? settingsLocale = SettingsDatabase.settings.locale;
+    final Locale locale =
+        settingsLocale != null && hasTranslation(settingsLocale)
+            ? settingsLocale
+            : defaultLocale;
+    currentTranslation = await parseTranslation(locale);
     AppEvents.controller.add(AppEvent.translationsChange);
   }
 
-  static Translations getDefaultLocaleTranslation() =>
-      getTranslation(defaultLocale)!;
+  static bool hasTranslation(final Locale locale) =>
+      Translation.availableLocales.contains(locale.code);
 
-  static Translations? getTranslation(final Locale locale) {
-    int prevMatchThreshold = 0;
-    Translations? sentences;
-
-    for (final Translations x in all) {
-      final int threshold = x.locale.compare(locale);
-      if (threshold > prevMatchThreshold) {
-        prevMatchThreshold = threshold;
-        sentences = x;
-      }
-    }
-
-    return sentences;
+  static Future<Translation> parseTranslation(final Locale locale) async {
+    final String content =
+        await rootBundle.loadString('assets/translations/${locale.code}.json');
+    final JsonMap parsed = json.decode(content) as JsonMap;
+    return Translation(parsed);
   }
 
   static Locale get locale => currentTranslation.locale;
 
-  static String get identifier =>
-      '${locale.toCodeString()}+$currentTranslation';
+  static String get identifier => locale.code;
 }

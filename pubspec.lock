@@ -69,7 +69,7 @@ packages:
     description:
       path: "packages/beize_shared"
       ref: HEAD
-      resolved-ref: "9d087085ae97516c8cedaa94e83f8edaff097714"
+      resolved-ref: "8669c3486375bfe9af7a13032aaa71af37828202"
       url: "https://github.com/zyrouge/beize.git"
     source: git
     version: "0.0.0"
@@ -78,7 +78,7 @@ packages:
     description:
       path: "packages/beize_vm"
       ref: HEAD
-      resolved-ref: "9d087085ae97516c8cedaa94e83f8edaff097714"
+      resolved-ref: "8669c3486375bfe9af7a13032aaa71af37828202"
       url: "https://github.com/zyrouge/beize.git"
     source: git
     version: "0.0.0"
@@ -239,7 +239,7 @@ packages:
     description:
       path: "."
       ref: dart_devx
-      resolved-ref: b337c5c4f10c4a23a626a1e8de5cf93f7fd57231
+      resolved-ref: "4cd1360f1d226e1793ef62b347a7078f0b446182"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -822,7 +822,7 @@ packages:
     description:
       path: "."
       ref: dart_tenka
-      resolved-ref: "99668f89bbfcc63aaaf6d1c04c9447e22805cbc7"
+      resolved-ref: "75bfb55cc9c100ee33f28933710af31872e88586"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "1.0.5"
@@ -831,7 +831,7 @@ packages:
     description:
       path: "."
       ref: dart_tenka_runtime
-      resolved-ref: "88c24830af512495176c1a56f39153e509f783ba"
+      resolved-ref: "3aa14ba346435090b44cab2acc7307eed8381024"
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -976,7 +976,7 @@ packages:
     description:
       path: "."
       ref: dart_utilx
-      resolved-ref: "7b2ddc4c01806acf239b47eba3bda5e59f983f5c"
+      resolved-ref: d3adba9598e4dfcc0e470ce7f5ce1d3fc3f088a1
       url: "https://github.com/yukino-org/packages.git"
     source: git
     version: "0.0.0"
@@ -1032,10 +1032,10 @@ packages:
     dependency: transitive
     description:
       name: web
-      sha256: "14f1f70c51119012600c5f1f60ca68efda5a9b6077748163c6af2893ec5df8fc"
+      sha256: afe077240a270dcfd2aafe77602b4113645af95d0ad31128cc02bce5ac5d5152
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.1-beta"
+    version: "0.3.0"
   web_socket_channel:
     dependency: transitive
     description:
@@ -1086,5 +1086,5 @@ packages:
     source: git
     version: "0.0.0"
 sdks:
-  dart: ">=3.2.0-157.0.dev <4.0.0"
+  dart: ">=3.2.0-194.0.dev <4.0.0"
   flutter: ">=3.13.0"

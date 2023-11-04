@@ -13,4 +13,4 @@ format = "json"
 stringFormat = "format-string"
 
 [hooks]
-files = []
+files = ["./hooks/dart-sync.js"]

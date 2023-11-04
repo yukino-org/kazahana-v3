@@ -3,18 +3,18 @@ import 'package:kazahana/core/exports.dart';
 class UnderScoreHomePageProvider extends StatedChangeNotifier {
   TenkaType type = TenkaType.anime;
 
-  final StatedValue<List<AnilistMedia>> trendingAnimes =
+  final StatedValue<List<AnilistMedia>> trendingAnime =
       StatedValue<List<AnilistMedia>>();
-  final StatedValue<List<AnilistMedia>> topOngoingAnimes =
+  final StatedValue<List<AnilistMedia>> topOngoingAnime =
       StatedValue<List<AnilistMedia>>();
-  final StatedValue<List<AnilistMedia>> mostPopularAnimes =
+  final StatedValue<List<AnilistMedia>> mostPopularAnime =
       StatedValue<List<AnilistMedia>>();
 
-  final StatedValue<List<AnilistMedia>> trendingMangas =
+  final StatedValue<List<AnilistMedia>> trendingManga =
       StatedValue<List<AnilistMedia>>();
-  final StatedValue<List<AnilistMedia>> topOngoingMangas =
+  final StatedValue<List<AnilistMedia>> topOngoingManga =
       StatedValue<List<AnilistMedia>>();
-  final StatedValue<List<AnilistMedia>> mostPopularMangas =
+  final StatedValue<List<AnilistMedia>> mostPopularManga =
       StatedValue<List<AnilistMedia>>();
 
   Future<void> initialize() async {
@@ -40,83 +40,81 @@ class UnderScoreHomePageProvider extends StatedChangeNotifier {
         fetchTrendingAnimes();
         fetchTopOngoingAnimes();
         fetchMostPopularAnimes();
-        break;
 
       case TenkaType.manga:
         fetchTrendingMangas();
         fetchTopOngoingMangas();
         fetchMostPopularMangas();
-        break;
     }
   }
 
   Future<void> fetchTrendingAnimes() async {
-    if (!trendingAnimes.isWaiting) return;
+    if (!trendingAnime.isWaiting) return;
 
     try {
-      trendingAnimes.finish(await AnilistMediaEndpoints.trendingAnimes());
+      trendingAnime.finish(await AnilistMediaEndpoints.trendingAnimes());
     } catch (error, stackTrace) {
-      trendingAnimes.fail(error, stackTrace);
+      trendingAnime.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();
   }
 
   Future<void> fetchTopOngoingAnimes() async {
-    if (!topOngoingAnimes.isWaiting) return;
+    if (!topOngoingAnime.isWaiting) return;
 
     try {
-      topOngoingAnimes.finish(await AnilistMediaEndpoints.topOngoingAnimes());
+      topOngoingAnime.finish(await AnilistMediaEndpoints.topOngoingAnimes());
     } catch (error, stackTrace) {
-      topOngoingAnimes.fail(error, stackTrace);
+      topOngoingAnime.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();
   }
 
   Future<void> fetchMostPopularAnimes() async {
-    if (!mostPopularAnimes.isWaiting) return;
+    if (!mostPopularAnime.isWaiting) return;
 
     try {
-      mostPopularAnimes.finish(await AnilistMediaEndpoints.mostPopularAnimes());
+      mostPopularAnime.finish(await AnilistMediaEndpoints.mostPopularAnimes());
     } catch (error, stackTrace) {
-      mostPopularAnimes.fail(error, stackTrace);
+      mostPopularAnime.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();
   }
 
   Future<void> fetchTrendingMangas() async {
-    if (!trendingMangas.isWaiting) return;
+    if (!trendingManga.isWaiting) return;
 
     try {
-      trendingMangas.finish(await AnilistMediaEndpoints.trendingMangas());
+      trendingManga.finish(await AnilistMediaEndpoints.trendingMangas());
     } catch (error, stackTrace) {
-      trendingMangas.fail(error, stackTrace);
+      trendingManga.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();
   }
 
   Future<void> fetchTopOngoingMangas() async {
-    if (!topOngoingMangas.isWaiting) return;
+    if (!topOngoingManga.isWaiting) return;
 
     try {
-      topOngoingMangas.finish(await AnilistMediaEndpoints.topOngoingMangas());
+      topOngoingManga.finish(await AnilistMediaEndpoints.topOngoingMangas());
     } catch (error, stackTrace) {
-      topOngoingMangas.fail(error, stackTrace);
+      topOngoingManga.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();
   }
 
   Future<void> fetchMostPopularMangas() async {
-    if (!mostPopularMangas.isWaiting) return;
+    if (!mostPopularManga.isWaiting) return;
 
     try {
-      mostPopularMangas.finish(await AnilistMediaEndpoints.mostPopularMangas());
+      mostPopularManga.finish(await AnilistMediaEndpoints.mostPopularMangas());
     } catch (error, stackTrace) {
-      mostPopularMangas.fail(error, stackTrace);
+      mostPopularManga.fail(error, stackTrace);
     }
     if (!mounted) return;
     notifyListeners();

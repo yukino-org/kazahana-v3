@@ -12,6 +12,7 @@
         "@zyrouge/phrasey-json": "^1.0.3",
         "@zyrouge/phrasey-locales": "^1.1.9",
         "@zyrouge/phrasey-toml": "^1.0.3",
-        "phrasey": "^2.0.24"
+        "fs-extra": "^11.1.1",
+        "phrasey": "^2.0.25"
     }
 }

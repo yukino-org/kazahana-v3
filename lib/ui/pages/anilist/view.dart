@@ -19,7 +19,7 @@ class AnilistPage extends StatelessWidget {
             final _,
           ) =>
               Scaffold(
-            appBar: AppBar(title: Text(context.t.anilist())),
+            appBar: AppBar(title: Text(context.t.anilist)),
             body: provider.isLoggedIn
                 ? AnilistPageProfileBody(provider: provider)
                 : const AnilistPageLoginBody(),

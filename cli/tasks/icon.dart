@@ -2,19 +2,18 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:image/image.dart';
 import 'package:path/path.dart' as path;
-import 'package:utilx/utils.dart';
 import '../utils/exports.dart';
 
 const Logger _logger = Logger('icon');
 const int defaultImageSize = 1000;
 const int overlayContentSize = 250;
 
-const List<TwinTuple<int, String>> androidIconSizes = <TwinTuple<int, String>>[
-  TwinTuple<int, String>(defaultImageSize ~/ 1, 'mdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 1.5, 'hdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 2, 'xhdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 3, 'xxhdpi'),
-  TwinTuple<int, String>(defaultImageSize ~/ 4, 'xxxhdpi'),
+const List<(int, String)> androidIconSizes = <(int, String)>[
+  (defaultImageSize ~/ 1, 'mdpi'),
+  (defaultImageSize ~/ 1.5, 'hdpi'),
+  (defaultImageSize ~/ 2, 'xhdpi'),
+  (defaultImageSize ~/ 3, 'xxhdpi'),
+  (defaultImageSize ~/ 4, 'xxxhdpi'),
 ];
 
 String getAndroidIconPath(final String code) => path.join(
@@ -48,14 +47,14 @@ Future<void> main() async {
     ),
   );
 
-  for (final TwinTuple<int, String> x in androidIconSizes) {
-    final String iconPath = getAndroidIconPath(x.last);
+  for (final (int size, String code) in androidIconSizes) {
+    final String iconPath = getAndroidIconPath(code);
     final File iconFile = File(iconPath);
     final List<int> icon = encodeNamedImage(
       path.basename(iconFile.path),
-      copyResizeCropSquare(iconImage, size: x.first),
+      copyResizeCropSquare(iconImage, size: size),
     )!;
     await iconFile.writeAsBytes(icon);
-    _logger.info('Generated $iconPath (${x.last})');
+    _logger.info('Generated $iconPath ($code)');
   }
 }
