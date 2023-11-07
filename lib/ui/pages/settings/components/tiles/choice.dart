@@ -34,7 +34,10 @@ class _MultiChoiceListTileState<T> extends State<MultiChoiceListTile<T>> {
         subtitle: widget.items[widget.value],
         onTap: () async {
           WidgetsBinding.instance.addPostFrameCallback((final _) {
-            Scrollable.ensureVisible(_initActiveOptionKey.currentContext!);
+            Scrollable.ensureVisible(
+              _initActiveOptionKey.currentContext!,
+              duration: AnimationDurations.defaultNormalAnimation,
+            );
           });
           final T? value = await showModalBottomSheet<T>(
             context: context,

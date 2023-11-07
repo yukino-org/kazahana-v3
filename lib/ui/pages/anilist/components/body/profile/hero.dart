@@ -38,7 +38,6 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
     switch (provider.category.type) {
       case AnilistMediaType.anime:
         final AnilistUserStatistics? stats = user.animeStatistics;
-
         return <Widget>[
           buildStatisticsChild(
             context: context,
@@ -69,7 +68,6 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
 
       case AnilistMediaType.manga:
         final AnilistUserStatistics? stats = user.mangaStatistics;
-
         return <Widget>[
           buildStatisticsChild(
             context: context,

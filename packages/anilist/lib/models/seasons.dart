@@ -14,29 +14,10 @@ extension AnimeSeasonsUtils on AnimeSeasons {
 AnimeSeasons parseAnimeSeason(final String code) =>
     EnumUtils.find(AnimeSeasons.values, code.toLowerCase());
 
-AnimeSeasons getAnimeSeasonFromMonth(final int month) {
-  switch (month) {
-    case 1:
-    case 2:
-    case 3:
-      return AnimeSeasons.winter;
-
-    case 4:
-    case 5:
-    case 6:
-      return AnimeSeasons.spring;
-
-    case 7:
-    case 8:
-    case 9:
-      return AnimeSeasons.summer;
-
-    case 10:
-    case 11:
-    case 12:
-      return AnimeSeasons.fall;
-
-    default:
-      throw Error();
-  }
-}
+AnimeSeasons getAnimeSeasonFromMonth(final int month) => switch (month) {
+      1 || 2 || 3 => AnimeSeasons.winter,
+      4 || 5 || 6 => AnimeSeasons.spring,
+      7 || 8 || 9 => AnimeSeasons.summer,
+      10 || 11 || 12 => AnimeSeasons.fall,
+      _ => throw Exception('Unexpected anime season month'),
+    };

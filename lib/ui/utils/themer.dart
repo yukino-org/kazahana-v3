@@ -1,6 +1,6 @@
 import 'package:flutter/scheduler.dart';
 import 'package:kazahana/core/exports.dart';
-import 'relative_size.dart';
+import 'relative_scale.dart';
 
 abstract class Themer {
   static Color _findColor(final String? color, final Color fallback) {

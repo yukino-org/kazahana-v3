@@ -30,18 +30,14 @@ class AnilistPageProfileBodyBody extends StatelessWidget {
         ),
       );
 
-  String getMediaProgressText(final AnilistMedia media) {
-    switch (media.type) {
-      case AnilistMediaType.anime:
-        return '${media.mediaListEntry?.progress ?? 0}/${media.episodes ?? Translation.unk}';
-
-      case AnilistMediaType.manga:
-        return <String>[
-          '${media.mediaListEntry?.progress ?? 0}/${media.episodes ?? 0}',
-          '(${media.mediaListEntry?.progressVolumes ?? 0}/${media.volumes ?? Translation.unk})',
-        ].join(' ');
-    }
-  }
+  String getMediaProgressText(final AnilistMedia media) => switch (media.type) {
+        AnilistMediaType.anime =>
+          '${media.mediaListEntry?.progress ?? 0}/${media.episodes ?? Translation.unk}',
+        AnilistMediaType.manga => <String>[
+            '${media.mediaListEntry?.progress ?? 0}/${media.episodes ?? 0}',
+            '(${media.mediaListEntry?.progressVolumes ?? 0}/${media.volumes ?? Translation.unk})',
+          ].join(' '),
+      };
 
   List<Widget> buildTiles({
     required final BuildContext context,

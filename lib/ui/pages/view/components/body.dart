@@ -11,23 +11,14 @@ enum _ViewPageTabs {
 }
 
 extension on _ViewPageTabs {
-  String getTitleCase(final Translation translation, final TenkaType type) {
-    switch (this) {
-      case _ViewPageTabs.overview:
-        return translation.overview;
-
-      case _ViewPageTabs.content:
-        {
-          switch (type) {
-            case TenkaType.anime:
-              return translation.episodes;
-
-            case TenkaType.manga:
-              return translation.chapters;
+  String getTitleCase(final Translation translation, final TenkaType type) =>
+      switch (this) {
+        _ViewPageTabs.overview => translation.overview,
+        _ViewPageTabs.content => switch (type) {
+            TenkaType.anime => translation.episodes,
+            TenkaType.manga => translation.chapters,
           }
-        }
-    }
-  }
+      };
 }
 
 class ViewPageBody extends StatefulWidget {

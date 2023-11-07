@@ -16,12 +16,9 @@ enum _SettingsCategory {
 }
 
 extension on _SettingsCategory {
-  String getTitleCase(final Translation translation) {
-    switch (this) {
-      case _SettingsCategory.appearance:
-        return translation.appearance;
-    }
-  }
+  String getTitleCase(final Translation translation) => switch (this) {
+        _SettingsCategory.appearance => translation.appearance,
+      };
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -80,12 +77,9 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget buildBody(final BuildContext context) {
-    switch (category) {
-      case _SettingsCategory.appearance:
-        return const ApperanceSettings();
-    }
-  }
+  Widget buildBody(final BuildContext context) => switch (category) {
+        _SettingsCategory.appearance => const ApperanceSettings(),
+      };
 
   @override
   Widget build(final BuildContext context) => Scaffold(

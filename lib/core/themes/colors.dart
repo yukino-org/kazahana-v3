@@ -44,61 +44,28 @@ abstract class ForegroundColors {
 
   static List<String> names() => colors.keys.toList();
 
-  static String getTitleCase(final Translation translation, final String name) {
-    switch (name) {
-      case 'red':
-        return translation.red;
-
-      case 'orange':
-        return translation.orange;
-
-      case 'amber':
-        return translation.amber;
-
-      case 'yellow':
-        return translation.yellow;
-
-      case 'lime':
-        return translation.lime;
-
-      case 'green':
-        return translation.green;
-
-      case 'emerald':
-        return translation.emerald;
-
-      case 'teal':
-        return translation.teal;
-
-      case 'cyan':
-        return translation.cyan;
-
-      case 'sky':
-        return translation.sky;
-
-      case 'blue':
-        return translation.blue;
-
-      case 'indigo':
-        return translation.indigo;
-
-      case 'violet':
-        return translation.violet;
-
-      case 'purple':
-        return translation.purple;
-
-      case 'fuchsia':
-        return translation.fuchsia;
-
-      case 'pink':
-        return translation.pink;
-
-      case 'rose':
-        return translation.rose;
-
-      default:
-        return name;
-    }
-  }
+  static String getTitleCase(
+    final Translation translation,
+    final String name,
+  ) =>
+      switch (name) {
+        'red' => translation.red,
+        'orange' => translation.orange,
+        'amber' => translation.amber,
+        'yellow' => translation.yellow,
+        'lime' => translation.lime,
+        'green' => translation.green,
+        'emerald' => translation.emerald,
+        'teal' => translation.teal,
+        'cyan' => translation.cyan,
+        'sky' => translation.sky,
+        'blue' => translation.blue,
+        'indigo' => translation.indigo,
+        'violet' => translation.violet,
+        'purple' => translation.purple,
+        'fuchsia' => translation.fuchsia,
+        'pink' => translation.pink,
+        'rose' => translation.rose,
+        _ => name,
+      };
 }

@@ -59,9 +59,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
     final UnderScoreHomePageProvider provider =
         context.watch<UnderScoreHomePageProvider>();
 
-    switch (provider.type) {
-      case TenkaType.anime:
-        return Column(
+    return switch (provider.type) {
+      TenkaType.anime => Column(
           key: const ValueKey<TenkaType>(TenkaType.anime),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,10 +78,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
               results: provider.mostPopularAnime,
             ),
           ],
-        );
-
-      case TenkaType.manga:
-        return Column(
+        ),
+      TenkaType.manga => Column(
           key: const ValueKey<TenkaType>(TenkaType.manga),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,8 +97,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
               results: provider.mostPopularManga,
             ),
           ],
-        );
-    }
+        ),
+    };
   }
 
   @override

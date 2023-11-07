@@ -33,41 +33,28 @@ extension TenkaTypeAnilistUtils on TenkaType {
 }
 
 extension AnimeSeasonsTUtils on AnimeSeasons {
-  String getTitleCase(final Translation translation) {
-    switch (this) {
-      case AnimeSeasons.winter:
-        return translation.winter;
-
-      case AnimeSeasons.spring:
-        return translation.spring;
-
-      case AnimeSeasons.summer:
-        return translation.summer;
-
-      case AnimeSeasons.fall:
-        return translation.fall;
-    }
-  }
+  String getTitleCase(final Translation translation) => switch (this) {
+        AnimeSeasons.winter => translation.winter,
+        AnimeSeasons.spring => translation.spring,
+        AnimeSeasons.summer => translation.summer,
+        AnimeSeasons.fall => translation.fall,
+      };
 }
 
 extension AnilistMediaTUtils on AnilistMedia {
-  String getWatchtime(final Translation translation) {
-    switch (type) {
-      case AnilistMediaType.anime:
-        if (format == AnilistMediaFormat.movie) {
-          return duration != null
+  String getWatchtime(final Translation translation) => switch (type) {
+        AnilistMediaType.anime when format == AnilistMediaFormat.movie =>
+          duration != null
               ? PrettyDurations.prettyHoursMinutesShort(
                   translation,
                   Duration(minutes: duration!),
                 )
-              : translation.nMins(Translation.unk);
-        }
-        return translation.nEps(episodes?.toString() ?? Translation.unk);
-
-      case AnilistMediaType.manga:
-        return translation.nChs(chapters?.toString() ?? Translation.unk);
-    }
-  }
+              : translation.nMins(Translation.unk),
+        AnilistMediaType.anime =>
+          translation.nEps(episodes?.toString() ?? Translation.unk),
+        AnilistMediaType.manga =>
+          translation.nChs(chapters?.toString() ?? Translation.unk),
+      };
 
   String get airdate {
     final String startDatePretty = startDate?.maybePretty ?? Translation.unk;
@@ -88,65 +75,37 @@ extension AnilistCharacterRoleTUtils on AnilistCharacterRole {
 }
 
 extension AnilistMediaStatusTUtils on AnilistMediaStatus {
-  String getTitleCase(final Translation translation) {
-    switch (this) {
-      case AnilistMediaStatus.cancelled:
-        return translation.cancelled;
-
-      case AnilistMediaStatus.releasing:
-        return translation.releasing;
-
-      case AnilistMediaStatus.notYetReleased:
-        return translation.notYetReleased;
-
-      case AnilistMediaStatus.finished:
-        return translation.finished;
-
-      case AnilistMediaStatus.hiatus:
-        return translation.hiatus;
-    }
-  }
+  String getTitleCase(final Translation translation) => switch (this) {
+        AnilistMediaStatus.cancelled => translation.cancelled,
+        AnilistMediaStatus.releasing => translation.releasing,
+        AnilistMediaStatus.notYetReleased => translation.notYetReleased,
+        AnilistMediaStatus.finished => translation.finished,
+        AnilistMediaStatus.hiatus => translation.hiatus,
+      };
 }
 
-const Map<AnilistMediaFormat, String> _anilistMediaFormatTitleMap =
-    <AnilistMediaFormat, String>{
-  AnilistMediaFormat.tv: 'TV',
-  AnilistMediaFormat.tvShort: 'TV (Short)',
-  AnilistMediaFormat.movie: 'Movie',
-  AnilistMediaFormat.special: 'Special',
-  AnilistMediaFormat.ova: 'OVA',
-  AnilistMediaFormat.ona: 'ONA',
-  AnilistMediaFormat.music: 'Music',
-  AnilistMediaFormat.manga: 'Manga',
-  AnilistMediaFormat.novel: 'Novel',
-  AnilistMediaFormat.oneshot: 'OneShot',
-};
-
 extension AnilistMediaFormatTUtils on AnilistMediaFormat {
-  String getTitleCase(final Translation translation) =>
-      _anilistMediaFormatTitleMap[this]!;
+  String getTitleCase(final Translation translation) => switch (this) {
+        AnilistMediaFormat.tv => 'TV',
+        AnilistMediaFormat.tvShort => 'TV (Short)',
+        AnilistMediaFormat.movie => 'Movie',
+        AnilistMediaFormat.special => 'Special',
+        AnilistMediaFormat.ova => 'OVA',
+        AnilistMediaFormat.ona => 'ONA',
+        AnilistMediaFormat.music => 'Music',
+        AnilistMediaFormat.manga => 'Manga',
+        AnilistMediaFormat.novel => 'Novel',
+        AnilistMediaFormat.oneshot => 'OneShot',
+      };
 }
 
 extension AnilistMediaListStatusTUtils on AnilistMediaListStatus {
-  String getTitleCase(final Translation translation) {
-    switch (this) {
-      case AnilistMediaListStatus.current:
-        return translation.current;
-
-      case AnilistMediaListStatus.planning:
-        return translation.planning;
-
-      case AnilistMediaListStatus.completed:
-        return translation.completed;
-
-      case AnilistMediaListStatus.dropped:
-        return translation.dropped;
-
-      case AnilistMediaListStatus.paused:
-        return translation.paused;
-
-      case AnilistMediaListStatus.repeating:
-        return translation.repeating;
-    }
-  }
+  String getTitleCase(final Translation translation) => switch (this) {
+        AnilistMediaListStatus.current => translation.current,
+        AnilistMediaListStatus.planning => translation.planning,
+        AnilistMediaListStatus.completed => translation.completed,
+        AnilistMediaListStatus.dropped => translation.dropped,
+        AnilistMediaListStatus.paused => translation.paused,
+        AnilistMediaListStatus.repeating => translation.repeating,
+      };
 }
