@@ -30,9 +30,8 @@ class _UnderScoreHomePageAppBarState extends State<UnderScoreHomePageAppBar> {
 
   @override
   void dispose() {
-    appEventSubscription?.cancel();
-
     super.dispose();
+    appEventSubscription?.cancel();
   }
 
   @override

@@ -16,12 +16,12 @@ class AnilistMediaTile extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pusher.pushToViewPageFromMedia(media);
         },
-        borderRadius: BorderRadius.circular(context.r.scale(0.25)),
+        borderRadius: BorderRadius.circular(context.r.scale(0.5)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(context.r.scale(0.25)),
+              borderRadius: BorderRadius.circular(context.r.scale(0.5)),
               child: AspectRatio(
                 aspectRatio: coverRatio,
                 child: Stack(
@@ -75,14 +75,15 @@ class AnilistMediaTile extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: context.r.scale(0.25)),
+            SizedBox(height: context.r.scale(0.5)),
             Flexible(
               child: Text(
                 media.titleUserPreferred,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
+            SizedBox(height: context.r.scale(0.25)),
           ],
         ),
       );
@@ -98,16 +99,22 @@ class AnilistMediaTile extends StatelessWidget {
   }) =>
       DecoratedBox(
         decoration: BoxDecoration(
-          color: backgroundColor ?? Theme.of(context).bottomAppBarTheme.color,
-          borderRadius: BorderRadius.circular(context.r.scale(0.2)),
+          color: backgroundColor ?? Theme.of(context).colorScheme.background,
+          borderRadius: BorderRadius.circular(context.r.scale(0.3)),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.r.scale(0.2)),
+          padding: EdgeInsets.only(
+            top: context.r.scale(0.05),
+            bottom: context.r.scale(0.1),
+            left: context.r.scale(0.25),
+            right: context.r.scale(0.25),
+          ),
           child: DefaultTextStyle(
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge!
-                .copyWith(fontWeight: FontWeight.normal, color: textColor),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color:
+                      textColor ?? Theme.of(context).colorScheme.onBackground,
+                ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -116,10 +123,10 @@ class AnilistMediaTile extends StatelessWidget {
                   IconTheme(
                     data: Theme.of(context)
                         .iconTheme
-                        .copyWith(size: context.r.scale(0.65)),
+                        .copyWith(size: context.r.scale(1)),
                     child: icon,
                   ),
-                  SizedBox(width: context.r.scale(0.15)),
+                  SizedBox(width: context.r.scale(0.25)),
                 ],
                 child,
               ],
@@ -131,6 +138,8 @@ class AnilistMediaTile extends StatelessWidget {
   static Widget buildFormatChip({
     required final BuildContext context,
     required final AnilistMedia media,
+    final Color? backgroundColor,
+    final Color? textColor,
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
@@ -138,35 +147,49 @@ class AnilistMediaTile extends StatelessWidget {
             ? AnilistMediaTile.ongoingIcon
             : null,
         child: Text(media.format.getTitleCase(context.t)),
+        backgroundColor: backgroundColor,
+        textColor: textColor,
       );
 
   static Widget buildWatchtimeChip({
     required final BuildContext context,
     required final AnilistMedia media,
+    final Color? backgroundColor,
+    final Color? textColor,
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
         child: Text(media.getWatchtime(context.t)),
+        backgroundColor: backgroundColor,
+        textColor: textColor,
       );
 
   static Widget buildRatingChip({
     required final BuildContext context,
     required final AnilistMedia media,
+    final Color? backgroundColor,
+    final Color? textColor,
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
         icon: AnilistMediaTile.ratingIcon,
         child: Text('${media.averageScore}%'),
+        backgroundColor: backgroundColor,
+        textColor: textColor,
       );
 
   static Widget buildAirdateChip({
     required final BuildContext context,
     required final AnilistMedia media,
+    final Color? backgroundColor,
+    final Color? textColor,
   }) =>
       AnilistMediaTile.buildChip(
         context: context,
         icon: airdateIcon,
         child: Text(media.airdate),
+        backgroundColor: backgroundColor,
+        textColor: textColor,
       );
 
   static Widget buildNSFWChip({

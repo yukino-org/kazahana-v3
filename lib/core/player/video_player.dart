@@ -30,8 +30,8 @@ class _PlayerPageState extends State<PlayerPage> {
 
   @override
   void dispose() {
-    _player.dispose();
     super.dispose();
+    _player.dispose();
   }
 
   Future<void> _setDataSource() async {

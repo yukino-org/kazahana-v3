@@ -18,25 +18,25 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
       duration: AnimationDurations.defaultQuickAnimation,
       transitionBuilder:
           (final Widget child, final Animation<double> animation) =>
-              FadeScaleTransition(animation: animation, child: child),
+              FadeTransition(opacity: animation, child: child),
       child: provider.showFloatingAppBar
           ? SizedBox.square(
-              dimension: context.r.scale(1.5),
+              dimension: context.r.scale(2),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Theme.of(context)
-                      .bottomAppBarTheme
-                      .color!
+                      .colorScheme
+                      .background
                       .withOpacity(0.25),
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(context.r.scale(1)),
+                  borderRadius: BorderRadius.circular(context.r.scale(2)),
                   onTap: onPressed,
                   child: Center(
                     child: IconTheme(
                       data: IconThemeData(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                       child: icon,
                     ),
@@ -53,14 +53,11 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     final ViewPageProvider provider = context.watch<ViewPageProvider>();
 
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: context.r.scale(0.5),
-          left: context.r.scale(0.75),
-          right: context.r.scale(0.75),
-        ),
+      child: SizedBox(
+        height: preferredHeight,
         child: Row(
           children: <Widget>[
+            SizedBox(width: context.r.scale(0.75)),
             buildAppBarButton(
               context: context,
               icon: const Icon(Icons.close_rounded),
@@ -77,12 +74,16 @@ class ViewPageAppBar extends StatelessWidget implements PreferredSizeWidget {
                   provider.fetch();
                 },
               ),
+            SizedBox(width: context.r.scale(0.75)),
           ],
         ),
       ),
     );
   }
 
+  double get preferredHeight =>
+      RelativeScaleData.fromSettingsNoResponsive().scale(3.5);
+
   @override
-  Size get preferredSize => const Size.fromHeight(0);
+  Size get preferredSize => Size.fromHeight(preferredHeight);
 }

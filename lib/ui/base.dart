@@ -12,14 +12,14 @@ class BaseApp extends StatefulWidget {
 
 class _BaseAppState extends State<BaseApp> {
   late ThemerThemeData theme;
-  late RelativeScaleData scale;
+  late double scaleMultiplier;
   late String translationId;
 
   @override
   void initState() {
     super.initState();
     theme = Themer.defaultTheme();
-    scale = RelativeScaleData.defaultScale;
+    scaleMultiplier = RelativeScaleData.defaultScaleMultiplier;
     translationId = '';
     AppEvents.stream.listen((final AppEvent event) {
       if (event == AppEvent.settingsChange) {
@@ -29,10 +29,10 @@ class _BaseAppState extends State<BaseApp> {
             theme = nTheme;
           });
         }
-        final RelativeScaleData nScale = RelativeScaleData.fromSettings();
-        if (scale != nScale) {
+        final double nScaleMultiplier = RelativeScaleData.getScaleMultiplier();
+        if (scaleMultiplier != nScaleMultiplier) {
           setState(() {
-            scale = nScale;
+            scaleMultiplier = nScaleMultiplier;
           });
         }
       }
@@ -57,7 +57,10 @@ class _BaseAppState extends State<BaseApp> {
           final Widget? child,
         ) =>
             RelativeScaler(
-          data: scale,
+          data: RelativeScaleData(
+            multiplier: scaleMultiplier,
+            screen: RelativeScaleData.getScreenSize(context),
+          ),
           child: TranslationWrapper(
             id: translationId,
             child: Builder(

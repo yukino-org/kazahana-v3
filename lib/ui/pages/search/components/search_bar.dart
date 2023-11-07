@@ -31,10 +31,9 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   void dispose() {
+    super.dispose();
     searchTimer?.cancel();
     textEditingController.dispose();
-
-    super.dispose();
   }
 
   void onInputChange(

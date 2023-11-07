@@ -62,7 +62,7 @@ class AnilistPageProfileBodyBody extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: HorizontalBodyPadding.size(context),
+          horizontal: HorizontalBodyPadding.paddingValue(context),
           vertical: context.r.scale(0.5),
         ),
         child: StatedBuilder(

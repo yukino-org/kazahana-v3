@@ -46,23 +46,20 @@ class _ViewPageBodyState extends State<ViewPageBody>
     tabController = TabController(length: tabs.length, vsync: this);
     scrollController = ScrollController()
       ..addListener(() {
-        if (mounted && scrollController.hasClients) {
-          final ViewPageViewProvider provider =
-              context.read<ViewPageViewProvider>();
-
-          provider.setFloatingAppBarVisibility(
-            visible: scrollController.position.pixels < 50,
-          );
-        }
+        if (!mounted || !scrollController.hasClients) return;
+        final ViewPageViewProvider provider =
+            context.read<ViewPageViewProvider>();
+        provider.setFloatingAppBarVisibility(
+          visible: scrollController.position.pixels < 50,
+        );
       });
   }
 
   @override
   void dispose() {
+    super.dispose();
     tabController.dispose();
     scrollController.dispose();
-
-    super.dispose();
   }
 
   Widget buildTabBarViewPage({
@@ -131,18 +128,22 @@ class _ViewPageBodyState extends State<ViewPageBody>
           ),
         ),
       ],
-      body: TabBarView(
-        controller: tabController,
-        children: <Widget>[
-          buildTabBarViewPage(
-            context: context,
-            builder: (final _) => ViewPageOverview(media),
-          ),
-          buildTabBarViewPage(
-            context: context,
-            builder: (final _) => ViewPageContent(media),
-          ),
-        ],
+      body: MediaQuery.removePadding(
+        removeTop: true,
+        context: context,
+        child: TabBarView(
+          controller: tabController,
+          children: <Widget>[
+            buildTabBarViewPage(
+              context: context,
+              builder: (final _) => ViewPageOverview(media),
+            ),
+            buildTabBarViewPage(
+              context: context,
+              builder: (final _) => ViewPageContent(media),
+            ),
+          ],
+        ),
       ),
     );
   }

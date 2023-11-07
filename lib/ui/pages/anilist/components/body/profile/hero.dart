@@ -167,7 +167,7 @@ class AnilistPageProfileBodyHero extends StatelessWidget {
                     alignment: Alignment.bottomCenter,
                     child: Padding(
                       padding: EdgeInsets.all(
-                        HorizontalBodyPadding.size(context),
+                        HorizontalBodyPadding.paddingValue(context),
                       ),
                       child: buildHeroContent(context),
                     ),

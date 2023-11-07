@@ -61,12 +61,14 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                 ),
             ],
           ),
-          SizedBox(height: context.r.scale(0.25)),
+          SizedBox(height: context.r.scale(0.5)),
           Text(
             widget.media.titleUserPreferred,
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall!
+            style: context.r
+                .responsive(
+                  Theme.of(context).textTheme.titleLarge,
+                  md: Theme.of(context).textTheme.headlineSmall,
+                )!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: context.r.scale(0.25)),
@@ -111,8 +113,14 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Theme.of(context).colorScheme.background.withOpacity(0.3),
-                      Theme.of(context).colorScheme.background.withOpacity(0.7),
+                      Theme.of(context)
+                          .colorScheme
+                          .background
+                          .withOpacity(0.25),
+                      Theme.of(context)
+                          .colorScheme
+                          .background
+                          .withOpacity(0.75),
                     ],
                   ),
                 ),
@@ -130,24 +138,34 @@ class _AnilistMediaSlideState extends State<AnilistMediaSlide>
           child: IgnorePointer(
             child: Padding(
               padding: EdgeInsets.all(context.r.scale(1)),
-              child: Row(
-                // mainAxisSize: MainAxisSize.min,
-                // mainAxisAlignment: MainAxisAlignment.end,
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  buildThumbnail(context),
-                  // SizedBox(height: context.r.scale(0.5)),
-                  SizedBox(width: context.r.scale(1.5)),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        buildContent(context),
-                      ],
+              child: context.r.responsiveBuilder(
+                () => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: buildThumbnail(context),
                     ),
-                  ),
-                ],
+                    SizedBox(height: context.r.scale(1)),
+                    buildContent(context),
+                  ],
+                ),
+                md: () => Row(
+                  children: <Widget>[
+                    buildThumbnail(context),
+                    SizedBox(width: context.r.scale(1.5)),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          buildContent(context),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

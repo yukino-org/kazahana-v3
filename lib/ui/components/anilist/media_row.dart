@@ -14,12 +14,16 @@ class AnilistMediaRow extends StatelessWidget {
         results
             .map(
               (final AnilistMedia x) => SizedBox(
-                width: context.r.scale(tileWidthScale),
+                width: getTileWidth(context.r),
                 child: AnilistMediaTile(x),
               ),
             )
             .toList(),
       );
 
-  static const double tileWidthScale = 7.5;
+  static const double tileWidthAny = 8;
+  static const double tileWidthMd = 9;
+
+  static double getTileWidth(final RelativeScaler r) =>
+      r.scale(tileWidthAny, md: tileWidthMd);
 }

@@ -9,7 +9,7 @@ class AnilistPageLoginBody extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: HorizontalBodyPadding.size(context),
+          horizontal: HorizontalBodyPadding.paddingValue(context),
           vertical: MediaQuery.of(context).size.height * 0.2,
         ),
         child: Column(

@@ -13,8 +13,12 @@ class HorizontalBodyPadding extends StatelessWidget {
   Widget build(final BuildContext context) =>
       Padding(padding: padding(context), child: child);
 
-  static const double sizeScale = 0.75;
-  static double size(final BuildContext context) => context.r.scale(sizeScale);
+  static const double paddingAny = 0.75;
+  static const double paddingMd = 1;
+
+  static double paddingValue(final BuildContext context) =>
+      context.r.scale(paddingAny, md: paddingMd);
+
   static EdgeInsets padding(final BuildContext context) =>
-      EdgeInsets.symmetric(horizontal: size(context));
+      EdgeInsets.symmetric(horizontal: paddingValue(context));
 }

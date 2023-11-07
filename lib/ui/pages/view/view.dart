@@ -38,9 +38,7 @@ class ViewPage extends StatelessWidget {
               provider.media.state,
               waiting: (final _) => const SizedBox.shrink(),
               processing: (final _) => const SizedBox.shrink(),
-              finished: (final _) => const SafeArea(
-                child: ViewPageBody(),
-              ),
+              finished: (final _) => const ViewPageBody(),
               failed: (final _) => const SizedBox.shrink(),
             ),
           ),

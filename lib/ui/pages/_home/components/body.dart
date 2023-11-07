@@ -33,8 +33,8 @@ class UnderScoreHomePageBody extends StatelessWidget {
   }) =>
       Padding(
         padding: HorizontalBodyPadding.padding(context)
-            .copyWith(bottom: context.r.scale(0.5)),
-        child: Text(text, style: Theme.of(context).textTheme.titleLarge),
+            .copyWith(bottom: context.r.scale(0.75, md: 1)),
+        child: Text(text, style: Theme.of(context).textTheme.titleMedium),
       );
 
   Widget buildTrendsSlideshow(final StatedValue<List<AnilistMedia>> data) =>
@@ -66,17 +66,19 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingAnime),
-            SizedBox(height: context.r.scale(4)),
+            SizedBox(height: context.r.scale(2)),
             buildText(context.t.topOngoingAnime, context: context),
             buildCarousel(
               context: context,
               results: provider.topOngoingAnime,
             ),
+            SizedBox(height: context.r.scale(1)),
             buildText(context.t.mostPopularAnime, context: context),
             buildCarousel(
               context: context,
               results: provider.mostPopularAnime,
             ),
+            SizedBox(height: context.r.scale(1)),
           ],
         ),
       TenkaType.manga => Column(
@@ -85,17 +87,19 @@ class UnderScoreHomePageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildTrendsSlideshow(provider.trendingManga),
-            SizedBox(height: context.r.scale(0.75)),
+            SizedBox(height: context.r.scale(2)),
             buildText(context.t.topOngoingManga, context: context),
             buildCarousel(
               context: context,
               results: provider.topOngoingManga,
             ),
+            SizedBox(height: context.r.scale(1)),
             buildText(context.t.mostPopularManga, context: context),
             buildCarousel(
               context: context,
               results: provider.mostPopularManga,
             ),
+            SizedBox(height: context.r.scale(1)),
           ],
         ),
     };

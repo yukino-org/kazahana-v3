@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:kazahana/ui/components/exports.dart';
 
 class Slideshow extends StatefulWidget {
   const Slideshow({
@@ -21,6 +22,7 @@ class _SlideshowState extends State<Slideshow>
     with SingleTickerProviderStateMixin {
   late final TabController tabController;
   Timer? timer;
+  bool isDragged = false;
 
   @override
   void initState() {
@@ -34,24 +36,39 @@ class _SlideshowState extends State<Slideshow>
 
   @override
   void dispose() {
+    super.dispose();
     timer?.cancel();
     tabController.dispose();
-
-    super.dispose();
   }
 
   void scheduleSlideChange() {
     timer = Timer(widget.slideDuration, () {
-      final int nextIndex =
-          currentIndex + 1 < widget.children.length ? currentIndex + 1 : 0;
-      tabController.animateTo(nextIndex, duration: widget.animationDuration);
+      if (!isDragged) {
+        final int nextIndex =
+            currentIndex + 1 < widget.children.length ? currentIndex + 1 : 0;
+        tabController.animateTo(nextIndex, duration: widget.animationDuration);
+      }
       scheduleSlideChange();
     });
   }
 
   @override
-  Widget build(final BuildContext context) =>
-      TabBarView(controller: tabController, children: widget.children);
+  Widget build(final BuildContext context) => DraggableScrollConfiguration(
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (final ScrollNotification x) {
+            if (x is ScrollStartNotification) {
+              isDragged = true;
+            } else if (x is ScrollEndNotification) {
+              isDragged = false;
+            }
+            return false;
+          },
+          child: TabBarView(
+            controller: tabController,
+            children: widget.children,
+          ),
+        ),
+      );
 
   int get currentIndex => tabController.index;
 }
